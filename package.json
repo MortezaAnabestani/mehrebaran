@@ -1,0 +1,18 @@
+{
+  "name": "Mehre-Baran-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Monorepo for the Mehre-Baran application",
+  "scripts": {
+    "dev:api": "pnpm --filter api dev",
+    "dev:web": "pnpm --filter web dev",
+    "dev:dashboard": "pnpm --filter dashboard dev"
+  },
+  "keywords": [],
+  "author": "Morteza Anabestani",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/react": "^19.1.9",
+    "@types/react-dom": "^19.1.7"
+  }
+}

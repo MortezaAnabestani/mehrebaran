@@ -13,7 +13,7 @@ interface Props {
 
 const Home: React.FC<Props> = ({}) => {
   return (
-    <section className="relative">
+    <section>
       <HeroSection />
       <main className="md:w-8/10 container mx-auto flex-grow">
         <WhatWeDidSection />

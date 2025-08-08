@@ -36,7 +36,7 @@ const OptimizedImage: FC<SmartImageProps> = ({
         src={src}
         alt={alt}
         fill
-        className={`${imageClass} object-top-left object-cover`}
+        className={`${imageClass} object-top-center object-cover`}
         priority={priority === "up" ? true : false}
         placeholder={placeholder}
         blurDataURL={placeholder === "blur" ? blurDataURL : undefined}
@@ -49,8 +49,8 @@ const OptimizedImage: FC<SmartImageProps> = ({
       alt={alt}
       width={width}
       height={height}
-      className={imageClass}
-      priority={priority}
+      className={`${imageClass} object-cover`}
+      priority={priority === "up"}
       placeholder={placeholder}
       blurDataURL={placeholder === "blur" ? blurDataURL : undefined}
       sizes={sizes}

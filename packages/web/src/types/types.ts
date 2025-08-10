@@ -28,7 +28,7 @@ export interface DonationProjectsType {
   requiredVolunteers: "تعداد داوطلب مورد نیاز";
 }
 
-export interface NewsCardType {
+export interface CardType {
   img: string;
   title: string;
   description: string;
@@ -46,4 +46,15 @@ export interface AreasOfActivity {
 export interface FAQsType {
   answer: string;
   question: string;
+}
+
+export interface SigningDataForm1 {
+  mobile: string;
+}
+export interface SigningDataForm2 {
+  name: string;
+  major: string;
+  yearOfAdmission: string;
+  verificationCode: string;
+  ID: string;
 }

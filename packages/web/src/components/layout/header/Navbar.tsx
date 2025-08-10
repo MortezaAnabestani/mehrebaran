@@ -14,7 +14,7 @@ const menuItems: MenuItem[] = [
   { label: "طرح‌های جاری", href: "/projects/active" },
   { label: "اخبار", href: "/news" },
   { label: "مجلۀ مهر باران", href: "/blog" },
-  { label: "ثبت‌نام", href: "/contact-us" },
+  { label: "ثبت‌نام", href: "/signup" },
 ];
 
 const Navbar: React.FC<props> = ({ deviceSize }) => {

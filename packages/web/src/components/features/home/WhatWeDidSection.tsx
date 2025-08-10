@@ -55,7 +55,7 @@ const Items: WhatWeDidType[] = [
 
 const WhatWeDidSection: React.FC = ({}) => {
   return (
-    <section className="my-10">
+    <section className="mb-10">
       <HeadTitle title="در کنار هم چه کردیم؟" />
       <div className="w-9/10 md:w-7/10 mx-auto flex justify-between items-center flex-wrap gap-4">
         {Items.map((item, index) => (

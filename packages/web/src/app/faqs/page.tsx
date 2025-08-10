@@ -1,4 +1,4 @@
-import FaqSection from "@/components/ui/FaqSection";
+import FaqSection from "@/components/views/faqs_co/FaqSection";
 import { FAQsType } from "@/types/types";
 import React from "react";
 
@@ -21,14 +21,14 @@ const FaqsItems: FAQsType[] = [
 ];
 const FAQs: React.FC = ({}) => {
   return (
-    <div className="w-full md:w-6/10 mx-auto pt-8">
+    <div className="w-full md:w-6/10 mx-auto my-8">
       <h1 className="text-2xl font-bold mb-6 px-3">
         <span className="text-3xl">▪ </span>سوالات پرتکرار
       </h1>
       <div>
         {FaqsItems.map((faq, index) => (
           <div key={index}>
-            <FaqSection faq={faq} />
+            <FaqSection answer={faq.answer} question={faq.question} />
           </div>
         ))}
       </div>

@@ -5,9 +5,14 @@ import React from "react";
 const HeroSection: React.FC = ({}) => {
   return (
     <section className=" w-full min-h-screen">
-      <div className="w-full relative h-[100vh] ">
-        <OptimizedImage src="/images/hero_img.jpg" alt="عکس پس زمینه مهر باران است" fill={true} />
-        <div className="absolute w-8/10 md:w-4/10 bottom-10 right-1/10 md:right-5/10 bg-neutral-600/70 text-white text-justify p-4 rounded-2xl">
+      <div className="w-full relative h-[100vh]">
+        <OptimizedImage
+          src="/images/hero_img.jpg"
+          alt="عکس پس زمینه مهر باران است"
+          fill={true}
+          className=" -translate-y-27"
+        />
+        <div className="absolute w-8/10 md:w-4/10 top-35 right-1/10 md:right-5/10 bg-neutral-600/70 text-white text-justify p-4 rounded-2xl">
           <h1 className="text-center text-sm md:text-[25px] font-extrabold pb-3 border-b-2 border-white">
             کانون مسئولیت اجتماعی مهر باران
           </h1>

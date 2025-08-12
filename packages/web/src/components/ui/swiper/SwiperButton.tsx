@@ -3,14 +3,17 @@ import React from "react";
 interface Props {
   prevRef: React.Ref<HTMLButtonElement>;
   nextRef: React.Ref<HTMLButtonElement>;
+  outsideBtn?: boolean;
 }
 
-const SwiperButton: React.FC<Props> = ({ prevRef, nextRef }) => {
+const SwiperButton: React.FC<Props> = ({ prevRef, nextRef, outsideBtn = true }) => {
   return (
     <>
       <button
         ref={prevRef}
-        className="absolute -left-11 top-1/2 -translate-y-1/2 z-10 bg-mblue shadow-lg rounded-full p-1.5 hover:bg-mblue/80 cursor-pointer"
+        className={`absolute ${
+          outsideBtn ? "-left-11" : "left-11"
+        } top-1/2 -translate-y-1/2 z-10 bg-mblue shadow-lg rounded-full p-1.5 hover:bg-mblue/80 cursor-pointer`}
         aria-label="Previous"
       >
         <svg
@@ -26,7 +29,9 @@ const SwiperButton: React.FC<Props> = ({ prevRef, nextRef }) => {
 
       <button
         ref={nextRef}
-        className="absolute -right-11 top-1/2 -translate-y-1/2 z-10 bg-mblue shadow-lg rounded-full p-1.5 hover:bg-mblue/80 cursor-pointer"
+        className={`absolute ${
+          outsideBtn ? "-right-11" : "right-11"
+        }  top-1/2 -translate-y-1/2 z-10 bg-mblue shadow-lg rounded-full p-1.5 hover:bg-mblue/80 cursor-pointer`}
         aria-label="Next"
       >
         <svg

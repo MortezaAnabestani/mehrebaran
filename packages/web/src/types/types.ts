@@ -14,6 +14,7 @@ export interface WhatWeDidType {
 }
 
 export interface RuningProjectsType {
+  id: string;
   title: string;
   img: string;
   description: string;
@@ -26,6 +27,7 @@ export interface DonationProjectsType {
   collectedVolunteer: number;
   totalRaised: "میزان مبلغ تأمین‌شده";
   requiredVolunteers: "تعداد داوطلب مورد نیاز";
+  deadLine?: number;
 }
 
 export interface CardType {
@@ -57,4 +59,19 @@ export interface SigningDataForm2 {
   yearOfAdmission: string;
   verificationCode: string;
   ID: string;
+}
+
+export interface NeedsNetworkSectionsType {
+  title: string;
+  subtitle: string;
+  icon: string;
+  description: string;
+  link: "social-responsibility" | "volunteer-camps" | "effective-altruism" | "environment";
+  subject: {
+    title: string;
+    description: string;
+    comments: string[];
+    images: string[];
+    totalVote: number;
+  }[];
 }

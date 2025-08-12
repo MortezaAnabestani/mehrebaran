@@ -1,6 +1,9 @@
 {
+  "/_not-found/page": "app/_not-found/page.js",
   "/page": "app/page.js",
+  "/about-us/page": "app/about-us/page.js",
   "/blog/page": "app/blog/page.js",
-  "/news/page": "app/news/page.js",
-  "/contact-us/page": "app/contact-us/page.js"
+  "/faqs/page": "app/faqs/page.js",
+  "/projects/completed/page": "app/projects/completed/page.js",
+  "/focus/page": "app/focus/page.js"
 }

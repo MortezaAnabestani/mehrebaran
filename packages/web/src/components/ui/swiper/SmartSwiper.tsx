@@ -27,6 +27,7 @@ interface SmartSwiperProps {
   };
   onSlideChange?: (swiper: any) => void;
   onSwiper?: (swiper: any) => void;
+  outsideBtn?: boolean;
 }
 
 const SmartSwiper: React.FC<SmartSwiperProps> = ({
@@ -42,6 +43,7 @@ const SmartSwiper: React.FC<SmartSwiperProps> = ({
   breakpoints,
   onSlideChange,
   onSwiper,
+  outsideBtn = true,
 }) => {
   const prevRef = useRef<HTMLButtonElement>(null);
   const nextRef = useRef<HTMLButtonElement>(null);
@@ -77,7 +79,7 @@ const SmartSwiper: React.FC<SmartSwiperProps> = ({
       </Swiper>
       {showNavigation && (
         <div className="hidden md:block">
-          <SwiperButton prevRef={prevRef} nextRef={nextRef} />
+          <SwiperButton prevRef={prevRef} nextRef={nextRef} outsideBtn={outsideBtn} />
         </div>
       )}
     </div>

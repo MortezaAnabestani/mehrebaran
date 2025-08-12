@@ -9,8 +9,8 @@ interface props {
 }
 
 const menuItems: MenuItem[] = [
+  { label: "شبکه نیازسنجی", href: "/network" },
   { label: "دربارۀ ما", href: "/about-us" },
-  { label: "پرسش‌های متداول", href: "/faqs" },
   { label: "طرح‌های جاری", href: "/projects/active" },
   { label: "اخبار", href: "/news" },
   { label: "مجلۀ مهر باران", href: "/blog" },

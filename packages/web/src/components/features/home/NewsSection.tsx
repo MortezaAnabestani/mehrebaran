@@ -1,46 +1,8 @@
 import React from "react";
 import HeadTitle from "./HeadTitle";
 import SmartSwiper from "@/components/ui/swiper/SmartSwiper";
-import { CardType } from "@/types/types";
 import Card from "@/components/shared/Card";
-
-const cardItems: CardType[] = [
-  {
-    img: "/images/1.png",
-    title: "پاکسازی طبیعت",
-    description:
-      "بعضی نیازهای روزمره برنامه نویسی در همه زبان ها همیشه مورد نیاز هستند. مهم ترین اینها توابع و کتابخانه های کار با اعداد و زبان و تبدیل های مختلف اونهاست.",
-    href: "/",
-  },
-  {
-    img: "/images/2.png",
-    title: "دست در دست",
-    description:
-      "بعضی نیازهای روزمره برنامه نویسی در همه زبان ها همیشه مورد نیاز هستند. مهم ترین اینها توابع و کتابخانه های کار با اعداد و زبان و تبدیل های مختلف اونهاست.",
-    href: "/",
-  },
-  {
-    img: "/images/hero_img.jpg",
-    title: "راستۀ خیریه",
-    description:
-      "بعضی نیازهای روزمره برنامه نویسی در همه زبان ها همیشه مورد نیاز هستند. مهم ترین اینها توابع و کتابخانه های کار با اعداد و زبان و تبدیل های مختلف اونهاست.",
-    href: "/",
-  },
-  {
-    img: "/images/1.png",
-    title: "راستا",
-    description:
-      "بعضی نیازهای روزمره برنامه نویسی در همه زبان ها همیشه مورد نیاز هستند. مهم ترین اینها توابع و کتابخانه های کار با اعداد و زبان و تبدیل های مختلف اونهاست.",
-    href: "/",
-  },
-  {
-    img: "/images/hero_img.jpg",
-    title: "راستۀ خیریه",
-    description:
-      "بعضی نیازهای روزمره برنامه نویسی در همه زبان ها همیشه مورد نیاز هستند. مهم ترین اینها توابع و کتابخانه های کار با اعداد و زبان و تبدیل های مختلف اونهاست.",
-    href: "/",
-  },
-];
+import { cardItems } from "@/fakeData/fakeData";
 
 const NewsSection: React.FC = ({}) => {
   return (
@@ -49,7 +11,7 @@ const NewsSection: React.FC = ({}) => {
       <div className="w-9/10 md:w-11/12 mx-auto">
         <SmartSwiper
           items={cardItems.map((item, index) => (
-            <div key={index} className="h-full flex">
+            <div key={index} className="flex h-100">
               <Card cardItems={item} />
             </div>
           ))}

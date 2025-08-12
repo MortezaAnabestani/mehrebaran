@@ -1,46 +1,8 @@
 import HeadTitle from "@/components/features/home/HeadTitle";
-import SmartButton from "@/components/ui/SmartButton";
-import BlogSections_views from "@/components/views/blog_co/BlogSections_views";
+import HeroShared_views from "@/components/views/shared/HeroShared_views";
+import { cardItems } from "@/fakeData/fakeData";
 import { CardType } from "@/types/types";
 import React from "react";
-
-const cardItems: CardType[] = [
-  {
-    img: "/images/1.png",
-    title: "پاکسازی طبیعت",
-    description:
-      "بعضی نیازهای روزمره برنامه نویسی در همه زبان ها همیشه مورد نیاز هستند. مهم ترین اینها توابع و کتابخانه های کار با اعداد و زبان و تبدیل های مختلف اونهاست.",
-    href: "/",
-  },
-  {
-    img: "/images/2.png",
-    title: "دست در دست",
-    description:
-      "بعضی نیازهای روزمره برنامه نویسی در همه زبان ها همیشه مورد نیاز هستند. مهم ترین اینها توابع و کتابخانه های کار با اعداد و زبان و تبدیل های مختلف اونهاست.",
-    href: "/",
-  },
-  {
-    img: "/images/hero_img.jpg",
-    title: "راستۀ خیریه",
-    description:
-      "بعضی نیازهای روزمره برنامه نویسی در همه زبان ها همیشه مورد نیاز هستند. مهم ترین اینها توابع و کتابخانه های کار با اعداد و زبان و تبدیل های مختلف اونهاست.",
-    href: "/",
-  },
-  {
-    img: "/images/1.png",
-    title: "راستا",
-    description:
-      "بعضی نیازهای روزمره برنامه نویسی در همه زبان ها همیشه مورد نیاز هستند. مهم ترین اینها توابع و کتابخانه های کار با اعداد و زبان و تبدیل های مختلف اونهاست.",
-    href: "/",
-  },
-  {
-    img: "/images/hero_img.jpg",
-    title: "راستۀ خیریه",
-    description:
-      "بعضی نیازهای روزمره برنامه نویسی در همه زبان ها همیشه مورد نیاز هستند. مهم ترین اینها توابع و کتابخانه های کار با اعداد و زبان و تبدیل های مختلف اونهاست.",
-    href: "/",
-  },
-];
 
 const Blog: React.FC = ({}) => {
   return (
@@ -61,13 +23,13 @@ const Blog: React.FC = ({}) => {
         </div>
       </div>
       <div className="w-9/10 md:w-8/10 mx-auto">
-        <BlogSections_views cardItems={cardItems} />
+        <HeroShared_views cardItems={cardItems} />
         <HeadTitle title="ویدئوها" />
-        <BlogSections_views cardItems={cardItems} horizontal={true} />
+        <HeroShared_views cardItems={cardItems} horizontal={true} page="blog/videos" />
         <HeadTitle title="مجموعه عکس" />
-        <BlogSections_views cardItems={cardItems} horizontal={true} />
+        <HeroShared_views cardItems={cardItems} horizontal={true} page="blog/gallery" />
         <HeadTitle title="مقالات" />
-        <BlogSections_views cardItems={cardItems} horizontal={true} />
+        <HeroShared_views cardItems={cardItems} horizontal={true} page="blog/articles" />
       </div>
     </div>
   );

@@ -27,7 +27,7 @@ const Header: React.FC<Props> = ({}) => {
     <header className="h-13.5 md:h-26">
       <div
         className={`w-full fixed ${
-          scrolled ? "bg-mblue/100" : "bg-mblue/50"
+          scrolled ? "bg-mblue/100 text-white" : "bg-mblue/50 hover:bg-mblue/100 transition duration-200"
         } py-2 z-20 duration-300 transition-all`}
       >
         <div

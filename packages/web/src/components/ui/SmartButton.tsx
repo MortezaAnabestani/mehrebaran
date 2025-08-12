@@ -28,7 +28,8 @@ const SmartButton: React.FC<ButtonProps> = ({
   disabled,
   ...rest
 }) => {
-  const baseStyle = "inline-flex items-center justify-center rounded-xs font-semibold transition-all";
+  const baseStyle =
+    "inline-flex items-center justify-center rounded-xs font-semibold transition-all cursor-pointer";
 
   const variantStyles: Record<string, string> = {
     mblue: "bg-mblue text-white hover:bg-mblue/80",

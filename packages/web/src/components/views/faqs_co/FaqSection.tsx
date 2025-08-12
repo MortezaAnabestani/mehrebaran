@@ -1,7 +1,7 @@
 "use client";
+import OptimizedImage from "@/components/ui/OptimizedImage";
 import { FAQsType } from "@/types/types";
 import { useState, FC } from "react";
-import OptimizedImage from "./OptimizedImage";
 
 const FaqSection: FC<FAQsType> = ({ question, answer }) => {
   const [faqOpen, setFaqOpen] = useState<boolean>(false);

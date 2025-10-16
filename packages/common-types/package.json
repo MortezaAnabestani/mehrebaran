@@ -1,0 +1,9 @@
+{
+  "name": "common-types",
+  "version": "1.0.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "devDependencies": {
+    "mongoose": "^8.17.1"
+  }
+}

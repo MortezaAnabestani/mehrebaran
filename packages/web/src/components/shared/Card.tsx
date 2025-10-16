@@ -1,43 +1,51 @@
 import React from "react";
 import OptimizedImage from "../ui/OptimizedImage";
 import SmartButton from "../ui/SmartButton";
-import { CardType } from "@/types/types";
+import { INews, IArticle, IProject } from "common-types";
 
-interface CardTypeCombine {
-  cardItems: CardType;
+type CardItem = (INews | IArticle | IProject) & {
+  _id: string;
+  slug: string;
+  title: string;
+  excerpt: string;
+};
+
+interface CardProps {
+  cardItem?: CardItem;
   horizontal?: boolean;
-  page?: "news" | "blog" | "blog/articles" | "blog/gallery" | "blog/videos";
+  page?: "news" | "articles" | "projects";
 }
 
-const Card: React.FC<CardTypeCombine> = ({ cardItems, horizontal = false, page = "blog" }) => {
+const Card: React.FC<CardProps> = ({ cardItem, horizontal = false, page = "news" }) => {
+  if (!cardItem) {
+    return null;
+  }
+
   return (
     <div
       className={`flex ${
         horizontal ? "flex-row" : "flex-col"
-      } bg-white rounded-xl shadow-md border border-mgray/65 overflow-hidden ${
-        horizontal ? "h-50" : "h-full"
-      } ${horizontal ? "w-full" : "w-full"}`}
+      } bg-white rounded-xl shadow-md border border-mgray/65 overflow-hidden h-full w-full`}
     >
-      <div className={`${horizontal ? "w-40 md:w-70 h-50" : "w-full h-100"} relative `}>
+      <div className={`${horizontal ? "w-40 md:w-70" : "w-full h-48"} relative `}>
         <OptimizedImage
-          src={cardItems.img}
-          alt={cardItems.title}
+          src={cardItem.featuredImage.desktop}
+          alt={cardItem.title}
           fill={true}
-          className={`${horizontal ? "w-1/4 h-50" : "w-full"} h-50 object-cover`}
+          className="object-cover min-h-43 max-h-43"
         />
       </div>
       <div className="p-1 md:p-4 flex flex-col justify-between flex-1">
         <div>
-          <h3 className="text-sm md:text-lg font-semibold mb-2">{cardItems.title}</h3>
-          <p className="text-gray-600 text-xs md:text-sm text-justify">{cardItems.description}</p>
+          <h3 className="text-sm md:text-lg font-semibold mb-2">{cardItem.title}</h3>
+          <p className="text-gray-600 text-xs md:text-sm text-justify line-clamp-3">{cardItem.excerpt}</p> //
         </div>
-        <div className="text-left">
+        <div className="text-left mt-3">
           <SmartButton
-            href={page + cardItems.href}
+            href={`/${page}/${cardItem.slug}`}
             variant="mblue"
             asLink={true}
-            fullWidth={true}
-            className="h-8 max-w-30 text-xs p-2 rounded-xs text-center mt-3 my-6 md:my-0"
+            className="h-8 max-w-30 text-xs p-2 rounded-xs text-center"
             size="sm"
           >
             اطلاعات بیش‌تر

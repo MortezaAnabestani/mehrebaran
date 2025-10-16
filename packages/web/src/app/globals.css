@@ -1,5 +1,37 @@
 @import "tailwindcss";
 
+@layer components {
+  .container {
+    width: 100%;
+  }
+
+  @media (width >= 40rem) {
+    .container {
+      max-width: 40rem;
+    }
+  }
+  @media (width >= 768px) {
+    .container {
+      max-width: 768px;
+    }
+  }
+  @media (width >= 1024px) {
+    .container {
+      max-width: 1024px;
+    }
+  }
+  @media (width >= 1280px) {
+    .container {
+      max-width: 1280px;
+    }
+  }
+  @media (width >= 1536px) {
+    .container {
+      max-width: 1536px;
+    }
+  }
+}
+
 @theme {
   --color-mblue: #3b80c3;
   --color-mgray: #cfcfcf;

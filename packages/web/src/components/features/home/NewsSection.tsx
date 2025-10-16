@@ -2,17 +2,20 @@ import React from "react";
 import HeadTitle from "./HeadTitle";
 import SmartSwiper from "@/components/ui/swiper/SmartSwiper";
 import Card from "@/components/shared/Card";
-import { cardItems } from "@/fakeData/fakeData";
+import { INews } from "common-types";
 
-const NewsSection: React.FC = ({}) => {
+export default function NewsSection({ newsItems }: { newsItems: INews[] }) {
+  if (!newsItems || newsItems.length === 0) {
+    return null;
+  }
   return (
     <section className="my-4">
-      <HeadTitle title="اخبار" subTitle="گزارش آخرین رویدادها و فعالیت‌های کانون مسئولیت اجتماعی مهر باران" />
+      <HeadTitle title="اخبار" subTitle="گزارش آخرین رویدادها و فعالیت‌های کانون" />
       <div className="w-9/10 md:w-11/12 mx-auto">
         <SmartSwiper
-          items={cardItems.map((item, index) => (
-            <div key={index} className="flex h-100">
-              <Card cardItems={item} />
+          items={newsItems.map((item) => (
+            <div key={item._id} className="flex h-100">
+              <Card cardItem={item} />
             </div>
           ))}
           breakpoints={{
@@ -26,6 +29,4 @@ const NewsSection: React.FC = ({}) => {
       </div>
     </section>
   );
-};
-
-export default NewsSection;
+}

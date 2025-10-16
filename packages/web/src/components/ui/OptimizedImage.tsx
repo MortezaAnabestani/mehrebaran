@@ -1,3 +1,4 @@
+import { IResponsiveImage } from "common-types";
 import Image from "next/image";
 import type { FC } from "react";
 
@@ -29,7 +30,6 @@ const OptimizedImage: FC<SmartImageProps> = ({
   blurDataURL,
 }) => {
   const imageClass = `${className} ${rounded ? "rounded-xl" : ""}`;
-
   return fill ? (
     <div className="relative w-full h-full">
       <Image

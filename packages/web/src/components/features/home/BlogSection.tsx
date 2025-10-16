@@ -1,14 +1,8 @@
-import OptimizedImage from "@/components/ui/OptimizedImage";
 import React from "react";
 import HeadTitle from "./HeadTitle";
-import { url } from "inspector";
 import SmartButton from "@/components/ui/SmartButton";
 
-interface Props {
-  // define your props here
-}
-
-const BlogSection: React.FC<Props> = ({}) => {
+const BlogSection: React.FC = ({}) => {
   return (
     <section
       className="w-full relative h-[80vh] mt-10 mb-6 bg-mblue md:p-[100px]"

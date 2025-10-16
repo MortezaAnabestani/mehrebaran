@@ -95,7 +95,7 @@ const Signup: React.FC = () => {
             className="bg-mgray p-2 rounded-lg text-center placeholder-white focus:outline-mblue/45"
           />
           <SmartButton type="submit" variant="mblue" className="cursor-pointer">
-            نهایی‌کردن ثبت‌نام{" "}
+            نهایی‌کردن ثبت‌نام
           </SmartButton>
         </form>
       )}

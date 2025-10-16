@@ -4,7 +4,6 @@ import OptimizedImage from "@/components/ui/OptimizedImage";
 import SmartButton from "@/components/ui/SmartButton";
 import SmartSwiper from "@/components/ui/swiper/SmartSwiper";
 import { projects } from "@/fakeData/fakeData";
-import { title } from "process";
 import React from "react";
 
 const reviewProject = [

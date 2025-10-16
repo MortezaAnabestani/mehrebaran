@@ -1,4 +1,4 @@
-// File: D:\Sefareshat\sazeman daneshjoyan\mehrebaran\mehre-baran-app\packages\web\src\app\page.tsx
+// File: D:\Sefareshat\jahad\mehrebaran\mehre-baran-app\packages\web\src\app\page.tsx
 import * as entry from '../../../src/app/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

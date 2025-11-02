@@ -23,6 +23,7 @@ import needCategoryRoutes from "./modules/need-categories/needCategory.routes";
 import needRoutes from "./modules/needs/need.routes";
 import teamInvitationRoutes from "./modules/teams/teamInvitation.routes";
 import gamificationRoutes from "./modules/gamification/gamification.routes";
+import socialRoutes from "./modules/social/social.routes";
 
 const app = express();
 
@@ -51,6 +52,7 @@ app.use("/api/v1/need-categories", needCategoryRoutes);
 app.use("/api/v1/needs", needRoutes);
 app.use("/api/v1/team-invitations", teamInvitationRoutes);
 app.use("/api/v1/gamification", gamificationRoutes);
+app.use("/api/v1/social", socialRoutes);
 
 app.use(globalErrorHandler);
 

@@ -24,13 +24,15 @@ class SupporterMessageService {
     const message = await SupporterMessageModel.findById(messageId);
     if (!message) throw new ApiError(404, "پیام یافت نشد.");
 
-    const userObjectId = new Types.ObjectId(userId);
-    const likeIndex = message.likes.findIndex((id) => (id as Types.ObjectId).equals(userObjectId));
+    // Find like index by comparing string IDs
+    const likeIndex = message.likes.findIndex((id) => id.toString() === userId);
 
     if (likeIndex > -1) {
+      // Remove like
       message.likes.splice(likeIndex, 1);
     } else {
-      message.likes.push(userObjectId);
+      // Add like
+      message.likes.push(new Types.ObjectId(userId) as any);
     }
 
     await message.save();

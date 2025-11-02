@@ -107,6 +107,45 @@ class NeedController {
     if (!need) throw new ApiError(404, "نیاز یا به‌روزرسانی مورد نظر یافت نشد.");
     res.status(200).json({ message: "به‌روزرسانی با موفقیت حذف شد.", data: need });
   });
+
+  // Geo-search
+  public getNearby = asyncHandler(async (req: Request, res: Response) => {
+    const { lat, lng, radius } = req.query;
+
+    if (!lat || !lng) {
+      throw new ApiError(400, "موقعیت جغرافیایی (lat و lng) الزامی است.");
+    }
+
+    const latitude = parseFloat(lat as string);
+    const longitude = parseFloat(lng as string);
+    const radiusInKm = radius ? parseFloat(radius as string) : 50;
+
+    if (isNaN(latitude) || isNaN(longitude)) {
+      throw new ApiError(400, "مقادیر lat و lng معتبر نیستند.");
+    }
+
+    const needs = await needService.findNearby(longitude, latitude, radiusInKm, req.query);
+    res.status(200).json({ results: needs.length, data: needs });
+  });
+
+  // Special feeds
+  public getTrending = asyncHandler(async (req: Request, res: Response) => {
+    const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
+    const needs = await needService.findTrending(limit);
+    res.status(200).json({ results: needs.length, data: needs });
+  });
+
+  public getPopular = asyncHandler(async (req: Request, res: Response) => {
+    const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
+    const needs = await needService.findPopular(limit);
+    res.status(200).json({ results: needs.length, data: needs });
+  });
+
+  public getUrgent = asyncHandler(async (req: Request, res: Response) => {
+    const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
+    const needs = await needService.findUrgent(limit);
+    res.status(200).json({ results: needs.length, data: needs });
+  });
 }
 
 export const needController = new NeedController();

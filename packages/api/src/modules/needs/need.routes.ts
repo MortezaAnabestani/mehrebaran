@@ -11,6 +11,13 @@ const router = Router();
 // Public routes
 router.post("/", protectOptional, needController.create);
 router.get("/", needController.getAll);
+
+// Special feeds (must be before /:identifier)
+router.get("/trending", needController.getTrending);
+router.get("/popular", needController.getPopular);
+router.get("/urgent", needController.getUrgent);
+router.get("/nearby", needController.getNearby);
+
 router.get("/:identifier", needController.getOne);
 
 // Social interactions

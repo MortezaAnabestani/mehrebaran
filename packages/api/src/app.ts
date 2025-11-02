@@ -25,6 +25,7 @@ import teamInvitationRoutes from "./modules/teams/teamInvitation.routes";
 import gamificationRoutes from "./modules/gamification/gamification.routes";
 import socialRoutes from "./modules/social/social.routes";
 import discoveryRoutes from "./modules/discovery/discovery.routes";
+import notificationRoutes from "./modules/notifications/notification.routes";
 
 const app = express();
 
@@ -55,6 +56,7 @@ app.use("/api/v1/team-invitations", teamInvitationRoutes);
 app.use("/api/v1/gamification", gamificationRoutes);
 app.use("/api/v1/social", socialRoutes);
 app.use("/api/v1/discovery", discoveryRoutes);
+app.use("/api/v1/notifications", notificationRoutes);
 
 app.use(globalErrorHandler);
 

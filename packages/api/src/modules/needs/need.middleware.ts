@@ -18,7 +18,17 @@ export const isSupporter = asyncHandler(async (req: Request, res: Response, next
     throw new ApiError(404, "نیاز یافت نشد.");
   }
 
-  const isUserSupporter = need.supporters.some((supporterId) => supporterId.equals(userId));
+  // Check if user is a supporter
+  if (!need.supporters || need.supporters.length === 0) {
+    throw new ApiError(403, "شما حامی این طرح نیستید و اجازه انجام این عملیات را ندارید.");
+  }
+
+  const userIdString = userId.toString();
+  const isUserSupporter = need.supporters.some((supporterId) => {
+    // Convert ObjectId to string for comparison
+    const supporterIdString = supporterId.toString();
+    return supporterIdString === userIdString;
+  });
 
   if (!isUserSupporter) {
     throw new ApiError(403, "شما حامی این طرح نیستید و اجازه انجام این عملیات را ندارید.");

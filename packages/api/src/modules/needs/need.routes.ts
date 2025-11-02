@@ -38,6 +38,13 @@ router.patch("/:id/milestones/:milestoneId", protect, needController.updateMiles
 router.delete("/:id/milestones/:milestoneId", protect, needController.deleteMilestone);
 router.post("/:id/milestones/:milestoneId/complete", protect, needController.completeMilestone);
 
+// Budget Items
+router.get("/:id/budget", needController.getBudgetItems);
+router.post("/:id/budget", protect, needController.createBudgetItem);
+router.patch("/:id/budget/:budgetItemId", protect, needController.updateBudgetItem);
+router.delete("/:id/budget/:budgetItemId", protect, needController.deleteBudgetItem);
+router.post("/:id/budget/:budgetItemId/add-funds", protect, needController.addFundsToBudgetItem);
+
 // Admin routes
 router.get(
   "/admin/all",

@@ -66,6 +66,22 @@ export interface IMilestone {
   evidence?: string[];  // URLs of images/documents
 }
 
+export type BudgetItemStatus = "pending" | "partial" | "fully_funded" | "exceeded";
+
+export interface IBudgetItem {
+  _id: string;
+  title: string;
+  description?: string;
+  category: string; // مثل: تجهیزات، خدمات، مواد اولیه
+  estimatedCost: number;
+  actualCost?: number;
+  amountRaised: number; // مبلغ جمع‌آوری شده
+  currency: string; // پیش‌فرض: "IRR"
+  status: BudgetItemStatus;
+  priority: number; // 1-5
+  notes?: string;
+}
+
 export interface INeed {
   _id: string;
   title: string;
@@ -103,6 +119,12 @@ export interface INeed {
   milestones?: IMilestone[];
   overallProgress?: number;  // 0-100, محاسبه شده از milestones
   deadline?: Date;
+
+  // Budget
+  budgetItems?: IBudgetItem[];
+  totalBudget?: number; // مجموع estimatedCost همه آیتم‌ها (محاسبه شده)
+  totalRaised?: number; // مجموع amountRaised همه آیتم‌ها (محاسبه شده)
+  budgetProgress?: number; // درصد جمع‌آوری شده (محاسبه شده)
 
   // System
   priority?: number; // امتیاز محاسبه‌شده برای ranking

@@ -407,6 +407,124 @@ class NeedService {
       evidence: evidence,
     });
   }
+
+  // Budget Items CRUD
+  public async getBudgetItems(needId: string): Promise<any[] | null> {
+    const need = await NeedModel.findById(needId).select("budgetItems");
+    if (!need) return null;
+    return need.budgetItems || [];
+  }
+
+  public async addBudgetItem(
+    needId: string,
+    budgetData: {
+      title: string;
+      description?: string;
+      category: string;
+      estimatedCost: number;
+      actualCost?: number;
+      currency?: string;
+      priority?: number;
+      notes?: string;
+    }
+  ): Promise<INeed | null> {
+    const need = await NeedModel.findByIdAndUpdate(
+      needId,
+      {
+        $push: {
+          budgetItems: {
+            title: budgetData.title,
+            description: budgetData.description,
+            category: budgetData.category,
+            estimatedCost: budgetData.estimatedCost,
+            actualCost: budgetData.actualCost,
+            amountRaised: 0,
+            currency: budgetData.currency || "IRR",
+            status: "pending",
+            priority: budgetData.priority || 3,
+            notes: budgetData.notes,
+          },
+        },
+      },
+      { new: true, runValidators: true }
+    );
+
+    if (!need) return null;
+    return this.populateNeed(need);
+  }
+
+  public async updateBudgetItem(
+    needId: string,
+    budgetItemId: string,
+    updateData: {
+      title?: string;
+      description?: string;
+      category?: string;
+      estimatedCost?: number;
+      actualCost?: number;
+      amountRaised?: number;
+      currency?: string;
+      priority?: number;
+      notes?: string;
+    }
+  ): Promise<INeed | null> {
+    const need = await NeedModel.findById(needId);
+    if (!need || !need.budgetItems) return null;
+
+    const budgetItem = need.budgetItems.find((item: any) => item._id.toString() === budgetItemId);
+    if (!budgetItem) {
+      throw new ApiError(404, "قلم بودجه یافت نشد.");
+    }
+
+    // Update fields if provided
+    if (updateData.title !== undefined) (budgetItem as any).title = updateData.title;
+    if (updateData.description !== undefined) (budgetItem as any).description = updateData.description;
+    if (updateData.category !== undefined) (budgetItem as any).category = updateData.category;
+    if (updateData.estimatedCost !== undefined) (budgetItem as any).estimatedCost = updateData.estimatedCost;
+    if (updateData.actualCost !== undefined) (budgetItem as any).actualCost = updateData.actualCost;
+    if (updateData.amountRaised !== undefined) (budgetItem as any).amountRaised = updateData.amountRaised;
+    if (updateData.currency !== undefined) (budgetItem as any).currency = updateData.currency;
+    if (updateData.priority !== undefined) (budgetItem as any).priority = updateData.priority;
+    if (updateData.notes !== undefined) (budgetItem as any).notes = updateData.notes;
+
+    // Status will be auto-updated by pre-save middleware
+    await need.save();
+    return this.populateNeed(need);
+  }
+
+  public async deleteBudgetItem(needId: string, budgetItemId: string): Promise<INeed | null> {
+    const need = await NeedModel.findById(needId);
+    if (!need || !need.budgetItems) return null;
+
+    const budgetItemIndex = need.budgetItems.findIndex((item: any) => item._id.toString() === budgetItemId);
+    if (budgetItemIndex === -1) {
+      throw new ApiError(404, "قلم بودجه یافت نشد.");
+    }
+
+    need.budgetItems.splice(budgetItemIndex, 1);
+    await need.save();
+    return this.populateNeed(need);
+  }
+
+  public async addFundsToBudgetItem(
+    needId: string,
+    budgetItemId: string,
+    amount: number
+  ): Promise<INeed | null> {
+    const need = await NeedModel.findById(needId);
+    if (!need || !need.budgetItems) return null;
+
+    const budgetItem = need.budgetItems.find((item: any) => item._id.toString() === budgetItemId);
+    if (!budgetItem) {
+      throw new ApiError(404, "قلم بودجه یافت نشد.");
+    }
+
+    (budgetItem as any).amountRaised = ((budgetItem as any).amountRaised || 0) + amount;
+
+    // Status will be auto-updated by pre-save middleware
+    await need.save();
+    return this.populateNeed(need);
+  }
 }
 
 export const needService = new NeedService();

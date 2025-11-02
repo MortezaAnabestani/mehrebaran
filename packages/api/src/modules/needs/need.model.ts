@@ -66,6 +66,26 @@ const milestoneSchema = new Schema(
   { _id: true, timestamps: true }
 );
 
+const budgetItemSchema = new Schema(
+  {
+    title: { type: String, required: true },
+    description: { type: String },
+    category: { type: String, required: true }, // تجهیزات، خدمات، مواد اولیه
+    estimatedCost: { type: Number, required: true, min: 0 },
+    actualCost: { type: Number, min: 0 },
+    amountRaised: { type: Number, default: 0, min: 0 },
+    currency: { type: String, default: "IRR" },
+    status: {
+      type: String,
+      enum: ["pending", "partial", "fully_funded", "exceeded"],
+      default: "pending",
+    },
+    priority: { type: Number, default: 3, min: 1, max: 5 },
+    notes: { type: String },
+  },
+  { _id: true, timestamps: true }
+);
+
 const statusHistorySchema = new Schema(
   {
     status: {
@@ -130,6 +150,9 @@ const needSchema = new Schema<INeed>(
     milestones: [milestoneSchema],
     deadline: { type: Date },
 
+    // Budget
+    budgetItems: [budgetItemSchema],
+
     // System
     priority: { type: Number, default: 0, index: true },
   },
@@ -163,6 +186,65 @@ needSchema.virtual("overallProgress").get(function () {
     return sum + (milestone.progressPercentage || 0);
   }, 0);
   return Math.round(totalProgress / this.milestones.length);
+});
+
+// Calculate total budget from budget items
+needSchema.virtual("totalBudget").get(function () {
+  if (!this.budgetItems || this.budgetItems.length === 0) {
+    return 0;
+  }
+  return this.budgetItems.reduce((sum: number, item: any) => {
+    return sum + (item.estimatedCost || 0);
+  }, 0);
+});
+
+// Calculate total raised amount
+needSchema.virtual("totalRaised").get(function () {
+  if (!this.budgetItems || this.budgetItems.length === 0) {
+    return 0;
+  }
+  return this.budgetItems.reduce((sum: number, item: any) => {
+    return sum + (item.amountRaised || 0);
+  }, 0);
+});
+
+// Calculate budget progress percentage
+needSchema.virtual("budgetProgress").get(function () {
+  if (!this.budgetItems || this.budgetItems.length === 0) {
+    return 0;
+  }
+  const total = this.budgetItems.reduce((sum: number, item: any) => {
+    return sum + (item.estimatedCost || 0);
+  }, 0);
+
+  if (total === 0) return 0;
+
+  const raised = this.budgetItems.reduce((sum: number, item: any) => {
+    return sum + (item.amountRaised || 0);
+  }, 0);
+
+  return Math.round((raised / total) * 100);
+});
+
+// Middleware to auto-update budget item status
+needSchema.pre("save", function (next) {
+  // Update budget item status based on amountRaised
+  if (this.budgetItems && this.budgetItems.length > 0) {
+    this.budgetItems.forEach((item: any) => {
+      const raised = item.amountRaised || 0;
+      const estimated = item.estimatedCost || 0;
+
+      if (raised === 0) {
+        item.status = "pending";
+      } else if (raised >= estimated) {
+        item.status = raised > estimated ? "exceeded" : "fully_funded";
+      } else {
+        item.status = "partial";
+      }
+    });
+  }
+
+  next();
 });
 
 needSchema.pre("save", function (next) {

@@ -8,6 +8,9 @@ import {
   createMilestoneSchema,
   updateMilestoneSchema,
   completeMilestoneSchema,
+  createBudgetItemSchema,
+  updateBudgetItemSchema,
+  addFundsToBudgetItemSchema,
 } from "./need.validation";
 import asyncHandler from "../../core/utils/asyncHandler";
 import ApiError from "../../core/utils/apiError";
@@ -172,6 +175,50 @@ class NeedController {
     );
     if (!need) throw new ApiError(404, "نیاز یا مایلستون مورد نظر یافت نشد.");
     res.status(200).json({ message: "مایلستون با موفقیت تکمیل شد.", data: need });
+  });
+
+  // Budget Items CRUD
+  public getBudgetItems = asyncHandler(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const budgetItems = await needService.getBudgetItems(id);
+    if (!budgetItems) throw new ApiError(404, "نیاز مورد نظر یافت نشد.");
+    res.status(200).json({ results: budgetItems.length, data: budgetItems });
+  });
+
+  public createBudgetItem = asyncHandler(async (req: Request, res: Response) => {
+    const validatedData = createBudgetItemSchema.parse({ body: req.body, params: req.params });
+    const need = await needService.addBudgetItem(validatedData.params.id, validatedData.body);
+    if (!need) throw new ApiError(404, "نیاز مورد نظر یافت نشد.");
+    res.status(201).json({ message: "قلم بودجه با موفقیت ثبت شد.", data: need });
+  });
+
+  public updateBudgetItem = asyncHandler(async (req: Request, res: Response) => {
+    const validatedData = updateBudgetItemSchema.parse({ body: req.body, params: req.params });
+    const need = await needService.updateBudgetItem(
+      validatedData.params.id,
+      validatedData.params.budgetItemId,
+      validatedData.body
+    );
+    if (!need) throw new ApiError(404, "نیاز یا قلم بودجه مورد نظر یافت نشد.");
+    res.status(200).json({ message: "قلم بودجه با موفقیت به‌روزرسانی شد.", data: need });
+  });
+
+  public deleteBudgetItem = asyncHandler(async (req: Request, res: Response) => {
+    const { id, budgetItemId } = req.params;
+    const need = await needService.deleteBudgetItem(id, budgetItemId);
+    if (!need) throw new ApiError(404, "نیاز یا قلم بودجه مورد نظر یافت نشد.");
+    res.status(200).json({ message: "قلم بودجه با موفقیت حذف شد.", data: need });
+  });
+
+  public addFundsToBudgetItem = asyncHandler(async (req: Request, res: Response) => {
+    const validatedData = addFundsToBudgetItemSchema.parse({ body: req.body, params: req.params });
+    const need = await needService.addFundsToBudgetItem(
+      validatedData.params.id,
+      validatedData.params.budgetItemId,
+      validatedData.body.amount
+    );
+    if (!need) throw new ApiError(404, "نیاز یا قلم بودجه مورد نظر یافت نشد.");
+    res.status(200).json({ message: "مبلغ با موفقیت به قلم بودجه اضافه شد.", data: need });
   });
 
   // Geo-search

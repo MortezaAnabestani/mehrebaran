@@ -121,3 +121,48 @@ export const completeMilestoneSchema = z.object({
     milestoneId: z.string().regex(/^[0-9a-fA-F]{24}$/, "شناسه مایلستون معتبر نیست."),
   }),
 });
+
+// Validation for Budget Items
+export const createBudgetItemSchema = z.object({
+  body: z.object({
+    title: z.string().min(3, "عنوان قلم بودجه باید حداقل ۳ حرف باشد."),
+    description: z.string().optional(),
+    category: z.string().min(2, "دسته‌بندی الزامی است."),
+    estimatedCost: z.number().min(0, "هزینه تخمینی باید عدد مثبت باشد."),
+    actualCost: z.number().min(0).optional(),
+    currency: z.string().optional().default("IRR"),
+    priority: z.number().min(1).max(5).optional().default(3),
+    notes: z.string().optional(),
+  }),
+  params: z.object({
+    id: z.string().regex(/^[0-9a-fA-F]{24}$/, "شناسه نیاز معتبر نیست."),
+  }),
+});
+
+export const updateBudgetItemSchema = z.object({
+  body: z.object({
+    title: z.string().min(3, "عنوان قلم بودجه باید حداقل ۳ حرف باشد.").optional(),
+    description: z.string().optional(),
+    category: z.string().min(2, "دسته‌بندی الزامی است.").optional(),
+    estimatedCost: z.number().min(0, "هزینه تخمینی باید عدد مثبت باشد.").optional(),
+    actualCost: z.number().min(0).optional(),
+    amountRaised: z.number().min(0, "مبلغ جمع‌آوری شده باید عدد مثبت باشد.").optional(),
+    currency: z.string().optional(),
+    priority: z.number().min(1).max(5).optional(),
+    notes: z.string().optional(),
+  }),
+  params: z.object({
+    id: z.string().regex(/^[0-9a-fA-F]{24}$/, "شناسه نیاز معتبر نیست."),
+    budgetItemId: z.string().regex(/^[0-9a-fA-F]{24}$/, "شناسه قلم بودجه معتبر نیست."),
+  }),
+});
+
+export const addFundsToBudgetItemSchema = z.object({
+  body: z.object({
+    amount: z.number().min(1, "مبلغ باید بزرگتر از صفر باشد."),
+  }),
+  params: z.object({
+    id: z.string().regex(/^[0-9a-fA-F]{24}$/, "شناسه نیاز معتبر نیست."),
+    budgetItemId: z.string().regex(/^[0-9a-fA-F]{24}$/, "شناسه قلم بودجه معتبر نیست."),
+  }),
+});

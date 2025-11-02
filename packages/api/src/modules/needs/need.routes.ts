@@ -51,6 +51,14 @@ router.post("/:id/verifications", protect, needController.createVerificationRequ
 router.patch("/:id/verifications/:verificationId/review", protect, restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN), needController.reviewVerificationRequest);
 router.delete("/:id/verifications/:verificationId", protect, needController.deleteVerificationRequest);
 
+// Task Management
+router.get("/:id/tasks", needController.getTasks);
+router.post("/:id/tasks", protect, needController.createTask);
+router.patch("/:id/tasks/:taskId", protect, needController.updateTask);
+router.delete("/:id/tasks/:taskId", protect, needController.deleteTask);
+router.patch("/:id/tasks/:taskId/checklist", protect, needController.updateTaskChecklist);
+router.post("/:id/tasks/:taskId/complete", protect, needController.completeTask);
+
 // Admin routes
 router.get(
   "/admin/all",

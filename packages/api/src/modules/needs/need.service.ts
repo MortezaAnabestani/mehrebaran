@@ -662,6 +662,172 @@ class NeedService {
     await need.save();
     return this.populateNeed(need);
   }
+
+  // Task Management CRUD
+  public async getTasks(needId: string, filters?: { status?: string; assignedTo?: string; priority?: string }): Promise<any[] | null> {
+    const need = await NeedModel.findById(needId)
+      .select("tasks")
+      .populate("tasks.assignedTo", "name")
+      .populate("tasks.assignedBy", "name");
+    if (!need) return null;
+
+    let tasks = need.tasks || [];
+
+    // Apply filters
+    if (filters) {
+      if (filters.status) {
+        tasks = (tasks as any[]).filter((task: any) => task.status === filters.status);
+      }
+      if (filters.assignedTo) {
+        tasks = (tasks as any[]).filter((task: any) => task.assignedTo?.toString() === filters.assignedTo);
+      }
+      if (filters.priority) {
+        tasks = (tasks as any[]).filter((task: any) => task.priority === filters.priority);
+      }
+    }
+
+    return tasks;
+  }
+
+  public async createTask(
+    needId: string,
+    userId: string,
+    taskData: {
+      title: string;
+      description?: string;
+      assignedTo?: string;
+      priority?: "low" | "medium" | "high" | "critical";
+      deadline?: Date;
+      estimatedHours?: number;
+      dependencies?: string[];
+    }
+  ): Promise<INeed | null> {
+    const need = await NeedModel.findByIdAndUpdate(
+      needId,
+      {
+        $push: {
+          tasks: {
+            title: taskData.title,
+            description: taskData.description,
+            assignedTo: taskData.assignedTo ? new Types.ObjectId(taskData.assignedTo) : undefined,
+            assignedBy: new Types.ObjectId(userId),
+            assignedAt: taskData.assignedTo ? new Date() : undefined,
+            priority: taskData.priority || "medium",
+            status: "todo",
+            deadline: taskData.deadline,
+            estimatedHours: taskData.estimatedHours,
+            dependencies: taskData.dependencies || [],
+            progressPercentage: 0,
+          },
+        },
+      },
+      { new: true, runValidators: true }
+    );
+
+    if (!need) return null;
+    return this.populateNeed(need);
+  }
+
+  public async updateTask(
+    needId: string,
+    taskId: string,
+    updateData: {
+      title?: string;
+      description?: string;
+      assignedTo?: string;
+      status?: "todo" | "in_progress" | "review" | "completed" | "blocked";
+      priority?: "low" | "medium" | "high" | "critical";
+      deadline?: Date;
+      estimatedHours?: number;
+      actualHours?: number;
+      progressPercentage?: number;
+      blockedBy?: string;
+      blockingReason?: string;
+      dependencies?: string[];
+    }
+  ): Promise<INeed | null> {
+    const need = await NeedModel.findById(needId);
+    if (!need || !need.tasks) return null;
+
+    const task = need.tasks.find((t: any) => t._id.toString() === taskId);
+    if (!task) {
+      throw new ApiError(404, "تسک یافت نشد.");
+    }
+
+    // Update fields if provided
+    if (updateData.title !== undefined) (task as any).title = updateData.title;
+    if (updateData.description !== undefined) (task as any).description = updateData.description;
+    if (updateData.assignedTo !== undefined) {
+      (task as any).assignedTo = new Types.ObjectId(updateData.assignedTo);
+      (task as any).assignedAt = new Date();
+    }
+    if (updateData.status !== undefined) (task as any).status = updateData.status;
+    if (updateData.priority !== undefined) (task as any).priority = updateData.priority;
+    if (updateData.deadline !== undefined) (task as any).deadline = updateData.deadline;
+    if (updateData.estimatedHours !== undefined) (task as any).estimatedHours = updateData.estimatedHours;
+    if (updateData.actualHours !== undefined) (task as any).actualHours = updateData.actualHours;
+    if (updateData.progressPercentage !== undefined) (task as any).progressPercentage = updateData.progressPercentage;
+    if (updateData.blockedBy !== undefined) (task as any).blockedBy = updateData.blockedBy;
+    if (updateData.blockingReason !== undefined) (task as any).blockingReason = updateData.blockingReason;
+    if (updateData.dependencies !== undefined) (task as any).dependencies = updateData.dependencies;
+
+    // Auto-complete if status is completed
+    if (updateData.status === "completed" && !(task as any).completedAt) {
+      (task as any).completedAt = new Date();
+      (task as any).progressPercentage = 100;
+    }
+
+    await need.save();
+    return this.populateNeed(need);
+  }
+
+  public async deleteTask(needId: string, taskId: string): Promise<INeed | null> {
+    const need = await NeedModel.findById(needId);
+    if (!need || !need.tasks) return null;
+
+    const taskIndex = need.tasks.findIndex((t: any) => t._id.toString() === taskId);
+    if (taskIndex === -1) {
+      throw new ApiError(404, "تسک یافت نشد.");
+    }
+
+    need.tasks.splice(taskIndex, 1);
+    await need.save();
+    return this.populateNeed(need);
+  }
+
+  public async updateTaskChecklist(
+    needId: string,
+    taskId: string,
+    checklist: Array<{ title: string; completed: boolean }>
+  ): Promise<INeed | null> {
+    const need = await NeedModel.findById(needId);
+    if (!need || !need.tasks) return null;
+
+    const task = need.tasks.find((t: any) => t._id.toString() === taskId);
+    if (!task) {
+      throw new ApiError(404, "تسک یافت نشد.");
+    }
+
+    (task as any).checklist = checklist;
+
+    // Auto-update progress based on checklist
+    const totalItems = checklist.length;
+    const completedItems = checklist.filter(item => item.completed).length;
+    if (totalItems > 0) {
+      (task as any).progressPercentage = Math.round((completedItems / totalItems) * 100);
+    }
+
+    await need.save();
+    return this.populateNeed(need);
+  }
+
+  public async completeTask(needId: string, taskId: string, actualHours?: number): Promise<INeed | null> {
+    return this.updateTask(needId, taskId, {
+      status: "completed",
+      progressPercentage: 100,
+      actualHours: actualHours,
+    });
+  }
 }
 
 export const needService = new NeedService();

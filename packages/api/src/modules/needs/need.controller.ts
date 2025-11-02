@@ -13,6 +13,9 @@ import {
   addFundsToBudgetItemSchema,
   createVerificationRequestSchema,
   reviewVerificationRequestSchema,
+  createTaskSchema,
+  updateTaskSchema,
+  updateTaskChecklistSchema,
 } from "./need.validation";
 import asyncHandler from "../../core/utils/asyncHandler";
 import ApiError from "../../core/utils/apiError";
@@ -260,6 +263,73 @@ class NeedController {
     const need = await needService.deleteVerificationRequest(id, verificationId);
     if (!need) throw new ApiError(404, "نیاز یا درخواست تایید مورد نظر یافت نشد.");
     res.status(200).json({ message: "درخواست تایید با موفقیت حذف شد.", data: need });
+  });
+
+  // Task Management CRUD
+  public getTasks = asyncHandler(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { status, assignedTo, priority } = req.query;
+    const tasks = await needService.getTasks(id, {
+      status: status as string,
+      assignedTo: assignedTo as string,
+      priority: priority as string,
+    });
+    if (!tasks) throw new ApiError(404, "نیاز مورد نظر یافت نشد.");
+    res.status(200).json({ results: tasks.length, data: tasks });
+  });
+
+  public createTask = asyncHandler(async (req: Request, res: Response) => {
+    const validatedData = createTaskSchema.parse({ body: req.body, params: req.params });
+
+    // Convert date if provided
+    const taskData: any = { ...validatedData.body };
+    if (taskData.deadline && typeof taskData.deadline === 'string') {
+      taskData.deadline = new Date(taskData.deadline);
+    }
+
+    const need = await needService.createTask(validatedData.params.id, req.user!._id.toString(), taskData);
+    if (!need) throw new ApiError(404, "نیاز مورد نظر یافت نشد.");
+    res.status(201).json({ message: "تسک با موفقیت ثبت شد.", data: need });
+  });
+
+  public updateTask = asyncHandler(async (req: Request, res: Response) => {
+    const validatedData = updateTaskSchema.parse({ body: req.body, params: req.params });
+
+    // Convert date if provided
+    const taskData: any = { ...validatedData.body };
+    if (taskData.deadline && typeof taskData.deadline === 'string') {
+      taskData.deadline = new Date(taskData.deadline);
+    }
+
+    const need = await needService.updateTask(validatedData.params.id, validatedData.params.taskId, taskData);
+    if (!need) throw new ApiError(404, "نیاز یا تسک مورد نظر یافت نشد.");
+    res.status(200).json({ message: "تسک با موفقیت به‌روزرسانی شد.", data: need });
+  });
+
+  public deleteTask = asyncHandler(async (req: Request, res: Response) => {
+    const { id, taskId } = req.params;
+    const need = await needService.deleteTask(id, taskId);
+    if (!need) throw new ApiError(404, "نیاز یا تسک مورد نظر یافت نشد.");
+    res.status(200).json({ message: "تسک با موفقیت حذف شد.", data: need });
+  });
+
+  public updateTaskChecklist = asyncHandler(async (req: Request, res: Response) => {
+    const validatedData = updateTaskChecklistSchema.parse({ body: req.body, params: req.params });
+    const need = await needService.updateTaskChecklist(
+      validatedData.params.id,
+      validatedData.params.taskId,
+      validatedData.body.checklist
+    );
+    if (!need) throw new ApiError(404, "نیاز یا تسک مورد نظر یافت نشد.");
+    res.status(200).json({ message: "چک‌لیست با موفقیت به‌روزرسانی شد.", data: need });
+  });
+
+  public completeTask = asyncHandler(async (req: Request, res: Response) => {
+    const { id, taskId } = req.params;
+    const { actualHours } = req.body;
+    const need = await needService.completeTask(id, taskId, actualHours);
+    if (!need) throw new ApiError(404, "نیاز یا تسک مورد نظر یافت نشد.");
+    res.status(200).json({ message: "تسک با موفقیت تکمیل شد.", data: need });
   });
 
   // Geo-search

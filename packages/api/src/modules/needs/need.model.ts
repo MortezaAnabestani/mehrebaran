@@ -137,6 +137,56 @@ const verificationRequestSchema = new Schema(
   { _id: true, timestamps: true }
 );
 
+const taskChecklistSchema = new Schema(
+  {
+    title: { type: String, required: true },
+    completed: { type: Boolean, default: false },
+  },
+  { _id: false }
+);
+
+const taskSchema = new Schema(
+  {
+    title: { type: String, required: true },
+    description: { type: String },
+
+    // Assignment
+    assignedTo: { type: Types.ObjectId, ref: "User" },
+    assignedBy: { type: Types.ObjectId, ref: "User" },
+    assignedAt: { type: Date },
+
+    // Status & Priority
+    status: {
+      type: String,
+      enum: ["todo", "in_progress", "review", "completed", "blocked"],
+      default: "todo",
+    },
+    priority: {
+      type: String,
+      enum: ["low", "medium", "high", "critical"],
+      default: "medium",
+    },
+
+    // Timeline
+    deadline: { type: Date },
+    completedAt: { type: Date },
+    estimatedHours: { type: Number, min: 0 },
+    actualHours: { type: Number, min: 0 },
+
+    // Dependencies
+    dependencies: [{ type: String }], // Array of task IDs
+    blockedBy: { type: String }, // Task ID
+    blockingReason: { type: String },
+
+    // Progress
+    progressPercentage: { type: Number, default: 0, min: 0, max: 100 },
+
+    // Checklist
+    checklist: [taskChecklistSchema],
+  },
+  { _id: true, timestamps: true }
+);
+
 const statusHistorySchema = new Schema(
   {
     status: {
@@ -206,6 +256,9 @@ const needSchema = new Schema<INeed>(
 
     // Verification
     verificationRequests: [verificationRequestSchema],
+
+    // Task Management
+    tasks: [taskSchema],
 
     // System
     priority: { type: Number, default: 0, index: true },
@@ -286,6 +339,31 @@ needSchema.virtual("pendingVerificationsCount").get(function () {
     return 0;
   }
   return this.verificationRequests.filter((req: any) => req.status === "pending").length;
+});
+
+// Count total tasks
+needSchema.virtual("totalTasksCount").get(function () {
+  if (!this.tasks || this.tasks.length === 0) {
+    return 0;
+  }
+  return this.tasks.length;
+});
+
+// Count completed tasks
+needSchema.virtual("completedTasksCount").get(function () {
+  if (!this.tasks || this.tasks.length === 0) {
+    return 0;
+  }
+  return this.tasks.filter((task: any) => task.status === "completed").length;
+});
+
+// Calculate tasks progress percentage
+needSchema.virtual("tasksProgress").get(function () {
+  if (!this.tasks || this.tasks.length === 0) {
+    return 0;
+  }
+  const completedCount = this.tasks.filter((task: any) => task.status === "completed").length;
+  return Math.round((completedCount / this.tasks.length) * 100);
 });
 
 // Middleware to auto-update budget item status

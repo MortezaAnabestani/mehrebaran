@@ -128,6 +128,49 @@ export interface IVerificationRequest {
   revisionNotes?: string;
 }
 
+export type TaskStatus = "todo" | "in_progress" | "review" | "completed" | "blocked";
+
+export type TaskPriority = "low" | "medium" | "high" | "critical";
+
+export interface ITask {
+  _id: string;
+  title: string;
+  description?: string;
+
+  // Assignment
+  assignedTo?: IUser | string;
+  assignedBy?: IUser | string;
+  assignedAt?: Date;
+
+  // Status & Priority
+  status: TaskStatus;
+  priority: TaskPriority;
+
+  // Timeline
+  deadline?: Date;
+  completedAt?: Date;
+  estimatedHours?: number;
+  actualHours?: number;
+
+  // Dependencies
+  dependencies?: string[]; // Array of task IDs که باید اول تکمیل بشن
+  blockedBy?: string; // Task ID که این task رو block کرده
+  blockingReason?: string;
+
+  // Progress
+  progressPercentage?: number; // 0-100
+
+  // Checklist
+  checklist?: Array<{
+    title: string;
+    completed: boolean;
+  }>;
+
+  // Metadata
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export interface INeed {
   _id: string;
   title: string;
@@ -175,6 +218,12 @@ export interface INeed {
   // Verification
   verificationRequests?: IVerificationRequest[];
   pendingVerificationsCount?: number; // تعداد درخواست‌های در انتظار (محاسبه شده)
+
+  // Task Management
+  tasks?: ITask[];
+  totalTasksCount?: number; // تعداد کل task ها (محاسبه شده)
+  completedTasksCount?: number; // تعداد task های تکمیل شده (محاسبه شده)
+  tasksProgress?: number; // درصد پیشرفت task ها (محاسبه شده)
 
   // System
   priority?: number; // امتیاز محاسبه‌شده برای ranking

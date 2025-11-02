@@ -203,3 +203,53 @@ export const reviewVerificationRequestSchema = z.object({
     verificationId: z.string().regex(/^[0-9a-fA-F]{24}$/, "شناسه درخواست تایید معتبر نیست."),
   }),
 });
+
+// Validation for Tasks
+export const createTaskSchema = z.object({
+  body: z.object({
+    title: z.string().min(3, "عنوان تسک باید حداقل ۳ حرف باشد."),
+    description: z.string().optional(),
+    assignedTo: z.string().regex(/^[0-9a-fA-F]{24}$/, "شناسه کاربر معتبر نیست.").optional(),
+    priority: z.enum(["low", "medium", "high", "critical"], { message: "اولویت معتبر نیست." }).optional().default("medium"),
+    deadline: z.string().datetime().or(z.date()).optional(),
+    estimatedHours: z.number().min(0, "ساعات تخمینی باید عدد مثبت باشد.").optional(),
+    dependencies: z.array(z.string()).optional(),
+  }),
+  params: z.object({
+    id: z.string().regex(/^[0-9a-fA-F]{24}$/, "شناسه نیاز معتبر نیست."),
+  }),
+});
+
+export const updateTaskSchema = z.object({
+  body: z.object({
+    title: z.string().min(3, "عنوان تسک باید حداقل ۳ حرف باشد.").optional(),
+    description: z.string().optional(),
+    assignedTo: z.string().regex(/^[0-9a-fA-F]{24}$/, "شناسه کاربر معتبر نیست.").optional(),
+    status: z.enum(["todo", "in_progress", "review", "completed", "blocked"], { message: "وضعیت معتبر نیست." }).optional(),
+    priority: z.enum(["low", "medium", "high", "critical"], { message: "اولویت معتبر نیست." }).optional(),
+    deadline: z.string().datetime().or(z.date()).optional(),
+    estimatedHours: z.number().min(0).optional(),
+    actualHours: z.number().min(0).optional(),
+    progressPercentage: z.number().min(0).max(100).optional(),
+    blockedBy: z.string().optional(),
+    blockingReason: z.string().optional(),
+    dependencies: z.array(z.string()).optional(),
+  }),
+  params: z.object({
+    id: z.string().regex(/^[0-9a-fA-F]{24}$/, "شناسه نیاز معتبر نیست."),
+    taskId: z.string().regex(/^[0-9a-fA-F]{24}$/, "شناسه تسک معتبر نیست."),
+  }),
+});
+
+export const updateTaskChecklistSchema = z.object({
+  body: z.object({
+    checklist: z.array(z.object({
+      title: z.string().min(1, "عنوان آیتم چک‌لیست الزامی است."),
+      completed: z.boolean(),
+    })),
+  }),
+  params: z.object({
+    id: z.string().regex(/^[0-9a-fA-F]{24}$/, "شناسه نیاز معتبر نیست."),
+    taskId: z.string().regex(/^[0-9a-fA-F]{24}$/, "شناسه تسک معتبر نیست."),
+  }),
+});

@@ -67,46 +67,6 @@ class NeedController {
     await needService.addSupporter(req.params.id, req.user!._id.toString());
     res.status(200).json({ message: "شما با موفقیت به حامیان این طرح پیوستید." });
   });
-
-  // View Counter
-  public incrementView = asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
-    await needService.incrementViews(id);
-    res.status(200).json({ message: "بازدید با موفقیت ثبت شد." });
-  });
-
-  // Need Updates CRUD
-  public createUpdate = asyncHandler(async (req: Request, res: Response) => {
-    const validatedData = createNeedUpdateSchema.parse({ body: req.body, params: req.params });
-    const need = await needService.addUpdate(validatedData.params.id, validatedData.body);
-    if (!need) throw new ApiError(404, "نیاز مورد نظر یافت نشد.");
-    res.status(201).json({ message: "به‌روزرسانی با موفقیت ثبت شد.", data: need });
-  });
-
-  public getUpdates = asyncHandler(async (req: Request, res: Response) => {
-    const { id } = req.params;
-    const updates = await needService.getUpdates(id);
-    if (!updates) throw new ApiError(404, "نیاز مورد نظر یافت نشد.");
-    res.status(200).json({ results: updates.length, data: updates });
-  });
-
-  public updateUpdate = asyncHandler(async (req: Request, res: Response) => {
-    const validatedData = updateNeedUpdateSchema.parse({ body: req.body, params: req.params });
-    const need = await needService.updateUpdate(
-      validatedData.params.id,
-      validatedData.params.updateId,
-      validatedData.body
-    );
-    if (!need) throw new ApiError(404, "نیاز یا به‌روزرسانی مورد نظر یافت نشد.");
-    res.status(200).json({ message: "به‌روزرسانی با موفقیت ویرایش شد.", data: need });
-  });
-
-  public deleteUpdate = asyncHandler(async (req: Request, res: Response) => {
-    const { id, updateId } = req.params;
-    const need = await needService.deleteUpdate(id, updateId);
-    if (!need) throw new ApiError(404, "نیاز یا به‌روزرسانی مورد نظر یافت نشد.");
-    res.status(200).json({ message: "به‌روزرسانی با موفقیت حذف شد.", data: need });
-  });
 }
 
 export const needController = new NeedController();

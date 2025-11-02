@@ -1,47 +1,73 @@
+import { getVideoByIdOrSlug } from "@/services/video.service"; // 👈 باید این سرویس را بسازید
+import { notFound } from "next/navigation";
+import { Metadata } from "next";
+
 import HeadTitle from "@/components/features/home/HeadTitle";
 import Comment from "@/components/shared/Comment";
-import OptimizedImage from "@/components/ui/OptimizedImage";
-import React from "react";
+import Link from "next/link";
+import VideoPlayer from "@/components/features/video/VideoPlayer";
 
-interface Props {
-  // define your props here
-}
-
-const Video: React.FC<Props> = ({}) => {
-  return (
-    <div className="w-9/10 md:w-8/10 mx-auto my-10">
-      <HeadTitle title="ویدئوها" />
-      <h1 className="font-bold text-2xl my-5">تیتر</h1>
-      <div className="relative h-60 md:h-120 border border-mgray shadow-xs shadow-mgray">
-        <OptimizedImage src="/images/hero_img.jpg" alt="ax" fill />
-        <OptimizedImage
-          src="/icons/play.svg"
-          alt="play icon"
-          width={90}
-          height={90}
-          className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 cursor-pointer hover:opacity-80 duration-200 transition-all"
-        />
-      </div>
-      <h1 className="font-bold text-lg my-5">منبع: منبع</h1>
-      <p className="text-base/loose text-justify">
-        لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ، و با استفاده از طراحان گرافیک است، چاپگرها
-        و متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است، و برای شرایط فعلی تکنولوژی مورد نیاز، و
-        کاربردهای متنوع با هدف بهبود ابزارهای کاربردی می باشد، کتابهای زیادی در شصت و سه درصد گذشته حال و
-        آینده، شناخت فراوان جامعه و متخصصان را می طلبد، تا با نرم افزارها شناخت بیشتری را برای طراحان رایانه
-        ای علی الخصوص طراحان خلاقی، و فرهنگ پیشرو در زبان فارسی ایجاد کرد، در این صورت می توان امید داشت که
-        تمام و دشواری موجود در ارائه راهکارها، و شرایط سخت تایپ به پایان رسد و زمان مورد نیاز شامل حروفچینی
-        دستاوردهای اصلی، و جوابگوی سوالات پیوسته اهل دنیای موجود طراحی اساسا مورد استفاده قرار گیرد.لورم
-        ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ، و با استفاده از طراحان گرافیک است، چاپگرها و
-        متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است، و برای شرایط فعلی تکنولوژی مورد نیاز، و
-        کاربردهای متنوع با هدف بهبود ابزارهای کاربردی می باشد، کتابهای زیادی در شصت و سه درصد گذشته حال و
-        آینده، شناخت فراوان جامعه و متخصصان را می طلبد، تا با نرم افزارها شناخت بیشتری را برای طراحان رایانه
-        ای علی الخصوص طراحان خلاقی، و فرهنگ پیشرو در زبان فارسی ایجاد کرد، در این صورت می توان امید داشت که
-        تمام و دشواری موجود در ارائه راهکارها، و شرایط سخت تایپ به پایان رسد و زمان مورد نیاز شامل حروفچینی
-        دستاوردهای اصلی، و جوابگوی سوالات پیوسته اهل دنیای موجود طراحی اساسا مورد استفاده قرار گیرد.
-      </p>
-      <Comment />
-    </div>
-  );
+type PageProps = {
+  params: { slug: string };
 };
 
-export default Video;
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const video = await getVideoByIdOrSlug(params.slug);
+  if (!video) return { title: "ویدئو یافت نشد" };
+
+  return {
+    title: video.seo.metaTitle,
+    description: video.seo.metaDescription || video.description,
+    openGraph: {
+      title: video.seo.metaTitle,
+      description: video.description,
+      images: [{ url: video.coverImage.desktop }],
+    },
+  };
+}
+
+export default async function VideoDetailPage({ params }: PageProps) {
+  const video = await getVideoByIdOrSlug(params.slug);
+
+  if (!video) {
+    notFound();
+  }
+
+  const cameraman = typeof video.cameraman !== "string" ? video.cameraman : null;
+
+  return (
+    <div className="w-9/10 md:w-8/10 mx-auto my-10">
+      <HeadTitle title={video.title} />
+
+      <VideoPlayer video={video} />
+
+      <div className="flex items-center justify-between text-gray-600 my-5">
+        {cameraman && (
+          <div className="font-bold text-lg">
+            <span>فیلمبردار: </span>
+            <Link href={`/authors/${cameraman.slug}`} className="text-mblue hover:underline">
+              {cameraman.name}
+            </Link>
+          </div>
+        )}
+        <p className="text-sm">
+          {new Date(video.createdAt).toLocaleDateString("fa-IR", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          })}
+        </p>
+      </div>
+
+      <div
+        className="text-base/loose text-justify prose max-w-none"
+        dangerouslySetInnerHTML={{ __html: video.description }}
+      />
+
+      <div className="mt-16">
+        <h2 className="text-2xl font-bold mb-6">نظرات</h2>
+        <Comment postId={video._id} postType="Video" />
+      </div>
+    </div>
+  );
+}

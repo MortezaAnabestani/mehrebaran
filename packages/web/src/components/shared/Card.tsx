@@ -1,9 +1,9 @@
 import React from "react";
 import OptimizedImage from "../ui/OptimizedImage";
 import SmartButton from "../ui/SmartButton";
-import { INews, IArticle, IProject } from "common-types";
+import { INews, IArticle, IProject, IVideo, IGallery } from "common-types";
 
-type CardItem = (INews | IArticle | IProject) & {
+type CardItem = (INews | IArticle | IProject | IVideo | IGallery) & {
   _id: string;
   slug: string;
   title: string;
@@ -13,7 +13,7 @@ type CardItem = (INews | IArticle | IProject) & {
 interface CardProps {
   cardItem?: CardItem;
   horizontal?: boolean;
-  page?: "news" | "articles" | "projects";
+  page?: "news" | "articles" | "projects" | "videos" | "galleries";
 }
 
 const Card: React.FC<CardProps> = ({ cardItem, horizontal = false, page = "news" }) => {

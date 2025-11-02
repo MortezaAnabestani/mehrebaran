@@ -6,12 +6,13 @@ import type {
   LeaderboardPeriod,
   IUserStats,
 } from "common-types";
+import { UserStatsModel } from "../gamification/userStats.model";
 
 class LeaderboardService {
-  private UserStatsModel: Model<IUserStats>;
+  private UserStatsModel: typeof UserStatsModel;
 
   constructor() {
-    this.UserStatsModel = model("UserStats") as any;
+    this.UserStatsModel = UserStatsModel;
   }
 
   /**

@@ -3,6 +3,7 @@ import { Types } from "mongoose";
 import { pointsService } from "./points.service";
 import { badgeService } from "./badge.service";
 import { getLevelByPoints } from "./levels.config";
+import { UserStatsModel } from "./userStats.model";
 
 // Import models from other modules
 import { model } from "mongoose";

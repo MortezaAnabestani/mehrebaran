@@ -1,6 +1,13 @@
 import { Router } from "express";
 import { mediaController } from "./media.controller";
 import { protect } from "../auth/auth.middleware";
+import { validate } from "../../core/middlewares/validate";
+import {
+  uploadMediaSchema,
+  mediaIdParamSchema,
+  getUserMediaSchema,
+  getRelatedMediaSchema,
+} from "./media.validation";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
@@ -83,7 +90,7 @@ router.use(protect);
  * POST /api/v1/media/upload
  * آپلود فایل media
  */
-router.post("/upload", upload.single("file"), mediaController.uploadMedia);
+router.post("/upload", upload.single("file"), validate(uploadMediaSchema), mediaController.uploadMedia);
 
 // ==================== MEDIA MANAGEMENT ====================
 
@@ -103,30 +110,30 @@ router.get("/storage", mediaController.getTotalStorage);
  * GET /api/v1/media/user/:userId
  * دریافت media های کاربر
  */
-router.get("/user/:userId", mediaController.getUserMedia);
+router.get("/user/:userId", validate(getUserMediaSchema), mediaController.getUserMedia);
 
 /**
  * GET /api/v1/media/related/:model/:id
  * دریافت media های مرتبط با موجودیت
  */
-router.get("/related/:model/:id", mediaController.getRelatedMedia);
+router.get("/related/:model/:id", validate(getRelatedMediaSchema), mediaController.getRelatedMedia);
 
 /**
  * GET /api/v1/media/:id
  * دریافت media بر اساس ID
  */
-router.get("/:id", mediaController.getMediaById);
+router.get("/:id", validate(mediaIdParamSchema), mediaController.getMediaById);
 
 /**
  * POST /api/v1/media/:id/download
  * افزایش شمارنده downloads
  */
-router.post("/:id/download", mediaController.incrementDownloads);
+router.post("/:id/download", validate(mediaIdParamSchema), mediaController.incrementDownloads);
 
 /**
  * DELETE /api/v1/media/:id
  * حذف media
  */
-router.delete("/:id", mediaController.deleteMedia);
+router.delete("/:id", validate(mediaIdParamSchema), mediaController.deleteMedia);
 
 export default router;

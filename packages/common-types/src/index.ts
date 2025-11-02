@@ -19,5 +19,6 @@ export * from "./gamification.types";
 export * from "./social.types";
 export * from "./discovery.types";
 export * from "./notification.types";
+export * from "./story.types";
 export * from "./supporterSubmission.types";
 export * from "./poll.types";

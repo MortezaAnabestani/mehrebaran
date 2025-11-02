@@ -9,14 +9,36 @@ const geoLocationSchema = z.object({
   type: z.literal("Point").default("Point"),
   coordinates: z.array(z.number()).length(2),
   address: z.string().optional(),
+  locationName: z.string().optional(),
+  city: z.string().optional(),
+  province: z.string().optional(),
+  country: z.string().optional().default("ایران"),
+  isLocationApproximate: z.boolean().optional().default(false),
 });
 
 const needBodySchema = z.object({
   title: z.string().min(5, "عنوان نیاز باید حداقل ۵ حرف باشد."),
   description: z.string().min(20, "توضیحات نیاز باید حداقل ۲۰ حرف باشد."),
   category: z.string().regex(/^[0-9a-fA-F]{24}$/, "شناسه حوزه معتبر نیست."),
+
+  // Status & Priority
+  urgencyLevel: z.enum(["low", "medium", "high", "critical"]).optional().default("medium"),
+
+  // Media
   attachments: z.array(attachmentSchema).optional().default([]),
+
+  // Planning
+  estimatedDuration: z.string().optional(),
+  requiredSkills: z.array(z.string()).optional().default([]),
+  tags: z.array(z.string()).optional().default([]),
+
+  // Location
   location: geoLocationSchema.optional(),
+
+  // Timeline
+  deadline: z.string().datetime().optional().or(z.date().optional()),
+
+  // Guest submission
   guestName: z.string().min(3).optional(),
   guestEmail: z.string().email().optional(),
 });
@@ -27,9 +49,34 @@ export const createNeedSchema = z.object({
 
 export const updateNeedSchema = z.object({
   body: needBodySchema.partial().extend({
-    status: z.enum(["pending", "approved", "in_progress", "completed", "rejected"]).optional(),
+    status: z
+      .enum(["draft", "pending", "under_review", "approved", "in_progress", "completed", "rejected", "archived", "cancelled"])
+      .optional(),
+    statusChangeReason: z.string().optional(), // دلیل تغییر وضعیت
   }),
   params: z.object({
     id: z.string().regex(/^[0-9a-fA-F]{24}$/),
+  }),
+});
+
+// Validation for Need Updates
+export const createNeedUpdateSchema = z.object({
+  body: z.object({
+    title: z.string().min(3, "عنوان به‌روزرسانی باید حداقل ۳ حرف باشد."),
+    description: z.string().min(10, "توضیحات به‌روزرسانی باید حداقل ۱۰ حرف باشد."),
+  }),
+  params: z.object({
+    id: z.string().regex(/^[0-9a-fA-F]{24}$/, "شناسه نیاز معتبر نیست."),
+  }),
+});
+
+export const updateNeedUpdateSchema = z.object({
+  body: z.object({
+    title: z.string().min(3, "عنوان به‌روزرسانی باید حداقل ۳ حرف باشد.").optional(),
+    description: z.string().min(10, "توضیحات به‌روزرسانی باید حداقل ۱۰ حرف باشد.").optional(),
+  }),
+  params: z.object({
+    id: z.string().regex(/^[0-9a-fA-F]{24}$/, "شناسه نیاز معتبر نیست."),
+    updateId: z.string(), // Index of update in array
   }),
 });

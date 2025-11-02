@@ -86,6 +86,57 @@ const budgetItemSchema = new Schema(
   { _id: true, timestamps: true }
 );
 
+const verificationEvidenceSchema = new Schema(
+  {
+    type: {
+      type: String,
+      enum: ["image", "document", "video"],
+      required: true,
+    },
+    url: { type: String, required: true },
+    description: { type: String },
+  },
+  { _id: false }
+);
+
+const verificationRequestSchema = new Schema(
+  {
+    type: {
+      type: String,
+      enum: ["milestone_completion", "budget_expense", "need_completion", "progress_update"],
+      required: true,
+    },
+    status: {
+      type: String,
+      enum: ["pending", "approved", "rejected", "needs_revision"],
+      default: "pending",
+    },
+
+    // Reference to what's being verified
+    relatedItemId: { type: String }, // milestone _id, budget item _id, etc.
+    relatedItemType: { type: String }, // "milestone", "budget_item", etc.
+
+    // Request details
+    description: { type: String, required: true },
+    evidence: [verificationEvidenceSchema],
+
+    // Metadata
+    submittedBy: { type: Types.ObjectId, ref: "User", required: true },
+    submittedAt: { type: Date, default: Date.now },
+
+    // Review details
+    reviewedBy: { type: Types.ObjectId, ref: "User" },
+    reviewedAt: { type: Date },
+    adminComments: { type: String },
+    rejectionReason: { type: String },
+
+    // Revision tracking
+    revisionRequested: { type: Boolean, default: false },
+    revisionNotes: { type: String },
+  },
+  { _id: true, timestamps: true }
+);
+
 const statusHistorySchema = new Schema(
   {
     status: {
@@ -152,6 +203,9 @@ const needSchema = new Schema<INeed>(
 
     // Budget
     budgetItems: [budgetItemSchema],
+
+    // Verification
+    verificationRequests: [verificationRequestSchema],
 
     // System
     priority: { type: Number, default: 0, index: true },
@@ -224,6 +278,14 @@ needSchema.virtual("budgetProgress").get(function () {
   }, 0);
 
   return Math.round((raised / total) * 100);
+});
+
+// Count pending verification requests
+needSchema.virtual("pendingVerificationsCount").get(function () {
+  if (!this.verificationRequests || this.verificationRequests.length === 0) {
+    return 0;
+  }
+  return this.verificationRequests.filter((req: any) => req.status === "pending").length;
 });
 
 // Middleware to auto-update budget item status

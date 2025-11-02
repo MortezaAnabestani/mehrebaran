@@ -11,6 +11,8 @@ import {
   createBudgetItemSchema,
   updateBudgetItemSchema,
   addFundsToBudgetItemSchema,
+  createVerificationRequestSchema,
+  reviewVerificationRequestSchema,
 } from "./need.validation";
 import asyncHandler from "../../core/utils/asyncHandler";
 import ApiError from "../../core/utils/apiError";
@@ -219,6 +221,45 @@ class NeedController {
     );
     if (!need) throw new ApiError(404, "نیاز یا قلم بودجه مورد نظر یافت نشد.");
     res.status(200).json({ message: "مبلغ با موفقیت به قلم بودجه اضافه شد.", data: need });
+  });
+
+  // Verification Requests CRUD
+  public getVerificationRequests = asyncHandler(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { status } = req.query;
+    const verifications = await needService.getVerificationRequests(id, status as string);
+    if (!verifications) throw new ApiError(404, "نیاز مورد نظر یافت نشد.");
+    res.status(200).json({ results: verifications.length, data: verifications });
+  });
+
+  public createVerificationRequest = asyncHandler(async (req: Request, res: Response) => {
+    const validatedData = createVerificationRequestSchema.parse({ body: req.body, params: req.params });
+    const need = await needService.createVerificationRequest(
+      validatedData.params.id,
+      req.user!._id.toString(),
+      validatedData.body
+    );
+    if (!need) throw new ApiError(404, "نیاز مورد نظر یافت نشد.");
+    res.status(201).json({ message: "درخواست تایید با موفقیت ثبت شد.", data: need });
+  });
+
+  public reviewVerificationRequest = asyncHandler(async (req: Request, res: Response) => {
+    const validatedData = reviewVerificationRequestSchema.parse({ body: req.body, params: req.params });
+    const need = await needService.reviewVerificationRequest(
+      validatedData.params.id,
+      validatedData.params.verificationId,
+      req.user!._id.toString(),
+      validatedData.body
+    );
+    if (!need) throw new ApiError(404, "نیاز یا درخواست تایید مورد نظر یافت نشد.");
+    res.status(200).json({ message: "درخواست تایید با موفقیت بررسی شد.", data: need });
+  });
+
+  public deleteVerificationRequest = asyncHandler(async (req: Request, res: Response) => {
+    const { id, verificationId } = req.params;
+    const need = await needService.deleteVerificationRequest(id, verificationId);
+    if (!need) throw new ApiError(404, "نیاز یا درخواست تایید مورد نظر یافت نشد.");
+    res.status(200).json({ message: "درخواست تایید با موفقیت حذف شد.", data: need });
   });
 
   // Geo-search

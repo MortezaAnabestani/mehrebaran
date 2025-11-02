@@ -525,6 +525,143 @@ class NeedService {
     await need.save();
     return this.populateNeed(need);
   }
+
+  // Verification Requests CRUD
+  public async getVerificationRequests(needId: string, status?: string): Promise<any[] | null> {
+    const need = await NeedModel.findById(needId).select("verificationRequests").populate("verificationRequests.submittedBy", "name").populate("verificationRequests.reviewedBy", "name");
+    if (!need) return null;
+
+    let requests = need.verificationRequests || [];
+
+    // Filter by status if provided
+    if (status) {
+      requests = (requests as any[]).filter((req: any) => req.status === status);
+    }
+
+    return requests;
+  }
+
+  public async createVerificationRequest(
+    needId: string,
+    userId: string,
+    requestData: {
+      type: "milestone_completion" | "budget_expense" | "need_completion" | "progress_update";
+      description: string;
+      evidence: Array<{ type: "image" | "document" | "video"; url: string; description?: string }>;
+      relatedItemId?: string;
+      relatedItemType?: string;
+    }
+  ): Promise<INeed | null> {
+    const need = await NeedModel.findByIdAndUpdate(
+      needId,
+      {
+        $push: {
+          verificationRequests: {
+            type: requestData.type,
+            description: requestData.description,
+            evidence: requestData.evidence,
+            relatedItemId: requestData.relatedItemId,
+            relatedItemType: requestData.relatedItemType,
+            submittedBy: new Types.ObjectId(userId),
+            submittedAt: new Date(),
+            status: "pending",
+          },
+        },
+      },
+      { new: true, runValidators: true }
+    );
+
+    if (!need) return null;
+    return this.populateNeed(need);
+  }
+
+  public async reviewVerificationRequest(
+    needId: string,
+    verificationId: string,
+    reviewerId: string,
+    reviewData: {
+      status: "approved" | "rejected" | "needs_revision";
+      adminComments?: string;
+      rejectionReason?: string;
+      revisionNotes?: string;
+    }
+  ): Promise<INeed | null> {
+    const need = await NeedModel.findById(needId);
+    if (!need || !need.verificationRequests) return null;
+
+    const verification = need.verificationRequests.find((req: any) => req._id.toString() === verificationId);
+    if (!verification) {
+      throw new ApiError(404, "درخواست تایید یافت نشد.");
+    }
+
+    // Update verification status
+    (verification as any).status = reviewData.status;
+    (verification as any).reviewedBy = new Types.ObjectId(reviewerId);
+    (verification as any).reviewedAt = new Date();
+
+    if (reviewData.adminComments) {
+      (verification as any).adminComments = reviewData.adminComments;
+    }
+
+    if (reviewData.status === "rejected" && reviewData.rejectionReason) {
+      (verification as any).rejectionReason = reviewData.rejectionReason;
+    }
+
+    if (reviewData.status === "needs_revision") {
+      (verification as any).revisionRequested = true;
+      if (reviewData.revisionNotes) {
+        (verification as any).revisionNotes = reviewData.revisionNotes;
+      }
+    }
+
+    // Auto-update related items if approved
+    if (reviewData.status === "approved" && (verification as any).relatedItemType) {
+      await this.handleApprovedVerification(need, verification as any);
+    }
+
+    await need.save();
+    return this.populateNeed(need);
+  }
+
+  private async handleApprovedVerification(need: any, verification: any): Promise<void> {
+    // Handle different verification types
+    if (verification.relatedItemType === "milestone" && verification.relatedItemId) {
+      // Auto-complete the milestone
+      const milestone = need.milestones?.find((m: any) => m._id.toString() === verification.relatedItemId);
+      if (milestone) {
+        milestone.status = "completed";
+        milestone.progressPercentage = 100;
+        milestone.completionDate = new Date();
+      }
+    }
+
+    if (verification.relatedItemType === "budget_item" && verification.relatedItemId) {
+      // Mark budget expense as verified
+      const budgetItem = need.budgetItems?.find((b: any) => b._id.toString() === verification.relatedItemId);
+      if (budgetItem && budgetItem.actualCost === undefined) {
+        // You might want to set actualCost based on verification data
+      }
+    }
+
+    if (verification.type === "need_completion") {
+      // Mark need as completed
+      need.status = "completed";
+    }
+  }
+
+  public async deleteVerificationRequest(needId: string, verificationId: string): Promise<INeed | null> {
+    const need = await NeedModel.findById(needId);
+    if (!need || !need.verificationRequests) return null;
+
+    const verificationIndex = need.verificationRequests.findIndex((req: any) => req._id.toString() === verificationId);
+    if (verificationIndex === -1) {
+      throw new ApiError(404, "درخواست تایید یافت نشد.");
+    }
+
+    need.verificationRequests.splice(verificationIndex, 1);
+    await need.save();
+    return this.populateNeed(need);
+  }
 }
 
 export const needService = new NeedService();

@@ -82,6 +82,52 @@ export interface IBudgetItem {
   notes?: string;
 }
 
+export type VerificationRequestType =
+  | "milestone_completion"
+  | "budget_expense"
+  | "need_completion"
+  | "progress_update";
+
+export type VerificationStatus =
+  | "pending"
+  | "approved"
+  | "rejected"
+  | "needs_revision";
+
+export interface IVerificationEvidence {
+  type: "image" | "document" | "video";
+  url: string;
+  description?: string;
+}
+
+export interface IVerificationRequest {
+  _id: string;
+  type: VerificationRequestType;
+  status: VerificationStatus;
+
+  // Reference to what's being verified
+  relatedItemId?: string; // milestone ID, budget item ID, etc.
+  relatedItemType?: string; // "milestone", "budget_item", etc.
+
+  // Request details
+  description: string;
+  evidence: IVerificationEvidence[];
+
+  // Metadata
+  submittedBy: IUser | string;
+  submittedAt: Date;
+
+  // Review details
+  reviewedBy?: IUser | string;
+  reviewedAt?: Date;
+  adminComments?: string;
+  rejectionReason?: string;
+
+  // Revision tracking
+  revisionRequested?: boolean;
+  revisionNotes?: string;
+}
+
 export interface INeed {
   _id: string;
   title: string;
@@ -125,6 +171,10 @@ export interface INeed {
   totalBudget?: number; // مجموع estimatedCost همه آیتم‌ها (محاسبه شده)
   totalRaised?: number; // مجموع amountRaised همه آیتم‌ها (محاسبه شده)
   budgetProgress?: number; // درصد جمع‌آوری شده (محاسبه شده)
+
+  // Verification
+  verificationRequests?: IVerificationRequest[];
+  pendingVerificationsCount?: number; // تعداد درخواست‌های در انتظار (محاسبه شده)
 
   // System
   priority?: number; // امتیاز محاسبه‌شده برای ranking

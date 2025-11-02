@@ -166,3 +166,40 @@ export const addFundsToBudgetItemSchema = z.object({
     budgetItemId: z.string().regex(/^[0-9a-fA-F]{24}$/, "شناسه قلم بودجه معتبر نیست."),
   }),
 });
+
+// Validation for Verification Requests
+const verificationEvidenceSchema = z.object({
+  type: z.enum(["image", "document", "video"], { message: "نوع مدرک معتبر نیست." }),
+  url: z.string().url("لینک مدرک معتبر نیست."),
+  description: z.string().optional(),
+});
+
+export const createVerificationRequestSchema = z.object({
+  body: z.object({
+    type: z.enum(["milestone_completion", "budget_expense", "need_completion", "progress_update"], {
+      message: "نوع درخواست تایید معتبر نیست.",
+    }),
+    description: z.string().min(10, "توضیحات درخواست تایید باید حداقل ۱۰ حرف باشد."),
+    evidence: z.array(verificationEvidenceSchema).min(1, "حداقل یک مدرک الزامی است."),
+    relatedItemId: z.string().optional(),
+    relatedItemType: z.string().optional(),
+  }),
+  params: z.object({
+    id: z.string().regex(/^[0-9a-fA-F]{24}$/, "شناسه نیاز معتبر نیست."),
+  }),
+});
+
+export const reviewVerificationRequestSchema = z.object({
+  body: z.object({
+    status: z.enum(["approved", "rejected", "needs_revision"], {
+      message: "وضعیت بررسی معتبر نیست.",
+    }),
+    adminComments: z.string().optional(),
+    rejectionReason: z.string().optional(),
+    revisionNotes: z.string().optional(),
+  }),
+  params: z.object({
+    id: z.string().regex(/^[0-9a-fA-F]{24}$/, "شناسه نیاز معتبر نیست."),
+    verificationId: z.string().regex(/^[0-9a-fA-F]{24}$/, "شناسه درخواست تایید معتبر نیست."),
+  }),
+});

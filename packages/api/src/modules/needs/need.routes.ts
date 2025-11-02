@@ -45,6 +45,12 @@ router.patch("/:id/budget/:budgetItemId", protect, needController.updateBudgetIt
 router.delete("/:id/budget/:budgetItemId", protect, needController.deleteBudgetItem);
 router.post("/:id/budget/:budgetItemId/add-funds", protect, needController.addFundsToBudgetItem);
 
+// Verification Requests
+router.get("/:id/verifications", needController.getVerificationRequests);
+router.post("/:id/verifications", protect, needController.createVerificationRequest);
+router.patch("/:id/verifications/:verificationId/review", protect, restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN), needController.reviewVerificationRequest);
+router.delete("/:id/verifications/:verificationId", protect, needController.deleteVerificationRequest);
+
 // Admin routes
 router.get(
   "/admin/all",

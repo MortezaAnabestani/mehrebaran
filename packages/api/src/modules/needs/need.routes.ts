@@ -31,6 +31,13 @@ router.post("/:id/updates", protect, needController.createUpdate);
 router.patch("/:id/updates/:updateId", protect, needController.updateUpdate);
 router.delete("/:id/updates/:updateId", protect, needController.deleteUpdate);
 
+// Milestones
+router.get("/:id/milestones", needController.getMilestones);
+router.post("/:id/milestones", protect, needController.createMilestone);
+router.patch("/:id/milestones/:milestoneId", protect, needController.updateMilestone);
+router.delete("/:id/milestones/:milestoneId", protect, needController.deleteMilestone);
+router.post("/:id/milestones/:milestoneId/complete", protect, needController.completeMilestone);
+
 // Admin routes
 router.get(
   "/admin/all",

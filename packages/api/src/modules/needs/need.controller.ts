@@ -5,6 +5,9 @@ import {
   updateNeedSchema,
   createNeedUpdateSchema,
   updateNeedUpdateSchema,
+  createMilestoneSchema,
+  updateMilestoneSchema,
+  completeMilestoneSchema,
 } from "./need.validation";
 import asyncHandler from "../../core/utils/asyncHandler";
 import ApiError from "../../core/utils/apiError";
@@ -106,6 +109,69 @@ class NeedController {
     const need = await needService.deleteUpdate(id, updateId);
     if (!need) throw new ApiError(404, "نیاز یا به‌روزرسانی مورد نظر یافت نشد.");
     res.status(200).json({ message: "به‌روزرسانی با موفقیت حذف شد.", data: need });
+  });
+
+  // Milestones CRUD
+  public getMilestones = asyncHandler(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const milestones = await needService.getMilestones(id);
+    if (!milestones) throw new ApiError(404, "نیاز مورد نظر یافت نشد.");
+    res.status(200).json({ results: milestones.length, data: milestones });
+  });
+
+  public createMilestone = asyncHandler(async (req: Request, res: Response) => {
+    const validatedData = createMilestoneSchema.parse({ body: req.body, params: req.params });
+
+    // Convert date strings to Date objects
+    const milestoneData = {
+      ...validatedData.body,
+      targetDate: typeof validatedData.body.targetDate === 'string'
+        ? new Date(validatedData.body.targetDate)
+        : validatedData.body.targetDate,
+    };
+
+    const need = await needService.addMilestone(validatedData.params.id, milestoneData);
+    if (!need) throw new ApiError(404, "نیاز مورد نظر یافت نشد.");
+    res.status(201).json({ message: "مایلستون با موفقیت ثبت شد.", data: need });
+  });
+
+  public updateMilestone = asyncHandler(async (req: Request, res: Response) => {
+    const validatedData = updateMilestoneSchema.parse({ body: req.body, params: req.params });
+
+    // Convert date strings to Date objects
+    const updateData: any = { ...validatedData.body };
+    if (updateData.targetDate && typeof updateData.targetDate === 'string') {
+      updateData.targetDate = new Date(updateData.targetDate);
+    }
+    if (updateData.completionDate && typeof updateData.completionDate === 'string') {
+      updateData.completionDate = new Date(updateData.completionDate);
+    }
+
+    const need = await needService.updateMilestone(
+      validatedData.params.id,
+      validatedData.params.milestoneId,
+      updateData
+    );
+    if (!need) throw new ApiError(404, "نیاز یا مایلستون مورد نظر یافت نشد.");
+    res.status(200).json({ message: "مایلستون با موفقیت به‌روزرسانی شد.", data: need });
+  });
+
+  public deleteMilestone = asyncHandler(async (req: Request, res: Response) => {
+    const { id, milestoneId } = req.params;
+    const need = await needService.deleteMilestone(id, milestoneId);
+    if (!need) throw new ApiError(404, "نیاز یا مایلستون مورد نظر یافت نشد.");
+    res.status(200).json({ message: "مایلستون با موفقیت حذف شد.", data: need });
+  });
+
+  public completeMilestone = asyncHandler(async (req: Request, res: Response) => {
+    const validatedData = completeMilestoneSchema.parse({ body: req.body, params: req.params });
+    const need = await needService.completeMilestone(
+      validatedData.params.id,
+      validatedData.params.milestoneId,
+      validatedData.body.evidence
+    );
+    if (!need) throw new ApiError(404, "نیاز یا مایلستون مورد نظر یافت نشد.");
+    res.status(200).json({ message: "مایلستون با موفقیت تکمیل شد.", data: need });
   });
 
   // Geo-search

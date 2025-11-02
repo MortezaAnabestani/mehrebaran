@@ -80,3 +80,44 @@ export const updateNeedUpdateSchema = z.object({
     updateId: z.string(), // Index of update in array
   }),
 });
+
+// Validation for Milestones
+export const createMilestoneSchema = z.object({
+  body: z.object({
+    title: z.string().min(3, "عنوان مایلستون باید حداقل ۳ حرف باشد."),
+    description: z.string().min(10, "توضیحات مایلستون باید حداقل ۱۰ حرف باشد."),
+    targetDate: z.string().datetime("تاریخ هدف معتبر نیست.").or(z.date()),
+    order: z.number().int().min(1, "ترتیب مایلستون باید عدد مثبت باشد."),
+    progressPercentage: z.number().min(0).max(100).optional().default(0),
+  }),
+  params: z.object({
+    id: z.string().regex(/^[0-9a-fA-F]{24}$/, "شناسه نیاز معتبر نیست."),
+  }),
+});
+
+export const updateMilestoneSchema = z.object({
+  body: z.object({
+    title: z.string().min(3, "عنوان مایلستون باید حداقل ۳ حرف باشد.").optional(),
+    description: z.string().min(10, "توضیحات مایلستون باید حداقل ۱۰ حرف باشد.").optional(),
+    targetDate: z.string().datetime().or(z.date()).optional(),
+    completionDate: z.string().datetime().or(z.date()).optional(),
+    status: z.enum(["pending", "in_progress", "completed", "delayed"]).optional(),
+    progressPercentage: z.number().min(0).max(100).optional(),
+    order: z.number().int().min(1).optional(),
+    evidence: z.array(z.string().url("لینک مدرک معتبر نیست.")).optional(),
+  }),
+  params: z.object({
+    id: z.string().regex(/^[0-9a-fA-F]{24}$/, "شناسه نیاز معتبر نیست."),
+    milestoneId: z.string().regex(/^[0-9a-fA-F]{24}$/, "شناسه مایلستون معتبر نیست."),
+  }),
+});
+
+export const completeMilestoneSchema = z.object({
+  body: z.object({
+    evidence: z.array(z.string().url("لینک مدرک معتبر نیست.")).optional(),
+  }),
+  params: z.object({
+    id: z.string().regex(/^[0-9a-fA-F]{24}$/, "شناسه نیاز معتبر نیست."),
+    milestoneId: z.string().regex(/^[0-9a-fA-F]{24}$/, "شناسه مایلستون معتبر نیست."),
+  }),
+});

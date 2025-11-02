@@ -303,6 +303,110 @@ class NeedService {
     await need.save();
     return this.populateNeed(need);
   }
+
+  // Milestones CRUD
+  public async getMilestones(needId: string): Promise<any[] | null> {
+    const need = await NeedModel.findById(needId).select("milestones");
+    if (!need) return null;
+    return need.milestones || [];
+  }
+
+  public async addMilestone(
+    needId: string,
+    milestoneData: {
+      title: string;
+      description: string;
+      targetDate: Date;
+      order: number;
+      progressPercentage?: number;
+    }
+  ): Promise<INeed | null> {
+    const need = await NeedModel.findByIdAndUpdate(
+      needId,
+      {
+        $push: {
+          milestones: {
+            title: milestoneData.title,
+            description: milestoneData.description,
+            targetDate: milestoneData.targetDate,
+            order: milestoneData.order,
+            status: "pending",
+            progressPercentage: milestoneData.progressPercentage || 0,
+            evidence: [],
+          },
+        },
+      },
+      { new: true, runValidators: true }
+    );
+
+    if (!need) return null;
+    return this.populateNeed(need);
+  }
+
+  public async updateMilestone(
+    needId: string,
+    milestoneId: string,
+    updateData: {
+      title?: string;
+      description?: string;
+      targetDate?: Date;
+      completionDate?: Date;
+      status?: "pending" | "in_progress" | "completed" | "delayed";
+      progressPercentage?: number;
+      order?: number;
+      evidence?: string[];
+    }
+  ): Promise<INeed | null> {
+    const need = await NeedModel.findById(needId);
+    if (!need || !need.milestones) return null;
+
+    const milestone = need.milestones.find((m: any) => m._id.toString() === milestoneId);
+    if (!milestone) {
+      throw new ApiError(404, "مایلستون یافت نشد.");
+    }
+
+    // Update fields if provided
+    if (updateData.title !== undefined) (milestone as any).title = updateData.title;
+    if (updateData.description !== undefined) (milestone as any).description = updateData.description;
+    if (updateData.targetDate !== undefined) (milestone as any).targetDate = updateData.targetDate;
+    if (updateData.completionDate !== undefined) (milestone as any).completionDate = updateData.completionDate;
+    if (updateData.status !== undefined) (milestone as any).status = updateData.status;
+    if (updateData.progressPercentage !== undefined) (milestone as any).progressPercentage = updateData.progressPercentage;
+    if (updateData.order !== undefined) (milestone as any).order = updateData.order;
+    if (updateData.evidence !== undefined) (milestone as any).evidence = updateData.evidence;
+
+    // Auto-complete if progress is 100%
+    if (updateData.progressPercentage === 100 && (milestone as any).status !== "completed") {
+      (milestone as any).status = "completed";
+      (milestone as any).completionDate = new Date();
+    }
+
+    await need.save();
+    return this.populateNeed(need);
+  }
+
+  public async deleteMilestone(needId: string, milestoneId: string): Promise<INeed | null> {
+    const need = await NeedModel.findById(needId);
+    if (!need || !need.milestones) return null;
+
+    const milestoneIndex = need.milestones.findIndex((m: any) => m._id.toString() === milestoneId);
+    if (milestoneIndex === -1) {
+      throw new ApiError(404, "مایلستون یافت نشد.");
+    }
+
+    need.milestones.splice(milestoneIndex, 1);
+    await need.save();
+    return this.populateNeed(need);
+  }
+
+  public async completeMilestone(needId: string, milestoneId: string, evidence?: string[]): Promise<INeed | null> {
+    return this.updateMilestone(needId, milestoneId, {
+      status: "completed",
+      progressPercentage: 100,
+      completionDate: new Date(),
+      evidence: evidence,
+    });
+  }
 }
 
 export const needService = new NeedService();

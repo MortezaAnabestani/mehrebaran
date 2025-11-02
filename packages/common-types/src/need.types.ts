@@ -52,6 +52,20 @@ export interface INeedUpdate {
   date: Date;
 }
 
+export type MilestoneStatus = "pending" | "in_progress" | "completed" | "delayed";
+
+export interface IMilestone {
+  _id: string;
+  title: string;
+  description: string;
+  targetDate: Date;
+  completionDate?: Date;
+  status: MilestoneStatus;
+  progressPercentage: number;
+  order: number;
+  evidence?: string[];  // URLs of images/documents
+}
+
 export interface INeed {
   _id: string;
   title: string;
@@ -86,6 +100,8 @@ export interface INeed {
 
   // Timeline
   updates?: INeedUpdate[];
+  milestones?: IMilestone[];
+  overallProgress?: number;  // 0-100, محاسبه شده از milestones
   deadline?: Date;
 
   // System

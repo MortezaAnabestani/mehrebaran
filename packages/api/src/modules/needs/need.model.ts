@@ -48,6 +48,24 @@ const needUpdateSchema = new Schema(
   { _id: false }
 );
 
+const milestoneSchema = new Schema(
+  {
+    title: { type: String, required: true },
+    description: { type: String, required: true },
+    targetDate: { type: Date, required: true },
+    completionDate: { type: Date },
+    status: {
+      type: String,
+      enum: ["pending", "in_progress", "completed", "delayed"],
+      default: "pending",
+    },
+    progressPercentage: { type: Number, default: 0, min: 0, max: 100 },
+    order: { type: Number, required: true },
+    evidence: [{ type: String }],
+  },
+  { _id: true, timestamps: true }
+);
+
 const statusHistorySchema = new Schema(
   {
     status: {
@@ -109,6 +127,7 @@ const needSchema = new Schema<INeed>(
 
     // Timeline
     updates: [needUpdateSchema],
+    milestones: [milestoneSchema],
     deadline: { type: Date },
 
     // System
@@ -133,6 +152,17 @@ needSchema.virtual("comments", {
   localField: "_id",
   foreignField: "post",
   match: { postType: "Need" },
+});
+
+// Calculate overall progress from milestones
+needSchema.virtual("overallProgress").get(function () {
+  if (!this.milestones || this.milestones.length === 0) {
+    return 0;
+  }
+  const totalProgress = this.milestones.reduce((sum: number, milestone: any) => {
+    return sum + (milestone.progressPercentage || 0);
+  }, 0);
+  return Math.round(totalProgress / this.milestones.length);
 });
 
 needSchema.pre("save", function (next) {

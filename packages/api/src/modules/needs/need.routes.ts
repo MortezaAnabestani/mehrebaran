@@ -4,6 +4,7 @@ import { protect, protectOptional, restrictTo } from "../auth/auth.middleware";
 import { UserRole } from "common-types";
 import supporterMessageRoutes from "../supporter/supporter-messages/supporterMessage.routes";
 import directMessageRoutes from "../direct-messages/directMessage.routes";
+import teamRoutes from "../teams/team.routes";
 import pollRoutes from "../polls/poll.routes";
 import supporterSubmissionRoutes from "../supporter/supporter-submissions/supporterSubmission.routes";
 
@@ -79,6 +80,7 @@ router.delete("/:id", protect, restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
 // Nested routes for supporters
 router.use("/:id/messages", supporterMessageRoutes);
 router.use("/:needId/direct-messages", directMessageRoutes);
+router.use("/:needId/teams", teamRoutes);
 router.use("/:id/polls", pollRoutes);
 router.use("/:id/submissions", supporterSubmissionRoutes);
 

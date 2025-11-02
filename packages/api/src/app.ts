@@ -21,6 +21,7 @@ import galleryRoutes from "./modules/blog/gallery/gallery.routes";
 import featuredItemsRoutes from "./modules/blog/featuredItems/featured.routes";
 import needCategoryRoutes from "./modules/need-categories/needCategory.routes";
 import needRoutes from "./modules/needs/need.routes";
+import teamInvitationRoutes from "./modules/teams/teamInvitation.routes";
 
 const app = express();
 
@@ -47,6 +48,7 @@ app.use("/api/v1/blog/gallery", galleryRoutes);
 app.use("/api/v1/blog/featured-items", featuredItemsRoutes);
 app.use("/api/v1/need-categories", needCategoryRoutes);
 app.use("/api/v1/needs", needRoutes);
+app.use("/api/v1/team-invitations", teamInvitationRoutes);
 
 app.use(globalErrorHandler);
 

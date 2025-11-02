@@ -14,5 +14,6 @@ export * from "./featured.types";
 export * from "./need.types";
 export * from "./supporterMessage.types";
 export * from "./directMessage.types";
+export * from "./team.types";
 export * from "./supporterSubmission.types";
 export * from "./poll.types";

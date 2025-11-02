@@ -16,6 +16,8 @@ import {
   createTaskSchema,
   updateTaskSchema,
   updateTaskChecklistSchema,
+  updateSupporterDetailSchema,
+  addContributionSchema,
 } from "./need.validation";
 import asyncHandler from "../../core/utils/asyncHandler";
 import ApiError from "../../core/utils/apiError";
@@ -77,6 +79,45 @@ class NeedController {
   public addSupporter = asyncHandler(async (req: Request, res: Response) => {
     await needService.addSupporter(req.params.id, req.user!._id.toString());
     res.status(200).json({ message: "شما با موفقیت به حامیان این طرح پیوستید." });
+  });
+
+  // Supporter Details
+  public getSupporterDetails = asyncHandler(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { userId } = req.query;
+    const supporterDetails = await needService.getSupporterDetails(id, userId as string);
+    if (!supporterDetails) throw new ApiError(404, "نیاز مورد نظر یافت نشد.");
+    res.status(200).json({ results: supporterDetails.length, data: supporterDetails });
+  });
+
+  public updateSupporterDetail = asyncHandler(async (req: Request, res: Response) => {
+    const validatedData = updateSupporterDetailSchema.parse({ body: req.body, params: req.params });
+    const need = await needService.updateSupporterDetail(
+      validatedData.params.id,
+      validatedData.params.userId,
+      validatedData.body
+    );
+    if (!need) throw new ApiError(404, "نیاز یا حامی مورد نظر یافت نشد.");
+    res.status(200).json({ message: "اطلاعات حامی با موفقیت به‌روزرسانی شد.", data: need });
+  });
+
+  public addContribution = asyncHandler(async (req: Request, res: Response) => {
+    const validatedData = addContributionSchema.parse({ body: req.body, params: req.params });
+    const need = await needService.addContribution(
+      validatedData.params.id,
+      validatedData.params.userId,
+      validatedData.body
+    );
+    if (!need) throw new ApiError(404, "نیاز یا حامی مورد نظر یافت نشد.");
+    res.status(201).json({ message: "مشارکت با موفقیت ثبت شد.", data: need });
+  });
+
+  public removeSupporterDetail = asyncHandler(async (req: Request, res: Response) => {
+    const { id, userId } = req.params;
+    const { reason } = req.body;
+    const need = await needService.removeSupporterDetail(id, userId, reason);
+    if (!need) throw new ApiError(404, "نیاز یا حامی مورد نظر یافت نشد.");
+    res.status(200).json({ message: "حامی با موفقیت حذف شد.", data: need });
   });
 
   // View Counter

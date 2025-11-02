@@ -253,3 +253,32 @@ export const updateTaskChecklistSchema = z.object({
     taskId: z.string().regex(/^[0-9a-fA-F]{24}$/, "شناسه تسک معتبر نیست."),
   }),
 });
+
+// Validation for Supporter Details
+export const updateSupporterDetailSchema = z.object({
+  body: z.object({
+    role: z.enum(["supporter", "volunteer", "coordinator", "lead"], { message: "نقش معتبر نیست." }).optional(),
+    badge: z.string().optional(),
+    notes: z.string().optional(),
+    isActive: z.boolean().optional(),
+    leaveReason: z.string().optional(),
+  }),
+  params: z.object({
+    id: z.string().regex(/^[0-9a-fA-F]{24}$/, "شناسه نیاز معتبر نیست."),
+    userId: z.string().regex(/^[0-9a-fA-F]{24}$/, "شناسه کاربر معتبر نیست."),
+  }),
+});
+
+export const addContributionSchema = z.object({
+  body: z.object({
+    type: z.enum(["financial", "time", "skill", "material", "other"], { message: "نوع مشارکت معتبر نیست." }),
+    description: z.string().min(3, "توضیحات مشارکت باید حداقل ۳ حرف باشد."),
+    amount: z.number().min(0, "مبلغ باید عدد مثبت باشد.").optional(),
+    hours: z.number().min(0, "ساعات باید عدد مثبت باشد.").optional(),
+    verifiedByAdmin: z.boolean().optional(),
+  }),
+  params: z.object({
+    id: z.string().regex(/^[0-9a-fA-F]{24}$/, "شناسه نیاز معتبر نیست."),
+    userId: z.string().regex(/^[0-9a-fA-F]{24}$/, "شناسه کاربر معتبر نیست."),
+  }),
+});

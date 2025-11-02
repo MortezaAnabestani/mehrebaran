@@ -171,6 +171,49 @@ export interface ITask {
   updatedAt: Date;
 }
 
+export type SupporterRole = "supporter" | "volunteer" | "coordinator" | "lead";
+
+export type ContributionType = "financial" | "time" | "skill" | "material" | "other";
+
+export interface IContribution {
+  type: ContributionType;
+  description: string;
+  amount?: number; // برای کمک مالی (ریال)
+  hours?: number; // برای کمک زمانی (ساعت)
+  date: Date;
+  verifiedByAdmin?: boolean;
+}
+
+export interface ISupporterDetail {
+  _id: string;
+  user: IUser | string;
+  role: SupporterRole;
+
+  // Join info
+  joinedAt: Date;
+  invitedBy?: IUser | string;
+
+  // Contributions
+  contributions?: IContribution[];
+  totalFinancialContribution?: number; // مجموع کمک‌های مالی (محاسبه شده)
+  totalHoursContribution?: number; // مجموع ساعات کار (محاسبه شده)
+
+  // Activity
+  lastActivityAt?: Date;
+  tasksCompleted?: number; // تعداد task های تکمیل شده
+
+  // Badge/Recognition
+  badge?: string; // مثل: "Top Contributor", "Early Supporter", "Volunteer of the Month"
+
+  // Status
+  isActive: boolean;
+  leftAt?: Date;
+  leaveReason?: string;
+
+  // Notes
+  notes?: string; // یادداشت‌های داخلی
+}
+
 export interface INeed {
   _id: string;
   title: string;
@@ -193,6 +236,7 @@ export interface INeed {
   // Social
   upvotes: (IUser | string)[];
   supporters?: (IUser | string)[];
+  supporterDetails?: ISupporterDetail[]; // اطلاعات تکمیلی حامیان
   viewsCount: number;
 
   // Planning

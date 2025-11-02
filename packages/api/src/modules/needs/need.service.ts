@@ -223,14 +223,40 @@ class NeedService {
     ]);
   }
 
-  public async addSupporter(needId: string, userId: string): Promise<void> {
-    const result = await NeedModel.findByIdAndUpdate(needId, {
-      $addToSet: { supporters: new Types.ObjectId(userId) },
-    });
-
-    if (!result) {
+  public async addSupporter(needId: string, userId: string, invitedBy?: string): Promise<void> {
+    const need = await NeedModel.findById(needId);
+    if (!need) {
       throw new ApiError(404, "نیاز یافت نشد.");
     }
+
+    // Add to supporters array
+    if (!need.supporters) {
+      need.supporters = [];
+    }
+    const userObjId = new Types.ObjectId(userId);
+    const alreadySupporter = need.supporters.some((s) => s.toString() === userId);
+    if (!alreadySupporter) {
+      need.supporters.push(userObjId as any);
+    }
+
+    // Create supporter detail if doesn't exist
+    if (!need.supporterDetails) {
+      need.supporterDetails = [];
+    }
+    const existingDetail = need.supporterDetails.find((sd: any) => sd.user.toString() === userId);
+    if (!existingDetail) {
+      (need.supporterDetails as any).push({
+        user: userObjId,
+        role: "supporter",
+        joinedAt: new Date(),
+        invitedBy: invitedBy ? new Types.ObjectId(invitedBy) : undefined,
+        contributions: [],
+        tasksCompleted: 0,
+        isActive: true,
+      });
+    }
+
+    await need.save();
   }
 
   // View Counter
@@ -827,6 +853,122 @@ class NeedService {
       progressPercentage: 100,
       actualHours: actualHours,
     });
+  }
+
+  // Supporter Details Management
+  public async getSupporterDetails(needId: string, userId?: string): Promise<any[] | null> {
+    const need = await NeedModel.findById(needId)
+      .select("supporterDetails")
+      .populate("supporterDetails.user", "name email")
+      .populate("supporterDetails.invitedBy", "name");
+    if (!need) return null;
+
+    let details = need.supporterDetails || [];
+
+    // Filter by specific user if provided
+    if (userId) {
+      details = (details as any[]).filter((sd: any) => sd.user._id.toString() === userId);
+    }
+
+    return details;
+  }
+
+  public async updateSupporterDetail(
+    needId: string,
+    userId: string,
+    updateData: {
+      role?: "supporter" | "volunteer" | "coordinator" | "lead";
+      badge?: string;
+      notes?: string;
+      isActive?: boolean;
+      leaveReason?: string;
+    }
+  ): Promise<INeed | null> {
+    const need = await NeedModel.findById(needId);
+    if (!need || !need.supporterDetails) return null;
+
+    const supporterDetail = need.supporterDetails.find((sd: any) => sd.user.toString() === userId);
+    if (!supporterDetail) {
+      throw new ApiError(404, "حامی یافت نشد.");
+    }
+
+    // Update fields
+    if (updateData.role !== undefined) (supporterDetail as any).role = updateData.role;
+    if (updateData.badge !== undefined) (supporterDetail as any).badge = updateData.badge;
+    if (updateData.notes !== undefined) (supporterDetail as any).notes = updateData.notes;
+    if (updateData.isActive !== undefined) {
+      (supporterDetail as any).isActive = updateData.isActive;
+      if (!updateData.isActive) {
+        (supporterDetail as any).leftAt = new Date();
+      }
+    }
+    if (updateData.leaveReason !== undefined) (supporterDetail as any).leaveReason = updateData.leaveReason;
+
+    await need.save();
+    return this.populateNeed(need);
+  }
+
+  public async addContribution(
+    needId: string,
+    userId: string,
+    contributionData: {
+      type: "financial" | "time" | "skill" | "material" | "other";
+      description: string;
+      amount?: number;
+      hours?: number;
+    }
+  ): Promise<INeed | null> {
+    const need = await NeedModel.findById(needId);
+    if (!need || !need.supporterDetails) return null;
+
+    const supporterDetail = need.supporterDetails.find((sd: any) => sd.user.toString() === userId);
+    if (!supporterDetail) {
+      throw new ApiError(404, "حامی یافت نشد.");
+    }
+
+    // Add contribution
+    if (!(supporterDetail as any).contributions) {
+      (supporterDetail as any).contributions = [];
+    }
+    (supporterDetail as any).contributions.push({
+      type: contributionData.type,
+      description: contributionData.description,
+      amount: contributionData.amount,
+      hours: contributionData.hours,
+      date: new Date(),
+      verifiedByAdmin: false,
+    });
+
+    // Update last activity
+    (supporterDetail as any).lastActivityAt = new Date();
+
+    await need.save();
+    return this.populateNeed(need);
+  }
+
+  public async removeSupporterDetail(needId: string, userId: string, reason?: string): Promise<INeed | null> {
+    const need = await NeedModel.findById(needId);
+    if (!need || !need.supporterDetails) return null;
+
+    const supporterDetail = need.supporterDetails.find((sd: any) => sd.user.toString() === userId);
+    if (!supporterDetail) {
+      throw new ApiError(404, "حامی یافت نشد.");
+    }
+
+    // Mark as inactive instead of removing
+    (supporterDetail as any).isActive = false;
+    (supporterDetail as any).leftAt = new Date();
+    if (reason) {
+      (supporterDetail as any).leaveReason = reason;
+    }
+
+    // Also remove from supporters array
+    if (need.supporters) {
+      need.supporters = (need.supporters as any[]).filter((s) => s.toString() !== userId);
+    }
+
+    await need.save();
+    return this.populateNeed(need);
   }
 }
 

@@ -25,6 +25,12 @@ router.post("/:id/upvote", protect, needController.toggleUpvote);
 router.post("/:id/support", protect, needController.addSupporter);
 router.post("/:id/view", needController.incrementView);
 
+// Supporter Details
+router.get("/:id/supporters/details", needController.getSupporterDetails);
+router.patch("/:id/supporters/:userId", protect, restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN), needController.updateSupporterDetail);
+router.post("/:id/supporters/:userId/contributions", protect, needController.addContribution);
+router.delete("/:id/supporters/:userId", protect, needController.removeSupporterDetail);
+
 // Updates (Timeline)
 router.get("/:id/updates", needController.getUpdates);
 router.post("/:id/updates", protect, needController.createUpdate);

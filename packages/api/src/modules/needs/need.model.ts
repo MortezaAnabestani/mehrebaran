@@ -187,6 +187,56 @@ const taskSchema = new Schema(
   { _id: true, timestamps: true }
 );
 
+const contributionSchema = new Schema(
+  {
+    type: {
+      type: String,
+      enum: ["financial", "time", "skill", "material", "other"],
+      required: true,
+    },
+    description: { type: String, required: true },
+    amount: { type: Number, min: 0 }, // برای کمک مالی
+    hours: { type: Number, min: 0 }, // برای کمک زمانی
+    date: { type: Date, default: Date.now },
+    verifiedByAdmin: { type: Boolean, default: false },
+  },
+  { _id: true, timestamps: true }
+);
+
+const supporterDetailSchema = new Schema(
+  {
+    user: { type: Types.ObjectId, ref: "User", required: true },
+    role: {
+      type: String,
+      enum: ["supporter", "volunteer", "coordinator", "lead"],
+      default: "supporter",
+    },
+
+    // Join info
+    joinedAt: { type: Date, default: Date.now },
+    invitedBy: { type: Types.ObjectId, ref: "User" },
+
+    // Contributions
+    contributions: [contributionSchema],
+
+    // Activity
+    lastActivityAt: { type: Date },
+    tasksCompleted: { type: Number, default: 0 },
+
+    // Badge
+    badge: { type: String },
+
+    // Status
+    isActive: { type: Boolean, default: true },
+    leftAt: { type: Date },
+    leaveReason: { type: String },
+
+    // Notes
+    notes: { type: String },
+  },
+  { _id: true, timestamps: true }
+);
+
 const statusHistorySchema = new Schema(
   {
     status: {
@@ -236,6 +286,7 @@ const needSchema = new Schema<INeed>(
     // Social
     upvotes: [{ type: Types.ObjectId, ref: "User" }],
     supporters: [{ type: Types.ObjectId, ref: "User" }],
+    supporterDetails: [supporterDetailSchema],
     viewsCount: { type: Number, default: 0, index: true },
 
     // Planning
@@ -364,6 +415,25 @@ needSchema.virtual("tasksProgress").get(function () {
   }
   const completedCount = this.tasks.filter((task: any) => task.status === "completed").length;
   return Math.round((completedCount / this.tasks.length) * 100);
+});
+
+// Add virtual fields to supporterDetailSchema for contribution totals
+supporterDetailSchema.virtual("totalFinancialContribution").get(function () {
+  if (!this.contributions || this.contributions.length === 0) {
+    return 0;
+  }
+  return this.contributions
+    .filter((c: any) => c.type === "financial")
+    .reduce((sum: number, c: any) => sum + (c.amount || 0), 0);
+});
+
+supporterDetailSchema.virtual("totalHoursContribution").get(function () {
+  if (!this.contributions || this.contributions.length === 0) {
+    return 0;
+  }
+  return this.contributions
+    .filter((c: any) => c.type === "time")
+    .reduce((sum: number, c: any) => sum + (c.hours || 0), 0);
 });
 
 // Middleware to auto-update budget item status

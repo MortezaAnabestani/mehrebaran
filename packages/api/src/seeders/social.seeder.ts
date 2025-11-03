@@ -1,6 +1,6 @@
 import { Follow } from "../modules/social/follow.model";
 import { Like } from "../modules/social/like.model";
-import { Comment } from "../modules/comments/comment.model";
+import { NeedComment } from "../modules/needs/needComment.model";
 
 /**
  * Social Interactions Seeder
@@ -13,7 +13,7 @@ export async function seedSocialInteractions(users: any[], needs: any[]) {
     // پاک کردن داده‌های قبلی
     await Follow.deleteMany({});
     await Like.deleteMany({});
-    await Comment.deleteMany({});
+    await NeedComment.deleteMany({});
     console.log("  ✓ Cleared existing social interactions");
 
     // ===========================
@@ -128,7 +128,7 @@ export async function seedSocialInteractions(users: any[], needs: any[]) {
       }
     }
 
-    await Comment.insertMany(comments);
+    await NeedComment.insertMany(comments);
     console.log(`  ✓ Created ${comments.length} comments`);
 
     return { follows, likes, comments };

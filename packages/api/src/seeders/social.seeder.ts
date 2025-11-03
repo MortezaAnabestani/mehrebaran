@@ -1,10 +1,6 @@
 import { FollowModel } from "../modules/social/follow.model";
 import { Like } from "../modules/social/like.model";
-<<<<<<< HEAD
-import { CommentModel } from "../modules/comment/comment.model";
-=======
 import { NeedComment } from "../modules/needs/needComment.model";
->>>>>>> f764468aa8404dec9f549b6ea6017ab817d3749c
 
 /**
  * Social Interactions Seeder
@@ -17,11 +13,7 @@ export async function seedSocialInteractions(users: any[], needs: any[]) {
     // پاک کردن داده‌های قبلی
     await FollowModel.deleteMany({});
     await Like.deleteMany({});
-<<<<<<< HEAD
-    await CommentModel.deleteMany({});
-=======
     await NeedComment.deleteMany({});
->>>>>>> f764468aa8404dec9f549b6ea6017ab817d3749c
     console.log("  ✓ Cleared existing social interactions");
 
     // ===========================
@@ -139,11 +131,7 @@ export async function seedSocialInteractions(users: any[], needs: any[]) {
       }
     }
 
-<<<<<<< HEAD
-    await CommentModel.insertMany(comments);
-=======
     await NeedComment.insertMany(comments);
->>>>>>> f764468aa8404dec9f549b6ea6017ab817d3749c
     console.log(`  ✓ Created ${comments.length} comments`);
 
     return { follows, likes, comments };

@@ -80,8 +80,6 @@ class NeedController {
     await needService.addSupporter(req.params.id, req.user!._id.toString());
     res.status(200).json({ message: "شما با موفقیت به حامیان این طرح پیوستید." });
   });
-<<<<<<< HEAD
-=======
 
   // Supporter Details
   public getSupporterDetails = asyncHandler(async (req: Request, res: Response) => {
@@ -176,9 +174,10 @@ class NeedController {
     // Convert date strings to Date objects
     const milestoneData = {
       ...validatedData.body,
-      targetDate: typeof validatedData.body.targetDate === 'string'
-        ? new Date(validatedData.body.targetDate)
-        : validatedData.body.targetDate,
+      targetDate:
+        typeof validatedData.body.targetDate === "string"
+          ? new Date(validatedData.body.targetDate)
+          : validatedData.body.targetDate,
     };
 
     const need = await needService.addMilestone(validatedData.params.id, milestoneData);
@@ -191,10 +190,10 @@ class NeedController {
 
     // Convert date strings to Date objects
     const updateData: any = { ...validatedData.body };
-    if (updateData.targetDate && typeof updateData.targetDate === 'string') {
+    if (updateData.targetDate && typeof updateData.targetDate === "string") {
       updateData.targetDate = new Date(updateData.targetDate);
     }
-    if (updateData.completionDate && typeof updateData.completionDate === 'string') {
+    if (updateData.completionDate && typeof updateData.completionDate === "string") {
       updateData.completionDate = new Date(updateData.completionDate);
     }
 
@@ -326,7 +325,7 @@ class NeedController {
 
     // Convert date if provided
     const taskData: any = { ...validatedData.body };
-    if (taskData.deadline && typeof taskData.deadline === 'string') {
+    if (taskData.deadline && typeof taskData.deadline === "string") {
       taskData.deadline = new Date(taskData.deadline);
     }
 
@@ -340,7 +339,7 @@ class NeedController {
 
     // Convert date if provided
     const taskData: any = { ...validatedData.body };
-    if (taskData.deadline && typeof taskData.deadline === 'string') {
+    if (taskData.deadline && typeof taskData.deadline === "string") {
       taskData.deadline = new Date(taskData.deadline);
     }
 
@@ -413,7 +412,6 @@ class NeedController {
     const needs = await needService.findUrgent(limit);
     res.status(200).json({ results: needs.length, data: needs });
   });
->>>>>>> claude/review-repository-011CUioMnpKhKErWDFn7uG1L
 }
 
 export const needController = new NeedController();

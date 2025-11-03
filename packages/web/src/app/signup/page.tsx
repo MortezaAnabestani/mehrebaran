@@ -218,12 +218,7 @@ const Signup: React.FC = () => {
               بازگشت
             </SmartButton>
 
-            <SmartButton
-              type="submit"
-              variant="mblue"
-              className="cursor-pointer flex-1"
-              disabled={isLoading}
-            >
+            <SmartButton type="submit" variant="mblue" className="cursor-pointer flex-1" disabled={isLoading}>
               {isLoading ? "در حال ثبت‌نام..." : "نهایی‌کردن ثبت‌نام"}
             </SmartButton>
           </div>

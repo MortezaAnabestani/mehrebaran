@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { SmartButton } from "@/components/SmartButton";
+import { SmartButton } from "@/components/ui/SmartButton";
 
 // ===========================
 // Types & Interfaces
@@ -62,9 +62,7 @@ const SuggestedSection: React.FC<SuggestedSectionProps> = ({
           {icon && <span className="text-2xl">{icon}</span>}
           <div>
             <h2 className="text-xl font-bold text-gray-800">{title}</h2>
-            {subtitle && (
-              <p className="text-sm text-gray-500 mt-1">{subtitle}</p>
-            )}
+            {subtitle && <p className="text-sm text-gray-500 mt-1">{subtitle}</p>}
           </div>
         </div>
 

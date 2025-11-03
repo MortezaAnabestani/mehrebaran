@@ -2,19 +2,15 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import ProtectedRoute from "@/components/auth/ProtectedRoute";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import SuggestedSection from "@/components/discovery/SuggestedSection";
 import NeedCard from "@/components/network/NeedCard";
 import UserCard from "@/components/social/UserCard";
 import TeamCard from "@/components/network/TeamCard";
 import discoveryService from "@/services/discovery.service";
-import type { INeed } from "@/types/need";
-import type { IUser } from "@/types/user";
-import type { ITeam } from "@/types/team";
-
-// ===========================
-// Explore Page Component
-// ===========================
+import type { INeed } from "common-types";
+import type { IUser } from "common-types";
+import type { ITeam } from "common-types";
 
 const ExplorePage: React.FC = () => {
   const router = useRouter();
@@ -27,13 +23,10 @@ const ExplorePage: React.FC = () => {
   const [newUsers, setNewUsers] = useState<IUser[]>([]);
   const [newTeams, setNewTeams] = useState<ITeam[]>([]);
 
-  const [isLoadingRecommended, setIsLoadingRecommended] =
-    useState<boolean>(true);
+  const [isLoadingRecommended, setIsLoadingRecommended] = useState<boolean>(true);
   const [isLoadingNew, setIsLoadingNew] = useState<boolean>(true);
 
-  const [activeTab, setActiveTab] = useState<"recommended" | "new">(
-    "recommended"
-  );
+  const [activeTab, setActiveTab] = useState<"recommended" | "new">("recommended");
 
   // ===========================
   // Data Fetching
@@ -96,12 +89,8 @@ const ExplorePage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              🔍 اکتشاف و پیشنهادات
-            </h1>
-            <p className="text-gray-600">
-              محتوای پیشنهادی و جدید برای شما
-            </p>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">🔍 اکتشاف و پیشنهادات</h1>
+            <p className="text-gray-600">محتوای پیشنهادی و جدید برای شما</p>
           </div>
 
           {/* Tabs */}
@@ -109,9 +98,7 @@ const ExplorePage: React.FC = () => {
             <button
               onClick={() => setActiveTab("recommended")}
               className={`pb-4 px-6 font-semibold transition-colors relative ${
-                activeTab === "recommended"
-                  ? "text-mblue"
-                  : "text-gray-500 hover:text-gray-700"
+                activeTab === "recommended" ? "text-mblue" : "text-gray-500 hover:text-gray-700"
               }`}
             >
               پیشنهادی برای شما
@@ -123,15 +110,11 @@ const ExplorePage: React.FC = () => {
             <button
               onClick={() => setActiveTab("new")}
               className={`pb-4 px-6 font-semibold transition-colors relative ${
-                activeTab === "new"
-                  ? "text-mblue"
-                  : "text-gray-500 hover:text-gray-700"
+                activeTab === "new" ? "text-mblue" : "text-gray-500 hover:text-gray-700"
               }`}
             >
               تازه‌ها
-              {activeTab === "new" && (
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-mblue"></div>
-              )}
+              {activeTab === "new" && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-mblue"></div>}
             </button>
           </div>
 
@@ -152,11 +135,7 @@ const ExplorePage: React.FC = () => {
                 >
                   {recommendedNeeds.map((need) => (
                     <div key={need._id} className="min-w-[320px]">
-                      <NeedCard
-                        need={need}
-                        variant="feed"
-                        onUpdate={handleNeedUpdate}
-                      />
+                      <NeedCard need={need} variant="feed" onUpdate={handleNeedUpdate} />
                     </div>
                   ))}
                 </SuggestedSection>
@@ -216,11 +195,7 @@ const ExplorePage: React.FC = () => {
                 >
                   {newNeeds.map((need) => (
                     <div key={need._id} className="min-w-[320px]">
-                      <NeedCard
-                        need={need}
-                        variant="feed"
-                        onUpdate={handleNeedUpdate}
-                      />
+                      <NeedCard need={need} variant="feed" onUpdate={handleNeedUpdate} />
                     </div>
                   ))}
                 </SuggestedSection>

@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { seedUsers } from "./user.seeder";
+import { seedNeedCategories } from "./needCategory.seeder";
 import { seedNeeds } from "./need.seeder";
 import { seedTeams } from "./team.seeder";
 import { seedSocialInteractions } from "./social.seeder";
@@ -21,7 +22,10 @@ async function runSeeders() {
     const users = await seedUsers();
     console.log("");
 
-    const needs = await seedNeeds(users);
+    const categories = await seedNeedCategories();
+    console.log("");
+
+    const needs = await seedNeeds(users, categories);
     console.log("");
 
     const teams = await seedTeams(users, needs);
@@ -35,6 +39,7 @@ async function runSeeders() {
     console.log("🎉 Seeding completed successfully!");
     console.log("=" .repeat(50));
     console.log(`✓ ${users.length} users created`);
+    console.log(`✓ ${categories.length} need categories created`);
     console.log(`✓ ${needs.length} needs created`);
     console.log(`✓ ${teams.length} teams created`);
     console.log(`✓ ${social.follows.length} follows created`);

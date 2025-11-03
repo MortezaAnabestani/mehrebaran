@@ -58,41 +58,22 @@ const persianNames = [
   { first: "ساناز", last: "بهرامی" },
 ];
 
-const cities = [
-  "تهران",
-  "مشهد",
-  "اصفهان",
-  "شیراز",
-  "تبریز",
-  "کرج",
-  "اهواز",
-  "قم",
-  "کرمانشاه",
-  "ارومیه",
-  "رشت",
-  "زاهدان",
-  "همدان",
-  "کرمان",
-  "یزد",
-  "اردبیل",
-  "بندرعباس",
-  "قزوین",
-  "زنجان",
-  "سنندج",
-];
+/**
+ * تولید کد ملی تصادفی (فرمت ساده برای تست)
+ */
+function generateNationalId(index: number): string {
+  const num = (1000000000 + index).toString();
+  return num;
+}
 
-const bios = [
-  "عاشق کمک به دیگران و ایجاد تغییرات مثبت در جامعه",
-  "فعال اجتماعی و علاقه‌مند به پروژه‌های خیریه",
-  "به دنبال کمک به نیازمندان و ایجاد امید در دل‌ها",
-  "معتقدم با کمک‌های کوچک می‌توانیم جهان را بهتر کنیم",
-  "همیشه آماده کمک به هم‌نوعان و حمایت از نیازمندان",
-  "داوطلب فعال در پروژه‌های خیرخواهانه",
-  "علاقه‌مند به کارهای گروهی و کمک به جامعه",
-  "باور دارم که هر کمک کوچکی می‌تواند تفاوت بزرگی ایجاد کند",
-  "فعال در حوزه مسئولیت اجتماعی",
-  "کمک به دیگران بخشی از زندگی روزمره من است",
-];
+/**
+ * تولید شماره موبایل تصادفی
+ */
+function generateMobile(index: number): string {
+  const prefix = "0912"; // یکی از پیش‌شماره‌های ایران
+  const num = (3000000 + index).toString().padStart(7, "0");
+  return prefix + num;
+}
 
 export async function seedUsers() {
   console.log("🌱 Starting user seeder...");
@@ -108,50 +89,29 @@ export async function seedUsers() {
     // ایجاد admin
     users.push({
       name: "مدیر سیستم",
-      email: "admin@mehrebaran.ir",
+      mobile: "09120000000",
+      nationalId: "0000000000",
       password: hashedPassword,
       role: "super_admin",
-      isEmailVerified: true,
       profile: {
-        avatar: "https://ui-avatars.com/api/?name=Admin&background=3b80c3&color=fff&size=200",
-        bio: "مدیر ارشد پلتفرم مهربانان",
-        city: "تهران",
-        province: "تهران",
-      },
-      stats: {
-        reputation: 1000,
-        level: 10,
-        points: 5000,
+        major: "مدیریت سیستم",
+        yearOfAdmission: "1400",
       },
     });
 
     // ایجاد کاربران عادی
     for (let i = 0; i < persianNames.length; i++) {
       const name = persianNames[i];
-      const city = cities[i % cities.length];
-      const bio = bios[i % bios.length];
-
-      const username = `${name.first}_${name.last}_${i}`.replace(/\s/g, "_");
-      const email = `user${i + 1}@mehrebaran.ir`;
 
       users.push({
         name: `${name.first} ${name.last}`,
-        email,
+        mobile: generateMobile(i + 1),
+        nationalId: generateNationalId(i + 1),
         password: hashedPassword,
         role: i < 5 ? "admin" : "user",
-        isEmailVerified: true,
         profile: {
-          avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(
-            name.first + "+" + name.last
-          )}&background=${i % 2 === 0 ? "3b80c3" : "ff9434"}&color=fff&size=200`,
-          bio,
-          city,
-          province: city,
-        },
-        stats: {
-          reputation: Math.floor(Math.random() * 500) + 50,
-          level: Math.floor(Math.random() * 8) + 1,
-          points: Math.floor(Math.random() * 2000) + 100,
+          major: i % 3 === 0 ? "مهندسی کامپیوتر" : i % 3 === 1 ? "پزشکی" : "حقوق",
+          yearOfAdmission: (1398 + (i % 5)).toString(),
         },
       });
     }

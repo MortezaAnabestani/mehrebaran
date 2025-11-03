@@ -5,19 +5,17 @@ import { useRouter } from "next/navigation";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import NeedCard from "@/components/network/NeedCard";
 import UserCard from "@/components/social/UserCard";
-import TeamCard from "@/components/network/TeamCard";
 import SmartButton from "@/components/ui/SmartButton";
 import discoveryService from "@/services/discovery.service";
 import type { INeed } from "common-types";
 import type { IUser } from "common-types";
-import type { ITeam } from "common-types";
 
 // ===========================
 // Types
 // ===========================
 
 type Period = "day" | "week" | "month" | "all";
-type Category = "needs" | "users" | "teams";
+type Category = "needs" | "users";
 
 // ===========================
 // Trending Page Component
@@ -32,7 +30,6 @@ const TrendingPage: React.FC = () => {
 
   const [trendingNeeds, setTrendingNeeds] = useState<INeed[]>([]);
   const [trendingUsers, setTrendingUsers] = useState<IUser[]>([]);
-  const [trendingTeams, setTrendingTeams] = useState<ITeam[]>([]);
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -47,7 +44,6 @@ const TrendingPage: React.FC = () => {
       const data = await discoveryService.getAllTrending(activePeriod, 20);
       setTrendingNeeds(data.needs);
       setTrendingUsers(data.users);
-      setTrendingTeams(data.teams);
     } catch (error) {
       console.error("Error fetching trending content:", error);
     } finally {
@@ -89,7 +85,6 @@ const TrendingPage: React.FC = () => {
     const icons: Record<Category, string> = {
       needs: "🔥",
       users: "⭐",
-      teams: "🏆",
     };
     return icons[category];
   };
@@ -98,7 +93,6 @@ const TrendingPage: React.FC = () => {
     const labels: Record<Category, string> = {
       needs: "نیازها",
       users: "کاربران",
-      teams: "تیم‌ها",
     };
     return labels[category];
   };
@@ -178,33 +172,6 @@ const TrendingPage: React.FC = () => {
       );
     }
 
-    if (activeCategory === "teams") {
-      if (trendingTeams.length === 0) {
-        return (
-          <div className="text-center py-20">
-            <p className="text-gray-400 text-6xl mb-4">🏆</p>
-            <p className="text-gray-500 text-lg">در حال حاضر تیمی در این بازه زمانی ترند نیست.</p>
-          </div>
-        );
-      }
-
-      return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {trendingTeams.map((team, index) => (
-            <div key={team._id} className="relative">
-              {/* Trending Badge */}
-              {index < 3 && (
-                <div className="absolute top-4 right-4 z-10 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
-                  🏆 #{index + 1}
-                </div>
-              )}
-              <TeamCard team={team} variant="card" />
-            </div>
-          ))}
-        </div>
-      );
-    }
-
     return null;
   };
 
@@ -222,12 +189,12 @@ const TrendingPage: React.FC = () => {
               <span className="text-4xl">📈</span>
               محتوای ترند
             </h1>
-            <p className="text-gray-600">محبوب‌ترین نیازها، کاربران و تیم‌ها</p>
+            <p className="text-gray-600">محبوب‌ترین نیازها و کاربران</p>
           </div>
 
           {/* Category Tabs */}
           <div className="flex gap-4 mb-6 border-b border-gray-200 overflow-x-auto pb-2">
-            {(["needs", "users", "teams"] as Category[]).map((category) => (
+            {(["needs", "users"] as Category[]).map((category) => (
               <button
                 key={category}
                 onClick={() => setActiveCategory(category)}
@@ -261,7 +228,7 @@ const TrendingPage: React.FC = () => {
 
           {/* Stats Summary */}
           <div className="bg-gradient-to-r from-mblue to-cyan-500 rounded-lg p-6 mb-8 text-white shadow-lg">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="text-center">
                 <div className="text-4xl font-bold mb-2">{trendingNeeds.length}</div>
                 <div className="text-sm opacity-90">نیاز ترند</div>
@@ -269,10 +236,6 @@ const TrendingPage: React.FC = () => {
               <div className="text-center">
                 <div className="text-4xl font-bold mb-2">{trendingUsers.length}</div>
                 <div className="text-sm opacity-90">کاربر ترند</div>
-              </div>
-              <div className="text-center">
-                <div className="text-4xl font-bold mb-2">{trendingTeams.length}</div>
-                <div className="text-sm opacity-90">تیم ترند</div>
               </div>
             </div>
           </div>

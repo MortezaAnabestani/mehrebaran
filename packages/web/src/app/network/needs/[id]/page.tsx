@@ -36,9 +36,9 @@ const NeedDetailPage: React.FC = () => {
       setIsLoading(true);
       setError(null);
 
-      const response = await needService.getNeedById(needId);
-      setNeed(response.data);
-      setLikesCount(response.data.likesCount || 0);
+      const need = await needService.getNeedById(needId);
+      setNeed(need);
+      setLikesCount(need.likesCount || 0);
       // TODO: Check if user has liked/followed this need
     } catch (err: any) {
       console.error("Failed to fetch need:", err);

@@ -1,5 +1,5 @@
 import { Need } from "../modules/needs/need.model";
-import { User } from "../modules/users/user.model";
+import { UserModel as User } from "../modules/users/user.model";
 
 /**
  * Need Seeder - ایجاد نیازهای فیک

@@ -34,26 +34,6 @@ export interface GetTrendingUsersParams {
   period?: "day" | "week" | "month" | "all";
 }
 
-export interface GetTrendingTeamsParams {
-  limit?: number;
-  skip?: number;
-  period?: "day" | "week" | "month" | "all";
-}
-
-export interface GetNewUsersParams {
-  limit?: number;
-  skip?: number;
-}
-
-export interface GetNewNeedsParams {
-  limit?: number;
-  skip?: number;
-}
-
-export interface GetNewTeamsParams {
-  limit?: number;
-  skip?: number;
-}
 
 export interface GetRecommendedNeedsResponse {
   success: boolean;
@@ -85,29 +65,6 @@ export interface GetTrendingUsersResponse {
   message: string;
 }
 
-export interface GetTrendingTeamsResponse {
-  success: boolean;
-  data: ITeam[];
-  message: string;
-}
-
-export interface GetNewUsersResponse {
-  success: boolean;
-  data: IUser[];
-  message: string;
-}
-
-export interface GetNewNeedsResponse {
-  success: boolean;
-  data: INeed[];
-  message: string;
-}
-
-export interface GetNewTeamsResponse {
-  success: boolean;
-  data: ITeam[];
-  message: string;
-}
 
 // ===========================
 // Discovery Service Class
@@ -124,7 +81,7 @@ class DiscoveryService {
   public async getRecommendedNeeds(
     params?: GetRecommendedNeedsParams
   ): Promise<GetRecommendedNeedsResponse> {
-    const response = await api.get("/discovery/recommended-needs", { params });
+    const response = await api.get("/discovery/recommendations/needs", { params });
     return response.data;
   }
 
@@ -134,7 +91,7 @@ class DiscoveryService {
   public async getRecommendedUsers(
     params?: GetRecommendedUsersParams
   ): Promise<GetRecommendedUsersResponse> {
-    const response = await api.get("/discovery/recommended-users", { params });
+    const response = await api.get("/discovery/recommendations/users", { params });
     return response.data;
   }
 
@@ -144,7 +101,7 @@ class DiscoveryService {
   public async getRecommendedTeams(
     params?: GetRecommendedTeamsParams
   ): Promise<GetRecommendedTeamsResponse> {
-    const response = await api.get("/discovery/recommended-teams", { params });
+    const response = await api.get("/discovery/recommendations/teams", { params });
     return response.data;
   }
 
@@ -158,7 +115,7 @@ class DiscoveryService {
   public async getTrendingNeeds(
     params?: GetTrendingNeedsParams
   ): Promise<GetTrendingNeedsResponse> {
-    const response = await api.get("/discovery/trending-needs", { params });
+    const response = await api.get("/discovery/trending/needs", { params });
     return response.data;
   }
 
@@ -168,51 +125,122 @@ class DiscoveryService {
   public async getTrendingUsers(
     params?: GetTrendingUsersParams
   ): Promise<GetTrendingUsersResponse> {
-    const response = await api.get("/discovery/trending-users", { params });
+    const response = await api.get("/discovery/trending/users", { params });
     return response.data;
   }
 
   /**
-   * Get trending teams based on activity
+   * Get trending tags based on activity
    */
-  public async getTrendingTeams(
-    params?: GetTrendingTeamsParams
-  ): Promise<GetTrendingTeamsResponse> {
-    const response = await api.get("/discovery/trending-teams", { params });
+  public async getTrendingTags(
+    params?: { limit?: number; skip?: number; period?: "day" | "week" | "month" | "all" }
+  ): Promise<{ success: boolean; data: any[]; message: string }> {
+    const response = await api.get("/discovery/trending/tags", { params });
     return response.data;
   }
 
   // ===========================
-  // New Content
+  // Leaderboard
   // ===========================
 
   /**
-   * Get newly registered users
+   * Get leaderboard
    */
-  public async getNewUsers(
-    params?: GetNewUsersParams
-  ): Promise<GetNewUsersResponse> {
-    const response = await api.get("/discovery/new-users", { params });
+  public async getLeaderboard(
+    params?: { category?: string; period?: string; limit?: number }
+  ): Promise<{ success: boolean; data: any[]; message: string }> {
+    const response = await api.get("/discovery/leaderboard", { params });
     return response.data;
   }
 
   /**
-   * Get newly created needs
+   * Get my rank in leaderboard
    */
-  public async getNewNeeds(
-    params?: GetNewNeedsParams
-  ): Promise<GetNewNeedsResponse> {
-    const response = await api.get("/discovery/new-needs", { params });
+  public async getMyRank(
+    params?: { category?: string; period?: string }
+  ): Promise<{ success: boolean; data: any; message: string }> {
+    const response = await api.get("/discovery/leaderboard/me", { params });
     return response.data;
   }
 
   /**
-   * Get newly created teams
+   * Get user rank in leaderboard
    */
-  public async getNewTeams(
-    params?: GetNewTeamsParams
-  ): Promise<GetNewTeamsResponse> {
-    const response = await api.get("/discovery/new-teams", { params });
+  public async getUserRank(
+    userId: string,
+    params?: { category?: string; period?: string }
+  ): Promise<{ success: boolean; data: any; message: string }> {
+    const response = await api.get(`/discovery/leaderboard/user/${userId}`, { params });
+    return response.data;
+  }
+
+  /**
+   * Get nearby users in leaderboard
+   */
+  public async getNearbyUsers(
+    params?: { category?: string; period?: string; range?: number }
+  ): Promise<{ success: boolean; data: any[]; message: string }> {
+    const response = await api.get("/discovery/leaderboard/nearby", { params });
+    return response.data;
+  }
+
+  /**
+   * Get top users
+   */
+  public async getTopUsers(
+    params?: { category?: string; period?: string; limit?: number }
+  ): Promise<{ success: boolean; data: any[]; message: string }> {
+    const response = await api.get("/discovery/leaderboard/top", { params });
+    return response.data;
+  }
+
+  // ===========================
+  // Personalized Feed & Stats
+  // ===========================
+
+  /**
+   * Get personalized recommendations
+   */
+  public async getPersonalizedRecommendations(
+    params?: { limit?: number }
+  ): Promise<{ success: boolean; data: any; message: string }> {
+    const response = await api.get("/discovery/recommendations/personalized", { params });
+    return response.data;
+  }
+
+  /**
+   * Get user preferences
+   */
+  public async getUserPreferences(): Promise<{ success: boolean; data: any; message: string }> {
+    const response = await api.get("/discovery/recommendations/preferences");
+    return response.data;
+  }
+
+  /**
+   * Get personalized feed
+   */
+  public async getPersonalizedFeed(
+    params?: { limit?: number; skip?: number }
+  ): Promise<{ success: boolean; data: any[]; message: string }> {
+    const response = await api.get("/discovery/feed", { params });
+    return response.data;
+  }
+
+  /**
+   * Get discovery stats
+   */
+  public async getDiscoveryStats(): Promise<{ success: boolean; data: any; message: string }> {
+    const response = await api.get("/discovery/stats");
+    return response.data;
+  }
+
+  /**
+   * Get all trending content
+   */
+  public async getAllTrendingContent(
+    params?: { period?: "day" | "week" | "month" | "all"; limit?: number }
+  ): Promise<{ success: boolean; data: any; message: string }> {
+    const response = await api.get("/discovery/trending/all", { params });
     return response.data;
   }
 
@@ -250,39 +278,15 @@ class DiscoveryService {
   ): Promise<{
     needs: INeed[];
     users: IUser[];
-    teams: ITeam[];
   }> {
-    const [needsRes, usersRes, teamsRes] = await Promise.all([
+    const [needsRes, usersRes] = await Promise.all([
       this.getTrendingNeeds({ period, limit }),
       this.getTrendingUsers({ period, limit }),
-      this.getTrendingTeams({ period, limit }),
     ]);
 
     return {
       needs: needsRes.data,
       users: usersRes.data,
-      teams: teamsRes.data,
-    };
-  }
-
-  /**
-   * Get all new content at once
-   */
-  public async getAllNewContent(limit: number = 10): Promise<{
-    needs: INeed[];
-    users: IUser[];
-    teams: ITeam[];
-  }> {
-    const [needsRes, usersRes, teamsRes] = await Promise.all([
-      this.getNewNeeds({ limit }),
-      this.getNewUsers({ limit }),
-      this.getNewTeams({ limit }),
-    ]);
-
-    return {
-      needs: needsRes.data,
-      users: usersRes.data,
-      teams: teamsRes.data,
     };
   }
 }

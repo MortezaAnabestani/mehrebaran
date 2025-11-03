@@ -139,7 +139,7 @@ class NotificationService {
    * Mark a notification as read
    */
   public async markAsRead(id: string): Promise<MarkAsReadResponse> {
-    const response = await api.patch(`/notifications/${id}/read`);
+    const response = await api.post(`/notifications/${id}/read`);
     return response.data;
   }
 
@@ -147,7 +147,7 @@ class NotificationService {
    * Mark all notifications as read
    */
   public async markAllAsRead(): Promise<MarkAllAsReadResponse> {
-    const response = await api.patch("/notifications/mark-all-read");
+    const response = await api.post("/notifications/mark-all-read");
     return response.data;
   }
 
@@ -182,6 +182,126 @@ class NotificationService {
    */
   public async getUnreadCount(): Promise<GetUnreadCountResponse> {
     const response = await api.get("/notifications/unread-count");
+    return response.data;
+  }
+
+  // ===========================
+  // Advanced Features
+  // ===========================
+
+  /**
+   * Get grouped notifications
+   */
+  public async getGroupedNotifications(
+    params?: { groupBy?: string; limit?: number }
+  ): Promise<{ success: boolean; data: any; message: string }> {
+    const response = await api.get("/notifications/grouped", { params });
+    return response.data;
+  }
+
+  /**
+   * Get notification stats
+   */
+  public async getNotificationStats(): Promise<{ success: boolean; data: any; message: string }> {
+    const response = await api.get("/notifications/stats");
+    return response.data;
+  }
+
+  /**
+   * Delete all read notifications
+   */
+  public async deleteAllRead(): Promise<DeleteNotificationResponse> {
+    const response = await api.delete("/notifications/read");
+    return response.data;
+  }
+
+  // ===========================
+  // Preferences
+  // ===========================
+
+  /**
+   * Get notification preferences
+   */
+  public async getPreferences(): Promise<{ success: boolean; data: any; message: string }> {
+    const response = await api.get("/notifications/preferences");
+    return response.data;
+  }
+
+  /**
+   * Update notification preferences
+   */
+  public async updatePreferences(
+    data: any
+  ): Promise<{ success: boolean; data: any; message: string }> {
+    const response = await api.put("/notifications/preferences", data);
+    return response.data;
+  }
+
+  /**
+   * Toggle notification channel
+   */
+  public async toggleChannel(
+    channel: string,
+    enabled: boolean
+  ): Promise<{ success: boolean; data: any; message: string }> {
+    const response = await api.post("/notifications/preferences/toggle-channel", {
+      channel,
+      enabled,
+    });
+    return response.data;
+  }
+
+  /**
+   * Mute notification type
+   */
+  public async muteType(
+    type: NotificationType,
+    mutedUntil?: Date
+  ): Promise<{ success: boolean; data: any; message: string }> {
+    const response = await api.post("/notifications/preferences/mute-type", {
+      type,
+      mutedUntil,
+    });
+    return response.data;
+  }
+
+  /**
+   * Toggle global mute
+   */
+  public async toggleGlobalMute(
+    enabled: boolean
+  ): Promise<{ success: boolean; data: any; message: string }> {
+    const response = await api.post("/notifications/preferences/global-mute", {
+      enabled,
+    });
+    return response.data;
+  }
+
+  // ===========================
+  // Push Tokens
+  // ===========================
+
+  /**
+   * Register push notification token
+   */
+  public async registerPushToken(
+    token: string,
+    platform: "web" | "ios" | "android"
+  ): Promise<{ success: boolean; data: any; message: string }> {
+    const response = await api.post("/notifications/push-token", {
+      token,
+      platform,
+    });
+    return response.data;
+  }
+
+  /**
+   * Remove push notification token
+   */
+  public async removePushToken(
+    token: string
+  ): Promise<{ success: boolean; message: string }> {
+    const response = await api.delete(`/notifications/push-token/${token}`);
     return response.data;
   }
 

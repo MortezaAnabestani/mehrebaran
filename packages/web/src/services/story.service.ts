@@ -207,24 +207,99 @@ class StoryService {
   }
 
   // ===========================
-  // Stats
+  // Stats & Viewers
   // ===========================
 
   /**
    * Get story stats for current user
    */
   public async getMyStoryStats(): Promise<GetStoryStatsResponse> {
-    const response = await api.get("/stories/stats/my");
+    const response = await api.get("/stories/stats");
     return response.data;
   }
 
   /**
-   * Get story stats for a specific user
+   * Get viewers of a story
    */
-  public async getUserStoryStats(
+  public async getViewers(
+    id: string
+  ): Promise<{ success: boolean; data: any[]; message: string }> {
+    const response = await api.get(`/stories/${id}/viewers`);
+    return response.data;
+  }
+
+  // ===========================
+  // Highlights
+  // ===========================
+
+  /**
+   * Create a highlight
+   */
+  public async createHighlight(data: {
+    title: string;
+    coverImage?: string;
+  }): Promise<{ success: boolean; data: any; message: string }> {
+    const response = await api.post("/stories/highlights", data);
+    return response.data;
+  }
+
+  /**
+   * Get highlights for a user
+   */
+  public async getUserHighlights(
     userId: string
-  ): Promise<GetStoryStatsResponse> {
-    const response = await api.get(`/stories/stats/user/${userId}`);
+  ): Promise<{ success: boolean; data: any[]; message: string }> {
+    const response = await api.get(`/stories/highlights/user/${userId}`);
+    return response.data;
+  }
+
+  /**
+   * Add story to highlight
+   */
+  public async addStoryToHighlight(
+    highlightId: string,
+    storyId: string
+  ): Promise<{ success: boolean; data: any; message: string }> {
+    const response = await api.post(`/stories/highlights/${highlightId}/add-story`, {
+      storyId,
+    });
+    return response.data;
+  }
+
+  /**
+   * Remove story from highlight
+   */
+  public async removeStoryFromHighlight(
+    highlightId: string,
+    storyId: string
+  ): Promise<{ success: boolean; message: string }> {
+    const response = await api.delete(
+      `/stories/highlights/${highlightId}/remove-story/${storyId}`
+    );
+    return response.data;
+  }
+
+  /**
+   * Update highlight
+   */
+  public async updateHighlight(
+    highlightId: string,
+    data: {
+      title?: string;
+      coverImage?: string;
+    }
+  ): Promise<{ success: boolean; data: any; message: string }> {
+    const response = await api.put(`/stories/highlights/${highlightId}`, data);
+    return response.data;
+  }
+
+  /**
+   * Delete highlight
+   */
+  public async deleteHighlight(
+    highlightId: string
+  ): Promise<{ success: boolean; message: string }> {
+    const response = await api.delete(`/stories/highlights/${highlightId}`);
     return response.data;
   }
 

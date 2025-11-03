@@ -94,14 +94,6 @@ class MediaService {
   }
 
   /**
-   * Get current user's media
-   */
-  public async getMyMedia(params?: GetMediaParams): Promise<GetMediaResponse> {
-    const response = await api.get("/media/my", { params });
-    return response.data;
-  }
-
-  /**
    * Get media by ID
    */
   public async getMediaById(id: string): Promise<GetMediaByIdResponse> {
@@ -117,6 +109,17 @@ class MediaService {
     params?: GetMediaParams
   ): Promise<GetMediaResponse> {
     const response = await api.get(`/media/user/${userId}`, { params });
+    return response.data;
+  }
+
+  /**
+   * Get media related to a specific entity
+   */
+  public async getRelatedMedia(
+    model: string,
+    id: string
+  ): Promise<GetMediaResponse> {
+    const response = await api.get(`/media/related/${model}/${id}`);
     return response.data;
   }
 
@@ -213,15 +216,35 @@ class MediaService {
   }
 
   /**
-   * Delete multiple media
+   * Increment download count
    */
-  public async deleteMultipleMedia(ids: string[]): Promise<DeleteMediaResponse> {
-    const response = await api.post("/media/delete-multiple", { ids });
+  public async incrementDownloads(id: string): Promise<{ success: boolean; message: string }> {
+    const response = await api.post(`/media/${id}/download`);
     return response.data;
   }
 
   // ===========================
-  // Media Galleries
+  // Stats & Storage
+  // ===========================
+
+  /**
+   * Get media stats for current user
+   */
+  public async getStats(): Promise<{ success: boolean; data: any; message: string }> {
+    const response = await api.get("/media/stats");
+    return response.data;
+  }
+
+  /**
+   * Get total storage used by current user
+   */
+  public async getTotalStorage(): Promise<{ success: boolean; data: { totalStorage: number }; message: string }> {
+    const response = await api.get("/media/storage");
+    return response.data;
+  }
+
+  // ===========================
+  // Media Galleries (NOT YET IMPLEMENTED IN BACKEND)
   // ===========================
 
   /**

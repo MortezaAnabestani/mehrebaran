@@ -1,8 +1,7 @@
-import { Team } from "../modules/teams/team.model";
-import { Need } from "../modules/needs/need.model";
+import { TeamModel } from "../modules/teams/team.model";
 
 /**
- * Team Seeder - ایجاد تیم‌های فیک
+ * TeamModel Seeder - ایجاد تیم‌های فیک
  */
 
 const teamTemplates = [
@@ -53,7 +52,7 @@ export async function seedTeams(users: any[], needs: any[]) {
 
   try {
     // پاک کردن تیم‌های قبلی
-    await Team.deleteMany({});
+    await TeamModel.deleteMany({});
     console.log("  ✓ Cleared existing teams");
 
     const teams = [];
@@ -103,7 +102,7 @@ export async function seedTeams(users: any[], needs: any[]) {
     }
 
     // ذخیره تیم‌ها
-    const createdTeams = await Team.insertMany(teams);
+    const createdTeams = await TeamModel.insertMany(teams);
     console.log(`  ✓ Created ${createdTeams.length} teams`);
 
     return createdTeams;

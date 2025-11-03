@@ -1,8 +1,8 @@
-import { User } from "../modules/users/user.model";
+import { UserModel } from "../modules/users/user.model";
 import bcrypt from "bcryptjs";
 
 /**
- * User Seeder - ایجاد کاربران فیک
+ * UserModel Seeder - ایجاد کاربران فیک
  */
 
 const persianNames = [
@@ -99,7 +99,7 @@ export async function seedUsers() {
 
   try {
     // پاک کردن کاربران قبلی
-    await User.deleteMany({});
+    await UserModel.deleteMany({});
     console.log("  ✓ Cleared existing users");
 
     const hashedPassword = await bcrypt.hash("password123", 12);
@@ -141,7 +141,9 @@ export async function seedUsers() {
         role: i < 5 ? "admin" : "user",
         isEmailVerified: true,
         profile: {
-          avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(name.first + "+" + name.last)}&background=${i % 2 === 0 ? "3b80c3" : "ff9434"}&color=fff&size=200`,
+          avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(
+            name.first + "+" + name.last
+          )}&background=${i % 2 === 0 ? "3b80c3" : "ff9434"}&color=fff&size=200`,
           bio,
           city,
           province: city,
@@ -155,10 +157,12 @@ export async function seedUsers() {
     }
 
     // ذخیره کاربران
-    const createdUsers = await User.insertMany(users);
+    const createdUsers = await UserModel.insertMany(users);
     console.log(`  ✓ Created ${createdUsers.length} users`);
     console.log(`    - Admin: admin@mehrebaran.ir / password123`);
-    console.log(`    - Users: user1@mehrebaran.ir ... user${persianNames.length}@mehrebaran.ir / password123`);
+    console.log(
+      `    - Users: user1@mehrebaran.ir ... user${persianNames.length}@mehrebaran.ir / password123`
+    );
 
     return createdUsers;
   } catch (error) {

@@ -1,6 +1,6 @@
-import { Follow } from "../modules/social/follow.model";
+import { FollowModel } from "../modules/social/follow.model";
 import { Like } from "../modules/social/like.model";
-import { Comment } from "../modules/comments/comment.model";
+import { CommentModel } from "../modules/comment/comment.model";
 
 /**
  * Social Interactions Seeder
@@ -11,9 +11,9 @@ export async function seedSocialInteractions(users: any[], needs: any[]) {
 
   try {
     // پاک کردن داده‌های قبلی
-    await Follow.deleteMany({});
+    await FollowModel.deleteMany({});
     await Like.deleteMany({});
-    await Comment.deleteMany({});
+    await CommentModel.deleteMany({});
     console.log("  ✓ Cleared existing social interactions");
 
     // ===========================
@@ -29,7 +29,10 @@ export async function seedSocialInteractions(users: any[], needs: any[]) {
 
       for (let j = 0; j < followCount; j++) {
         const randomUser = users[Math.floor(Math.random() * users.length)];
-        if (randomUser._id.toString() !== follower._id.toString() && !followedUsers.has(randomUser._id.toString())) {
+        if (
+          randomUser._id.toString() !== follower._id.toString() &&
+          !followedUsers.has(randomUser._id.toString())
+        ) {
           followedUsers.add(randomUser._id.toString());
           follows.push({
             follower: follower._id,
@@ -56,7 +59,7 @@ export async function seedSocialInteractions(users: any[], needs: any[]) {
       }
     }
 
-    await Follow.insertMany(follows);
+    await FollowModel.insertMany(follows);
     console.log(`  ✓ Created ${follows.length} follows`);
 
     // ===========================
@@ -128,7 +131,7 @@ export async function seedSocialInteractions(users: any[], needs: any[]) {
       }
     }
 
-    await Comment.insertMany(comments);
+    await CommentModel.insertMany(comments);
     console.log(`  ✓ Created ${comments.length} comments`);
 
     return { follows, likes, comments };

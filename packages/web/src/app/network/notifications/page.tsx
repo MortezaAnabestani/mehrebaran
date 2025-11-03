@@ -2,9 +2,9 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import ProtectedRoute from "@/components/auth/ProtectedRoute";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import NotificationItem from "@/components/notifications/NotificationItem";
-import { SmartButton } from "@/components/SmartButton";
+import SmartButton from "@/components/ui/SmartButton";
 import notificationService, {
   type INotification,
   type NotificationType,
@@ -27,9 +27,7 @@ const NotificationsPage: React.FC = () => {
   const [notifications, setNotifications] = useState<INotification[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [activeFilter, setActiveFilter] = useState<Filter>("all");
-  const [selectedType, setSelectedType] = useState<NotificationType | "all">(
-    "all"
-  );
+  const [selectedType, setSelectedType] = useState<NotificationType | "all">("all");
   const [unreadCount, setUnreadCount] = useState<number>(0);
 
   // ===========================
@@ -54,9 +52,7 @@ const NotificationsPage: React.FC = () => {
 
       // Filter by type if selected
       if (selectedType !== "all") {
-        filteredNotifications = filteredNotifications.filter(
-          (n) => n.type === selectedType
-        );
+        filteredNotifications = filteredNotifications.filter((n) => n.type === selectedType);
       }
 
       setNotifications(filteredNotifications);
@@ -96,11 +92,7 @@ const NotificationsPage: React.FC = () => {
   };
 
   const handleDeleteAll = async () => {
-    if (
-      !confirm(
-        "آیا مطمئن هستید که می‌خواهید همه اعلان‌ها را حذف کنید؟ این عمل قابل بازگشت نیست."
-      )
-    ) {
+    if (!confirm("آیا مطمئن هستید که می‌خواهید همه اعلان‌ها را حذف کنید؟ این عمل قابل بازگشت نیست.")) {
       return;
     }
 
@@ -174,20 +166,14 @@ const NotificationsPage: React.FC = () => {
                   اعلان‌ها
                 </h1>
                 <p className="text-gray-600">
-                  {unreadCount > 0
-                    ? `${unreadCount} اعلان خوانده نشده`
-                    : "همه اعلان‌ها خوانده شده"}
+                  {unreadCount > 0 ? `${unreadCount} اعلان خوانده نشده` : "همه اعلان‌ها خوانده شده"}
                 </p>
               </div>
 
               {/* Action Buttons */}
               <div className="flex gap-2">
                 {unreadCount > 0 && (
-                  <SmartButton
-                    onClick={handleMarkAllAsRead}
-                    variant="outline"
-                    size="sm"
-                  >
+                  <SmartButton onClick={handleMarkAllAsRead} variant="outline" size="sm">
                     ✓ علامت‌گذاری همه
                   </SmartButton>
                 )}
@@ -207,21 +193,15 @@ const NotificationsPage: React.FC = () => {
             {/* Stats */}
             <div className="grid grid-cols-3 gap-4">
               <div className="bg-white rounded-lg p-4 border border-gray-200 text-center">
-                <div className="text-2xl font-bold text-gray-900">
-                  {notifications.length}
-                </div>
+                <div className="text-2xl font-bold text-gray-900">{notifications.length}</div>
                 <div className="text-sm text-gray-500">کل اعلان‌ها</div>
               </div>
               <div className="bg-blue-50 rounded-lg p-4 border border-blue-200 text-center">
-                <div className="text-2xl font-bold text-mblue">
-                  {unreadCount}
-                </div>
+                <div className="text-2xl font-bold text-mblue">{unreadCount}</div>
                 <div className="text-sm text-gray-600">خوانده نشده</div>
               </div>
               <div className="bg-green-50 rounded-lg p-4 border border-green-200 text-center">
-                <div className="text-2xl font-bold text-green-600">
-                  {notifications.length - unreadCount}
-                </div>
+                <div className="text-2xl font-bold text-green-600">{notifications.length - unreadCount}</div>
                 <div className="text-sm text-gray-600">خوانده شده</div>
               </div>
             </div>
@@ -231,9 +211,7 @@ const NotificationsPage: React.FC = () => {
           <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200 mb-6">
             {/* Read Status Filter */}
             <div className="mb-4">
-              <label className="text-sm font-semibold text-gray-700 mb-2 block">
-                وضعیت:
-              </label>
+              <label className="text-sm font-semibold text-gray-700 mb-2 block">وضعیت:</label>
               <div className="flex flex-wrap gap-2">
                 {(["all", "unread", "read"] as Filter[]).map((filter) => (
                   <SmartButton
@@ -255,9 +233,7 @@ const NotificationsPage: React.FC = () => {
 
             {/* Type Filter */}
             <div>
-              <label className="text-sm font-semibold text-gray-700 mb-2 block">
-                نوع اعلان:
-              </label>
+              <label className="text-sm font-semibold text-gray-700 mb-2 block">نوع اعلان:</label>
               <div className="flex flex-wrap gap-2">
                 {notificationTypes.map((type) => (
                   <SmartButton
@@ -266,10 +242,7 @@ const NotificationsPage: React.FC = () => {
                     variant={selectedType === type ? "primary" : "outline"}
                     size="sm"
                   >
-                    {type !== "all" &&
-                      notificationService.getNotificationIcon(
-                        type as NotificationType
-                      )}{" "}
+                    {type !== "all" && notificationService.getNotificationIcon(type as NotificationType)}{" "}
                     {getTypeLabel(type)}
                   </SmartButton>
                 ))}

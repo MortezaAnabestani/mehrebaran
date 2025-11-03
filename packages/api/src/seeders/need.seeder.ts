@@ -1,15 +1,15 @@
-import { Need } from "../modules/needs/need.model";
-import { User } from "../modules/users/user.model";
+import { NeedModel } from "../modules/needs/need.model";
 
 /**
- * Need Seeder - ایجاد نیازهای فیک
+ * NeedModel Seeder - ایجاد نیازهای فیک
  */
 
 const needTemplates = [
   {
     category: "medical",
     title: "کمک به هزینه درمان کودک مبتلا به سرطان",
-    description: "این کودک ۷ ساله به سرطان خون مبتلا شده و نیاز به شیمی‌درمانی دارد. خانواده توان پرداخت هزینه‌های درمانی را ندارند.",
+    description:
+      "این کودک ۷ ساله به سرطان خون مبتلا شده و نیاز به شیمی‌درمانی دارد. خانواده توان پرداخت هزینه‌های درمانی را ندارند.",
     targetAmount: 150000000,
     priority: "high",
     tags: ["سلامت", "کودکان", "سرطان", "درمان"],
@@ -17,7 +17,8 @@ const needTemplates = [
   {
     category: "education",
     title: "تامین لوازم‌التحریر برای دانش‌آموزان روستایی",
-    description: "دانش‌آموزان روستای محروم به لوازم‌التحریر و کیف مدرسه نیاز دارند. با کمک شما می‌توانیم ۵۰ دانش‌آموز را تجهیز کنیم.",
+    description:
+      "دانش‌آموزان روستای محروم به لوازم‌التحریر و کیف مدرسه نیاز دارند. با کمک شما می‌توانیم ۵۰ دانش‌آموز را تجهیز کنیم.",
     targetAmount: 25000000,
     priority: "medium",
     tags: ["آموزش", "کودکان", "روستا", "لوازم‌التحریر"],
@@ -25,7 +26,8 @@ const needTemplates = [
   {
     category: "housing",
     title: "ساخت خانه برای خانواده آسیب‌دیده از سیل",
-    description: "این خانواده در سیل اخیر خانه خود را از دست داده‌اند. نیاز به کمک برای ساخت یک خانه ساده دارند.",
+    description:
+      "این خانواده در سیل اخیر خانه خود را از دست داده‌اند. نیاز به کمک برای ساخت یک خانه ساده دارند.",
     targetAmount: 200000000,
     priority: "critical",
     tags: ["مسکن", "بلایای طبیعی", "سیل", "خانواده"],
@@ -49,7 +51,8 @@ const needTemplates = [
   {
     category: "education",
     title: "راه‌اندازی کتابخانه روستایی",
-    description: "قصد داریم یک کتابخانه کوچک در روستای محروم راه‌اندازی کنیم. به کتاب، قفسه و میز و صندلی نیاز داریم.",
+    description:
+      "قصد داریم یک کتابخانه کوچک در روستای محروم راه‌اندازی کنیم. به کتاب، قفسه و میز و صندلی نیاز داریم.",
     targetAmount: 80000000,
     priority: "low",
     tags: ["آموزش", "کتابخانه", "روستا", "فرهنگ"],
@@ -131,7 +134,7 @@ const needTemplates = [
 const cities = [
   { name: "تهران", lat: 35.6892, lng: 51.389 },
   { name: "مشهد", lat: 36.2605, lng: 59.6168 },
-  { name: "اصفهان", lat: 32.6546, lng: 51.6680 },
+  { name: "اصفهان", lat: 32.6546, lng: 51.668 },
   { name: "شیراز", lat: 29.5918, lng: 52.5836 },
   { name: "تبریز", lat: 38.0962, lng: 46.2738 },
   { name: "کرج", lat: 35.8327, lng: 50.9916 },
@@ -144,7 +147,7 @@ export async function seedNeeds(users: any[]) {
 
   try {
     // پاک کردن نیازهای قبلی
-    await Need.deleteMany({});
+    await NeedModel.deleteMany({});
     console.log("  ✓ Cleared existing needs");
 
     const needs = [];
@@ -158,7 +161,7 @@ export async function seedNeeds(users: any[]) {
 
       // تعداد تصادفی حامیان (۰ تا ۳۰)
       const supportersCount = Math.floor(Math.random() * 30);
-      const supporters = [];
+      const supporters: any[] = [];
       for (let j = 0; j < supportersCount; j++) {
         const randomUser = users[Math.floor(Math.random() * users.length)];
         if (!supporters.includes(randomUser._id)) {
@@ -208,7 +211,7 @@ export async function seedNeeds(users: any[]) {
     }
 
     // ذخیره نیازها
-    const createdNeeds = await Need.insertMany(needs);
+    const createdNeeds = await NeedModel.insertMany(needs);
     console.log(`  ✓ Created ${createdNeeds.length} needs`);
 
     // اضافه کردن updates, milestones و budget برای بعضی از نیازها
@@ -237,14 +240,20 @@ export async function seedNeeds(users: any[]) {
           title: "تکمیل ۲۵٪ هدف",
           description: "رسیدن به یک چهارم هدف مالی",
           targetAmount: need.targetAmount * 0.25,
-          currentAmount: need.currentAmount >= need.targetAmount * 0.25 ? need.targetAmount * 0.25 : need.currentAmount,
+          currentAmount:
+            need.currentAmount >= need.targetAmount * 0.25 ? need.targetAmount * 0.25 : need.currentAmount,
           isCompleted: need.currentAmount >= need.targetAmount * 0.25,
         },
         {
           title: "تکمیل ۵۰٪ هدف",
           description: "رسیدن به نصف هدف مالی",
           targetAmount: need.targetAmount * 0.5,
-          currentAmount: need.currentAmount >= need.targetAmount * 0.5 ? need.targetAmount * 0.5 : need.currentAmount > need.targetAmount * 0.25 ? need.currentAmount : 0,
+          currentAmount:
+            need.currentAmount >= need.targetAmount * 0.5
+              ? need.targetAmount * 0.5
+              : need.currentAmount > need.targetAmount * 0.25
+              ? need.currentAmount
+              : 0,
           isCompleted: need.currentAmount >= need.targetAmount * 0.5,
         },
         {
@@ -272,7 +281,7 @@ export async function seedNeeds(users: any[]) {
         },
       ];
 
-      await Need.findByIdAndUpdate(need._id, {
+      await NeedModel.findByIdAndUpdate(need._id, {
         updates,
         milestones,
         budgetItems,

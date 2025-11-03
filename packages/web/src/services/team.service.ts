@@ -46,7 +46,15 @@ export interface CreateTeamData {
   need: string;
   name: string;
   description?: string;
-  focusArea?: "fundraising" | "logistics" | "communication" | "technical" | "volunteer" | "coordination" | "documentation" | "general";
+  focusArea?:
+    | "fundraising"
+    | "logistics"
+    | "communication"
+    | "technical"
+    | "volunteer"
+    | "coordination"
+    | "documentation"
+    | "general";
   maxMembers?: number;
   tags?: string[];
   isPrivate?: boolean;
@@ -80,7 +88,7 @@ class TeamService {
    */
   public async getTeams(params?: GetTeamsParams): Promise<GetTeamsResponse> {
     try {
-      const response = await api.get("/teams", { params });
+      const response = await api.get(`${process.env.NEXT_PUBLIC_API_URL}/teams`, { params });
       return response.data;
     } catch (error: any) {
       console.error("Failed to fetch teams:", error);
@@ -93,7 +101,7 @@ class TeamService {
    */
   public async getMyTeams(): Promise<GetTeamsResponse> {
     try {
-      const response = await api.get("/teams/my-teams");
+      const response = await api.get(`${process.env.NEXT_PUBLIC_API_URL}/teams/my-teams`);
       return response.data;
     } catch (error: any) {
       console.error("Failed to fetch my teams:", error);
@@ -106,7 +114,7 @@ class TeamService {
    */
   public async getTeamById(teamId: string): Promise<GetTeamByIdResponse> {
     try {
-      const response = await api.get(`/teams/${teamId}`);
+      const response = await api.get(`${process.env.NEXT_PUBLIC_API_URL}/teams/${teamId}`);
       return response.data;
     } catch (error: any) {
       console.error("Failed to fetch team:", error);
@@ -119,7 +127,7 @@ class TeamService {
    */
   public async createTeam(data: CreateTeamData): Promise<CreateTeamResponse> {
     try {
-      const response = await api.post("/teams", data);
+      const response = await api.post(`${process.env.NEXT_PUBLIC_API_URL}/teams`, data);
       return response.data;
     } catch (error: any) {
       console.error("Failed to create team:", error);
@@ -132,7 +140,7 @@ class TeamService {
    */
   public async updateTeam(teamId: string, data: UpdateTeamData): Promise<GetTeamByIdResponse> {
     try {
-      const response = await api.patch(`/teams/${teamId}`, data);
+      const response = await api.patch(`${process.env.NEXT_PUBLIC_API_URL}/teams/${teamId}`, data);
       return response.data;
     } catch (error: any) {
       console.error("Failed to update team:", error);
@@ -145,7 +153,7 @@ class TeamService {
    */
   public async deleteTeam(teamId: string): Promise<void> {
     try {
-      await api.delete(`/teams/${teamId}`);
+      await api.delete(`${process.env.NEXT_PUBLIC_API_URL}/teams/${teamId}`);
     } catch (error: any) {
       console.error("Failed to delete team:", error);
       throw new Error(error.response?.data?.message || "خطا در حذف تیم");
@@ -157,7 +165,7 @@ class TeamService {
    */
   public async getTeamStats(teamId: string): Promise<TeamStatsResponse> {
     try {
-      const response = await api.get(`/teams/${teamId}/stats`);
+      const response = await api.get(`${process.env.NEXT_PUBLIC_API_URL}/teams/${teamId}/stats`);
       return response.data;
     } catch (error: any) {
       console.error("Failed to fetch team stats:", error);
@@ -170,7 +178,7 @@ class TeamService {
    */
   public async addMember(teamId: string, data: AddMemberData): Promise<GetTeamByIdResponse> {
     try {
-      const response = await api.post(`/teams/${teamId}/members`, data);
+      const response = await api.post(`${process.env.NEXT_PUBLIC_API_URL}/teams/${teamId}/members`, data);
       return response.data;
     } catch (error: any) {
       console.error("Failed to add member:", error);
@@ -183,7 +191,9 @@ class TeamService {
    */
   public async removeMember(teamId: string, userId: string): Promise<GetTeamByIdResponse> {
     try {
-      const response = await api.delete(`/teams/${teamId}/members/${userId}`);
+      const response = await api.delete(
+        `${process.env.NEXT_PUBLIC_API_URL}/teams/${teamId}/members/${userId}`
+      );
       return response.data;
     } catch (error: any) {
       console.error("Failed to remove member:", error);
@@ -200,7 +210,10 @@ class TeamService {
     data: UpdateMemberRoleData
   ): Promise<GetTeamByIdResponse> {
     try {
-      const response = await api.patch(`/teams/${teamId}/members/${userId}/role`, data);
+      const response = await api.patch(
+        `${process.env.NEXT_PUBLIC_API_URL}/teams/${teamId}/members/${userId}/role`,
+        data
+      );
       return response.data;
     } catch (error: any) {
       console.error("Failed to update member role:", error);
@@ -213,7 +226,7 @@ class TeamService {
    */
   public async inviteUser(teamId: string, userId: string): Promise<void> {
     try {
-      await api.post(`/teams/${teamId}/invite`, { userId });
+      await api.post(`${process.env.NEXT_PUBLIC_API_URL}/teams/${teamId}/invite`, { userId });
     } catch (error: any) {
       console.error("Failed to invite user:", error);
       throw new Error(error.response?.data?.message || "خطا در ارسال دعوتنامه");

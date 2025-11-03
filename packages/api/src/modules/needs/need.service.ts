@@ -223,14 +223,40 @@ class NeedService {
     ]);
   }
 
-  public async addSupporter(needId: string, userId: string): Promise<void> {
-    const result = await NeedModel.findByIdAndUpdate(needId, {
-      $addToSet: { supporters: new Types.ObjectId(userId) },
-    });
-
-    if (!result) {
+  public async addSupporter(needId: string, userId: string, invitedBy?: string): Promise<void> {
+    const need = await NeedModel.findById(needId);
+    if (!need) {
       throw new ApiError(404, "نیاز یافت نشد.");
     }
+
+    // Add to supporters array
+    if (!need.supporters) {
+      need.supporters = [];
+    }
+    const userObjId = new Types.ObjectId(userId);
+    const alreadySupporter = need.supporters.some((s) => s.toString() === userId);
+    if (!alreadySupporter) {
+      need.supporters.push(userObjId as any);
+    }
+
+    // Create supporter detail if doesn't exist
+    if (!need.supporterDetails) {
+      need.supporterDetails = [];
+    }
+    const existingDetail = need.supporterDetails.find((sd: any) => sd.user.toString() === userId);
+    if (!existingDetail) {
+      (need.supporterDetails as any).push({
+        user: userObjId,
+        role: "supporter",
+        joinedAt: new Date(),
+        invitedBy: invitedBy ? new Types.ObjectId(invitedBy) : undefined,
+        contributions: [],
+        tasksCompleted: 0,
+        isActive: true,
+      });
+    }
+
+    await need.save();
   }
 
   // View Counter
@@ -300,6 +326,647 @@ class NeedService {
     }
 
     need.updates.splice(updateIndex, 1);
+    await need.save();
+    return this.populateNeed(need);
+  }
+
+  // Milestones CRUD
+  public async getMilestones(needId: string): Promise<any[] | null> {
+    const need = await NeedModel.findById(needId).select("milestones");
+    if (!need) return null;
+    return need.milestones || [];
+  }
+
+  public async addMilestone(
+    needId: string,
+    milestoneData: {
+      title: string;
+      description: string;
+      targetDate: Date;
+      order: number;
+      progressPercentage?: number;
+    }
+  ): Promise<INeed | null> {
+    const need = await NeedModel.findByIdAndUpdate(
+      needId,
+      {
+        $push: {
+          milestones: {
+            title: milestoneData.title,
+            description: milestoneData.description,
+            targetDate: milestoneData.targetDate,
+            order: milestoneData.order,
+            status: "pending",
+            progressPercentage: milestoneData.progressPercentage || 0,
+            evidence: [],
+          },
+        },
+      },
+      { new: true, runValidators: true }
+    );
+
+    if (!need) return null;
+    return this.populateNeed(need);
+  }
+
+  public async updateMilestone(
+    needId: string,
+    milestoneId: string,
+    updateData: {
+      title?: string;
+      description?: string;
+      targetDate?: Date;
+      completionDate?: Date;
+      status?: "pending" | "in_progress" | "completed" | "delayed";
+      progressPercentage?: number;
+      order?: number;
+      evidence?: string[];
+    }
+  ): Promise<INeed | null> {
+    const need = await NeedModel.findById(needId);
+    if (!need || !need.milestones) return null;
+
+    const milestone = need.milestones.find((m: any) => m._id.toString() === milestoneId);
+    if (!milestone) {
+      throw new ApiError(404, "مایلستون یافت نشد.");
+    }
+
+    // Update fields if provided
+    if (updateData.title !== undefined) (milestone as any).title = updateData.title;
+    if (updateData.description !== undefined) (milestone as any).description = updateData.description;
+    if (updateData.targetDate !== undefined) (milestone as any).targetDate = updateData.targetDate;
+    if (updateData.completionDate !== undefined) (milestone as any).completionDate = updateData.completionDate;
+    if (updateData.status !== undefined) (milestone as any).status = updateData.status;
+    if (updateData.progressPercentage !== undefined) (milestone as any).progressPercentage = updateData.progressPercentage;
+    if (updateData.order !== undefined) (milestone as any).order = updateData.order;
+    if (updateData.evidence !== undefined) (milestone as any).evidence = updateData.evidence;
+
+    // Auto-complete if progress is 100%
+    if (updateData.progressPercentage === 100 && (milestone as any).status !== "completed") {
+      (milestone as any).status = "completed";
+      (milestone as any).completionDate = new Date();
+    }
+
+    await need.save();
+    return this.populateNeed(need);
+  }
+
+  public async deleteMilestone(needId: string, milestoneId: string): Promise<INeed | null> {
+    const need = await NeedModel.findById(needId);
+    if (!need || !need.milestones) return null;
+
+    const milestoneIndex = need.milestones.findIndex((m: any) => m._id.toString() === milestoneId);
+    if (milestoneIndex === -1) {
+      throw new ApiError(404, "مایلستون یافت نشد.");
+    }
+
+    need.milestones.splice(milestoneIndex, 1);
+    await need.save();
+    return this.populateNeed(need);
+  }
+
+  public async completeMilestone(needId: string, milestoneId: string, evidence?: string[]): Promise<INeed | null> {
+    return this.updateMilestone(needId, milestoneId, {
+      status: "completed",
+      progressPercentage: 100,
+      completionDate: new Date(),
+      evidence: evidence,
+    });
+  }
+
+  // Budget Items CRUD
+  public async getBudgetItems(needId: string): Promise<any[] | null> {
+    const need = await NeedModel.findById(needId).select("budgetItems");
+    if (!need) return null;
+    return need.budgetItems || [];
+  }
+
+  public async addBudgetItem(
+    needId: string,
+    budgetData: {
+      title: string;
+      description?: string;
+      category: string;
+      estimatedCost: number;
+      actualCost?: number;
+      currency?: string;
+      priority?: number;
+      notes?: string;
+    }
+  ): Promise<INeed | null> {
+    const need = await NeedModel.findByIdAndUpdate(
+      needId,
+      {
+        $push: {
+          budgetItems: {
+            title: budgetData.title,
+            description: budgetData.description,
+            category: budgetData.category,
+            estimatedCost: budgetData.estimatedCost,
+            actualCost: budgetData.actualCost,
+            amountRaised: 0,
+            currency: budgetData.currency || "IRR",
+            status: "pending",
+            priority: budgetData.priority || 3,
+            notes: budgetData.notes,
+          },
+        },
+      },
+      { new: true, runValidators: true }
+    );
+
+    if (!need) return null;
+    return this.populateNeed(need);
+  }
+
+  public async updateBudgetItem(
+    needId: string,
+    budgetItemId: string,
+    updateData: {
+      title?: string;
+      description?: string;
+      category?: string;
+      estimatedCost?: number;
+      actualCost?: number;
+      amountRaised?: number;
+      currency?: string;
+      priority?: number;
+      notes?: string;
+    }
+  ): Promise<INeed | null> {
+    const need = await NeedModel.findById(needId);
+    if (!need || !need.budgetItems) return null;
+
+    const budgetItem = need.budgetItems.find((item: any) => item._id.toString() === budgetItemId);
+    if (!budgetItem) {
+      throw new ApiError(404, "قلم بودجه یافت نشد.");
+    }
+
+    // Update fields if provided
+    if (updateData.title !== undefined) (budgetItem as any).title = updateData.title;
+    if (updateData.description !== undefined) (budgetItem as any).description = updateData.description;
+    if (updateData.category !== undefined) (budgetItem as any).category = updateData.category;
+    if (updateData.estimatedCost !== undefined) (budgetItem as any).estimatedCost = updateData.estimatedCost;
+    if (updateData.actualCost !== undefined) (budgetItem as any).actualCost = updateData.actualCost;
+    if (updateData.amountRaised !== undefined) (budgetItem as any).amountRaised = updateData.amountRaised;
+    if (updateData.currency !== undefined) (budgetItem as any).currency = updateData.currency;
+    if (updateData.priority !== undefined) (budgetItem as any).priority = updateData.priority;
+    if (updateData.notes !== undefined) (budgetItem as any).notes = updateData.notes;
+
+    // Status will be auto-updated by pre-save middleware
+    await need.save();
+    return this.populateNeed(need);
+  }
+
+  public async deleteBudgetItem(needId: string, budgetItemId: string): Promise<INeed | null> {
+    const need = await NeedModel.findById(needId);
+    if (!need || !need.budgetItems) return null;
+
+    const budgetItemIndex = need.budgetItems.findIndex((item: any) => item._id.toString() === budgetItemId);
+    if (budgetItemIndex === -1) {
+      throw new ApiError(404, "قلم بودجه یافت نشد.");
+    }
+
+    need.budgetItems.splice(budgetItemIndex, 1);
+    await need.save();
+    return this.populateNeed(need);
+  }
+
+  public async addFundsToBudgetItem(
+    needId: string,
+    budgetItemId: string,
+    amount: number
+  ): Promise<INeed | null> {
+    const need = await NeedModel.findById(needId);
+    if (!need || !need.budgetItems) return null;
+
+    const budgetItem = need.budgetItems.find((item: any) => item._id.toString() === budgetItemId);
+    if (!budgetItem) {
+      throw new ApiError(404, "قلم بودجه یافت نشد.");
+    }
+
+    (budgetItem as any).amountRaised = ((budgetItem as any).amountRaised || 0) + amount;
+
+    // Status will be auto-updated by pre-save middleware
+    await need.save();
+    return this.populateNeed(need);
+  }
+
+  // Verification Requests CRUD
+  public async getVerificationRequests(needId: string, status?: string): Promise<any[] | null> {
+    const need = await NeedModel.findById(needId).select("verificationRequests").populate("verificationRequests.submittedBy", "name").populate("verificationRequests.reviewedBy", "name");
+    if (!need) return null;
+
+    let requests = need.verificationRequests || [];
+
+    // Filter by status if provided
+    if (status) {
+      requests = (requests as any[]).filter((req: any) => req.status === status);
+    }
+
+    return requests;
+  }
+
+  public async createVerificationRequest(
+    needId: string,
+    userId: string,
+    requestData: {
+      type: "milestone_completion" | "budget_expense" | "need_completion" | "progress_update";
+      description: string;
+      evidence: Array<{ type: "image" | "document" | "video"; url: string; description?: string }>;
+      relatedItemId?: string;
+      relatedItemType?: string;
+    }
+  ): Promise<INeed | null> {
+    const need = await NeedModel.findByIdAndUpdate(
+      needId,
+      {
+        $push: {
+          verificationRequests: {
+            type: requestData.type,
+            description: requestData.description,
+            evidence: requestData.evidence,
+            relatedItemId: requestData.relatedItemId,
+            relatedItemType: requestData.relatedItemType,
+            submittedBy: new Types.ObjectId(userId),
+            submittedAt: new Date(),
+            status: "pending",
+          },
+        },
+      },
+      { new: true, runValidators: true }
+    );
+
+    if (!need) return null;
+    return this.populateNeed(need);
+  }
+
+  public async reviewVerificationRequest(
+    needId: string,
+    verificationId: string,
+    reviewerId: string,
+    reviewData: {
+      status: "approved" | "rejected" | "needs_revision";
+      adminComments?: string;
+      rejectionReason?: string;
+      revisionNotes?: string;
+    }
+  ): Promise<INeed | null> {
+    const need = await NeedModel.findById(needId);
+    if (!need || !need.verificationRequests) return null;
+
+    const verification = need.verificationRequests.find((req: any) => req._id.toString() === verificationId);
+    if (!verification) {
+      throw new ApiError(404, "درخواست تایید یافت نشد.");
+    }
+
+    // Update verification status
+    (verification as any).status = reviewData.status;
+    (verification as any).reviewedBy = new Types.ObjectId(reviewerId);
+    (verification as any).reviewedAt = new Date();
+
+    if (reviewData.adminComments) {
+      (verification as any).adminComments = reviewData.adminComments;
+    }
+
+    if (reviewData.status === "rejected" && reviewData.rejectionReason) {
+      (verification as any).rejectionReason = reviewData.rejectionReason;
+    }
+
+    if (reviewData.status === "needs_revision") {
+      (verification as any).revisionRequested = true;
+      if (reviewData.revisionNotes) {
+        (verification as any).revisionNotes = reviewData.revisionNotes;
+      }
+    }
+
+    // Auto-update related items if approved
+    if (reviewData.status === "approved" && (verification as any).relatedItemType) {
+      await this.handleApprovedVerification(need, verification as any);
+    }
+
+    await need.save();
+    return this.populateNeed(need);
+  }
+
+  private async handleApprovedVerification(need: any, verification: any): Promise<void> {
+    // Handle different verification types
+    if (verification.relatedItemType === "milestone" && verification.relatedItemId) {
+      // Auto-complete the milestone
+      const milestone = need.milestones?.find((m: any) => m._id.toString() === verification.relatedItemId);
+      if (milestone) {
+        milestone.status = "completed";
+        milestone.progressPercentage = 100;
+        milestone.completionDate = new Date();
+      }
+    }
+
+    if (verification.relatedItemType === "budget_item" && verification.relatedItemId) {
+      // Mark budget expense as verified
+      const budgetItem = need.budgetItems?.find((b: any) => b._id.toString() === verification.relatedItemId);
+      if (budgetItem && budgetItem.actualCost === undefined) {
+        // You might want to set actualCost based on verification data
+      }
+    }
+
+    if (verification.type === "need_completion") {
+      // Mark need as completed
+      need.status = "completed";
+    }
+  }
+
+  public async deleteVerificationRequest(needId: string, verificationId: string): Promise<INeed | null> {
+    const need = await NeedModel.findById(needId);
+    if (!need || !need.verificationRequests) return null;
+
+    const verificationIndex = need.verificationRequests.findIndex((req: any) => req._id.toString() === verificationId);
+    if (verificationIndex === -1) {
+      throw new ApiError(404, "درخواست تایید یافت نشد.");
+    }
+
+    need.verificationRequests.splice(verificationIndex, 1);
+    await need.save();
+    return this.populateNeed(need);
+  }
+
+  // Task Management CRUD
+  public async getTasks(needId: string, filters?: { status?: string; assignedTo?: string; priority?: string }): Promise<any[] | null> {
+    const need = await NeedModel.findById(needId)
+      .select("tasks")
+      .populate("tasks.assignedTo", "name")
+      .populate("tasks.assignedBy", "name");
+    if (!need) return null;
+
+    let tasks = need.tasks || [];
+
+    // Apply filters
+    if (filters) {
+      if (filters.status) {
+        tasks = (tasks as any[]).filter((task: any) => task.status === filters.status);
+      }
+      if (filters.assignedTo) {
+        tasks = (tasks as any[]).filter((task: any) => task.assignedTo?.toString() === filters.assignedTo);
+      }
+      if (filters.priority) {
+        tasks = (tasks as any[]).filter((task: any) => task.priority === filters.priority);
+      }
+    }
+
+    return tasks;
+  }
+
+  public async createTask(
+    needId: string,
+    userId: string,
+    taskData: {
+      title: string;
+      description?: string;
+      assignedTo?: string;
+      priority?: "low" | "medium" | "high" | "critical";
+      deadline?: Date;
+      estimatedHours?: number;
+      dependencies?: string[];
+    }
+  ): Promise<INeed | null> {
+    const need = await NeedModel.findByIdAndUpdate(
+      needId,
+      {
+        $push: {
+          tasks: {
+            title: taskData.title,
+            description: taskData.description,
+            assignedTo: taskData.assignedTo ? new Types.ObjectId(taskData.assignedTo) : undefined,
+            assignedBy: new Types.ObjectId(userId),
+            assignedAt: taskData.assignedTo ? new Date() : undefined,
+            priority: taskData.priority || "medium",
+            status: "todo",
+            deadline: taskData.deadline,
+            estimatedHours: taskData.estimatedHours,
+            dependencies: taskData.dependencies || [],
+            progressPercentage: 0,
+          },
+        },
+      },
+      { new: true, runValidators: true }
+    );
+
+    if (!need) return null;
+    return this.populateNeed(need);
+  }
+
+  public async updateTask(
+    needId: string,
+    taskId: string,
+    updateData: {
+      title?: string;
+      description?: string;
+      assignedTo?: string;
+      status?: "todo" | "in_progress" | "review" | "completed" | "blocked";
+      priority?: "low" | "medium" | "high" | "critical";
+      deadline?: Date;
+      estimatedHours?: number;
+      actualHours?: number;
+      progressPercentage?: number;
+      blockedBy?: string;
+      blockingReason?: string;
+      dependencies?: string[];
+    }
+  ): Promise<INeed | null> {
+    const need = await NeedModel.findById(needId);
+    if (!need || !need.tasks) return null;
+
+    const task = need.tasks.find((t: any) => t._id.toString() === taskId);
+    if (!task) {
+      throw new ApiError(404, "تسک یافت نشد.");
+    }
+
+    // Update fields if provided
+    if (updateData.title !== undefined) (task as any).title = updateData.title;
+    if (updateData.description !== undefined) (task as any).description = updateData.description;
+    if (updateData.assignedTo !== undefined) {
+      (task as any).assignedTo = new Types.ObjectId(updateData.assignedTo);
+      (task as any).assignedAt = new Date();
+    }
+    if (updateData.status !== undefined) (task as any).status = updateData.status;
+    if (updateData.priority !== undefined) (task as any).priority = updateData.priority;
+    if (updateData.deadline !== undefined) (task as any).deadline = updateData.deadline;
+    if (updateData.estimatedHours !== undefined) (task as any).estimatedHours = updateData.estimatedHours;
+    if (updateData.actualHours !== undefined) (task as any).actualHours = updateData.actualHours;
+    if (updateData.progressPercentage !== undefined) (task as any).progressPercentage = updateData.progressPercentage;
+    if (updateData.blockedBy !== undefined) (task as any).blockedBy = updateData.blockedBy;
+    if (updateData.blockingReason !== undefined) (task as any).blockingReason = updateData.blockingReason;
+    if (updateData.dependencies !== undefined) (task as any).dependencies = updateData.dependencies;
+
+    // Auto-complete if status is completed
+    if (updateData.status === "completed" && !(task as any).completedAt) {
+      (task as any).completedAt = new Date();
+      (task as any).progressPercentage = 100;
+    }
+
+    await need.save();
+    return this.populateNeed(need);
+  }
+
+  public async deleteTask(needId: string, taskId: string): Promise<INeed | null> {
+    const need = await NeedModel.findById(needId);
+    if (!need || !need.tasks) return null;
+
+    const taskIndex = need.tasks.findIndex((t: any) => t._id.toString() === taskId);
+    if (taskIndex === -1) {
+      throw new ApiError(404, "تسک یافت نشد.");
+    }
+
+    need.tasks.splice(taskIndex, 1);
+    await need.save();
+    return this.populateNeed(need);
+  }
+
+  public async updateTaskChecklist(
+    needId: string,
+    taskId: string,
+    checklist: Array<{ title: string; completed: boolean }>
+  ): Promise<INeed | null> {
+    const need = await NeedModel.findById(needId);
+    if (!need || !need.tasks) return null;
+
+    const task = need.tasks.find((t: any) => t._id.toString() === taskId);
+    if (!task) {
+      throw new ApiError(404, "تسک یافت نشد.");
+    }
+
+    (task as any).checklist = checklist;
+
+    // Auto-update progress based on checklist
+    const totalItems = checklist.length;
+    const completedItems = checklist.filter(item => item.completed).length;
+    if (totalItems > 0) {
+      (task as any).progressPercentage = Math.round((completedItems / totalItems) * 100);
+    }
+
+    await need.save();
+    return this.populateNeed(need);
+  }
+
+  public async completeTask(needId: string, taskId: string, actualHours?: number): Promise<INeed | null> {
+    return this.updateTask(needId, taskId, {
+      status: "completed",
+      progressPercentage: 100,
+      actualHours: actualHours,
+    });
+  }
+
+  // Supporter Details Management
+  public async getSupporterDetails(needId: string, userId?: string): Promise<any[] | null> {
+    const need = await NeedModel.findById(needId)
+      .select("supporterDetails")
+      .populate("supporterDetails.user", "name email")
+      .populate("supporterDetails.invitedBy", "name");
+    if (!need) return null;
+
+    let details = need.supporterDetails || [];
+
+    // Filter by specific user if provided
+    if (userId) {
+      details = (details as any[]).filter((sd: any) => sd.user._id.toString() === userId);
+    }
+
+    return details;
+  }
+
+  public async updateSupporterDetail(
+    needId: string,
+    userId: string,
+    updateData: {
+      role?: "supporter" | "volunteer" | "coordinator" | "lead";
+      badge?: string;
+      notes?: string;
+      isActive?: boolean;
+      leaveReason?: string;
+    }
+  ): Promise<INeed | null> {
+    const need = await NeedModel.findById(needId);
+    if (!need || !need.supporterDetails) return null;
+
+    const supporterDetail = need.supporterDetails.find((sd: any) => sd.user.toString() === userId);
+    if (!supporterDetail) {
+      throw new ApiError(404, "حامی یافت نشد.");
+    }
+
+    // Update fields
+    if (updateData.role !== undefined) (supporterDetail as any).role = updateData.role;
+    if (updateData.badge !== undefined) (supporterDetail as any).badge = updateData.badge;
+    if (updateData.notes !== undefined) (supporterDetail as any).notes = updateData.notes;
+    if (updateData.isActive !== undefined) {
+      (supporterDetail as any).isActive = updateData.isActive;
+      if (!updateData.isActive) {
+        (supporterDetail as any).leftAt = new Date();
+      }
+    }
+    if (updateData.leaveReason !== undefined) (supporterDetail as any).leaveReason = updateData.leaveReason;
+
+    await need.save();
+    return this.populateNeed(need);
+  }
+
+  public async addContribution(
+    needId: string,
+    userId: string,
+    contributionData: {
+      type: "financial" | "time" | "skill" | "material" | "other";
+      description: string;
+      amount?: number;
+      hours?: number;
+    }
+  ): Promise<INeed | null> {
+    const need = await NeedModel.findById(needId);
+    if (!need || !need.supporterDetails) return null;
+
+    const supporterDetail = need.supporterDetails.find((sd: any) => sd.user.toString() === userId);
+    if (!supporterDetail) {
+      throw new ApiError(404, "حامی یافت نشد.");
+    }
+
+    // Add contribution
+    if (!(supporterDetail as any).contributions) {
+      (supporterDetail as any).contributions = [];
+    }
+    (supporterDetail as any).contributions.push({
+      type: contributionData.type,
+      description: contributionData.description,
+      amount: contributionData.amount,
+      hours: contributionData.hours,
+      date: new Date(),
+      verifiedByAdmin: false,
+    });
+
+    // Update last activity
+    (supporterDetail as any).lastActivityAt = new Date();
+
+    await need.save();
+    return this.populateNeed(need);
+  }
+
+  public async removeSupporterDetail(needId: string, userId: string, reason?: string): Promise<INeed | null> {
+    const need = await NeedModel.findById(needId);
+    if (!need || !need.supporterDetails) return null;
+
+    const supporterDetail = need.supporterDetails.find((sd: any) => sd.user.toString() === userId);
+    if (!supporterDetail) {
+      throw new ApiError(404, "حامی یافت نشد.");
+    }
+
+    // Mark as inactive instead of removing
+    (supporterDetail as any).isActive = false;
+    (supporterDetail as any).leftAt = new Date();
+    if (reason) {
+      (supporterDetail as any).leaveReason = reason;
+    }
+
+    // Also remove from supporters array
+    if (need.supporters) {
+      need.supporters = (need.supporters as any[]).filter((s) => s.toString() !== userId);
+    }
+
     await need.save();
     return this.populateNeed(need);
   }

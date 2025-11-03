@@ -24,19 +24,19 @@ class PollService {
       throw new ApiError(400, "زمان شرکت در این نظرسنجی به پایان رسیده است.");
     }
 
-    const userObjectId = new Types.ObjectId(userId);
-
+    // Check if user has already voted
     const hasVoted = poll.options.some((opt) =>
-      opt.votes.some((voterId) => (voterId as Types.ObjectId).equals(userObjectId))
+      opt.votes.some((voterId) => voterId.toString() === userId)
     );
     if (hasVoted) {
       throw new ApiError(409, "شما قبلاً در این نظرسنجی شرکت کرده‌اید.");
     }
 
-    const option = poll.options.find((opt) => opt._id.equals(optionId));
+    // Find the option by comparing string IDs
+    const option = poll.options.find((opt) => opt._id.toString() === optionId);
     if (!option) throw new ApiError(404, "گزینه مورد نظر یافت نشد.");
 
-    option.votes.push(userObjectId);
+    option.votes.push(new Types.ObjectId(userId) as any);
     await poll.save();
     return poll;
   }

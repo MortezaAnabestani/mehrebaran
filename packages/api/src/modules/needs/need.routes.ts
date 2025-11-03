@@ -3,6 +3,8 @@ import { needController } from "./need.controller";
 import { protect, protectOptional, restrictTo } from "../auth/auth.middleware";
 import { UserRole } from "common-types";
 import supporterMessageRoutes from "../supporter/supporter-messages/supporterMessage.routes";
+import directMessageRoutes from "../direct-messages/directMessage.routes";
+import teamRoutes from "../teams/team.routes";
 import pollRoutes from "../polls/poll.routes";
 import supporterSubmissionRoutes from "../supporter/supporter-submissions/supporterSubmission.routes";
 
@@ -25,11 +27,45 @@ router.post("/:id/upvote", protect, needController.toggleUpvote);
 router.post("/:id/support", protect, needController.addSupporter);
 router.post("/:id/view", needController.incrementView);
 
+// Supporter Details
+router.get("/:id/supporters/details", needController.getSupporterDetails);
+router.patch("/:id/supporters/:userId", protect, restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN), needController.updateSupporterDetail);
+router.post("/:id/supporters/:userId/contributions", protect, needController.addContribution);
+router.delete("/:id/supporters/:userId", protect, needController.removeSupporterDetail);
+
 // Updates (Timeline)
 router.get("/:id/updates", needController.getUpdates);
 router.post("/:id/updates", protect, needController.createUpdate);
 router.patch("/:id/updates/:updateId", protect, needController.updateUpdate);
 router.delete("/:id/updates/:updateId", protect, needController.deleteUpdate);
+
+// Milestones
+router.get("/:id/milestones", needController.getMilestones);
+router.post("/:id/milestones", protect, needController.createMilestone);
+router.patch("/:id/milestones/:milestoneId", protect, needController.updateMilestone);
+router.delete("/:id/milestones/:milestoneId", protect, needController.deleteMilestone);
+router.post("/:id/milestones/:milestoneId/complete", protect, needController.completeMilestone);
+
+// Budget Items
+router.get("/:id/budget", needController.getBudgetItems);
+router.post("/:id/budget", protect, needController.createBudgetItem);
+router.patch("/:id/budget/:budgetItemId", protect, needController.updateBudgetItem);
+router.delete("/:id/budget/:budgetItemId", protect, needController.deleteBudgetItem);
+router.post("/:id/budget/:budgetItemId/add-funds", protect, needController.addFundsToBudgetItem);
+
+// Verification Requests
+router.get("/:id/verifications", needController.getVerificationRequests);
+router.post("/:id/verifications", protect, needController.createVerificationRequest);
+router.patch("/:id/verifications/:verificationId/review", protect, restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN), needController.reviewVerificationRequest);
+router.delete("/:id/verifications/:verificationId", protect, needController.deleteVerificationRequest);
+
+// Task Management
+router.get("/:id/tasks", needController.getTasks);
+router.post("/:id/tasks", protect, needController.createTask);
+router.patch("/:id/tasks/:taskId", protect, needController.updateTask);
+router.delete("/:id/tasks/:taskId", protect, needController.deleteTask);
+router.patch("/:id/tasks/:taskId/checklist", protect, needController.updateTaskChecklist);
+router.post("/:id/tasks/:taskId/complete", protect, needController.completeTask);
 
 // Admin routes
 router.get(
@@ -43,6 +79,8 @@ router.delete("/:id", protect, restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
 
 // Nested routes for supporters
 router.use("/:id/messages", supporterMessageRoutes);
+router.use("/:needId/direct-messages", directMessageRoutes);
+router.use("/:needId/teams", teamRoutes);
 router.use("/:id/polls", pollRoutes);
 router.use("/:id/submissions", supporterSubmissionRoutes);
 

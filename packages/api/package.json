@@ -5,7 +5,9 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/main.js",
-    "dev": "nodemon src/main.ts"
+    "dev": "nodemon src/main.ts",
+    "seed": "ts-node src/seeders/index.ts",
+    "seed:dev": "NODE_ENV=development ts-node src/seeders/index.ts"
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",
@@ -17,6 +19,7 @@
     "mongoose": "^8.17.1",
     "multer": "^2.0.2",
     "sharp": "^0.34.3",
+    "socket.io": "^4.8.1",
     "zod": "^4.0.17"
   },
   "devDependencies": {

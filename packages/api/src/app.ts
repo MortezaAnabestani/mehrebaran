@@ -21,6 +21,14 @@ import galleryRoutes from "./modules/blog/gallery/gallery.routes";
 import featuredItemsRoutes from "./modules/blog/featuredItems/featured.routes";
 import needCategoryRoutes from "./modules/need-categories/needCategory.routes";
 import needRoutes from "./modules/needs/need.routes";
+import teamInvitationRoutes from "./modules/teams/teamInvitation.routes";
+import gamificationRoutes from "./modules/gamification/gamification.routes";
+import socialRoutes from "./modules/social/social.routes";
+import discoveryRoutes from "./modules/discovery/discovery.routes";
+import notificationRoutes from "./modules/notifications/notification.routes";
+import storyRoutes from "./modules/stories/story.routes";
+import mediaRoutes from "./modules/stories/media.routes";
+import teamsRoutes from "./modules/teams/team.routes";
 
 const app = express();
 
@@ -47,6 +55,14 @@ app.use("/api/v1/blog/gallery", galleryRoutes);
 app.use("/api/v1/blog/featured-items", featuredItemsRoutes);
 app.use("/api/v1/need-categories", needCategoryRoutes);
 app.use("/api/v1/needs", needRoutes);
+app.use("/api/v1/team-invitations", teamInvitationRoutes);
+app.use("/api/v1/gamification", gamificationRoutes);
+app.use("/api/v1/social", socialRoutes);
+app.use("/api/v1/discovery", discoveryRoutes);
+app.use("/api/v1/notifications", notificationRoutes);
+app.use("/api/v1/stories", storyRoutes);
+app.use("/api/v1/media", mediaRoutes);
+app.use("/api/v1/teams", teamsRoutes);
 
 app.use(globalErrorHandler);
 

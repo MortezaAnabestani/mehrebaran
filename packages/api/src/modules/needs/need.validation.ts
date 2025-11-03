@@ -80,3 +80,205 @@ export const updateNeedUpdateSchema = z.object({
     updateId: z.string(), // Index of update in array
   }),
 });
+
+// Validation for Milestones
+export const createMilestoneSchema = z.object({
+  body: z.object({
+    title: z.string().min(3, "عنوان مایلستون باید حداقل ۳ حرف باشد."),
+    description: z.string().min(10, "توضیحات مایلستون باید حداقل ۱۰ حرف باشد."),
+    targetDate: z.string().datetime("تاریخ هدف معتبر نیست.").or(z.date()),
+    order: z.number().int().min(1, "ترتیب مایلستون باید عدد مثبت باشد."),
+    progressPercentage: z.number().min(0).max(100).optional().default(0),
+  }),
+  params: z.object({
+    id: z.string().regex(/^[0-9a-fA-F]{24}$/, "شناسه نیاز معتبر نیست."),
+  }),
+});
+
+export const updateMilestoneSchema = z.object({
+  body: z.object({
+    title: z.string().min(3, "عنوان مایلستون باید حداقل ۳ حرف باشد.").optional(),
+    description: z.string().min(10, "توضیحات مایلستون باید حداقل ۱۰ حرف باشد.").optional(),
+    targetDate: z.string().datetime().or(z.date()).optional(),
+    completionDate: z.string().datetime().or(z.date()).optional(),
+    status: z.enum(["pending", "in_progress", "completed", "delayed"]).optional(),
+    progressPercentage: z.number().min(0).max(100).optional(),
+    order: z.number().int().min(1).optional(),
+    evidence: z.array(z.string().url("لینک مدرک معتبر نیست.")).optional(),
+  }),
+  params: z.object({
+    id: z.string().regex(/^[0-9a-fA-F]{24}$/, "شناسه نیاز معتبر نیست."),
+    milestoneId: z.string().regex(/^[0-9a-fA-F]{24}$/, "شناسه مایلستون معتبر نیست."),
+  }),
+});
+
+export const completeMilestoneSchema = z.object({
+  body: z.object({
+    evidence: z.array(z.string().url("لینک مدرک معتبر نیست.")).optional(),
+  }),
+  params: z.object({
+    id: z.string().regex(/^[0-9a-fA-F]{24}$/, "شناسه نیاز معتبر نیست."),
+    milestoneId: z.string().regex(/^[0-9a-fA-F]{24}$/, "شناسه مایلستون معتبر نیست."),
+  }),
+});
+
+// Validation for Budget Items
+export const createBudgetItemSchema = z.object({
+  body: z.object({
+    title: z.string().min(3, "عنوان قلم بودجه باید حداقل ۳ حرف باشد."),
+    description: z.string().optional(),
+    category: z.string().min(2, "دسته‌بندی الزامی است."),
+    estimatedCost: z.number().min(0, "هزینه تخمینی باید عدد مثبت باشد."),
+    actualCost: z.number().min(0).optional(),
+    currency: z.string().optional().default("IRR"),
+    priority: z.number().min(1).max(5).optional().default(3),
+    notes: z.string().optional(),
+  }),
+  params: z.object({
+    id: z.string().regex(/^[0-9a-fA-F]{24}$/, "شناسه نیاز معتبر نیست."),
+  }),
+});
+
+export const updateBudgetItemSchema = z.object({
+  body: z.object({
+    title: z.string().min(3, "عنوان قلم بودجه باید حداقل ۳ حرف باشد.").optional(),
+    description: z.string().optional(),
+    category: z.string().min(2, "دسته‌بندی الزامی است.").optional(),
+    estimatedCost: z.number().min(0, "هزینه تخمینی باید عدد مثبت باشد.").optional(),
+    actualCost: z.number().min(0).optional(),
+    amountRaised: z.number().min(0, "مبلغ جمع‌آوری شده باید عدد مثبت باشد.").optional(),
+    currency: z.string().optional(),
+    priority: z.number().min(1).max(5).optional(),
+    notes: z.string().optional(),
+  }),
+  params: z.object({
+    id: z.string().regex(/^[0-9a-fA-F]{24}$/, "شناسه نیاز معتبر نیست."),
+    budgetItemId: z.string().regex(/^[0-9a-fA-F]{24}$/, "شناسه قلم بودجه معتبر نیست."),
+  }),
+});
+
+export const addFundsToBudgetItemSchema = z.object({
+  body: z.object({
+    amount: z.number().min(1, "مبلغ باید بزرگتر از صفر باشد."),
+  }),
+  params: z.object({
+    id: z.string().regex(/^[0-9a-fA-F]{24}$/, "شناسه نیاز معتبر نیست."),
+    budgetItemId: z.string().regex(/^[0-9a-fA-F]{24}$/, "شناسه قلم بودجه معتبر نیست."),
+  }),
+});
+
+// Validation for Verification Requests
+const verificationEvidenceSchema = z.object({
+  type: z.enum(["image", "document", "video"], { message: "نوع مدرک معتبر نیست." }),
+  url: z.string().url("لینک مدرک معتبر نیست."),
+  description: z.string().optional(),
+});
+
+export const createVerificationRequestSchema = z.object({
+  body: z.object({
+    type: z.enum(["milestone_completion", "budget_expense", "need_completion", "progress_update"], {
+      message: "نوع درخواست تایید معتبر نیست.",
+    }),
+    description: z.string().min(10, "توضیحات درخواست تایید باید حداقل ۱۰ حرف باشد."),
+    evidence: z.array(verificationEvidenceSchema).min(1, "حداقل یک مدرک الزامی است."),
+    relatedItemId: z.string().optional(),
+    relatedItemType: z.string().optional(),
+  }),
+  params: z.object({
+    id: z.string().regex(/^[0-9a-fA-F]{24}$/, "شناسه نیاز معتبر نیست."),
+  }),
+});
+
+export const reviewVerificationRequestSchema = z.object({
+  body: z.object({
+    status: z.enum(["approved", "rejected", "needs_revision"], {
+      message: "وضعیت بررسی معتبر نیست.",
+    }),
+    adminComments: z.string().optional(),
+    rejectionReason: z.string().optional(),
+    revisionNotes: z.string().optional(),
+  }),
+  params: z.object({
+    id: z.string().regex(/^[0-9a-fA-F]{24}$/, "شناسه نیاز معتبر نیست."),
+    verificationId: z.string().regex(/^[0-9a-fA-F]{24}$/, "شناسه درخواست تایید معتبر نیست."),
+  }),
+});
+
+// Validation for Tasks
+export const createTaskSchema = z.object({
+  body: z.object({
+    title: z.string().min(3, "عنوان تسک باید حداقل ۳ حرف باشد."),
+    description: z.string().optional(),
+    assignedTo: z.string().regex(/^[0-9a-fA-F]{24}$/, "شناسه کاربر معتبر نیست.").optional(),
+    priority: z.enum(["low", "medium", "high", "critical"], { message: "اولویت معتبر نیست." }).optional().default("medium"),
+    deadline: z.string().datetime().or(z.date()).optional(),
+    estimatedHours: z.number().min(0, "ساعات تخمینی باید عدد مثبت باشد.").optional(),
+    dependencies: z.array(z.string()).optional(),
+  }),
+  params: z.object({
+    id: z.string().regex(/^[0-9a-fA-F]{24}$/, "شناسه نیاز معتبر نیست."),
+  }),
+});
+
+export const updateTaskSchema = z.object({
+  body: z.object({
+    title: z.string().min(3, "عنوان تسک باید حداقل ۳ حرف باشد.").optional(),
+    description: z.string().optional(),
+    assignedTo: z.string().regex(/^[0-9a-fA-F]{24}$/, "شناسه کاربر معتبر نیست.").optional(),
+    status: z.enum(["todo", "in_progress", "review", "completed", "blocked"], { message: "وضعیت معتبر نیست." }).optional(),
+    priority: z.enum(["low", "medium", "high", "critical"], { message: "اولویت معتبر نیست." }).optional(),
+    deadline: z.string().datetime().or(z.date()).optional(),
+    estimatedHours: z.number().min(0).optional(),
+    actualHours: z.number().min(0).optional(),
+    progressPercentage: z.number().min(0).max(100).optional(),
+    blockedBy: z.string().optional(),
+    blockingReason: z.string().optional(),
+    dependencies: z.array(z.string()).optional(),
+  }),
+  params: z.object({
+    id: z.string().regex(/^[0-9a-fA-F]{24}$/, "شناسه نیاز معتبر نیست."),
+    taskId: z.string().regex(/^[0-9a-fA-F]{24}$/, "شناسه تسک معتبر نیست."),
+  }),
+});
+
+export const updateTaskChecklistSchema = z.object({
+  body: z.object({
+    checklist: z.array(z.object({
+      title: z.string().min(1, "عنوان آیتم چک‌لیست الزامی است."),
+      completed: z.boolean(),
+    })),
+  }),
+  params: z.object({
+    id: z.string().regex(/^[0-9a-fA-F]{24}$/, "شناسه نیاز معتبر نیست."),
+    taskId: z.string().regex(/^[0-9a-fA-F]{24}$/, "شناسه تسک معتبر نیست."),
+  }),
+});
+
+// Validation for Supporter Details
+export const updateSupporterDetailSchema = z.object({
+  body: z.object({
+    role: z.enum(["supporter", "volunteer", "coordinator", "lead"], { message: "نقش معتبر نیست." }).optional(),
+    badge: z.string().optional(),
+    notes: z.string().optional(),
+    isActive: z.boolean().optional(),
+    leaveReason: z.string().optional(),
+  }),
+  params: z.object({
+    id: z.string().regex(/^[0-9a-fA-F]{24}$/, "شناسه نیاز معتبر نیست."),
+    userId: z.string().regex(/^[0-9a-fA-F]{24}$/, "شناسه کاربر معتبر نیست."),
+  }),
+});
+
+export const addContributionSchema = z.object({
+  body: z.object({
+    type: z.enum(["financial", "time", "skill", "material", "other"], { message: "نوع مشارکت معتبر نیست." }),
+    description: z.string().min(3, "توضیحات مشارکت باید حداقل ۳ حرف باشد."),
+    amount: z.number().min(0, "مبلغ باید عدد مثبت باشد.").optional(),
+    hours: z.number().min(0, "ساعات باید عدد مثبت باشد.").optional(),
+    verifiedByAdmin: z.boolean().optional(),
+  }),
+  params: z.object({
+    id: z.string().regex(/^[0-9a-fA-F]{24}$/, "شناسه نیاز معتبر نیست."),
+    userId: z.string().regex(/^[0-9a-fA-F]{24}$/, "شناسه کاربر معتبر نیست."),
+  }),
+});

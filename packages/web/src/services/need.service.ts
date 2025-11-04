@@ -130,53 +130,51 @@ class NeedService {
   /**
    * دنبال کردن نیاز
    */
-  public async followNeed(id: string): Promise<void> {
+  public async supportNeed(id: string): Promise<void> {
     try {
-      await api.post(`/social/follow`, {
-        followingType: "need",
-        following: id,
-      });
+      // ✅ اندپوینت صحیح از مستندات بک‌اند
+      await api.post(`/needs/${id}/support`);
     } catch (error: any) {
-      console.error("Follow need failed:", error);
-      throw new Error(error.response?.data?.message || "خطا در دنبال کردن نیاز");
+      console.error("Support need failed:", error);
+      throw new Error(error.response?.data?.message || "خطا در حمایت از نیاز");
     }
   }
 
   /**
    * لغو دنبال کردن نیاز
    */
-  public async unfollowNeed(id: string): Promise<void> {
+  public async unsupportNeed(id: string): Promise<void> {
     try {
-      await api.delete(`/social/follow/${id}`);
+      // ✅ اندپوینت صحیح (متد DELETE برای خنثی کردن عمل)
+      await api.delete(`/needs/${id}/support`);
     } catch (error: any) {
-      console.error("Unfollow need failed:", error);
-      throw new Error(error.response?.data?.message || "خطا در لغو دنبال کردن");
+      console.error("Unsupport need failed:", error);
+      throw new Error(error.response?.data?.message || "خطا در لغو حمایت");
     }
   }
 
   /**
    * لایک کردن نیاز
    */
-  public async likeNeed(id: string): Promise<void> {
+  public async upvoteNeed(id: string): Promise<void> {
     try {
-      await api.post(`/social/like`, {
-        targetType: "need",
-        target: id,
-      });
+      // ✅ اندپوینت صحیح از مستندات بک‌اند
+      await api.post(`/needs/${id}/upvote`);
     } catch (error: any) {
-      console.error("Like need failed:", error);
-      throw new Error(error.response?.data?.message || "خطا در لایک کردن");
+      console.error("Upvote need failed:", error);
+      throw new Error(error.response?.data?.message || "خطا در لایک کردن نیاز");
     }
   }
 
   /**
    * حذف لایک نیاز
    */
-  public async unlikeNeed(id: string): Promise<void> {
+  public async unvoteNeed(id: string): Promise<void> {
     try {
-      await api.delete(`/social/like/${id}`);
+      // ✅ اندپوینت صحیح (متد DELETE برای خنثی کردن عمل)
+      await api.delete(`/needs/${id}/upvote`);
     } catch (error: any) {
-      console.error("Unlike need failed:", error);
+      console.error("Unvote need failed:", error);
       throw new Error(error.response?.data?.message || "خطا در حذف لایک");
     }
   }

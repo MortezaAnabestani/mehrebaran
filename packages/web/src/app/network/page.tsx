@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import OptimizedImage from "@/components/ui/OptimizedImage";
 import SmartButton from "@/components/ui/SmartButton";
 import NeedCard from "@/components/network/NeedCard";
@@ -30,24 +29,38 @@ const NetworkPage: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   // دریافت لیست نیازها
+  // دریافت لیست نیازها بر اساس نوع فید
   const fetchNeeds = async () => {
     try {
       setIsLoading(true);
       setError(null);
+      setNeeds([]); // لیست را خالی می‌کنیم تا در صورت خطا، داده‌های قدیمی نمایش داده نشود
 
-      const params: GetNeedsParams = {
+      // پارامترهای مشترک برای همه درخواست‌ها
+      const baseParams: GetNeedsParams = {
         limit: 20,
-        skip: 0,
+        // page: currentPage, // اگر صفحه‌بندی دارید
+        search: searchQuery || undefined,
+        category: selectedCategory || undefined,
+        status: selectedStatus || undefined,
       };
 
-      if (searchQuery) params.search = searchQuery;
-      if (selectedCategory) params.category = selectedCategory;
-      if (selectedStatus) params.status = selectedStatus;
-      if (sortBy === "trending") params.trending = true;
-      if (sortBy === "popular") params.sortBy = "likes";
-      if (sortBy === "newest") params.sortBy = "createdAt";
+      let response;
 
-      const response = await needService.getNeeds();
+      // بر اساس نوع مرتب‌سازی، اندپوینت مناسب را فراخوانی می‌کنیم
+      switch (sortBy) {
+        case "trending":
+          response = await needService.getTrendingNeeds(baseParams);
+          break;
+        case "popular":
+          response = await needService.getPopularNeeds(baseParams);
+          break;
+        case "newest":
+        default: // حالت پیش‌فرض جدیدترین است
+          response = await needService.getNeeds(baseParams);
+          break;
+      }
+
       setNeeds(response.data);
     } catch (err: any) {
       console.error("Failed to fetch needs:", err);
@@ -105,7 +118,6 @@ const NetworkPage: React.FC = () => {
   return (
     <ProtectedRoute>
       <div className="min-h-screen bg-mgray/5">
-        {/* Header */}
         <header className="relative w-full py-15 bg-mgray/5 overflow-hidden">
           <div
             className="absolute left-0 inset-0 bg-no-repeat bg-center pointer-events-none"

@@ -59,40 +59,51 @@ const NeedCard: React.FC<NeedCardProps> = ({ need, variant = "feed", onUpdate })
   };
 
   // لایک کردن نیاز
+  // لایک کردن نیاز
   const handleLike = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
 
     try {
       if (isLiked) {
-        await needService.unlikeNeed(need._id);
+        // ✅ استفاده از متد صحیح برای حذف لایک
+        await needService.unvoteNeed(need._id);
         setLikesCount((prev) => prev - 1);
       } else {
-        await needService.likeNeed(need._id);
+        // ✅ استفاده از متد صحیح برای لایک کردن
+        await needService.upvoteNeed(need._id);
         setLikesCount((prev) => prev + 1);
       }
       setIsLiked(!isLiked);
-      onUpdate?.();
+      // onUpdate?.(); // این خط را می‌توان موقتاً کامنت کرد تا از رفرش کل لیست جلوگیری شود
     } catch (error) {
-      console.error("Like error:", error);
+      console.error("Upvote error:", error);
+      // در صورت خطا، وضعیت را به حالت قبل برمی‌گردانیم تا UI با واقعیت هماهنگ باشد
+      if (isLiked) {
+        setLikesCount((prev) => prev + 1);
+      } else {
+        setLikesCount((prev) => prev - 1);
+      }
     }
   };
 
-  // دنبال کردن نیاز
+  // حمایت (دنبال) کردن نیاز
   const handleFollow = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
 
     try {
       if (isFollowing) {
-        await needService.unfollowNeed(need._id);
+        // ✅ استفاده از متد صحیح برای لغو حمایت
+        await needService.unsupportNeed(need._id);
       } else {
-        await needService.followNeed(need._id);
+        // ✅ استفاده از متد صحیح برای حمایت
+        await needService.supportNeed(need._id);
       }
       setIsFollowing(!isFollowing);
-      onUpdate?.();
+      // onUpdate?.();
     } catch (error) {
-      console.error("Follow error:", error);
+      console.error("Support error:", error);
     }
   };
 
@@ -131,12 +142,7 @@ const NeedCard: React.FC<NeedCardProps> = ({ need, variant = "feed", onUpdate })
         <div className="flex items-center justify-between p-4 border-b border-mgray/20">
           <div className="flex items-center gap-3">
             <div className="relative w-10 h-10 rounded-full overflow-hidden">
-              <OptimizedImage
-                src={getCreatorAvatar()}
-                alt={getCreatorName()}
-                fill
-                className="object-cover"
-              />
+              <OptimizedImage src={getCreatorAvatar()} alt={getCreatorName()} fill className="object-cover" />
             </div>
             <div>
               <h4 className="font-bold text-sm">{getCreatorName()}</h4>
@@ -158,10 +164,7 @@ const NeedCard: React.FC<NeedCardProps> = ({ need, variant = "feed", onUpdate })
           {need.tags && need.tags.length > 0 && (
             <div className="flex flex-wrap gap-2 mb-3">
               {need.tags.slice(0, 3).map((tag, index) => (
-                <span
-                  key={index}
-                  className="text-xs bg-mblue/10 text-mblue px-2 py-1 rounded-full"
-                >
+                <span key={index} className="text-xs bg-mblue/10 text-mblue px-2 py-1 rounded-full">
                   #{tag}
                 </span>
               ))}
@@ -171,12 +174,7 @@ const NeedCard: React.FC<NeedCardProps> = ({ need, variant = "feed", onUpdate })
           {/* Image */}
           {need.images && need.images.length > 0 && (
             <div className="relative w-full h-48 rounded-md overflow-hidden mb-3">
-              <OptimizedImage
-                src={need.images[0]}
-                alt={need.title}
-                fill
-                className="object-cover"
-              />
+              <OptimizedImage src={need.images[0]} alt={need.title} fill className="object-cover" />
             </div>
           )}
 
@@ -185,9 +183,7 @@ const NeedCard: React.FC<NeedCardProps> = ({ need, variant = "feed", onUpdate })
             <div className="mb-3">
               <div className="flex justify-between items-center mb-1">
                 <span className="text-xs font-bold text-gray-700">پیشرفت:</span>
-                <span className="text-xs font-bold text-morange">
-                  {progressPercentage.toFixed(0)}%
-                </span>
+                <span className="text-xs font-bold text-morange">{progressPercentage.toFixed(0)}%</span>
               </div>
               <div className="w-full bg-mgray/30 rounded-full h-2 overflow-hidden">
                 <div
@@ -199,9 +195,7 @@ const NeedCard: React.FC<NeedCardProps> = ({ need, variant = "feed", onUpdate })
                 <span className="text-xs text-gray-600">
                   💰 {formatNumber(need.currentAmount)} / {formatNumber(need.targetAmount)} ریال
                 </span>
-                {need.deadline && (
-                  <span className="text-xs text-gray-600">⏰ {getDaysRemaining()}</span>
-                )}
+                {need.deadline && <span className="text-xs text-gray-600">⏰ {getDaysRemaining()}</span>}
               </div>
             </div>
           )}
@@ -210,9 +204,7 @@ const NeedCard: React.FC<NeedCardProps> = ({ need, variant = "feed", onUpdate })
           {need.team && (
             <div className="bg-mgray/10 rounded-md p-2 mb-3 text-xs">
               <span className="font-bold">👥 تیم: </span>
-              {typeof need.team === "string"
-                ? "تیم موجود"
-                : `${need.team.members?.length || 0} نفر`}
+              {typeof need.team === "string" ? "تیم موجود" : `${need.team.members?.length || 0} نفر`}
             </div>
           )}
         </div>
@@ -244,9 +236,7 @@ const NeedCard: React.FC<NeedCardProps> = ({ need, variant = "feed", onUpdate })
           <button
             onClick={handleFollow}
             className={`text-xs font-bold px-3 py-1 rounded-full ${
-              isFollowing
-                ? "bg-mgray text-gray-700"
-                : "bg-mblue text-white hover:bg-mblue/80"
+              isFollowing ? "bg-mgray text-gray-700" : "bg-mblue text-white hover:bg-mblue/80"
             } transition-colors`}
           >
             {isFollowing ? "دنبال‌شده ✓" : "دنبال کردن"}

@@ -1,6 +1,4 @@
 "use client";
-import OptimizedImage from "@/components/ui/OptimizedImage";
-import SmartButton from "@/components/ui/SmartButton";
 import React from "react";
 import ThreeD from "./ThreeD";
 

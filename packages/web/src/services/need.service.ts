@@ -7,12 +7,14 @@ import type { INeed, NeedCategory, NeedStatus, NeedPriority } from "common-types
 export interface GetNeedsParams {
   page?: number;
   limit?: number;
-  category?: NeedCategory;
-  status?: NeedStatus;
+  skip?: number;
+  category?: string; // Can be ObjectId, slug, or name
+  status?: string; // NeedStatus or custom string
   priority?: NeedPriority;
   search?: string;
   sortBy?: string;
   tags?: string[];
+  trending?: boolean;
 }
 
 /**
@@ -42,7 +44,7 @@ interface GetNeedResponse {
 export interface CreateNeedData {
   title: string;
   description: string;
-  category: NeedCategory;
+  category?: string; // Optional: ObjectId, slug, or name
   priority?: NeedPriority;
   tags?: string[];
   targetAmount?: number;

@@ -19,7 +19,7 @@ const geoLocationSchema = z.object({
 const needBodySchema = z.object({
   title: z.string().min(5, "عنوان نیاز باید حداقل ۵ حرف باشد."),
   description: z.string().min(20, "توضیحات نیاز باید حداقل ۲۰ حرف باشد."),
-  category: z.string().regex(/^[0-9a-fA-F]{24}$/, "شناسه حوزه معتبر نیست."),
+  category: z.string().optional(), // Can be ObjectId, slug, or name
 
   // Status & Priority
   urgencyLevel: z.enum(["low", "medium", "high", "critical"]).optional().default("medium"),

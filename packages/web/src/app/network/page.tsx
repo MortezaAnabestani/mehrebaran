@@ -100,8 +100,7 @@ const NetworkPage: React.FC = () => {
       await needService.createNeed({
         title: newNeedText.substring(0, 100),
         description: newNeedText,
-        category: "general",
-        status: "active",
+        // Let backend assign default category
       });
 
       setNewNeedText("");
@@ -172,8 +171,10 @@ const NetworkPage: React.FC = () => {
                 className="px-4 py-2 rounded-md border border-mgray/30 focus:outline-mblue/50 bg-white"
               >
                 <option value="">همه وضعیت‌ها</option>
-                <option value="active">فعال</option>
+                <option value="approved">تایید شده</option>
+                <option value="in_progress">در حال انجام</option>
                 <option value="completed">تکمیل شده</option>
+                <option value="pending">در انتظار تایید</option>
               </select>
 
               {/* Category Filter */}
@@ -183,12 +184,14 @@ const NetworkPage: React.FC = () => {
                 className="px-4 py-2 rounded-md border border-mgray/30 focus:outline-mblue/50 bg-white"
               >
                 <option value="">همه دسته‌ها</option>
-                <option value="educational">آموزشی</option>
-                <option value="health">بهداشت و سلامت</option>
-                <option value="infrastructure">زیرساخت</option>
-                <option value="social">اجتماعی</option>
-                <option value="cultural">فرهنگی</option>
-                <option value="general">عمومی</option>
+                <option value="آموزش">آموزش</option>
+                <option value="سلامت و درمان">سلامت و درمان</option>
+                <option value="مسکن">مسکن</option>
+                <option value="غذا و تغذیه">غذا و تغذیه</option>
+                <option value="اشتغال و کسب‌وکار">اشتغال و کسب‌وکار</option>
+                <option value="محیط زیست">محیط زیست</option>
+                <option value="اضطراری">اضطراری</option>
+                <option value="فرهنگ و هنر">فرهنگ و هنر</option>
               </select>
 
               {/* Sort */}

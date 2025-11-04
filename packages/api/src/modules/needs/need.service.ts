@@ -1,17 +1,48 @@
 import { INeed } from "common-types";
 import { NeedModel } from "./need.model";
+import { NeedCategoryModel } from "../need-categories/needCategory.model";
 import { Types } from "mongoose";
 import ApiFeatures from "../../core/utils/apiFeatures";
 import ApiError from "../../core/utils/apiError";
 
 class NeedService {
   public async create(data: any): Promise<INeed> {
+    // If category is provided as string (not ObjectId), convert it
+    if (data.category && !Types.ObjectId.isValid(data.category)) {
+      const category = await NeedCategoryModel.findOne({
+        $or: [
+          { slug: data.category },
+          { name: data.category },
+          { name: { $regex: data.category, $options: "i" } }
+        ]
+      });
+      if (category) {
+        data.category = category._id;
+      } else {
+        // If category not found, use first available category or throw error
+        const defaultCategory = await NeedCategoryModel.findOne();
+        if (defaultCategory) {
+          data.category = defaultCategory._id;
+        } else {
+          throw new ApiError(400, "دسته‌بندی معتبری یافت نشد.");
+        }
+      }
+    } else if (!data.category) {
+      // If no category provided, use first available category
+      const defaultCategory = await NeedCategoryModel.findOne();
+      if (defaultCategory) {
+        data.category = defaultCategory._id;
+      } else {
+        throw new ApiError(400, "دسته‌بندی معتبری یافت نشد.");
+      }
+    }
+
     const need = await NeedModel.create(data);
     return this.populateNeed(need);
   }
 
   public async findAll(queryString: Record<string, any>): Promise<INeed[]> {
-    const baseQuery = this.buildSearchQuery(queryString);
+    const baseQuery = await this.buildSearchQuery(queryString);
 
     const features = new ApiFeatures(NeedModel.find(baseQuery), queryString)
       .filter()
@@ -24,20 +55,40 @@ class NeedService {
   }
 
   // Advanced search with multiple filters
-  private buildSearchQuery(params: Record<string, any>): Record<string, any> {
+  private async buildSearchQuery(params: Record<string, any>): Promise<Record<string, any>> {
     const query: Record<string, any> = { status: "approved" };
 
-    // Text search (title, description)
-    if (params.q) {
+    // Text search (title, description) - support both 'q' and 'search' params
+    const searchTerm = params.q || params.search;
+    if (searchTerm) {
       query.$or = [
-        { title: { $regex: params.q, $options: "i" } },
-        { description: { $regex: params.q, $options: "i" } },
+        { title: { $regex: searchTerm, $options: "i" } },
+        { description: { $regex: searchTerm, $options: "i" } },
+        { tags: { $regex: searchTerm, $options: "i" } },
       ];
     }
 
-    // Category filter
+    // Category filter - support both ObjectId and slug
     if (params.category) {
-      query.category = params.category;
+      // If it's a valid ObjectId, use it directly
+      if (Types.ObjectId.isValid(params.category) && params.category.length === 24) {
+        query.category = new Types.ObjectId(params.category);
+      } else {
+        // Otherwise, find category by name or slug
+        const category = await NeedCategoryModel.findOne({
+          $or: [
+            { slug: params.category },
+            { name: params.category },
+            { name: { $regex: params.category, $options: "i" } }
+          ]
+        });
+        if (category) {
+          query.category = category._id;
+        } else {
+          // If category not found, return no results
+          query._id = null;
+        }
+      }
     }
 
     // Status filter (for admin)

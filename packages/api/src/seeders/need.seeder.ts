@@ -5,7 +5,7 @@ import { Types } from "mongoose";
  * NeedModel Seeder - ایجاد نیازهای فیک
  */
 
-// Map category slugs to category names
+// ... (بخش needTemplates و cities و categoryMap بدون تغییر باقی می‌ماند)
 const categoryMap: Record<string, string> = {
   medical: "سلامت و درمان",
   education: "آموزش",
@@ -18,6 +18,7 @@ const categoryMap: Record<string, string> = {
 };
 
 const needTemplates = [
+  // ... محتوای آرایه بدون تغییر
   {
     categoryKey: "medical",
     title: "کمک به هزینه درمان کودک مبتلا به سرطان",
@@ -143,7 +144,6 @@ const needTemplates = [
     tags: ["اورژانس", "زلزله", "بلایای طبیعی", "سرپناه"],
   },
 ];
-
 const cities = [
   { name: "تهران", lat: 35.6892, lng: 51.389 },
   { name: "مشهد", lat: 36.2605, lng: 59.6168 },
@@ -169,16 +169,16 @@ export async function seedNeeds(users: any[], categories: any[]) {
       categoryNameToId[cat.name] = cat._id;
     });
 
-    const needs = [];
+    // ======================= تغییر اصلی در این بخش است =======================
+    const createdNeeds = []; // آرایه‌ای برای نگهداری نیازهای ایجاد شده
     const now = new Date();
 
-    // ایجاد نیازها
+    // ایجاد نیازها به صورت تکی در یک حلقه
     for (let i = 0; i < needTemplates.length; i++) {
       const template = needTemplates[i];
+      // ... (بقیه منطق ساختن آبجکت need بدون تغییر باقی می‌ماند)
       const creator = users[Math.floor(Math.random() * Math.min(users.length, 20))];
       const city = cities[i % cities.length];
-
-      // Get category ID from category name
       const categoryName = categoryMap[template.categoryKey];
       const categoryId = categoryNameToId[categoryName];
 
@@ -187,7 +187,6 @@ export async function seedNeeds(users: any[], categories: any[]) {
         continue;
       }
 
-      // تعداد تصادفی حامیان (۰ تا ۳۰)
       const supportersCount = Math.floor(Math.random() * 30);
       const supporters: any[] = [];
       for (let j = 0; j < supportersCount; j++) {
@@ -197,15 +196,11 @@ export async function seedNeeds(users: any[], categories: any[]) {
         }
       }
 
-      // مبلغ جمع‌آوری شده (۱۰٪ تا ۹۰٪ هدف)
-      const progressPercent = Math.random() * 0.8 + 0.1; // 10% to 90%
+      const progressPercent = Math.random() * 0.8 + 0.1;
       const amountRaised = Math.floor(template.targetAmount * progressPercent);
-
-      // تاریخ deadline (۱ تا ۶ ماه آینده)
       const deadline = new Date(now);
       deadline.setDate(deadline.getDate() + Math.floor(Math.random() * 180) + 30);
 
-      // Create budget items
       const budgetItems = [
         {
           title: "هزینه اصلی",
@@ -225,11 +220,11 @@ export async function seedNeeds(users: any[], categories: any[]) {
         },
       ];
 
-      // Determine status based on progress
       let status: "draft" | "pending" | "approved" | "in_progress" | "completed" =
         progressPercent >= 0.99 ? "completed" : progressPercent >= 0.5 ? "in_progress" : "approved";
 
-      const need = {
+      const needData = {
+        // نام متغیر را به needData تغییر دادیم تا با متغیر need در حلقه بعدی تداخل نکند
         title: template.title,
         description: template.description,
         category: categoryId,
@@ -238,7 +233,7 @@ export async function seedNeeds(users: any[], categories: any[]) {
         deadline,
         location: {
           type: "Point",
-          coordinates: [city.lng, city.lat], // [longitude, latitude] for GeoJSON
+          coordinates: [city.lng, city.lat],
           address: `${city.name}، ایران`,
           city: city.name,
           province: city.name,
@@ -249,39 +244,47 @@ export async function seedNeeds(users: any[], categories: any[]) {
           user: creator._id,
         },
         supporters,
-        upvotes: supporters.slice(0, Math.floor(supporters.length * 0.6)), // 60% of supporters also upvote
+        upvotes: supporters.slice(0, Math.floor(supporters.length * 0.6)),
         viewsCount: Math.floor(Math.random() * 500) + 50,
         budgetItems,
       };
 
-      needs.push(need);
+      // **به جای push کردن، مستقیماً نیاز را ایجاد می‌کنیم**
+      const newNeed = await NeedModel.create(needData);
+      createdNeeds.push(newNeed); // نیاز ایجاد شده را به آرایه اضافه می‌کنیم
     }
+    // =======================================================================
 
-    // ذخیره نیازها
-    const createdNeeds = await NeedModel.insertMany(needs);
+    // **دیگر نیازی به خط insertMany نیست**
+    // const createdNeeds = await NeedModel.insertMany(needs);
     console.log(`  ✓ Created ${createdNeeds.length} needs`);
 
-    // اضافه کردن updates و milestones برای بعضی از نیازها
+    // ... (بخش اضافه کردن updates و milestones بدون تغییر کار خواهد کرد)
     for (let i = 0; i < Math.min(5, createdNeeds.length); i++) {
       const need = createdNeeds[i];
 
-      // اضافه کردن آپدیت‌ها
       const updates = [
         {
           title: "شروع جمع‌آوری کمک‌ها",
           description: "با تشکر از حامیان عزیز، جمع‌آوری کمک‌ها آغاز شد.",
-          date: new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000), // 10 days ago
+          date: new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000),
         },
         {
           title: "پیشرفت ۵۰٪",
           description: "با کمک شما عزیزان به نصف راه رسیدیم. از همراهی شما سپاسگزاریم.",
-          date: new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000), // 5 days ago
+          date: new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000),
         },
       ];
 
-      // اضافه کردن milestone ها
-      const totalBudget = need.budgetItems.reduce((sum: number, item: any) => sum + item.estimatedCost, 0);
-      const totalRaised = need.budgetItems.reduce((sum: number, item: any) => sum + item.amountRaised, 0);
+      // کد اصلاح‌شده
+      const totalBudget = (need.budgetItems || []).reduce(
+        (sum: number, item: any) => sum + item.estimatedCost,
+        0
+      );
+      const totalRaised = (need.budgetItems || []).reduce(
+        (sum: number, item: any) => sum + item.amountRaised,
+        0
+      );
 
       const milestones = [
         {
@@ -296,16 +299,32 @@ export async function seedNeeds(users: any[], categories: any[]) {
           title: "تکمیل ۵۰٪ هدف",
           description: "رسیدن به نصف هدف مالی",
           targetDate: new Date(now.getTime() + 60 * 24 * 60 * 60 * 1000),
-          status: totalRaised >= totalBudget * 0.5 ? "completed" : totalRaised >= totalBudget * 0.25 ? "in_progress" : "pending",
-          progressPercentage: totalRaised >= totalBudget * 0.25 ? Math.min(100, Math.round(((totalRaised - totalBudget * 0.25) / (totalBudget * 0.25)) * 100)) : 0,
+          status:
+            totalRaised >= totalBudget * 0.5
+              ? "completed"
+              : totalRaised >= totalBudget * 0.25
+              ? "in_progress"
+              : "pending",
+          progressPercentage:
+            totalRaised >= totalBudget * 0.25
+              ? Math.min(100, Math.round(((totalRaised - totalBudget * 0.25) / (totalBudget * 0.25)) * 100))
+              : 0,
           order: 2,
         },
         {
           title: "تکمیل ۱۰۰٪ هدف",
           description: "رسیدن به هدف نهایی",
           targetDate: new Date(now.getTime() + 120 * 24 * 60 * 60 * 1000),
-          status: totalRaised >= totalBudget ? "completed" : totalRaised >= totalBudget * 0.5 ? "in_progress" : "pending",
-          progressPercentage: totalRaised >= totalBudget * 0.5 ? Math.min(100, Math.round(((totalRaised - totalBudget * 0.5) / (totalBudget * 0.5)) * 100)) : 0,
+          status:
+            totalRaised >= totalBudget
+              ? "completed"
+              : totalRaised >= totalBudget * 0.5
+              ? "in_progress"
+              : "pending",
+          progressPercentage:
+            totalRaised >= totalBudget * 0.5
+              ? Math.min(100, Math.round(((totalRaised - totalBudget * 0.5) / (totalBudget * 0.5)) * 100))
+              : 0,
           order: 3,
         },
       ];

@@ -58,7 +58,7 @@ const TeamsPage: React.FC = () => {
   }, [activeTab, selectedStatus, selectedFocusArea]);
 
   const currentTeams = activeTab === "all" ? teams : myTeams;
-
+  console.log(teams);
   return (
     <ProtectedRoute>
       <div className="min-h-screen bg-mgray/5">
@@ -77,8 +77,8 @@ const TeamsPage: React.FC = () => {
             <div>
               <h1 className="text-lg md:text-2xl font-extrabold mb-5">تیم‌های نیازسنجی</h1>
               <p className="font-bold text-xs md:text-base/loose">
-                به تیم‌های فعال بپیوندید، مهارت‌های خود را به اشتراک بگذارید و در پروژه‌های خیرخواهانه
-                مشارکت کنید. با همکاری و هماهنگی، می‌توانیم تغییرات مثبتی ایجاد کنیم.
+                به تیم‌های فعال بپیوندید، مهارت‌های خود را به اشتراک بگذارید و در پروژه‌های خیرخواهانه مشارکت
+                کنید. با همکاری و هماهنگی، می‌توانیم تغییرات مثبتی ایجاد کنیم.
               </p>
             </div>
             <OptimizedImage
@@ -130,11 +130,7 @@ const TeamsPage: React.FC = () => {
             </div>
 
             {/* Create Team Button */}
-            <SmartButton
-              variant="morange"
-              size="md"
-              onClick={() => router.push("/network/teams/create")}
-            >
+            <SmartButton variant="morange" size="md" onClick={() => router.push("/network/teams/create")}>
               + ایجاد تیم جدید
             </SmartButton>
           </div>
@@ -202,11 +198,7 @@ const TeamsPage: React.FC = () => {
                   {activeTab === "all" ? "تیمی یافت نشد." : "شما هنوز عضو هیچ تیمی نیستید."}
                 </p>
                 {activeTab === "my" && (
-                  <SmartButton
-                    variant="mblue"
-                    size="sm"
-                    onClick={() => setActiveTab("all")}
-                  >
+                  <SmartButton variant="mblue" size="sm" onClick={() => setActiveTab("all")}>
                     مشاهده همه تیم‌ها
                   </SmartButton>
                 )}

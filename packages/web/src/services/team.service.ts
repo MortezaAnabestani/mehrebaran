@@ -79,13 +79,7 @@ export interface UpdateMemberRoleData {
   role: "leader" | "co_leader" | "member";
 }
 
-/**
- * Team Service - تمام درخواست‌های مربوط به تیم‌ها
- */
 class TeamService {
-  /**
-   * دریافت لیست تیم‌ها
-   */
   public async getTeams(params?: GetTeamsParams): Promise<GetTeamsResponse> {
     try {
       const response = await api.get(`${process.env.NEXT_PUBLIC_API_URL}/teams`, { params });

@@ -68,7 +68,7 @@ class NeedService {
    */
   public async getNeeds(params?: GetNeedsParams): Promise<GetNeedsResponse> {
     try {
-      const response = await api.get("/needs", { params });
+      const response = await api.get(`${process.env.NEXT_PUBLIC_API_URL}/needs`, { params });
       return response.data;
     } catch (error: any) {
       console.error("Get needs failed:", error);
@@ -240,7 +240,9 @@ class NeedService {
   /**
    * دریافت نیازهای نزدیک
    */
-  public async getNearbyNeeds(params?: GetNeedsParams & { lat?: number; lng?: number; radius?: number }): Promise<GetNeedsResponse> {
+  public async getNearbyNeeds(
+    params?: GetNeedsParams & { lat?: number; lng?: number; radius?: number }
+  ): Promise<GetNeedsResponse> {
     try {
       const response = await api.get("/needs/nearby", { params });
       return response.data;
@@ -270,7 +272,10 @@ class NeedService {
   /**
    * ایجاد آپدیت برای نیاز
    */
-  public async createUpdate(needId: string, data: { title: string; content: string; images?: string[] }): Promise<{ success: boolean; data: any; message: string }> {
+  public async createUpdate(
+    needId: string,
+    data: { title: string; content: string; images?: string[] }
+  ): Promise<{ success: boolean; data: any; message: string }> {
     try {
       const response = await api.post(`/needs/${needId}/updates`, data);
       return response.data;
@@ -283,7 +288,11 @@ class NeedService {
   /**
    * ویرایش آپدیت
    */
-  public async updateUpdate(needId: string, updateId: string, data: { title?: string; content?: string; images?: string[] }): Promise<{ success: boolean; data: any; message: string }> {
+  public async updateUpdate(
+    needId: string,
+    updateId: string,
+    data: { title?: string; content?: string; images?: string[] }
+  ): Promise<{ success: boolean; data: any; message: string }> {
     try {
       const response = await api.patch(`/needs/${needId}/updates/${updateId}`, data);
       return response.data;
@@ -296,7 +305,10 @@ class NeedService {
   /**
    * حذف آپدیت
    */
-  public async deleteUpdate(needId: string, updateId: string): Promise<{ success: boolean; message: string }> {
+  public async deleteUpdate(
+    needId: string,
+    updateId: string
+  ): Promise<{ success: boolean; message: string }> {
     try {
       const response = await api.delete(`/needs/${needId}/updates/${updateId}`);
       return response.data;
@@ -326,7 +338,10 @@ class NeedService {
   /**
    * ایجاد milestone برای نیاز
    */
-  public async createMilestone(needId: string, data: { title: string; description?: string; targetAmount?: number; deadline?: Date }): Promise<{ success: boolean; data: any; message: string }> {
+  public async createMilestone(
+    needId: string,
+    data: { title: string; description?: string; targetAmount?: number; deadline?: Date }
+  ): Promise<{ success: boolean; data: any; message: string }> {
     try {
       const response = await api.post(`/needs/${needId}/milestones`, data);
       return response.data;
@@ -339,7 +354,11 @@ class NeedService {
   /**
    * ویرایش milestone
    */
-  public async updateMilestone(needId: string, milestoneId: string, data: { title?: string; description?: string; targetAmount?: number; deadline?: Date }): Promise<{ success: boolean; data: any; message: string }> {
+  public async updateMilestone(
+    needId: string,
+    milestoneId: string,
+    data: { title?: string; description?: string; targetAmount?: number; deadline?: Date }
+  ): Promise<{ success: boolean; data: any; message: string }> {
     try {
       const response = await api.patch(`/needs/${needId}/milestones/${milestoneId}`, data);
       return response.data;
@@ -352,7 +371,10 @@ class NeedService {
   /**
    * حذف milestone
    */
-  public async deleteMilestone(needId: string, milestoneId: string): Promise<{ success: boolean; message: string }> {
+  public async deleteMilestone(
+    needId: string,
+    milestoneId: string
+  ): Promise<{ success: boolean; message: string }> {
     try {
       const response = await api.delete(`/needs/${needId}/milestones/${milestoneId}`);
       return response.data;
@@ -365,7 +387,10 @@ class NeedService {
   /**
    * تکمیل milestone
    */
-  public async completeMilestone(needId: string, milestoneId: string): Promise<{ success: boolean; data: any; message: string }> {
+  public async completeMilestone(
+    needId: string,
+    milestoneId: string
+  ): Promise<{ success: boolean; data: any; message: string }> {
     try {
       const response = await api.post(`/needs/${needId}/milestones/${milestoneId}/complete`);
       return response.data;
@@ -395,7 +420,10 @@ class NeedService {
   /**
    * ایجاد budget item
    */
-  public async createBudgetItem(needId: string, data: { category: string; description?: string; amount: number }): Promise<{ success: boolean; data: any; message: string }> {
+  public async createBudgetItem(
+    needId: string,
+    data: { category: string; description?: string; amount: number }
+  ): Promise<{ success: boolean; data: any; message: string }> {
     try {
       const response = await api.post(`/needs/${needId}/budget`, data);
       return response.data;
@@ -408,7 +436,11 @@ class NeedService {
   /**
    * ویرایش budget item
    */
-  public async updateBudgetItem(needId: string, budgetItemId: string, data: { category?: string; description?: string; amount?: number }): Promise<{ success: boolean; data: any; message: string }> {
+  public async updateBudgetItem(
+    needId: string,
+    budgetItemId: string,
+    data: { category?: string; description?: string; amount?: number }
+  ): Promise<{ success: boolean; data: any; message: string }> {
     try {
       const response = await api.patch(`/needs/${needId}/budget/${budgetItemId}`, data);
       return response.data;
@@ -421,7 +453,10 @@ class NeedService {
   /**
    * حذف budget item
    */
-  public async deleteBudgetItem(needId: string, budgetItemId: string): Promise<{ success: boolean; message: string }> {
+  public async deleteBudgetItem(
+    needId: string,
+    budgetItemId: string
+  ): Promise<{ success: boolean; message: string }> {
     try {
       const response = await api.delete(`/needs/${needId}/budget/${budgetItemId}`);
       return response.data;
@@ -434,7 +469,11 @@ class NeedService {
   /**
    * افزودن وجه به budget item
    */
-  public async addFundsToBudgetItem(needId: string, budgetItemId: string, amount: number): Promise<{ success: boolean; data: any; message: string }> {
+  public async addFundsToBudgetItem(
+    needId: string,
+    budgetItemId: string,
+    amount: number
+  ): Promise<{ success: boolean; data: any; message: string }> {
     try {
       const response = await api.post(`/needs/${needId}/budget/${budgetItemId}/add-funds`, { amount });
       return response.data;
@@ -451,7 +490,9 @@ class NeedService {
   /**
    * دریافت جزئیات supporter‌ها
    */
-  public async getSupporterDetails(needId: string): Promise<{ success: boolean; data: any[]; message: string }> {
+  public async getSupporterDetails(
+    needId: string
+  ): Promise<{ success: boolean; data: any[]; message: string }> {
     try {
       const response = await api.get(`/needs/${needId}/supporters/details`);
       return response.data;
@@ -464,7 +505,11 @@ class NeedService {
   /**
    * ویرایش جزئیات supporter
    */
-  public async updateSupporterDetail(needId: string, userId: string, data: { role?: string; permissions?: string[] }): Promise<{ success: boolean; data: any; message: string }> {
+  public async updateSupporterDetail(
+    needId: string,
+    userId: string,
+    data: { role?: string; permissions?: string[] }
+  ): Promise<{ success: boolean; data: any; message: string }> {
     try {
       const response = await api.patch(`/needs/${needId}/supporters/${userId}`, data);
       return response.data;
@@ -477,7 +522,11 @@ class NeedService {
   /**
    * افزودن contribution برای supporter
    */
-  public async addContribution(needId: string, userId: string, data: { type: string; amount?: number; description?: string }): Promise<{ success: boolean; data: any; message: string }> {
+  public async addContribution(
+    needId: string,
+    userId: string,
+    data: { type: string; amount?: number; description?: string }
+  ): Promise<{ success: boolean; data: any; message: string }> {
     try {
       const response = await api.post(`/needs/${needId}/supporters/${userId}/contributions`, data);
       return response.data;
@@ -490,7 +539,10 @@ class NeedService {
   /**
    * حذف supporter
    */
-  public async removeSupporterDetail(needId: string, userId: string): Promise<{ success: boolean; message: string }> {
+  public async removeSupporterDetail(
+    needId: string,
+    userId: string
+  ): Promise<{ success: boolean; message: string }> {
     try {
       const response = await api.delete(`/needs/${needId}/supporters/${userId}`);
       return response.data;
@@ -507,7 +559,9 @@ class NeedService {
   /**
    * دریافت درخواست‌های verification
    */
-  public async getVerificationRequests(needId: string): Promise<{ success: boolean; data: any[]; message: string }> {
+  public async getVerificationRequests(
+    needId: string
+  ): Promise<{ success: boolean; data: any[]; message: string }> {
     try {
       const response = await api.get(`/needs/${needId}/verifications`);
       return response.data;
@@ -520,7 +574,10 @@ class NeedService {
   /**
    * ایجاد درخواست verification
    */
-  public async createVerificationRequest(needId: string, data: { type: string; documents?: string[]; notes?: string }): Promise<{ success: boolean; data: any; message: string }> {
+  public async createVerificationRequest(
+    needId: string,
+    data: { type: string; documents?: string[]; notes?: string }
+  ): Promise<{ success: boolean; data: any; message: string }> {
     try {
       const response = await api.post(`/needs/${needId}/verifications`, data);
       return response.data;
@@ -533,7 +590,11 @@ class NeedService {
   /**
    * بررسی درخواست verification (فقط ادمین)
    */
-  public async reviewVerificationRequest(needId: string, verificationId: string, data: { status: string; reviewNotes?: string }): Promise<{ success: boolean; data: any; message: string }> {
+  public async reviewVerificationRequest(
+    needId: string,
+    verificationId: string,
+    data: { status: string; reviewNotes?: string }
+  ): Promise<{ success: boolean; data: any; message: string }> {
     try {
       const response = await api.patch(`/needs/${needId}/verifications/${verificationId}/review`, data);
       return response.data;
@@ -546,7 +607,10 @@ class NeedService {
   /**
    * حذف درخواست verification
    */
-  public async deleteVerificationRequest(needId: string, verificationId: string): Promise<{ success: boolean; message: string }> {
+  public async deleteVerificationRequest(
+    needId: string,
+    verificationId: string
+  ): Promise<{ success: boolean; message: string }> {
     try {
       const response = await api.delete(`/needs/${needId}/verifications/${verificationId}`);
       return response.data;

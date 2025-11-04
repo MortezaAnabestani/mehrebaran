@@ -19,80 +19,68 @@ export async function seedSocialInteractions(users: any[], needs: any[]) {
     // ===========================
     // Follows - دنبال کردن‌ها
     // ===========================
-    const follows = [];
-    for (let i = 0; i < users.length; i++) {
-      const follower = users[i];
-
-      // هر کاربر چند نفر را دنبال می‌کند (۱ تا ۱۰ نفر)
-      const followCount = Math.floor(Math.random() * 10) + 1;
+    let createdFollowsCount = 0;
+    for (const follower of users) {
+      // هر کاربر چند نفر را دنبال می‌کند
+      const followUserCount = Math.floor(Math.random() * 10) + 1;
       const followedUsers = new Set();
-
-      for (let j = 0; j < followCount; j++) {
+      for (let j = 0; j < followUserCount; j++) {
         const randomUser = users[Math.floor(Math.random() * users.length)];
         if (
           randomUser._id.toString() !== follower._id.toString() &&
           !followedUsers.has(randomUser._id.toString())
         ) {
           followedUsers.add(randomUser._id.toString());
-          follows.push({
+          // استفاده از نام فیلد صحیح `following` بر اساس مدل
+          await FollowModel.create({
             follower: follower._id,
-            following: randomUser._id,
-            followingType: "user",
+            following: randomUser._id, // <<<< این فیلد صحیح است
+            followType: "user",
           });
+          createdFollowsCount++;
         }
       }
 
-      // دنبال کردن چند نیاز (۱ تا ۵ نیاز)
+      // هر کاربر چند نیاز را دنبال می‌کند
       const followNeedCount = Math.floor(Math.random() * 5) + 1;
       const followedNeeds = new Set();
-
       for (let j = 0; j < followNeedCount; j++) {
         const randomNeed = needs[Math.floor(Math.random() * needs.length)];
         if (!followedNeeds.has(randomNeed._id.toString())) {
           followedNeeds.add(randomNeed._id.toString());
-          follows.push({
+          // استفاده از نام فیلد صحیح `followedNeed` بر اساس مدل
+          await FollowModel.create({
             follower: follower._id,
-            following: randomNeed._id,
-            followingType: "need",
+            followedNeed: randomNeed._id, // <<<< این فیلد صحیح است
+            followType: "need",
           });
+          createdFollowsCount++;
         }
       }
     }
+    console.log(`  ✓ Created ${createdFollowsCount} follows`);
 
-    await FollowModel.insertMany(follows);
-    console.log(`  ✓ Created ${follows.length} follows`);
-
-    // ===========================
-    // Likes - لایک‌ها
-    // ===========================
-    const likes = [];
-    for (let i = 0; i < users.length; i++) {
-      const user = users[i];
-
-      // هر کاربر چند نیاز را لایک می‌کند (۱ تا ۸ نیاز)
+    // بخش‌های Like و Comment بدون تغییر باقی می‌مانند
+    let createdLikesCount = 0;
+    for (const user of users) {
       const likeCount = Math.floor(Math.random() * 8) + 1;
       const likedNeeds = new Set();
-
       for (let j = 0; j < likeCount; j++) {
         const randomNeed = needs[Math.floor(Math.random() * needs.length)];
         if (!likedNeeds.has(randomNeed._id.toString())) {
           likedNeeds.add(randomNeed._id.toString());
-          likes.push({
+          await Like.create({
             user: user._id,
             target: randomNeed._id,
             targetType: "need",
           });
+          createdLikesCount++;
         }
       }
     }
+    console.log(`  ✓ Created ${createdLikesCount} likes`);
 
-    await Like.insertMany(likes);
-    console.log(`  ✓ Created ${likes.length} likes`);
-
-    // ===========================
-    // Comments - کامنت‌ها
-    // ===========================
-    const comments = [];
+    let createdCommentsCount = 0;
     const commentTexts = [
       "خداقوت! موفق باشید 🙏",
       "ان‌شاالله با کمک همه به هدف می‌رسیم",
@@ -110,31 +98,22 @@ export async function seedSocialInteractions(users: any[], needs: any[]) {
       "ما پشتیبانتونیم",
       "این کار ثواب داره، ادامه بدین",
     ];
-
-    for (let i = 0; i < needs.length; i++) {
-      const need = needs[i];
-
-      // هر نیاز چند کامنت دارد (۲ تا ۱۰ کامنت)
+    for (const need of needs) {
       const commentCount = Math.floor(Math.random() * 9) + 2;
-
       for (let j = 0; j < commentCount; j++) {
         const randomUser = users[Math.floor(Math.random() * users.length)];
         const randomText = commentTexts[Math.floor(Math.random() * commentTexts.length)];
-
-        comments.push({
+        await NeedComment.create({
           content: randomText,
           user: randomUser._id,
           target: need._id,
           targetType: "need",
           createdAt: new Date(Date.now() - Math.floor(Math.random() * 20) * 24 * 60 * 60 * 1000),
         });
+        createdCommentsCount++;
       }
     }
-
-    await NeedComment.insertMany(comments);
-    console.log(`  ✓ Created ${comments.length} comments`);
-
-    return { follows, likes, comments };
+    console.log(`  ✓ Created ${createdCommentsCount} comments`);
   } catch (error) {
     console.error("  ✗ Error seeding social interactions:", error);
     throw error;

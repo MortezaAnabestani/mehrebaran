@@ -55,7 +55,7 @@ export async function seedTeams(users: any[], needs: any[]) {
     await TeamModel.deleteMany({});
     console.log("  ✓ Cleared existing teams");
 
-    const teams = [];
+    const createdTeams = []; // آرایه‌ای برای نگهداری تیم‌های ایجاد شده
 
     // ایجاد تیم‌ها
     for (let i = 0; i < teamTemplates.length; i++) {
@@ -84,13 +84,17 @@ export async function seedTeams(users: any[], needs: any[]) {
         }
       }
 
-      const team = {
+      const teamData = {
         name: template.name,
         description: template.description,
         type: template.type,
         need: need._id,
         members,
         leader: leader._id,
+        // ======================= تغییر اصلی اول =======================
+        // اضافه کردن فیلد الزامی createdBy
+        createdBy: leader._id,
+        // ==============================================================
         isActive: true,
         stats: {
           tasksCompleted: Math.floor(Math.random() * 20),
@@ -98,11 +102,14 @@ export async function seedTeams(users: any[], needs: any[]) {
         },
       };
 
-      teams.push(team);
+      // ======================= تغییر اصلی دوم =======================
+      // ایجاد تیم به صورت مستقیم به جای push کردن در آرایه
+      const newTeam = await TeamModel.create(teamData);
+      createdTeams.push(newTeam);
+      // ==============================================================
     }
 
-    // ذخیره تیم‌ها
-    const createdTeams = await TeamModel.insertMany(teams);
+    // خط `insertMany` دیگر مورد نیاز نیست
     console.log(`  ✓ Created ${createdTeams.length} teams`);
 
     return createdTeams;

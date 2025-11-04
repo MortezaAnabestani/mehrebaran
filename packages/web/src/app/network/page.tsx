@@ -47,7 +47,7 @@ const NetworkPage: React.FC = () => {
       if (sortBy === "popular") params.sortBy = "likes";
       if (sortBy === "newest") params.sortBy = "createdAt";
 
-      const response = await needService.getNeeds(params);
+      const response = await needService.getNeeds();
       setNeeds(response.data);
     } catch (err: any) {
       console.error("Failed to fetch needs:", err);
@@ -120,9 +120,9 @@ const NetworkPage: React.FC = () => {
             <div>
               <h1 className="text-lg md:text-2xl font-extrabold mb-5">شبکه نیازسنجی</h1>
               <p className="font-bold text-xs md:text-base/loose">
-                ایجاد فضایی برای شناسایی، اولویت‌بندی و اجرای نیازهای واقعی فراهم شده است. با مشارکت شما و حمایت
-                دانشجویان و خیرین، قدم‌های مؤثری برمی‌داریم. لطفاً به ما بپیوندید و با نظراتتان، این مسیر را
-                همموار کنید
+                ایجاد فضایی برای شناسایی، اولویت‌بندی و اجرای نیازهای واقعی فراهم شده است. با مشارکت شما و
+                حمایت دانشجویان و خیرین، قدم‌های مؤثری برمی‌داریم. لطفاً به ما بپیوندید و با نظراتتان، این
+                مسیر را همموار کنید
               </p>
             </div>
             <OptimizedImage

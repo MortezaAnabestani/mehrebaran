@@ -61,7 +61,7 @@ class AuthService {
    */
   public async login(credentials: LoginCredentials): Promise<LoginResponse> {
     try {
-      const response = await api.post("/auth/login", credentials);
+      const response = await api.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, credentials);
 
       // ذخیره token در localStorage
       if (response.data.data.token) {

@@ -15,13 +15,24 @@ const followSchema = new Schema<IFollow>(
   { timestamps: true }
 );
 
-// Compound indexes for efficient queries
-followSchema.index({ follower: 1, following: 1 }, { unique: true, sparse: true });
-followSchema.index({ follower: 1, followedNeed: 1 }, { unique: true, sparse: true });
+// ======================= تغییرات اصلی در این بخش است =======================
+// ایندکس ترکیبی برای دنبال کردن کاربر، فقط زمانی که فیلد `following` وجود دارد
+followSchema.index(
+  { follower: 1, following: 1 },
+  { unique: true, partialFilterExpression: { following: { $exists: true } } }
+);
+
+// ایندکس ترکیبی برای دنبال کردن نیاز، فقط زمانی که فیلد `followedNeed` وجود دارد
+followSchema.index(
+  { follower: 1, followedNeed: 1 },
+  { unique: true, partialFilterExpression: { followedNeed: { $exists: true } } }
+);
+// ========================================================================
+
 followSchema.index({ followType: 1, following: 1 });
 followSchema.index({ followType: 1, followedNeed: 1 });
 
-// Validation: Either following user or followedNeed must be set
+// Validation: Either following or followedNeed must be set based on followType
 followSchema.pre("save", function (next) {
   if (this.followType === "user" && !this.following) {
     return next(new Error("following user is required for user follow type"));

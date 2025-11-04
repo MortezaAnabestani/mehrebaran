@@ -47,8 +47,12 @@ export async function seedNeedCategories() {
     await NeedCategoryModel.deleteMany({});
     console.log("  ✓ Cleared existing need categories");
 
-    // ایجاد دسته‌بندی‌ها
-    const createdCategories = await NeedCategoryModel.insertMany(categories);
+    const createdCategories = [];
+    for (const categoryData of categories) {
+      const newCategory = await NeedCategoryModel.create(categoryData);
+      createdCategories.push(newCategory);
+    }
+
     console.log(`  ✓ Created ${createdCategories.length} need categories`);
 
     return createdCategories;

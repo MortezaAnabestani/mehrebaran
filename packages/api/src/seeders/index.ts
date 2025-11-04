@@ -14,7 +14,7 @@ async function runSeeders() {
     console.log("🌱 Starting database seeding...\n");
 
     // اتصال به دیتابیس
-    const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/mehrebaran";
+    const MONGODB_URI = process.env.DATABASE_URL || "mongodb://localhost:27017/mehrebaran_db";
     await mongoose.connect(MONGODB_URI);
     console.log("✓ Connected to MongoDB\n");
 
@@ -31,25 +31,32 @@ async function runSeeders() {
     const teams = await seedTeams(users, needs);
     console.log("");
 
-    const social = await seedSocialInteractions(users, needs);
+    // ======================= تغییر اصلی در این بخش =======================
+    // فراخوانی تابع بدون انتظار برای مقدار بازگشتی
+    await seedSocialInteractions(users, needs);
     console.log("");
+    // ====================================================================
 
     // خلاصه نتایج
-    console.log("=" .repeat(50));
+    console.log("=".repeat(50));
     console.log("🎉 Seeding completed successfully!");
-    console.log("=" .repeat(50));
+    console.log("=".repeat(50));
     console.log(`✓ ${users.length} users created`);
     console.log(`✓ ${categories.length} need categories created`);
     console.log(`✓ ${needs.length} needs created`);
     console.log(`✓ ${teams.length} teams created`);
-    console.log(`✓ ${social.follows.length} follows created`);
-    console.log(`✓ ${social.likes.length} likes created`);
-    console.log(`✓ ${social.comments.length} comments created`);
-    console.log("=" .repeat(50));
+
+    // ======================= این سه خط حذف شدند =======================
+    // console.log(`✓ ${social.follows.length} follows created`);
+    // console.log(`✓ ${social.likes.length} likes created`);
+    // console.log(`✓ ${social.comments.length} comments created`);
+    // ====================================================================
+
+    console.log("=".repeat(50));
     console.log("\n📝 Test Account:");
     console.log("   Email: admin@mehrebaran.ir");
     console.log("   Password: password123");
-    console.log("=" .repeat(50));
+    console.log("=".repeat(50));
 
     process.exit(0);
   } catch (error) {

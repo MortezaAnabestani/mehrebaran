@@ -36,10 +36,15 @@ const NeedDetailPage: React.FC = () => {
       setIsLoading(true);
       setError(null);
 
-      const need = await needService.getNeedById(needId);
-      setNeed(need);
-      setLikesCount(need.likesCount || 0);
-      // TODO: Check if user has liked/followed this need
+      const fetchedNeed = await needService.getNeedById(needId);
+      setNeed(fetchedNeed);
+      setLikesCount(fetchedNeed.upvotes?.length || 0);
+
+      // Check if user has liked/followed this need
+      if (user) {
+        setIsLiked(fetchedNeed.upvotes?.includes(user._id) || false);
+        setIsFollowing(fetchedNeed.supporters?.includes(user._id) || false);
+      }
     } catch (err: any) {
       console.error("Failed to fetch need:", err);
       setError(err.message || "خطا در دریافت اطلاعات نیاز");
@@ -79,33 +84,37 @@ const NeedDetailPage: React.FC = () => {
     return `${days} روز مانده`;
   };
 
-  // لایک کردن
+  // لایک کردن (toggle upvote)
   const handleLike = async () => {
     try {
-      if (isLiked) {
-        await needService.unlikeNeed(needId);
-        setLikesCount((prev) => prev - 1);
-      } else {
-        await needService.likeNeed(needId);
-        setLikesCount((prev) => prev + 1);
-      }
+      // Both like and unlike use the same endpoint (toggle)
+      await needService.likeNeed(needId);
+      // Optimistic update
       setIsLiked(!isLiked);
+      setLikesCount((prev) => (isLiked ? prev - 1 : prev + 1));
+      // Refresh to get accurate data
+      await fetchNeed();
     } catch (error) {
       console.error("Like error:", error);
+      // Revert on error
+      setIsLiked(isLiked);
+      setLikesCount(need?.upvotes?.length || 0);
     }
   };
 
-  // دنبال کردن
+  // دنبال کردن (toggle support)
   const handleFollow = async () => {
     try {
-      if (isFollowing) {
-        await needService.unfollowNeed(needId);
-      } else {
-        await needService.followNeed(needId);
-      }
+      // Both follow and unfollow use the same endpoint (toggle)
+      await needService.followNeed(needId);
+      // Optimistic update
       setIsFollowing(!isFollowing);
+      // Refresh to get accurate data
+      await fetchNeed();
     } catch (error) {
       console.error("Follow error:", error);
+      // Revert on error
+      setIsFollowing(isFollowing);
     }
   };
 

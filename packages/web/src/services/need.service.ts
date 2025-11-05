@@ -134,10 +134,7 @@ class NeedService {
    */
   public async followNeed(id: string): Promise<void> {
     try {
-      await api.post(`/social/follow`, {
-        followingType: "need",
-        following: id,
-      });
+      await api.post(`/needs/${id}/support`);
     } catch (error: any) {
       console.error("Follow need failed:", error);
       throw new Error(error.response?.data?.message || "خطا در دنبال کردن نیاز");
@@ -145,11 +142,11 @@ class NeedService {
   }
 
   /**
-   * لغو دنبال کردن نیاز
+   * لغو دنبال کردن نیاز (same endpoint, it toggles)
    */
   public async unfollowNeed(id: string): Promise<void> {
     try {
-      await api.delete(`/social/follow/${id}`);
+      await api.post(`/needs/${id}/support`);
     } catch (error: any) {
       console.error("Unfollow need failed:", error);
       throw new Error(error.response?.data?.message || "خطا در لغو دنبال کردن");
@@ -157,14 +154,11 @@ class NeedService {
   }
 
   /**
-   * لایک کردن نیاز
+   * لایک کردن نیاز (upvote)
    */
   public async likeNeed(id: string): Promise<void> {
     try {
-      await api.post(`/social/like`, {
-        targetType: "need",
-        target: id,
-      });
+      await api.post(`/needs/${id}/upvote`);
     } catch (error: any) {
       console.error("Like need failed:", error);
       throw new Error(error.response?.data?.message || "خطا در لایک کردن");
@@ -172,11 +166,11 @@ class NeedService {
   }
 
   /**
-   * حذف لایک نیاز
+   * حذف لایک نیاز (same endpoint, it toggles)
    */
   public async unlikeNeed(id: string): Promise<void> {
     try {
-      await api.delete(`/social/like/${id}`);
+      await api.post(`/needs/${id}/upvote`);
     } catch (error: any) {
       console.error("Unlike need failed:", error);
       throw new Error(error.response?.data?.message || "خطا در حذف لایک");

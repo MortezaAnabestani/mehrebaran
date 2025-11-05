@@ -292,31 +292,54 @@ class NeedService {
       throw new ApiError(404, "نیاز یافت نشد.");
     }
 
-    // Add to supporters array
+    // Initialize supporters array if it doesn't exist
     if (!need.supporters) {
       need.supporters = [];
     }
-    const userObjId = new Types.ObjectId(userId);
-    const alreadySupporter = need.supporters.some((s) => s.toString() === userId);
-    if (!alreadySupporter) {
-      need.supporters.push(userObjId as any);
-    }
 
-    // Create supporter detail if doesn't exist
-    if (!need.supporterDetails) {
-      need.supporterDetails = [];
-    }
-    const existingDetail = need.supporterDetails.find((sd: any) => sd.user.toString() === userId);
-    if (!existingDetail) {
-      (need.supporterDetails as any).push({
-        user: userObjId,
-        role: "supporter",
-        joinedAt: new Date(),
-        invitedBy: invitedBy ? new Types.ObjectId(invitedBy) : undefined,
-        contributions: [],
-        tasksCompleted: 0,
-        isActive: true,
-      });
+    const userObjId = new Types.ObjectId(userId);
+    const supporterIndex = need.supporters.findIndex((s) => s.toString() === userId);
+
+    // Toggle supporter status (like toggleUpvote)
+    if (supporterIndex > -1) {
+      // User is already a supporter, remove them
+      need.supporters.splice(supporterIndex, 1);
+
+      // Mark supporter detail as inactive
+      if (!need.supporterDetails) {
+        need.supporterDetails = [];
+      }
+      const supporterDetail = need.supporterDetails.find((sd: any) => sd.user.toString() === userId);
+      if (supporterDetail) {
+        (supporterDetail as any).isActive = false;
+        (supporterDetail as any).leftAt = new Date();
+      }
+    } else {
+      // User is not a supporter, add them
+      need.supporters.push(userObjId as any);
+
+      // Create or reactivate supporter detail
+      if (!need.supporterDetails) {
+        need.supporterDetails = [];
+      }
+      const existingDetail = need.supporterDetails.find((sd: any) => sd.user.toString() === userId);
+      if (existingDetail) {
+        // Reactivate existing supporter
+        (existingDetail as any).isActive = true;
+        (existingDetail as any).leftAt = undefined;
+        (existingDetail as any).lastActivityAt = new Date();
+      } else {
+        // Create new supporter detail
+        (need.supporterDetails as any).push({
+          user: userObjId,
+          role: "supporter",
+          joinedAt: new Date(),
+          invitedBy: invitedBy ? new Types.ObjectId(invitedBy) : undefined,
+          contributions: [],
+          tasksCompleted: 0,
+          isActive: true,
+        });
+      }
     }
 
     await need.save();

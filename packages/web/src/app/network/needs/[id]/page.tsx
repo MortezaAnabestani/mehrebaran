@@ -86,35 +86,54 @@ const NeedDetailPage: React.FC = () => {
 
   // لایک کردن (toggle upvote)
   const handleLike = async () => {
+    if (!user) {
+      alert("لطفاً ابتدا وارد حساب کاربری خود شوید");
+      return;
+    }
+
     try {
-      // Both like and unlike use the same endpoint (toggle)
-      await needService.likeNeed(needId);
-      // Optimistic update
+      // Store previous state for revert
+      const previousLiked = isLiked;
+      const previousCount = likesCount;
+
+      // Optimistic update first (instant UI feedback)
       setIsLiked(!isLiked);
       setLikesCount((prev) => (isLiked ? prev - 1 : prev + 1));
-      // Refresh to get accurate data
-      await fetchNeed();
+
+      // Call API
+      await needService.likeNeed(needId);
+
+      // No refetch needed - optimistic update is enough
     } catch (error) {
       console.error("Like error:", error);
       // Revert on error
-      setIsLiked(isLiked);
-      setLikesCount(need?.upvotes?.length || 0);
+      setIsLiked(previousLiked);
+      setLikesCount(previousCount);
     }
   };
 
   // دنبال کردن (toggle support)
   const handleFollow = async () => {
+    if (!user) {
+      alert("لطفاً ابتدا وارد حساب کاربری خود شوید");
+      return;
+    }
+
     try {
-      // Both follow and unfollow use the same endpoint (toggle)
-      await needService.followNeed(needId);
-      // Optimistic update
+      // Store previous state for revert
+      const previousFollowing = isFollowing;
+
+      // Optimistic update first (instant UI feedback)
       setIsFollowing(!isFollowing);
-      // Refresh to get accurate data
-      await fetchNeed();
+
+      // Call API
+      await needService.followNeed(needId);
+
+      // No refetch needed - optimistic update is enough
     } catch (error) {
       console.error("Follow error:", error);
       // Revert on error
-      setIsFollowing(isFollowing);
+      setIsFollowing(previousFollowing);
     }
   };
 

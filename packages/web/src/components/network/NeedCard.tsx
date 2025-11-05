@@ -75,19 +75,28 @@ const NeedCard: React.FC<NeedCardProps> = ({ need, variant = "feed", onUpdate })
     e.preventDefault();
     e.stopPropagation();
 
+    if (!user) {
+      alert("لطفاً ابتدا وارد حساب کاربری خود شوید");
+      return;
+    }
+
     try {
-      // Toggle endpoint works for both like and unlike
-      await needService.likeNeed(need._id);
-      // Optimistic update
+      // Optimistic update first
+      const previousLiked = isLiked;
+      const previousCount = likesCount;
+
       setIsLiked(!isLiked);
       setLikesCount((prev) => (isLiked ? prev - 1 : prev + 1));
-      // Notify parent to refetch
-      onUpdate?.();
+
+      // Call API
+      await needService.likeNeed(need._id);
+
+      // No need to refetch - optimistic update is enough
     } catch (error) {
       console.error("Like error:", error);
       // Revert on error
-      setIsLiked(isLiked);
-      setLikesCount(need.upvotes?.length || 0);
+      setIsLiked(previousLiked);
+      setLikesCount(previousCount);
     }
   };
 
@@ -96,17 +105,25 @@ const NeedCard: React.FC<NeedCardProps> = ({ need, variant = "feed", onUpdate })
     e.preventDefault();
     e.stopPropagation();
 
+    if (!user) {
+      alert("لطفاً ابتدا وارد حساب کاربری خود شوید");
+      return;
+    }
+
     try {
-      // Toggle endpoint works for both follow and unfollow
-      await needService.followNeed(need._id);
-      // Optimistic update
+      // Optimistic update first
+      const previousFollowing = isFollowing;
+
       setIsFollowing(!isFollowing);
-      // Notify parent to refetch
-      onUpdate?.();
+
+      // Call API
+      await needService.followNeed(need._id);
+
+      // No need to refetch - optimistic update is enough
     } catch (error) {
       console.error("Follow error:", error);
       // Revert on error
-      setIsFollowing(isFollowing);
+      setIsFollowing(previousFollowing);
     }
   };
 

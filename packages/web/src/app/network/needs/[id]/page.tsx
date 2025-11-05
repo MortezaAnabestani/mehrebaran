@@ -266,6 +266,45 @@ const NeedDetailPage: React.FC = () => {
     return Math.min((raised / total) * 100, 100);
   };
 
+  // دریافت آیکون و اطلاعات فایل
+  const getFileInfo = (url: string, fileName?: string) => {
+    const name = fileName || url.split("/").pop() || "فایل";
+    const extension = name.split(".").pop()?.toLowerCase() || "";
+
+    let icon = "📄";
+    let color = "bg-gray-100 text-gray-700";
+
+    if (["pdf"].includes(extension)) {
+      icon = "📕";
+      color = "bg-red-100 text-red-700";
+    } else if (["doc", "docx"].includes(extension)) {
+      icon = "📘";
+      color = "bg-blue-100 text-blue-700";
+    } else if (["xls", "xlsx", "csv"].includes(extension)) {
+      icon = "📗";
+      color = "bg-green-100 text-green-700";
+    } else if (["ppt", "pptx"].includes(extension)) {
+      icon = "📙";
+      color = "bg-orange-100 text-orange-700";
+    } else if (["txt", "md"].includes(extension)) {
+      icon = "📝";
+      color = "bg-gray-100 text-gray-700";
+    } else if (["zip", "rar", "7z"].includes(extension)) {
+      icon = "🗜️";
+      color = "bg-purple-100 text-purple-700";
+    }
+
+    return { name, extension: extension.toUpperCase(), icon, color };
+  };
+
+  // فرمت سایز فایل
+  const formatFileSize = (bytes?: number): string => {
+    if (!bytes) return "";
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  };
+
   if (isLoading) {
     return (
       <ProtectedRoute>
@@ -451,18 +490,21 @@ const NeedDetailPage: React.FC = () => {
                   {/* Attachments */}
                   {need.attachments && need.attachments.length > 0 && (
                     <div className="mb-6">
-                      <h4 className="font-bold text-base mb-3">📎 فایل‌های پیوست</h4>
+                      <h4 className="font-bold text-base mb-3">
+                        📎 فایل‌های پیوست ({need.attachments.length})
+                      </h4>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {need.attachments.map((attachment: any, index: number) => (
                           <div key={index}>
                             {attachment.fileType === "image" && (
-                              <div className="relative w-full h-48 rounded-md overflow-hidden">
+                              <div className="relative w-full h-48 rounded-md overflow-hidden group cursor-pointer">
                                 <OptimizedImage
                                   src={attachment.url}
-                                  alt={`تصویر ${index + 1}`}
+                                  alt={attachment.fileName || `تصویر ${index + 1}`}
                                   fill
-                                  className="object-cover"
+                                  className="object-cover transition-transform group-hover:scale-105"
                                 />
+                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors"></div>
                               </div>
                             )}
                             {attachment.fileType === "video" && (
@@ -470,15 +512,70 @@ const NeedDetailPage: React.FC = () => {
                                 <video src={attachment.url} controls className="w-full h-full object-contain">
                                   مرورگر شما از پخش ویدیو پشتیبانی نمی‌کند.
                                 </video>
+                                {attachment.fileName && (
+                                  <p className="text-xs text-gray-500 mt-1 truncate">{attachment.fileName}</p>
+                                )}
                               </div>
                             )}
                             {attachment.fileType === "audio" && (
-                              <div className="bg-mgray/10 rounded-md p-4 flex items-center gap-3">
-                                <span className="text-2xl">🎵</span>
-                                <audio src={attachment.url} controls className="flex-1">
+                              <div className="bg-mgray/10 rounded-md p-4">
+                                <div className="flex items-center gap-3 mb-2">
+                                  <span className="text-2xl">🎵</span>
+                                  <div className="flex-1 min-w-0">
+                                    {attachment.fileName && (
+                                      <p className="text-sm font-bold truncate">{attachment.fileName}</p>
+                                    )}
+                                    {attachment.fileSize && (
+                                      <p className="text-xs text-gray-500">
+                                        {formatFileSize(attachment.fileSize)}
+                                      </p>
+                                    )}
+                                  </div>
+                                </div>
+                                <audio src={attachment.url} controls className="w-full">
                                   مرورگر شما از پخش صدا پشتیبانی نمی‌کند.
                                 </audio>
                               </div>
+                            )}
+                            {attachment.fileType === "document" && (
+                              <a
+                                href={attachment.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="block bg-mgray/10 rounded-md p-4 hover:bg-mgray/20 transition-colors border border-mgray/20"
+                              >
+                                <div className="flex items-start gap-3">
+                                  <div
+                                    className={`text-3xl flex-shrink-0 w-12 h-12 rounded-md flex items-center justify-center ${
+                                      getFileInfo(attachment.url, attachment.fileName).color
+                                    }`}
+                                  >
+                                    {getFileInfo(attachment.url, attachment.fileName).icon}
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-sm font-bold truncate">
+                                      {getFileInfo(attachment.url, attachment.fileName).name}
+                                    </p>
+                                    <div className="flex items-center gap-2 mt-1">
+                                      <span className="text-xs font-bold text-mblue">
+                                        {getFileInfo(attachment.url, attachment.fileName).extension}
+                                      </span>
+                                      {attachment.fileSize && (
+                                        <>
+                                          <span className="text-xs text-gray-400">•</span>
+                                          <span className="text-xs text-gray-500">
+                                            {formatFileSize(attachment.fileSize)}
+                                          </span>
+                                        </>
+                                      )}
+                                    </div>
+                                    <div className="flex items-center gap-1 mt-2 text-xs text-mblue">
+                                      <span>دانلود</span>
+                                      <span>↓</span>
+                                    </div>
+                                  </div>
+                                </div>
+                              </a>
                             )}
                           </div>
                         ))}

@@ -28,12 +28,18 @@ const attachmentSchema = new Schema(
   {
     fileType: {
       type: String,
-      enum: ["image", "audio", "video"],
+      enum: ["image", "audio", "video", "document"],
       required: true,
     },
     url: {
       type: String,
       required: true,
+    },
+    fileName: {
+      type: String,
+    },
+    fileSize: {
+      type: Number,
     },
   },
   { _id: false }

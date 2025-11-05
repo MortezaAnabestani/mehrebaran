@@ -18,9 +18,21 @@ interface NeedCardProps {
  */
 const NeedCard: React.FC<NeedCardProps> = ({ need, variant = "feed", onUpdate }) => {
   const { user } = useAuth();
-  const [isLiked, setIsLiked] = useState(false);
-  const [likesCount, setLikesCount] = useState(need.likesCount || 0);
-  const [isFollowing, setIsFollowing] = useState(false);
+
+  // Check if user has liked/followed this need
+  const userHasLiked = user && need.upvotes ? need.upvotes.includes(user._id) : false;
+  const userIsFollowing = user && need.supporters ? need.supporters.includes(user._id) : false;
+
+  const [isLiked, setIsLiked] = useState(userHasLiked);
+  const [likesCount, setLikesCount] = useState(need.upvotes?.length || 0);
+  const [isFollowing, setIsFollowing] = useState(userIsFollowing);
+
+  // Update state when need changes
+  React.useEffect(() => {
+    setIsLiked(userHasLiked);
+    setLikesCount(need.upvotes?.length || 0);
+    setIsFollowing(userIsFollowing);
+  }, [need, userHasLiked, userIsFollowing]);
 
   // محاسبه درصد پیشرفت
   const progressPercentage = need.targetAmount
@@ -58,52 +70,43 @@ const NeedCard: React.FC<NeedCardProps> = ({ need, variant = "feed", onUpdate })
     return `${days} روز پیش`;
   };
 
-  // لایک کردن نیاز
-  // لایک کردن نیاز
+  // لایک کردن نیاز (toggle upvote)
   const handleLike = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
 
     try {
-      if (isLiked) {
-        // ✅ استفاده از متد صحیح برای حذف لایک
-        await needService.unvoteNeed(need._id);
-        setLikesCount((prev) => prev - 1);
-      } else {
-        // ✅ استفاده از متد صحیح برای لایک کردن
-        await needService.upvoteNeed(need._id);
-        setLikesCount((prev) => prev + 1);
-      }
+      // Toggle endpoint works for both like and unlike
+      await needService.likeNeed(need._id);
+      // Optimistic update
       setIsLiked(!isLiked);
-      // onUpdate?.(); // این خط را می‌توان موقتاً کامنت کرد تا از رفرش کل لیست جلوگیری شود
+      setLikesCount((prev) => (isLiked ? prev - 1 : prev + 1));
+      // Notify parent to refetch
+      onUpdate?.();
     } catch (error) {
-      console.error("Upvote error:", error);
-      // در صورت خطا، وضعیت را به حالت قبل برمی‌گردانیم تا UI با واقعیت هماهنگ باشد
-      if (isLiked) {
-        setLikesCount((prev) => prev + 1);
-      } else {
-        setLikesCount((prev) => prev - 1);
-      }
+      console.error("Like error:", error);
+      // Revert on error
+      setIsLiked(isLiked);
+      setLikesCount(need.upvotes?.length || 0);
     }
   };
 
-  // حمایت (دنبال) کردن نیاز
+  // دنبال کردن نیاز (toggle support)
   const handleFollow = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
 
     try {
-      if (isFollowing) {
-        // ✅ استفاده از متد صحیح برای لغو حمایت
-        await needService.unsupportNeed(need._id);
-      } else {
-        // ✅ استفاده از متد صحیح برای حمایت
-        await needService.supportNeed(need._id);
-      }
+      // Toggle endpoint works for both follow and unfollow
+      await needService.followNeed(need._id);
+      // Optimistic update
       setIsFollowing(!isFollowing);
-      // onUpdate?.();
+      // Notify parent to refetch
+      onUpdate?.();
     } catch (error) {
-      console.error("Support error:", error);
+      console.error("Follow error:", error);
+      // Revert on error
+      setIsFollowing(isFollowing);
     }
   };
 

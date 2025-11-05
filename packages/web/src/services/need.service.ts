@@ -134,7 +134,6 @@ class NeedService {
    */
   public async supportNeed(id: string): Promise<void> {
     try {
-      // ✅ اندپوینت صحیح از مستندات بک‌اند
       await api.post(`/needs/${id}/support`);
     } catch (error: any) {
       console.error("Support need failed:", error);
@@ -143,12 +142,11 @@ class NeedService {
   }
 
   /**
-   * لغو دنبال کردن نیاز
+   * لغو دنبال کردن نیاز (same endpoint, it toggles)
    */
   public async unsupportNeed(id: string): Promise<void> {
     try {
-      // ✅ اندپوینت صحیح (متد DELETE برای خنثی کردن عمل)
-      await api.delete(`/needs/${id}/support`);
+      await api.post(`/needs/${id}/support`);
     } catch (error: any) {
       console.error("Unsupport need failed:", error);
       throw new Error(error.response?.data?.message || "خطا در لغو حمایت");
@@ -156,11 +154,10 @@ class NeedService {
   }
 
   /**
-   * لایک کردن نیاز
+   * لایک کردن نیاز (upvote)
    */
   public async upvoteNeed(id: string): Promise<void> {
     try {
-      // ✅ اندپوینت صحیح از مستندات بک‌اند
       await api.post(`/needs/${id}/upvote`);
     } catch (error: any) {
       console.error("Upvote need failed:", error);
@@ -169,12 +166,11 @@ class NeedService {
   }
 
   /**
-   * حذف لایک نیاز
+   * حذف لایک نیاز (same endpoint, it toggles)
    */
   public async unvoteNeed(id: string): Promise<void> {
     try {
-      // ✅ اندپوینت صحیح (متد DELETE برای خنثی کردن عمل)
-      await api.delete(`/needs/${id}/upvote`);
+      await api.post(`/needs/${id}/upvote`);
     } catch (error: any) {
       console.error("Unvote need failed:", error);
       throw new Error(error.response?.data?.message || "خطا در حذف لایک");

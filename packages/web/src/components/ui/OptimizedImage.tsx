@@ -29,8 +29,17 @@ const OptimizedImage: FC<SmartImageProps> = ({
   placeholder = "empty",
   blurDataURL,
 }) => {
-  // Validate src to prevent empty string errors
-  const validSrc = src && src.trim() !== "" ? src : "/images/default-avatar.png";
+  // Comprehensive validation to prevent empty string errors
+  // Check for undefined, null, empty string, and whitespace-only strings
+  const isValidSrc = src && typeof src === 'string' && src.trim().length > 0;
+
+  // Debug log for troubleshooting
+  if (!isValidSrc) {
+    console.warn('OptimizedImage received invalid src:', { src, type: typeof src });
+  }
+
+  // Always ensure we have a valid src - use fallback if needed
+  const validSrc = isValidSrc ? src : "/images/default-avatar.png";
 
   const imageClass = `${className} ${rounded ? "rounded-xl" : ""}`;
   return fill ? (

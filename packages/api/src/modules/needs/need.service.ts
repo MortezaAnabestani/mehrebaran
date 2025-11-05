@@ -1056,6 +1056,102 @@ class NeedService {
     await need.save();
     return this.populateNeed(need);
   }
+
+  // Comment Management
+  public async getComments(needId: string): Promise<any[]> {
+    const { NeedComment } = await import("./needComment.model");
+
+    const comments = await NeedComment.find({ target: needId, targetType: "need", parent: null })
+      .populate("user", "name avatar")
+      .sort({ createdAt: -1 })
+      .lean();
+
+    // Get replies for each comment
+    const commentsWithReplies = await Promise.all(
+      comments.map(async (comment: any) => {
+        const replies = await NeedComment.find({ parent: comment._id })
+          .populate("user", "name avatar")
+          .sort({ createdAt: 1 })
+          .lean();
+        return { ...comment, replies };
+      })
+    );
+
+    return commentsWithReplies;
+  }
+
+  public async createComment(
+    needId: string,
+    userId: string,
+    content: string,
+    parentId?: string
+  ): Promise<any> {
+    const { NeedComment } = await import("./needComment.model");
+
+    // Verify need exists
+    const need = await NeedModel.findById(needId);
+    if (!need) {
+      throw new ApiError(404, "نیاز یافت نشد.");
+    }
+
+    // Create comment
+    const comment = await NeedComment.create({
+      content,
+      user: new Types.ObjectId(userId),
+      target: new Types.ObjectId(needId),
+      targetType: "need",
+      parent: parentId ? new Types.ObjectId(parentId) : undefined,
+    });
+
+    // Increment comments count on need
+    await NeedModel.findByIdAndUpdate(needId, { $inc: { commentsCount: 1 } });
+
+    // Populate and return
+    return NeedComment.findById(comment._id).populate("user", "name avatar");
+  }
+
+  public async updateComment(commentId: string, userId: string, content: string): Promise<any> {
+    const { NeedComment } = await import("./needComment.model");
+
+    const comment = await NeedComment.findById(commentId);
+    if (!comment) {
+      throw new ApiError(404, "نظر یافت نشد.");
+    }
+
+    // Check if user owns the comment
+    if (comment.user.toString() !== userId) {
+      throw new ApiError(403, "شما اجازه ویرایش این نظر را ندارید.");
+    }
+
+    comment.content = content;
+    await comment.save();
+
+    return NeedComment.findById(comment._id).populate("user", "name avatar");
+  }
+
+  public async deleteComment(commentId: string, userId: string, isAdmin: boolean = false): Promise<void> {
+    const { NeedComment } = await import("./needComment.model");
+
+    const comment = await NeedComment.findById(commentId);
+    if (!comment) {
+      throw new ApiError(404, "نظر یافت نشد.");
+    }
+
+    // Check permissions
+    if (!isAdmin && comment.user.toString() !== userId) {
+      throw new ApiError(403, "شما اجازه حذف این نظر را ندارید.");
+    }
+
+    // Delete all replies first
+    await NeedComment.deleteMany({ parent: commentId });
+
+    // Decrement comments count on need
+    const replyCount = await NeedComment.countDocuments({ parent: commentId });
+    await NeedModel.findByIdAndUpdate(comment.target, { $inc: { commentsCount: -(replyCount + 1) } });
+
+    // Delete the comment
+    await NeedComment.findByIdAndDelete(commentId);
+  }
 }
 
 export const needService = new NeedService();

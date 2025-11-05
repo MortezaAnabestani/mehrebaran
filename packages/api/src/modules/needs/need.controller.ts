@@ -412,6 +412,36 @@ class NeedController {
     const needs = await needService.findUrgent(limit);
     res.status(200).json({ results: needs.length, data: needs });
   });
+
+  // Comment Management
+  public getComments = asyncHandler(async (req: Request, res: Response) => {
+    const comments = await needService.getComments(req.params.id);
+    res.status(200).json({ results: comments.length, data: comments });
+  });
+
+  public createComment = asyncHandler(async (req: Request, res: Response) => {
+    const { content, parentId } = req.body;
+    if (!content || !content.trim()) {
+      throw new ApiError(400, "محتوای نظر الزامی است.");
+    }
+    const comment = await needService.createComment(req.params.id, req.user!._id.toString(), content, parentId);
+    res.status(201).json({ message: "نظر شما با موفقیت ثبت شد.", data: comment });
+  });
+
+  public updateComment = asyncHandler(async (req: Request, res: Response) => {
+    const { content } = req.body;
+    if (!content || !content.trim()) {
+      throw new ApiError(400, "محتوای نظر الزامی است.");
+    }
+    const comment = await needService.updateComment(req.params.commentId, req.user!._id.toString(), content);
+    res.status(200).json({ message: "نظر با موفقیت ویرایش شد.", data: comment });
+  });
+
+  public deleteComment = asyncHandler(async (req: Request, res: Response) => {
+    const isAdmin = req.user?.role === "admin" || req.user?.role === "super_admin";
+    await needService.deleteComment(req.params.commentId, req.user!._id.toString(), isAdmin);
+    res.status(200).json({ message: "نظر با موفقیت حذف شد." });
+  });
 }
 
 export const needController = new NeedController();

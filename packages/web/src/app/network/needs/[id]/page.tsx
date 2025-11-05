@@ -26,9 +26,11 @@ const NeedDetailPage: React.FC = () => {
   const [likesCount, setLikesCount] = useState<number>(0);
   const [isFollowing, setIsFollowing] = useState<boolean>(false);
 
-  // Comment form
+  // Comment states
+  const [comments, setComments] = useState<any[]>([]);
   const [commentText, setCommentText] = useState<string>("");
   const [isSubmittingComment, setIsSubmittingComment] = useState<boolean>(false);
+  const [isLoadingComments, setIsLoadingComments] = useState<boolean>(false);
 
   // دریافت اطلاعات نیاز
   const fetchNeed = async () => {
@@ -53,11 +55,36 @@ const NeedDetailPage: React.FC = () => {
     }
   };
 
+  // دریافت نظرات
+  const fetchComments = async () => {
+    try {
+      setIsLoadingComments(true);
+      const fetchedComments = await needService.getComments(needId);
+      setComments(fetchedComments);
+    } catch (err: any) {
+      console.error("Failed to fetch comments:", err);
+    } finally {
+      setIsLoadingComments(false);
+    }
+  };
+
   useEffect(() => {
     if (needId) {
       fetchNeed();
+      fetchComments();
     }
   }, [needId]);
+
+  // Sync state with need data when it changes
+  useEffect(() => {
+    if (need && user) {
+      const userHasLiked = need.upvotes ? need.upvotes.includes(user._id) : false;
+      const userIsFollowing = need.supporters ? need.supporters.includes(user._id) : false;
+      setIsLiked(userHasLiked);
+      setIsFollowing(userIsFollowing);
+      setLikesCount(need.upvotes?.length || 0);
+    }
+  }, [need, user]);
 
   // محاسبه درصد پیشرفت
   const getProgressPercentage = (): number => {
@@ -137,18 +164,47 @@ const NeedDetailPage: React.FC = () => {
     }
   };
 
+  // حمایت کردن (همان follow)
+  const handleSupport = () => {
+    handleFollow();
+  };
+
+  // حمایت مالی
+  const handleFinancialSupport = () => {
+    if (!user) {
+      alert("لطفاً ابتدا وارد حساب کاربری خود شوید");
+      return;
+    }
+    // TODO: Implement financial support modal/page
+    alert("قابلیت حمایت مالی به زودی فعال خواهد شد. شما می‌توانید با دنبال کردن این نیاز، از آن حمایت کنید.");
+  };
+
   // ارسال کامنت
   const handleSubmitComment = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!commentText.trim()) return;
 
+    if (!user) {
+      alert("لطفاً ابتدا وارد حساب کاربری خود شوید");
+      return;
+    }
+
     try {
       setIsSubmittingComment(true);
-      // TODO: Add comment API integration
-      alert("قابلیت ثبت نظر به زودی فعال خواهد شد.");
+      const newComment = await needService.createComment(needId, commentText);
+
+      // Add new comment to the top of the list
+      setComments([newComment, ...comments]);
+
+      // Update comments count in need
+      if (need) {
+        setNeed({ ...need, commentsCount: (need.commentsCount || 0) + 1 });
+      }
+
       setCommentText("");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Comment error:", error);
+      alert(error.message || "خطا در ارسال نظر");
     } finally {
       setIsSubmittingComment(false);
     }
@@ -370,7 +426,7 @@ const NeedDetailPage: React.FC = () => {
                     </div>
                   </div>
 
-                  <SmartButton variant="morange" size="md">
+                  <SmartButton variant="morange" size="md" onClick={handleSupport}>
                     حمایت کنید
                   </SmartButton>
                 </div>
@@ -401,7 +457,64 @@ const NeedDetailPage: React.FC = () => {
                 </form>
 
                 {/* Comments List */}
-                <div className="text-center text-gray-500 text-sm py-8">هنوز نظری ثبت نشده است.</div>
+                {isLoadingComments ? (
+                  <div className="text-center text-gray-500 text-sm py-8">در حال بارگذاری نظرات...</div>
+                ) : comments.length === 0 ? (
+                  <div className="text-center text-gray-500 text-sm py-8">هنوز نظری ثبت نشده است.</div>
+                ) : (
+                  <div className="space-y-4">
+                    {comments.map((comment) => (
+                      <div key={comment._id} className="border-b border-mgray/10 pb-4 last:border-b-0">
+                        <div className="flex gap-3">
+                          <div className="relative w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
+                            <OptimizedImage
+                              src={comment.user?.avatar || "/images/default-avatar.png"}
+                              alt={comment.user?.name || "کاربر"}
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center justify-between mb-1">
+                              <h4 className="font-bold text-sm">{comment.user?.name || "کاربر"}</h4>
+                              <p className="text-xs text-gray-500">
+                                {new Date(comment.createdAt).toLocaleDateString("fa-IR")}
+                              </p>
+                            </div>
+                            <p className="text-sm text-gray-700">{comment.content}</p>
+
+                            {/* Replies */}
+                            {comment.replies && comment.replies.length > 0 && (
+                              <div className="mt-3 mr-8 space-y-3">
+                                {comment.replies.map((reply: any) => (
+                                  <div key={reply._id} className="flex gap-2">
+                                    <div className="relative w-8 h-8 rounded-full overflow-hidden flex-shrink-0">
+                                      <OptimizedImage
+                                        src={reply.user?.avatar || "/images/default-avatar.png"}
+                                        alt={reply.user?.name || "کاربر"}
+                                        fill
+                                        className="object-cover"
+                                      />
+                                    </div>
+                                    <div className="flex-1">
+                                      <div className="flex items-center justify-between mb-1">
+                                        <h5 className="font-bold text-xs">{reply.user?.name || "کاربر"}</h5>
+                                        <p className="text-xs text-gray-500">
+                                          {new Date(reply.createdAt).toLocaleDateString("fa-IR")}
+                                        </p>
+                                      </div>
+                                      <p className="text-xs text-gray-700">{reply.content}</p>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -413,7 +526,7 @@ const NeedDetailPage: React.FC = () => {
                 <p className="text-sm text-gray-700 mb-4">
                   با حمایت مالی خود، به تحقق این نیاز کمک کنید و در ساخت آینده بهتر سهیم شوید.
                 </p>
-                <SmartButton variant="morange" size="md" className="w-full">
+                <SmartButton variant="morange" size="md" className="w-full" onClick={handleFinancialSupport}>
                   حمایت مالی
                 </SmartButton>
               </div>

@@ -29,11 +29,14 @@ const OptimizedImage: FC<SmartImageProps> = ({
   placeholder = "empty",
   blurDataURL,
 }) => {
+  // Validate src to prevent empty string errors
+  const validSrc = src && src.trim() !== "" ? src : "/images/default-avatar.png";
+
   const imageClass = `${className} ${rounded ? "rounded-xl" : ""}`;
   return fill ? (
     <div className="relative w-full h-full">
       <Image
-        src={src}
+        src={validSrc}
         alt={alt}
         fill
         className={`${imageClass} object-top-center object-cover`}
@@ -45,7 +48,7 @@ const OptimizedImage: FC<SmartImageProps> = ({
     </div>
   ) : (
     <Image
-      src={src}
+      src={validSrc}
       alt={alt}
       width={width}
       height={height}

@@ -215,7 +215,8 @@ const NeedDetailPage: React.FC = () => {
   const getCreatorAvatar = (): string => {
     if (!need?.createdBy) return "/images/default-avatar.png";
     if (typeof need.createdBy === "string") return "/images/default-avatar.png";
-    return need.createdBy.avatar || "/images/default-avatar.png";
+    const avatar = need.createdBy.avatar;
+    return avatar && avatar.trim() !== "" ? avatar : "/images/default-avatar.png";
   };
 
   // دریافت اطلاعات urgency level

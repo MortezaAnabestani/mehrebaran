@@ -80,16 +80,17 @@ const NeedCard: React.FC<NeedCardProps> = ({ need, variant = "feed", onUpdate })
       return;
     }
 
+    // Store previous state outside try block for catch access
+    const previousLiked = isLiked;
+    const previousCount = likesCount;
+
     try {
       // Optimistic update first
-      const previousLiked = isLiked;
-      const previousCount = likesCount;
-
       setIsLiked(!isLiked);
       setLikesCount((prev) => (isLiked ? prev - 1 : prev + 1));
 
-      // Call API
-      await needService.likeNeed(need._id);
+      // Call API - use correct method name
+      await needService.upvoteNeed(need._id);
 
       // No need to refetch - optimistic update is enough
     } catch (error) {
@@ -110,14 +111,15 @@ const NeedCard: React.FC<NeedCardProps> = ({ need, variant = "feed", onUpdate })
       return;
     }
 
+    // Store previous state outside try block for catch access
+    const previousFollowing = isFollowing;
+
     try {
       // Optimistic update first
-      const previousFollowing = isFollowing;
-
       setIsFollowing(!isFollowing);
 
-      // Call API
-      await needService.followNeed(need._id);
+      // Call API - use correct method name
+      await needService.supportNeed(need._id);
 
       // No need to refetch - optimistic update is enough
     } catch (error) {

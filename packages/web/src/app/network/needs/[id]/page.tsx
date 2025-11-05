@@ -112,17 +112,17 @@ const NeedDetailPage: React.FC = () => {
       return;
     }
 
-    try {
-      // Store previous state for revert
-      const previousLiked = isLiked;
-      const previousCount = likesCount;
+    // Store previous state outside try block for catch access
+    const previousLiked = isLiked;
+    const previousCount = likesCount;
 
+    try {
       // Optimistic update first (instant UI feedback)
       setIsLiked(!isLiked);
       setLikesCount((prev) => (isLiked ? prev - 1 : prev + 1));
 
-      // Call API
-      await needService.likeNeed(needId);
+      // Call API - use correct method name
+      await needService.upvoteNeed(needId);
 
       // No refetch needed - optimistic update is enough
     } catch (error) {
@@ -140,15 +140,15 @@ const NeedDetailPage: React.FC = () => {
       return;
     }
 
-    try {
-      // Store previous state for revert
-      const previousFollowing = isFollowing;
+    // Store previous state outside try block for catch access
+    const previousFollowing = isFollowing;
 
+    try {
       // Optimistic update first (instant UI feedback)
       setIsFollowing(!isFollowing);
 
-      // Call API
-      await needService.followNeed(needId);
+      // Call API - use correct method name
+      await needService.supportNeed(needId);
 
       // No refetch needed - optimistic update is enough
     } catch (error) {

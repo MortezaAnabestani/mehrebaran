@@ -67,6 +67,12 @@ router.delete("/:id/tasks/:taskId", protect, needController.deleteTask);
 router.patch("/:id/tasks/:taskId/checklist", protect, needController.updateTaskChecklist);
 router.post("/:id/tasks/:taskId/complete", protect, needController.completeTask);
 
+// Comment Management
+router.get("/:id/comments", needController.getComments);
+router.post("/:id/comments", protect, needController.createComment);
+router.patch("/:id/comments/:commentId", protect, needController.updateComment);
+router.delete("/:id/comments/:commentId", protect, needController.deleteComment);
+
 // Admin routes
 router.get(
   "/admin/all",

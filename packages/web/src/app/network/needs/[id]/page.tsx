@@ -26,9 +26,11 @@ const NeedDetailPage: React.FC = () => {
   const [likesCount, setLikesCount] = useState<number>(0);
   const [isFollowing, setIsFollowing] = useState<boolean>(false);
 
-  // Comment form
+  // Comment states
+  const [comments, setComments] = useState<any[]>([]);
   const [commentText, setCommentText] = useState<string>("");
   const [isSubmittingComment, setIsSubmittingComment] = useState<boolean>(false);
+  const [isLoadingComments, setIsLoadingComments] = useState<boolean>(false);
 
   // دریافت اطلاعات نیاز
   const fetchNeed = async () => {
@@ -53,17 +55,36 @@ const NeedDetailPage: React.FC = () => {
     }
   };
 
+  // دریافت نظرات
+  const fetchComments = async () => {
+    try {
+      setIsLoadingComments(true);
+      const fetchedComments = await needService.getComments(needId);
+      setComments(fetchedComments);
+    } catch (err: any) {
+      console.error("Failed to fetch comments:", err);
+    } finally {
+      setIsLoadingComments(false);
+    }
+  };
+
   useEffect(() => {
     if (needId) {
       fetchNeed();
+      fetchComments();
     }
   }, [needId]);
 
-  // محاسبه درصد پیشرفت
-  const getProgressPercentage = (): number => {
-    if (!need?.targetAmount) return 0;
-    return Math.min((need.currentAmount / need.targetAmount) * 100, 100);
-  };
+  // Sync state with need data when it changes
+  useEffect(() => {
+    if (need && user) {
+      const userHasLiked = need.upvotes ? need.upvotes.includes(user._id) : false;
+      const userIsFollowing = need.supporters ? need.supporters.includes(user._id) : false;
+      setIsLiked(userHasLiked);
+      setIsFollowing(userIsFollowing);
+      setLikesCount(need.upvotes?.length || 0);
+    }
+  }, [need, user]);
 
   // فرمت اعداد
   const formatNumber = (num: number): string => {
@@ -86,36 +107,70 @@ const NeedDetailPage: React.FC = () => {
 
   // لایک کردن (toggle upvote)
   const handleLike = async () => {
+    if (!user) {
+      alert("لطفاً ابتدا وارد حساب کاربری خود شوید");
+      return;
+    }
+
     try {
-      // Both like and unlike use the same endpoint (toggle)
-      await needService.likeNeed(needId);
-      // Optimistic update
+      // Store previous state for revert
+      const previousLiked = isLiked;
+      const previousCount = likesCount;
+
+      // Optimistic update first (instant UI feedback)
       setIsLiked(!isLiked);
       setLikesCount((prev) => (isLiked ? prev - 1 : prev + 1));
-      // Refresh to get accurate data
-      await fetchNeed();
+
+      // Call API
+      await needService.likeNeed(needId);
+
+      // No refetch needed - optimistic update is enough
     } catch (error) {
       console.error("Like error:", error);
       // Revert on error
-      setIsLiked(isLiked);
-      setLikesCount(need?.upvotes?.length || 0);
+      setIsLiked(previousLiked);
+      setLikesCount(previousCount);
     }
   };
 
   // دنبال کردن (toggle support)
   const handleFollow = async () => {
+    if (!user) {
+      alert("لطفاً ابتدا وارد حساب کاربری خود شوید");
+      return;
+    }
+
     try {
-      // Both follow and unfollow use the same endpoint (toggle)
-      await needService.followNeed(needId);
-      // Optimistic update
+      // Store previous state for revert
+      const previousFollowing = isFollowing;
+
+      // Optimistic update first (instant UI feedback)
       setIsFollowing(!isFollowing);
-      // Refresh to get accurate data
-      await fetchNeed();
+
+      // Call API
+      await needService.followNeed(needId);
+
+      // No refetch needed - optimistic update is enough
     } catch (error) {
       console.error("Follow error:", error);
       // Revert on error
-      setIsFollowing(isFollowing);
+      setIsFollowing(previousFollowing);
     }
+  };
+
+  // حمایت کردن (همان follow)
+  const handleSupport = () => {
+    handleFollow();
+  };
+
+  // حمایت مالی
+  const handleFinancialSupport = () => {
+    if (!user) {
+      alert("لطفاً ابتدا وارد حساب کاربری خود شوید");
+      return;
+    }
+    // TODO: Implement financial support modal/page
+    alert("قابلیت حمایت مالی به زودی فعال خواهد شد. شما می‌توانید با دنبال کردن این نیاز، از آن حمایت کنید.");
   };
 
   // ارسال کامنت
@@ -123,13 +178,27 @@ const NeedDetailPage: React.FC = () => {
     e.preventDefault();
     if (!commentText.trim()) return;
 
+    if (!user) {
+      alert("لطفاً ابتدا وارد حساب کاربری خود شوید");
+      return;
+    }
+
     try {
       setIsSubmittingComment(true);
-      // TODO: Add comment API integration
-      alert("قابلیت ثبت نظر به زودی فعال خواهد شد.");
+      const newComment = await needService.createComment(needId, commentText);
+
+      // Add new comment to the top of the list
+      setComments([newComment, ...comments]);
+
+      // Update comments count in need
+      if (need) {
+        setNeed({ ...need, commentsCount: (need.commentsCount || 0) + 1 });
+      }
+
       setCommentText("");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Comment error:", error);
+      alert(error.message || "خطا در ارسال نظر");
     } finally {
       setIsSubmittingComment(false);
     }
@@ -147,6 +216,93 @@ const NeedDetailPage: React.FC = () => {
     if (!need?.createdBy) return "/images/default-avatar.png";
     if (typeof need.createdBy === "string") return "/images/default-avatar.png";
     return need.createdBy.avatar || "/images/default-avatar.png";
+  };
+
+  // دریافت اطلاعات urgency level
+  const getUrgencyInfo = () => {
+    const urgency = need?.urgencyLevel || "medium";
+    const urgencyMap = {
+      low: { label: "عادی", color: "bg-gray-100 text-gray-700", icon: "⚪" },
+      medium: { label: "متوسط", color: "bg-blue-100 text-blue-700", icon: "🔵" },
+      high: { label: "فوری", color: "bg-orange-100 text-orange-700", icon: "🟠" },
+      critical: { label: "بحرانی", color: "bg-red-100 text-red-700", icon: "🔴" },
+    };
+    return urgencyMap[urgency as keyof typeof urgencyMap] || urgencyMap.medium;
+  };
+
+  // دریافت نام وضعیت به فارسی
+  const getStatusLabel = (status: string) => {
+    const statusMap: Record<string, string> = {
+      draft: "پیش‌نویس",
+      pending: "در انتظار بررسی",
+      under_review: "در حال بررسی",
+      approved: "تایید شده",
+      in_progress: "در حال اجرا",
+      completed: "تکمیل شده",
+      rejected: "رد شده",
+      archived: "آرشیو شده",
+      cancelled: "لغو شده",
+    };
+    return statusMap[status] || status;
+  };
+
+  // محاسبه بودجه کل از budgetItems
+  const getTotalBudget = (): number => {
+    if (!need?.budgetItems || need.budgetItems.length === 0) return 0;
+    return need.budgetItems.reduce((sum: number, item: any) => sum + (item.estimatedCost || 0), 0);
+  };
+
+  // محاسبه مبلغ جمع‌آوری شده از budgetItems
+  const getTotalRaised = (): number => {
+    if (!need?.budgetItems || need.budgetItems.length === 0) return 0;
+    return need.budgetItems.reduce((sum: number, item: any) => sum + (item.amountRaised || 0), 0);
+  };
+
+  // محاسبه درصد پیشرفت بودجه
+  const getBudgetProgress = (): number => {
+    const total = getTotalBudget();
+    if (total === 0) return 0;
+    const raised = getTotalRaised();
+    return Math.min((raised / total) * 100, 100);
+  };
+
+  // دریافت آیکون و اطلاعات فایل
+  const getFileInfo = (url: string, fileName?: string) => {
+    const name = fileName || url.split("/").pop() || "فایل";
+    const extension = name.split(".").pop()?.toLowerCase() || "";
+
+    let icon = "📄";
+    let color = "bg-gray-100 text-gray-700";
+
+    if (["pdf"].includes(extension)) {
+      icon = "📕";
+      color = "bg-red-100 text-red-700";
+    } else if (["doc", "docx"].includes(extension)) {
+      icon = "📘";
+      color = "bg-blue-100 text-blue-700";
+    } else if (["xls", "xlsx", "csv"].includes(extension)) {
+      icon = "📗";
+      color = "bg-green-100 text-green-700";
+    } else if (["ppt", "pptx"].includes(extension)) {
+      icon = "📙";
+      color = "bg-orange-100 text-orange-700";
+    } else if (["txt", "md"].includes(extension)) {
+      icon = "📝";
+      color = "bg-gray-100 text-gray-700";
+    } else if (["zip", "rar", "7z"].includes(extension)) {
+      icon = "🗜️";
+      color = "bg-purple-100 text-purple-700";
+    }
+
+    return { name, extension: extension.toUpperCase(), icon, color };
+  };
+
+  // فرمت سایز فایل
+  const formatFileSize = (bytes?: number): string => {
+    if (!bytes) return "";
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
 
   if (isLoading) {
@@ -229,24 +385,42 @@ const NeedDetailPage: React.FC = () => {
                   {/* Title */}
                   <h1 className="text-2xl font-extrabold mb-4">{need.title}</h1>
 
-                  {/* Status Badge */}
-                  <div className="mb-4">
+                  {/* Status & Urgency Badges */}
+                  <div className="flex flex-wrap gap-2 mb-4">
                     <span
                       className={`inline-block px-3 py-1 rounded-full text-xs font-bold ${
-                        need.status === "active"
+                        need.status === "approved" || need.status === "in_progress"
                           ? "bg-green-100 text-green-700"
                           : need.status === "completed"
                           ? "bg-blue-100 text-blue-700"
+                          : need.status === "pending" || need.status === "under_review"
+                          ? "bg-yellow-100 text-yellow-700"
                           : "bg-gray-100 text-gray-700"
                       }`}
                     >
-                      {need.status === "active"
-                        ? "فعال"
-                        : need.status === "completed"
-                        ? "تکمیل شده"
-                        : need.status}
+                      {getStatusLabel(need.status)}
                     </span>
+                    <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold ${getUrgencyInfo().color}`}>
+                      {getUrgencyInfo().icon} {getUrgencyInfo().label}
+                    </span>
+                    {need.deadline && (
+                      <span className="inline-block px-3 py-1 rounded-full text-xs font-bold bg-morange/10 text-morange">
+                        ⏰ {getDaysRemaining()}
+                      </span>
+                    )}
                   </div>
+
+                  {/* Submitted By */}
+                  {need.submittedBy && (
+                    <div className="mb-4 text-sm text-gray-600">
+                      <span className="font-bold">ارسال‌کننده:</span>{" "}
+                      {need.submittedBy.user
+                        ? typeof need.submittedBy.user === "string"
+                          ? "کاربر"
+                          : need.submittedBy.user.name
+                        : need.submittedBy.guestName || "مهمان"}
+                    </div>
+                  )}
 
                   {/* Description */}
                   <p className="text-gray-700 leading-relaxed mb-6">{need.description}</p>
@@ -262,67 +436,288 @@ const NeedDetailPage: React.FC = () => {
                     </div>
                   )}
 
-                  {/* Images */}
-                  {need.images && need.images.length > 0 && (
-                    <div className="grid grid-cols-2 gap-4 mb-6">
-                      {need.images.map((image, index) => (
-                        <div key={index} className="relative w-full h-48 rounded-md overflow-hidden">
-                          <OptimizedImage src={image} alt={`تصویر ${index + 1}`} fill className="object-cover" />
+                  {/* Additional Info Cards */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    {/* Location */}
+                    {need.location && (
+                      <div className="bg-mgray/5 rounded-md p-4">
+                        <h4 className="font-bold text-sm mb-2 flex items-center gap-2">
+                          📍 موقعیت مکانی
+                        </h4>
+                        <div className="text-sm text-gray-700 space-y-1">
+                          {need.location.address && <p>{need.location.address}</p>}
+                          {(need.location.city || need.location.province) && (
+                            <p>
+                              {need.location.city}
+                              {need.location.city && need.location.province && "، "}
+                              {need.location.province}
+                            </p>
+                          )}
                         </div>
-                      ))}
+                      </div>
+                    )}
+
+                    {/* Estimated Duration */}
+                    {need.estimatedDuration && (
+                      <div className="bg-mgray/5 rounded-md p-4">
+                        <h4 className="font-bold text-sm mb-2 flex items-center gap-2">
+                          ⏱️ مدت زمان تخمینی
+                        </h4>
+                        <p className="text-sm text-gray-700">{need.estimatedDuration}</p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Required Skills */}
+                  {need.requiredSkills && need.requiredSkills.length > 0 && (
+                    <div className="bg-mblue/5 rounded-md p-4 mb-6">
+                      <h4 className="font-bold text-sm mb-3 flex items-center gap-2">
+                        🎯 مهارت‌های مورد نیاز
+                      </h4>
+                      <div className="flex flex-wrap gap-2">
+                        {need.requiredSkills.map((skill, index) => (
+                          <span key={index} className="text-xs bg-white border border-mblue/20 text-mblue px-3 py-1 rounded-full">
+                            {skill}
+                          </span>
+                        ))}
+                      </div>
                     </div>
                   )}
 
-                  {/* Progress Section */}
-                  {need.targetAmount && (
+                  {/* Attachments */}
+                  {need.attachments && need.attachments.length > 0 && (
+                    <div className="mb-6">
+                      <h4 className="font-bold text-base mb-3">📎 فایل‌های پیوست ({need.attachments.length})</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {need.attachments.map((attachment: any, index: number) => (
+                          <div key={index}>
+                            {attachment.fileType === "image" && (
+                              <div className="relative w-full h-48 rounded-md overflow-hidden group cursor-pointer">
+                                <OptimizedImage
+                                  src={attachment.url}
+                                  alt={attachment.fileName || `تصویر ${index + 1}`}
+                                  fill
+                                  className="object-cover transition-transform group-hover:scale-105"
+                                />
+                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors"></div>
+                              </div>
+                            )}
+                            {attachment.fileType === "video" && (
+                              <div className="relative w-full h-48 rounded-md overflow-hidden bg-black">
+                                <video src={attachment.url} controls className="w-full h-full object-contain">
+                                  مرورگر شما از پخش ویدیو پشتیبانی نمی‌کند.
+                                </video>
+                                {attachment.fileName && (
+                                  <p className="text-xs text-gray-500 mt-1 truncate">{attachment.fileName}</p>
+                                )}
+                              </div>
+                            )}
+                            {attachment.fileType === "audio" && (
+                              <div className="bg-mgray/10 rounded-md p-4">
+                                <div className="flex items-center gap-3 mb-2">
+                                  <span className="text-2xl">🎵</span>
+                                  <div className="flex-1 min-w-0">
+                                    {attachment.fileName && (
+                                      <p className="text-sm font-bold truncate">{attachment.fileName}</p>
+                                    )}
+                                    {attachment.fileSize && (
+                                      <p className="text-xs text-gray-500">{formatFileSize(attachment.fileSize)}</p>
+                                    )}
+                                  </div>
+                                </div>
+                                <audio src={attachment.url} controls className="w-full">
+                                  مرورگر شما از پخش صدا پشتیبانی نمی‌کند.
+                                </audio>
+                              </div>
+                            )}
+                            {attachment.fileType === "document" && (
+                              <a
+                                href={attachment.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="block bg-mgray/10 rounded-md p-4 hover:bg-mgray/20 transition-colors border border-mgray/20"
+                              >
+                                <div className="flex items-start gap-3">
+                                  <div className={`text-3xl flex-shrink-0 w-12 h-12 rounded-md flex items-center justify-center ${getFileInfo(attachment.url, attachment.fileName).color}`}>
+                                    {getFileInfo(attachment.url, attachment.fileName).icon}
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-sm font-bold truncate">
+                                      {getFileInfo(attachment.url, attachment.fileName).name}
+                                    </p>
+                                    <div className="flex items-center gap-2 mt-1">
+                                      <span className="text-xs font-bold text-mblue">
+                                        {getFileInfo(attachment.url, attachment.fileName).extension}
+                                      </span>
+                                      {attachment.fileSize && (
+                                        <>
+                                          <span className="text-xs text-gray-400">•</span>
+                                          <span className="text-xs text-gray-500">
+                                            {formatFileSize(attachment.fileSize)}
+                                          </span>
+                                        </>
+                                      )}
+                                    </div>
+                                    <div className="flex items-center gap-1 mt-2 text-xs text-mblue">
+                                      <span>دانلود</span>
+                                      <span>↓</span>
+                                    </div>
+                                  </div>
+                                </div>
+                              </a>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Budget Section */}
+                  {need.budgetItems && need.budgetItems.length > 0 && (
                     <div className="bg-mgray/10 rounded-md p-6 mb-6">
-                      <h3 className="font-bold text-lg mb-4">پیشرفت پروژه</h3>
+                      <h3 className="font-bold text-lg mb-4">💰 بودجه پروژه</h3>
                       <div className="mb-3">
                         <div className="flex justify-between items-center mb-2">
                           <span className="text-sm font-bold text-gray-700">میزان پیشرفت:</span>
-                          <span className="text-sm font-bold text-morange">
-                            {getProgressPercentage().toFixed(1)}%
-                          </span>
+                          <span className="text-sm font-bold text-morange">{getBudgetProgress().toFixed(1)}%</span>
                         </div>
                         <div className="w-full bg-mgray/30 rounded-full h-3 overflow-hidden">
                           <div
                             className="bg-morange h-full rounded-full transition-all"
-                            style={{ width: `${getProgressPercentage()}%` }}
+                            style={{ width: `${getBudgetProgress()}%` }}
                           ></div>
                         </div>
                       </div>
                       <div className="grid grid-cols-2 gap-4 mt-4">
                         <div>
                           <p className="text-xs text-gray-600 mb-1">مبلغ جمع‌آوری شده:</p>
-                          <p className="text-lg font-bold text-mblue">
-                            {formatNumber(need.currentAmount)} ریال
-                          </p>
+                          <p className="text-lg font-bold text-mblue">{formatNumber(getTotalRaised())} ریال</p>
                         </div>
                         <div>
-                          <p className="text-xs text-gray-600 mb-1">هدف مالی:</p>
-                          <p className="text-lg font-bold text-gray-700">
-                            {formatNumber(need.targetAmount)} ریال
-                          </p>
+                          <p className="text-xs text-gray-600 mb-1">بودجه کل:</p>
+                          <p className="text-lg font-bold text-gray-700">{formatNumber(getTotalBudget())} ریال</p>
                         </div>
                       </div>
-                      {need.deadline && (
-                        <div className="mt-4">
-                          <p className="text-xs text-gray-600 mb-1">مهلت زمانی:</p>
-                          <p className="text-sm font-bold text-morange">⏰ {getDaysRemaining()}</p>
-                        </div>
-                      )}
+
+                      {/* Budget Items List */}
+                      <div className="mt-6 space-y-3">
+                        <h4 className="font-bold text-sm mb-2">اقلام بودجه:</h4>
+                        {need.budgetItems.map((item: any, index: number) => (
+                          <div key={item._id || index} className="bg-white rounded-md p-3">
+                            <div className="flex justify-between items-start mb-2">
+                              <div className="flex-1">
+                                <h5 className="font-bold text-sm">{item.title}</h5>
+                                {item.description && <p className="text-xs text-gray-600 mt-1">{item.description}</p>}
+                              </div>
+                              <span
+                                className={`text-xs px-2 py-1 rounded-full ${
+                                  item.status === "fully_funded"
+                                    ? "bg-green-100 text-green-700"
+                                    : item.status === "partial"
+                                    ? "bg-yellow-100 text-yellow-700"
+                                    : "bg-gray-100 text-gray-700"
+                                }`}
+                              >
+                                {item.status === "fully_funded"
+                                  ? "تامین شده"
+                                  : item.status === "partial"
+                                  ? "در حال تامین"
+                                  : "در انتظار"}
+                              </span>
+                            </div>
+                            <div className="flex justify-between items-center text-xs">
+                              <span className="text-gray-600">{item.category}</span>
+                              <span className="font-bold">
+                                {formatNumber(item.amountRaised || 0)} / {formatNumber(item.estimatedCost)} ریال
+                              </span>
+                            </div>
+                            <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
+                              <div
+                                className="bg-mblue h-full rounded-full"
+                                style={{
+                                  width: `${Math.min(((item.amountRaised || 0) / item.estimatedCost) * 100, 100)}%`,
+                                }}
+                              ></div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   )}
 
-                  {/* Team Info */}
-                  {need.team && (
-                    <div className="bg-mblue/5 rounded-md p-4 mb-6">
-                      <h3 className="font-bold mb-2">👥 اطلاعات تیم</h3>
-                      <p className="text-sm text-gray-700">
-                        {typeof need.team === "string"
-                          ? "تیم موجود"
-                          : `تعداد اعضا: ${need.team.members?.length || 0} نفر`}
-                      </p>
+                  {/* Milestones Section */}
+                  {need.milestones && need.milestones.length > 0 && (
+                    <div className="bg-mblue/5 rounded-md p-6 mb-6">
+                      <h3 className="font-bold text-lg mb-4">🎯 نقاط عطف پروژه</h3>
+                      <div className="space-y-4">
+                        {need.milestones
+                          .sort((a: any, b: any) => a.order - b.order)
+                          .map((milestone: any, index: number) => (
+                            <div key={milestone._id || index} className="bg-white rounded-md p-4">
+                              <div className="flex justify-between items-start mb-2">
+                                <h4 className="font-bold text-sm">{milestone.title}</h4>
+                                <span
+                                  className={`text-xs px-2 py-1 rounded-full ${
+                                    milestone.status === "completed"
+                                      ? "bg-green-100 text-green-700"
+                                      : milestone.status === "in_progress"
+                                      ? "bg-blue-100 text-blue-700"
+                                      : milestone.status === "delayed"
+                                      ? "bg-red-100 text-red-700"
+                                      : "bg-gray-100 text-gray-700"
+                                  }`}
+                                >
+                                  {milestone.status === "completed"
+                                    ? "✓ تکمیل شده"
+                                    : milestone.status === "in_progress"
+                                    ? "در حال اجرا"
+                                    : milestone.status === "delayed"
+                                    ? "تاخیر"
+                                    : "در انتظار"}
+                                </span>
+                              </div>
+                              <p className="text-xs text-gray-600 mb-2">{milestone.description}</p>
+                              <div className="flex items-center justify-between text-xs text-gray-500 mb-2">
+                                <span>مهلت: {new Date(milestone.targetDate).toLocaleDateString("fa-IR")}</span>
+                                <span className="font-bold text-mblue">{milestone.progressPercentage}%</span>
+                              </div>
+                              <div className="w-full bg-gray-200 rounded-full h-2">
+                                <div
+                                  className="bg-mblue h-full rounded-full"
+                                  style={{ width: `${milestone.progressPercentage}%` }}
+                                ></div>
+                              </div>
+                            </div>
+                          ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Updates/Timeline Section */}
+                  {need.updates && need.updates.length > 0 && (
+                    <div className="bg-morange/5 rounded-md p-6 mb-6">
+                      <h3 className="font-bold text-lg mb-4">📰 به‌روزرسانی‌های پروژه</h3>
+                      <div className="space-y-4">
+                        {need.updates
+                          .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime())
+                          .slice(0, 5)
+                          .map((update: any, index: number) => (
+                            <div key={index} className="bg-white rounded-md p-4 border-r-4 border-morange">
+                              <div className="flex justify-between items-start mb-2">
+                                <h4 className="font-bold text-sm">{update.title}</h4>
+                                <span className="text-xs text-gray-500">
+                                  {new Date(update.date).toLocaleDateString("fa-IR")}
+                                </span>
+                              </div>
+                              <p className="text-sm text-gray-700">{update.description}</p>
+                            </div>
+                          ))}
+                      </div>
+                      {need.updates.length > 5 && (
+                        <p className="text-xs text-center text-gray-500 mt-4">
+                          و {need.updates.length - 5} به‌روزرسانی دیگر...
+                        </p>
+                      )}
                     </div>
                   )}
                 </div>
@@ -351,7 +746,7 @@ const NeedDetailPage: React.FC = () => {
                     </div>
                   </div>
 
-                  <SmartButton variant="morange" size="md">
+                  <SmartButton variant="morange" size="md" onClick={handleSupport}>
                     حمایت کنید
                   </SmartButton>
                 </div>
@@ -382,7 +777,64 @@ const NeedDetailPage: React.FC = () => {
                 </form>
 
                 {/* Comments List */}
-                <div className="text-center text-gray-500 text-sm py-8">هنوز نظری ثبت نشده است.</div>
+                {isLoadingComments ? (
+                  <div className="text-center text-gray-500 text-sm py-8">در حال بارگذاری نظرات...</div>
+                ) : comments.length === 0 ? (
+                  <div className="text-center text-gray-500 text-sm py-8">هنوز نظری ثبت نشده است.</div>
+                ) : (
+                  <div className="space-y-4">
+                    {comments.map((comment) => (
+                      <div key={comment._id} className="border-b border-mgray/10 pb-4 last:border-b-0">
+                        <div className="flex gap-3">
+                          <div className="relative w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
+                            <OptimizedImage
+                              src={comment.user?.avatar || "/images/default-avatar.png"}
+                              alt={comment.user?.name || "کاربر"}
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center justify-between mb-1">
+                              <h4 className="font-bold text-sm">{comment.user?.name || "کاربر"}</h4>
+                              <p className="text-xs text-gray-500">
+                                {new Date(comment.createdAt).toLocaleDateString("fa-IR")}
+                              </p>
+                            </div>
+                            <p className="text-sm text-gray-700">{comment.content}</p>
+
+                            {/* Replies */}
+                            {comment.replies && comment.replies.length > 0 && (
+                              <div className="mt-3 mr-8 space-y-3">
+                                {comment.replies.map((reply: any) => (
+                                  <div key={reply._id} className="flex gap-2">
+                                    <div className="relative w-8 h-8 rounded-full overflow-hidden flex-shrink-0">
+                                      <OptimizedImage
+                                        src={reply.user?.avatar || "/images/default-avatar.png"}
+                                        alt={reply.user?.name || "کاربر"}
+                                        fill
+                                        className="object-cover"
+                                      />
+                                    </div>
+                                    <div className="flex-1">
+                                      <div className="flex items-center justify-between mb-1">
+                                        <h5 className="font-bold text-xs">{reply.user?.name || "کاربر"}</h5>
+                                        <p className="text-xs text-gray-500">
+                                          {new Date(reply.createdAt).toLocaleDateString("fa-IR")}
+                                        </p>
+                                      </div>
+                                      <p className="text-xs text-gray-700">{reply.content}</p>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -394,7 +846,7 @@ const NeedDetailPage: React.FC = () => {
                 <p className="text-sm text-gray-700 mb-4">
                   با حمایت مالی خود، به تحقق این نیاز کمک کنید و در ساخت آینده بهتر سهیم شوید.
                 </p>
-                <SmartButton variant="morange" size="md" className="w-full">
+                <SmartButton variant="morange" size="md" className="w-full" onClick={handleFinancialSupport}>
                   حمایت مالی
                 </SmartButton>
               </div>
@@ -403,19 +855,48 @@ const NeedDetailPage: React.FC = () => {
               <div className="bg-white rounded-md shadow-sm border border-mgray/20 p-6">
                 <h3 className="font-bold text-lg mb-4">دسته‌بندی</h3>
                 <p className="text-sm bg-mblue/10 text-mblue px-3 py-2 rounded-md inline-block">
-                  {need.category === "educational"
-                    ? "آموزشی"
-                    : need.category === "health"
-                    ? "بهداشت و سلامت"
-                    : need.category === "infrastructure"
-                    ? "زیرساخت"
-                    : need.category === "social"
-                    ? "اجتماعی"
-                    : need.category === "cultural"
-                    ? "فرهنگی"
-                    : "عمومی"}
+                  {typeof need.category === "string"
+                    ? need.category
+                    : need.category?.name || "عمومی"}
                 </p>
               </div>
+
+              {/* Supporters Card */}
+              {need.supporters && need.supporters.length > 0 && (
+                <div className="bg-white rounded-md shadow-sm border border-mgray/20 p-6">
+                  <h3 className="font-bold text-lg mb-4">
+                    👥 حامیان ({need.supporters.length})
+                  </h3>
+                  <div className="space-y-3 max-h-96 overflow-y-auto">
+                    {need.supporters.slice(0, 10).map((supporter: any, index: number) => (
+                      <div key={supporter._id || index} className="flex items-center gap-3">
+                        <div className="relative w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
+                          <OptimizedImage
+                            src={
+                              typeof supporter === "string"
+                                ? "/images/default-avatar.png"
+                                : supporter.avatar || "/images/default-avatar.png"
+                            }
+                            alt={typeof supporter === "string" ? "حامی" : supporter.name || "حامی"}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-bold text-sm truncate">
+                            {typeof supporter === "string" ? "حامی" : supporter.name || "حامی"}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                    {need.supporters.length > 10 && (
+                      <p className="text-xs text-center text-gray-500 pt-2">
+                        و {need.supporters.length - 10} حامی دیگر...
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )}
 
               {/* Stats Card */}
               <div className="bg-white rounded-md shadow-sm border border-mgray/20 p-6">

@@ -616,6 +616,61 @@ class NeedService {
       throw new Error(error.response?.data?.message || "خطا در حذف درخواست تایید");
     }
   }
+
+  // ===========================
+  // Comments
+  // ===========================
+
+  /**
+   * دریافت نظرات یک نیاز
+   */
+  public async getComments(needId: string): Promise<any[]> {
+    try {
+      const response = await api.get(`/needs/${needId}/comments`);
+      return response.data.data;
+    } catch (error: any) {
+      console.error("Get comments failed:", error);
+      throw new Error(error.response?.data?.message || "خطا در دریافت نظرات");
+    }
+  }
+
+  /**
+   * ارسال نظر برای یک نیاز
+   */
+  public async createComment(needId: string, content: string, parentId?: string): Promise<any> {
+    try {
+      const response = await api.post(`/needs/${needId}/comments`, { content, parentId });
+      return response.data.data;
+    } catch (error: any) {
+      console.error("Create comment failed:", error);
+      throw new Error(error.response?.data?.message || "خطا در ارسال نظر");
+    }
+  }
+
+  /**
+   * ویرایش نظر
+   */
+  public async updateComment(needId: string, commentId: string, content: string): Promise<any> {
+    try {
+      const response = await api.patch(`/needs/${needId}/comments/${commentId}`, { content });
+      return response.data.data;
+    } catch (error: any) {
+      console.error("Update comment failed:", error);
+      throw new Error(error.response?.data?.message || "خطا در ویرایش نظر");
+    }
+  }
+
+  /**
+   * حذف نظر
+   */
+  public async deleteComment(needId: string, commentId: string): Promise<void> {
+    try {
+      await api.delete(`/needs/${needId}/comments/${commentId}`);
+    } catch (error: any) {
+      console.error("Delete comment failed:", error);
+      throw new Error(error.response?.data?.message || "خطا در حذف نظر");
+    }
+  }
 }
 
 export const needService = new NeedService();

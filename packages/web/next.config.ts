@@ -2,9 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
-    // Custom loader to prevent empty strings from reaching picomatch
-    loader: 'custom',
-    loaderFile: './src/lib/imageLoader.ts',
+    // Use remotePatterns instead of custom loader for Next.js 16 compatibility
     remotePatterns: [
       {
         protocol: "http",
@@ -15,34 +13,31 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "example.com",
-        port: "",
         pathname: "/images/**",
       },
       {
         protocol: "https",
         hostname: "images.unsplash.com",
-        port: "",
         pathname: "/**",
       },
       {
         protocol: "https",
         hostname: "www.w3schools.com",
-        port: "",
         pathname: "/**",
       },
       {
         protocol: "https",
         hostname: "www.soundhelix.com",
-        port: "",
         pathname: "/**",
       },
       {
         protocol: "https",
         hostname: "www.w3.org",
-        port: "",
         pathname: "/**",
       },
     ],
+    // Allow unoptimized for better compatibility
+    unoptimized: false,
   },
 };
 

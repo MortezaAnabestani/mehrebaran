@@ -14,6 +14,7 @@ type SmartImageProps = {
   sizes?: string;
   placeholder?: "blur" | "empty";
   blurDataURL?: string;
+  unoptimized?: boolean;
 };
 
 const OptimizedImage: FC<SmartImageProps> = ({
@@ -28,6 +29,7 @@ const OptimizedImage: FC<SmartImageProps> = ({
   sizes = "100vw",
   placeholder = "empty",
   blurDataURL,
+  unoptimized = false,
 }) => {
   // CRITICAL: Prevent empty string from reaching Next.js Image
   // Check for undefined, null, empty string, and whitespace-only strings
@@ -53,6 +55,9 @@ const OptimizedImage: FC<SmartImageProps> = ({
   // Double-check one more time before passing to Image
   const safeSrc = src.trim() || "/images/default-avatar.png";
 
+  // Auto-detect if image needs to be unoptimized (SVG files, local icons)
+  const shouldUnoptimize = unoptimized || safeSrc.endsWith('.svg') || safeSrc.startsWith('/icons/');
+
   const imageClass = `${className} ${rounded ? "rounded-xl" : ""}`;
   return fill ? (
     <div className="relative w-full h-full">
@@ -65,6 +70,7 @@ const OptimizedImage: FC<SmartImageProps> = ({
         placeholder={placeholder}
         blurDataURL={placeholder === "blur" ? blurDataURL : undefined}
         sizes={sizes}
+        unoptimized={shouldUnoptimize}
       />
     </div>
   ) : (
@@ -78,6 +84,7 @@ const OptimizedImage: FC<SmartImageProps> = ({
       placeholder={placeholder}
       blurDataURL={placeholder === "blur" ? blurDataURL : undefined}
       sizes={sizes}
+      unoptimized={shouldUnoptimize}
     />
   );
 };

@@ -162,7 +162,7 @@ class NeedService {
     radiusInKm: number = 50,
     queryString: Record<string, any> = {}
   ): Promise<INeed[]> {
-    const baseQuery = this.buildSearchQuery(queryString);
+    const baseQuery = await this.buildSearchQuery(queryString);
 
     // Add geospatial query
     baseQuery.location = {

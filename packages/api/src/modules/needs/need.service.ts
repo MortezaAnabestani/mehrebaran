@@ -51,8 +51,8 @@ class NeedService {
     const processedFields = ['search', 'q', 'category', 'status', 'urgencyLevel', 'tags', 'skills', 'city', 'province', 'minUpvotes', 'hasLocation', 'deadlineBefore', 'createdAfter', 'createdBefore'];
     processedFields.forEach(field => delete cleanQueryString[field]);
 
+    // Don't call .filter() since we already built the query
     const features = new ApiFeatures(NeedModel.find(baseQuery), cleanQueryString)
-      .filter()
       .sort()
       .limitFields()
       .paginate();

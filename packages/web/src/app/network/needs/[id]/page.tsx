@@ -491,10 +491,12 @@ const NeedDetailPage: React.FC = () => {
                   {need.attachments && need.attachments.length > 0 && (
                     <div className="mb-6">
                       <h4 className="font-bold text-base mb-3">
-                        📎 فایل‌های پیوست ({need.attachments.length})
+                        📎 فایل‌های پیوست ({need.attachments.filter((a: any) => a && a.url && a.url.trim() !== "").length})
                       </h4>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {need.attachments.map((attachment: any, index: number) => (
+                        {need.attachments
+                          .filter((attachment: any) => attachment && attachment.url && attachment.url.trim() !== "")
+                          .map((attachment: any, index: number) => (
                           <div key={index}>
                             {attachment.fileType === "image" && (
                               <div className="relative w-full h-48 rounded-md overflow-hidden group cursor-pointer">

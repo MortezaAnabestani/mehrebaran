@@ -42,9 +42,16 @@ class NeedService {
   }
 
   public async findAll(queryString: Record<string, any>): Promise<INeed[]> {
+    // Build base query with complex filters
     const baseQuery = await this.buildSearchQuery(queryString);
 
-    const features = new ApiFeatures(NeedModel.find(baseQuery), queryString)
+    // Create a clean queryString without fields already handled in buildSearchQuery
+    const cleanQueryString = { ...queryString };
+    // Remove fields that are already processed in buildSearchQuery to avoid ApiFeatures re-applying them
+    const processedFields = ['search', 'q', 'category', 'status', 'urgencyLevel', 'tags', 'skills', 'city', 'province', 'minUpvotes', 'hasLocation', 'deadlineBefore', 'createdAfter', 'createdBefore'];
+    processedFields.forEach(field => delete cleanQueryString[field]);
+
+    const features = new ApiFeatures(NeedModel.find(baseQuery), cleanQueryString)
       .filter()
       .sort()
       .limitFields()
@@ -175,7 +182,12 @@ class NeedService {
       },
     };
 
-    const features = new ApiFeatures(NeedModel.find(baseQuery), queryString)
+    // Clean queryString to avoid re-applying processed fields
+    const cleanQueryString = { ...queryString };
+    const processedFields = ['search', 'q', 'category', 'status', 'urgencyLevel', 'tags', 'skills', 'city', 'province', 'minUpvotes', 'hasLocation', 'deadlineBefore', 'createdAfter', 'createdBefore'];
+    processedFields.forEach(field => delete cleanQueryString[field]);
+
+    const features = new ApiFeatures(NeedModel.find(baseQuery), cleanQueryString)
       .sort()
       .limitFields()
       .paginate();

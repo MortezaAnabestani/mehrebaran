@@ -192,7 +192,7 @@ const NeedDetailPage: React.FC = () => {
 
       // Update comments count in need
       if (need) {
-        setNeed({ ...need, commentsCount: (need.commentsCount || 0) + 1 });
+        setNeed({ ...need, commentsCount: (comments.length || 0) + 1 });
       }
 
       setCommentText("");
@@ -400,7 +400,11 @@ const NeedDetailPage: React.FC = () => {
                     >
                       {getStatusLabel(need.status)}
                     </span>
-                    <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold ${getUrgencyInfo().color}`}>
+                    <span
+                      className={`inline-block px-3 py-1 rounded-full text-xs font-bold ${
+                        getUrgencyInfo().color
+                      }`}
+                    >
                       {getUrgencyInfo().icon} {getUrgencyInfo().label}
                     </span>
                     {need.deadline && (
@@ -441,9 +445,7 @@ const NeedDetailPage: React.FC = () => {
                     {/* Location */}
                     {need.location && (
                       <div className="bg-mgray/5 rounded-md p-4">
-                        <h4 className="font-bold text-sm mb-2 flex items-center gap-2">
-                          📍 موقعیت مکانی
-                        </h4>
+                        <h4 className="font-bold text-sm mb-2 flex items-center gap-2">📍 موقعیت مکانی</h4>
                         <div className="text-sm text-gray-700 space-y-1">
                           {need.location.address && <p>{need.location.address}</p>}
                           {(need.location.city || need.location.province) && (
@@ -460,9 +462,7 @@ const NeedDetailPage: React.FC = () => {
                     {/* Estimated Duration */}
                     {need.estimatedDuration && (
                       <div className="bg-mgray/5 rounded-md p-4">
-                        <h4 className="font-bold text-sm mb-2 flex items-center gap-2">
-                          ⏱️ مدت زمان تخمینی
-                        </h4>
+                        <h4 className="font-bold text-sm mb-2 flex items-center gap-2">⏱️ مدت زمان تخمینی</h4>
                         <p className="text-sm text-gray-700">{need.estimatedDuration}</p>
                       </div>
                     )}
@@ -476,7 +476,10 @@ const NeedDetailPage: React.FC = () => {
                       </h4>
                       <div className="flex flex-wrap gap-2">
                         {need.requiredSkills.map((skill, index) => (
-                          <span key={index} className="text-xs bg-white border border-mblue/20 text-mblue px-3 py-1 rounded-full">
+                          <span
+                            key={index}
+                            className="text-xs bg-white border border-mblue/20 text-mblue px-3 py-1 rounded-full"
+                          >
                             {skill}
                           </span>
                         ))}
@@ -487,14 +490,16 @@ const NeedDetailPage: React.FC = () => {
                   {/* Attachments */}
                   {need.attachments && need.attachments.length > 0 && (
                     <div className="mb-6">
-                      <h4 className="font-bold text-base mb-3">📎 فایل‌های پیوست ({need.attachments.length})</h4>
+                      <h4 className="font-bold text-base mb-3">
+                        📎 فایل‌های پیوست ({need.attachments.length})
+                      </h4>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {need.attachments.map((attachment: any, index: number) => (
                           <div key={index}>
                             {attachment.fileType === "image" && (
                               <div className="relative w-full h-48 rounded-md overflow-hidden group cursor-pointer">
                                 <OptimizedImage
-                                  src={attachment.url}
+                                  src={attachment.url || "/images/default-avatar.png"}
                                   alt={attachment.fileName || `تصویر ${index + 1}`}
                                   fill
                                   className="object-cover transition-transform group-hover:scale-105"
@@ -521,7 +526,9 @@ const NeedDetailPage: React.FC = () => {
                                       <p className="text-sm font-bold truncate">{attachment.fileName}</p>
                                     )}
                                     {attachment.fileSize && (
-                                      <p className="text-xs text-gray-500">{formatFileSize(attachment.fileSize)}</p>
+                                      <p className="text-xs text-gray-500">
+                                        {formatFileSize(attachment.fileSize)}
+                                      </p>
                                     )}
                                   </div>
                                 </div>
@@ -538,7 +545,11 @@ const NeedDetailPage: React.FC = () => {
                                 className="block bg-mgray/10 rounded-md p-4 hover:bg-mgray/20 transition-colors border border-mgray/20"
                               >
                                 <div className="flex items-start gap-3">
-                                  <div className={`text-3xl flex-shrink-0 w-12 h-12 rounded-md flex items-center justify-center ${getFileInfo(attachment.url, attachment.fileName).color}`}>
+                                  <div
+                                    className={`text-3xl flex-shrink-0 w-12 h-12 rounded-md flex items-center justify-center ${
+                                      getFileInfo(attachment.url, attachment.fileName).color
+                                    }`}
+                                  >
                                     {getFileInfo(attachment.url, attachment.fileName).icon}
                                   </div>
                                   <div className="flex-1 min-w-0">
@@ -579,7 +590,9 @@ const NeedDetailPage: React.FC = () => {
                       <div className="mb-3">
                         <div className="flex justify-between items-center mb-2">
                           <span className="text-sm font-bold text-gray-700">میزان پیشرفت:</span>
-                          <span className="text-sm font-bold text-morange">{getBudgetProgress().toFixed(1)}%</span>
+                          <span className="text-sm font-bold text-morange">
+                            {getBudgetProgress().toFixed(1)}%
+                          </span>
                         </div>
                         <div className="w-full bg-mgray/30 rounded-full h-3 overflow-hidden">
                           <div
@@ -591,11 +604,15 @@ const NeedDetailPage: React.FC = () => {
                       <div className="grid grid-cols-2 gap-4 mt-4">
                         <div>
                           <p className="text-xs text-gray-600 mb-1">مبلغ جمع‌آوری شده:</p>
-                          <p className="text-lg font-bold text-mblue">{formatNumber(getTotalRaised())} ریال</p>
+                          <p className="text-lg font-bold text-mblue">
+                            {formatNumber(getTotalRaised())} ریال
+                          </p>
                         </div>
                         <div>
                           <p className="text-xs text-gray-600 mb-1">بودجه کل:</p>
-                          <p className="text-lg font-bold text-gray-700">{formatNumber(getTotalBudget())} ریال</p>
+                          <p className="text-lg font-bold text-gray-700">
+                            {formatNumber(getTotalBudget())} ریال
+                          </p>
                         </div>
                       </div>
 
@@ -607,7 +624,9 @@ const NeedDetailPage: React.FC = () => {
                             <div className="flex justify-between items-start mb-2">
                               <div className="flex-1">
                                 <h5 className="font-bold text-sm">{item.title}</h5>
-                                {item.description && <p className="text-xs text-gray-600 mt-1">{item.description}</p>}
+                                {item.description && (
+                                  <p className="text-xs text-gray-600 mt-1">{item.description}</p>
+                                )}
                               </div>
                               <span
                                 className={`text-xs px-2 py-1 rounded-full ${
@@ -628,14 +647,18 @@ const NeedDetailPage: React.FC = () => {
                             <div className="flex justify-between items-center text-xs">
                               <span className="text-gray-600">{item.category}</span>
                               <span className="font-bold">
-                                {formatNumber(item.amountRaised || 0)} / {formatNumber(item.estimatedCost)} ریال
+                                {formatNumber(item.amountRaised || 0)} / {formatNumber(item.estimatedCost)}{" "}
+                                ریال
                               </span>
                             </div>
                             <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
                               <div
                                 className="bg-mblue h-full rounded-full"
                                 style={{
-                                  width: `${Math.min(((item.amountRaised || 0) / item.estimatedCost) * 100, 100)}%`,
+                                  width: `${Math.min(
+                                    ((item.amountRaised || 0) / item.estimatedCost) * 100,
+                                    100
+                                  )}%`,
                                 }}
                               ></div>
                             </div>
@@ -678,7 +701,9 @@ const NeedDetailPage: React.FC = () => {
                               </div>
                               <p className="text-xs text-gray-600 mb-2">{milestone.description}</p>
                               <div className="flex items-center justify-between text-xs text-gray-500 mb-2">
-                                <span>مهلت: {new Date(milestone.targetDate).toLocaleDateString("fa-IR")}</span>
+                                <span>
+                                  مهلت: {new Date(milestone.targetDate).toLocaleDateString("fa-IR")}
+                                </span>
                                 <span className="font-bold text-mblue">{milestone.progressPercentage}%</span>
                               </div>
                               <div className="w-full bg-gray-200 rounded-full h-2">
@@ -737,7 +762,7 @@ const NeedDetailPage: React.FC = () => {
 
                     <div className="flex items-center gap-2 text-gray-600">
                       <span className="text-xl">💬</span>
-                      <span className="font-bold">{formatNumber(need.commentsCount || 0)}</span>
+                      <span className="font-bold">{formatNumber(comments.length || 0)}</span>
                     </div>
 
                     <div className="flex items-center gap-2 text-gray-600">
@@ -754,7 +779,7 @@ const NeedDetailPage: React.FC = () => {
 
               {/* Comments Section */}
               <div className="bg-white rounded-md shadow-sm border border-mgray/20 p-6">
-                <h3 className="font-bold text-lg mb-4">نظرات ({need.commentsCount || 0})</h3>
+                <h3 className="font-bold text-lg mb-4">نظرات ({comments.length || 0})</h3>
 
                 {/* Comment Form */}
                 <form onSubmit={handleSubmitComment} className="mb-6">
@@ -855,18 +880,14 @@ const NeedDetailPage: React.FC = () => {
               <div className="bg-white rounded-md shadow-sm border border-mgray/20 p-6">
                 <h3 className="font-bold text-lg mb-4">دسته‌بندی</h3>
                 <p className="text-sm bg-mblue/10 text-mblue px-3 py-2 rounded-md inline-block">
-                  {typeof need.category === "string"
-                    ? need.category
-                    : need.category?.name || "عمومی"}
+                  {typeof need.category === "string" ? need.category : need.category?.name || "عمومی"}
                 </p>
               </div>
 
               {/* Supporters Card */}
               {need.supporters && need.supporters.length > 0 && (
                 <div className="bg-white rounded-md shadow-sm border border-mgray/20 p-6">
-                  <h3 className="font-bold text-lg mb-4">
-                    👥 حامیان ({need.supporters.length})
-                  </h3>
+                  <h3 className="font-bold text-lg mb-4">👥 حامیان ({need.supporters.length})</h3>
                   <div className="space-y-3 max-h-96 overflow-y-auto">
                     {need.supporters.slice(0, 10).map((supporter: any, index: number) => (
                       <div key={supporter._id || index} className="flex items-center gap-3">
@@ -912,7 +933,7 @@ const NeedDetailPage: React.FC = () => {
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-gray-600">نظرات:</span>
-                    <span className="font-bold">{formatNumber(need.commentsCount || 0)}</span>
+                    <span className="font-bold">{formatNumber(comments.length || 0)}</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-gray-600">اشتراک:</span>

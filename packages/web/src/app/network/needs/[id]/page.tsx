@@ -342,7 +342,12 @@ const NeedDetailPage: React.FC = () => {
                     <div className="grid grid-cols-2 gap-4 mb-6">
                       {need.images.map((image, index) => (
                         <div key={index} className="relative w-full h-48 rounded-md overflow-hidden">
-                          <OptimizedImage src={image} alt={`تصویر ${index + 1}`} fill className="object-cover" />
+                          <OptimizedImage
+                            src={image}
+                            alt={`تصویر ${index + 1}`}
+                            fill
+                            className="object-cover"
+                          />
                         </div>
                       ))}
                     </div>
@@ -417,7 +422,7 @@ const NeedDetailPage: React.FC = () => {
 
                     <div className="flex items-center gap-2 text-gray-600">
                       <span className="text-xl">💬</span>
-                      <span className="font-bold">{formatNumber(need.commentsCount || 0)}</span>
+                      <span className="font-bold">{formatNumber(comments.length || 0)}</span>
                     </div>
 
                     <div className="flex items-center gap-2 text-gray-600">
@@ -434,7 +439,7 @@ const NeedDetailPage: React.FC = () => {
 
               {/* Comments Section */}
               <div className="bg-white rounded-md shadow-sm border border-mgray/20 p-6">
-                <h3 className="font-bold text-lg mb-4">نظرات ({need.commentsCount || 0})</h3>
+                <h3 className="font-bold text-lg mb-4">نظرات ({comments.length || 0})</h3>
 
                 {/* Comment Form */}
                 <form onSubmit={handleSubmitComment} className="mb-6">
@@ -563,7 +568,7 @@ const NeedDetailPage: React.FC = () => {
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-gray-600">نظرات:</span>
-                    <span className="font-bold">{formatNumber(need.commentsCount || 0)}</span>
+                    <span className="font-bold">{formatNumber(comments.length || 0)}</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-gray-600">اشتراک:</span>

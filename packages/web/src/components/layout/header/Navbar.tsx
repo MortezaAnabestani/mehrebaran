@@ -3,12 +3,14 @@
 import { MenuItem } from "@/types/types";
 import Link from "next/link";
 import React from "react";
+import { usePathname } from "next/navigation";
 
 interface props {
   deviceSize: "mobile" | "desktop";
 }
 
-const menuItems: MenuItem[] = [
+// Menu items for main site
+const mainMenuItems: MenuItem[] = [
   { label: "شبکه نیازسنجی", href: "/network" },
   { label: "دربارۀ ما", href: "/about-us" },
   { label: "طرح‌های جاری", href: "/projects/active" },
@@ -17,7 +19,23 @@ const menuItems: MenuItem[] = [
   { label: "ثبت‌نام", href: "/signup" },
 ];
 
+// Menu items for network pages
+const networkMenuItems: MenuItem[] = [
+  { label: "صفحه اصلی", href: "/" },
+  { label: "خانه", href: "/network" },
+  { label: "کاوش", href: "/network/explore" },
+  { label: "پرطرفدارها", href: "/network/trending" },
+  { label: "تیم‌ها", href: "/network/teams" },
+  { label: "داستان‌ها", href: "/network/stories" },
+  { label: "رتبه‌بندی", href: "/network/leaderboard" },
+  { label: "پروفایل", href: "/network/profile" },
+];
+
 const Navbar: React.FC<props> = ({ deviceSize }) => {
+  const pathname = usePathname();
+  const isNetworkPage = pathname?.startsWith("/network");
+  const menuItems = isNetworkPage ? networkMenuItems : mainMenuItems;
+
   return (
     <nav
       className={`flex justify-between w-full gap-4 duration-300 transition-all text-white ${
@@ -31,7 +49,9 @@ const Navbar: React.FC<props> = ({ deviceSize }) => {
         >
           <Link
             href={item.href}
-            className={`text-sm md:text-base group-hover:font-bold group-hover:translate-y-0.5 duration-200 transition-all`}
+            className={`text-sm md:text-base group-hover:font-bold group-hover:translate-y-0.5 duration-200 transition-all ${
+              pathname === item.href ? "font-bold" : ""
+            }`}
           >
             {item.label}
           </Link>

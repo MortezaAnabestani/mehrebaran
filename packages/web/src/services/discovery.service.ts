@@ -1,7 +1,7 @@
 import api from "@/lib/api";
-import type { IUser } from "@/types/user";
-import type { INeed } from "@/types/need";
-import type { ITeam } from "@/types/team";
+import type { IUser } from "common-types";
+import type { INeed } from "common-types";
+import type { ITeam } from "common-types";
 
 // ===========================
 // Types & Interfaces
@@ -34,7 +34,6 @@ export interface GetTrendingUsersParams {
   period?: "day" | "week" | "month" | "all";
 }
 
-
 export interface GetRecommendedNeedsResponse {
   success: boolean;
   data: INeed[];
@@ -65,7 +64,6 @@ export interface GetTrendingUsersResponse {
   message: string;
 }
 
-
 // ===========================
 // Discovery Service Class
 // ===========================
@@ -78,30 +76,30 @@ class DiscoveryService {
   /**
    * Get recommended needs for the current user
    */
-  public async getRecommendedNeeds(
-    params?: GetRecommendedNeedsParams
-  ): Promise<GetRecommendedNeedsResponse> {
-    const response = await api.get("/discovery/recommendations/needs", { params });
+  public async getRecommendedNeeds(params?: GetRecommendedNeedsParams): Promise<GetRecommendedNeedsResponse> {
+    const response = await api.get(`${process.env.NEXT_PUBLIC_API_URL}/discovery/recommendations/needs`, {
+      params,
+    });
     return response.data;
   }
 
   /**
    * Get recommended users to follow
    */
-  public async getRecommendedUsers(
-    params?: GetRecommendedUsersParams
-  ): Promise<GetRecommendedUsersResponse> {
-    const response = await api.get("/discovery/recommendations/users", { params });
+  public async getRecommendedUsers(params?: GetRecommendedUsersParams): Promise<GetRecommendedUsersResponse> {
+    const response = await api.get(`${process.env.NEXT_PUBLIC_API_URL}/discovery/recommendations/users`, {
+      params,
+    });
     return response.data;
   }
 
   /**
    * Get recommended teams to join
    */
-  public async getRecommendedTeams(
-    params?: GetRecommendedTeamsParams
-  ): Promise<GetRecommendedTeamsResponse> {
-    const response = await api.get("/discovery/recommendations/teams", { params });
+  public async getRecommendedTeams(params?: GetRecommendedTeamsParams): Promise<GetRecommendedTeamsResponse> {
+    const response = await api.get(`${process.env.NEXT_PUBLIC_API_URL}/discovery/recommendations/teams`, {
+      params,
+    });
     return response.data;
   }
 
@@ -112,30 +110,28 @@ class DiscoveryService {
   /**
    * Get trending needs based on activity
    */
-  public async getTrendingNeeds(
-    params?: GetTrendingNeedsParams
-  ): Promise<GetTrendingNeedsResponse> {
-    const response = await api.get("/discovery/trending/needs", { params });
+  public async getTrendingNeeds(params?: GetTrendingNeedsParams): Promise<GetTrendingNeedsResponse> {
+    const response = await api.get(`${process.env.NEXT_PUBLIC_API_URL}/discovery/trending/needs`, { params });
     return response.data;
   }
 
   /**
    * Get trending users based on activity
    */
-  public async getTrendingUsers(
-    params?: GetTrendingUsersParams
-  ): Promise<GetTrendingUsersResponse> {
-    const response = await api.get("/discovery/trending/users", { params });
+  public async getTrendingUsers(params?: GetTrendingUsersParams): Promise<GetTrendingUsersResponse> {
+    const response = await api.get(`${process.env.NEXT_PUBLIC_API_URL}/discovery/trending/users`, { params });
     return response.data;
   }
 
   /**
    * Get trending tags based on activity
    */
-  public async getTrendingTags(
-    params?: { limit?: number; skip?: number; period?: "day" | "week" | "month" | "all" }
-  ): Promise<{ success: boolean; data: any[]; message: string }> {
-    const response = await api.get("/discovery/trending/tags", { params });
+  public async getTrendingTags(params?: {
+    limit?: number;
+    skip?: number;
+    period?: "day" | "week" | "month" | "all";
+  }): Promise<{ success: boolean; data: any[]; message: string }> {
+    const response = await api.get(`${process.env.NEXT_PUBLIC_API_URL}/discovery/trending/tags`, { params });
     return response.data;
   }
 
@@ -146,20 +142,23 @@ class DiscoveryService {
   /**
    * Get leaderboard
    */
-  public async getLeaderboard(
-    params?: { category?: string; period?: string; limit?: number }
-  ): Promise<{ success: boolean; data: any[]; message: string }> {
-    const response = await api.get("/discovery/leaderboard", { params });
+  public async getLeaderboard(params?: {
+    category?: string;
+    period?: string;
+    limit?: number;
+  }): Promise<{ success: boolean; data: any[]; message: string }> {
+    const response = await api.get(`${process.env.NEXT_PUBLIC_API_URL}/discovery/leaderboard`, { params });
     return response.data;
   }
 
   /**
    * Get my rank in leaderboard
    */
-  public async getMyRank(
-    params?: { category?: string; period?: string }
-  ): Promise<{ success: boolean; data: any; message: string }> {
-    const response = await api.get("/discovery/leaderboard/me", { params });
+  public async getMyRank(params?: {
+    category?: string;
+    period?: string;
+  }): Promise<{ success: boolean; data: any; message: string }> {
+    const response = await api.get(`${process.env.NEXT_PUBLIC_API_URL}/discovery/leaderboard/me`, { params });
     return response.data;
   }
 
@@ -170,27 +169,38 @@ class DiscoveryService {
     userId: string,
     params?: { category?: string; period?: string }
   ): Promise<{ success: boolean; data: any; message: string }> {
-    const response = await api.get(`/discovery/leaderboard/user/${userId}`, { params });
+    const response = await api.get(
+      `${process.env.NEXT_PUBLIC_API_URL}/discovery/leaderboard/user/${userId}`,
+      { params }
+    );
     return response.data;
   }
 
   /**
    * Get nearby users in leaderboard
    */
-  public async getNearbyUsers(
-    params?: { category?: string; period?: string; range?: number }
-  ): Promise<{ success: boolean; data: any[]; message: string }> {
-    const response = await api.get("/discovery/leaderboard/nearby", { params });
+  public async getNearbyUsers(params?: {
+    category?: string;
+    period?: string;
+    range?: number;
+  }): Promise<{ success: boolean; data: any[]; message: string }> {
+    const response = await api.get(`${process.env.NEXT_PUBLIC_API_URL}/discovery/leaderboard/nearby`, {
+      params,
+    });
     return response.data;
   }
 
   /**
    * Get top users
    */
-  public async getTopUsers(
-    params?: { category?: string; period?: string; limit?: number }
-  ): Promise<{ success: boolean; data: any[]; message: string }> {
-    const response = await api.get("/discovery/leaderboard/top", { params });
+  public async getTopUsers(params?: {
+    category?: string;
+    period?: string;
+    limit?: number;
+  }): Promise<{ success: boolean; data: any[]; message: string }> {
+    const response = await api.get(`${process.env.NEXT_PUBLIC_API_URL}/discovery/leaderboard/top`, {
+      params,
+    });
     return response.data;
   }
 
@@ -201,10 +211,13 @@ class DiscoveryService {
   /**
    * Get personalized recommendations
    */
-  public async getPersonalizedRecommendations(
-    params?: { limit?: number }
-  ): Promise<{ success: boolean; data: any; message: string }> {
-    const response = await api.get("/discovery/recommendations/personalized", { params });
+  public async getPersonalizedRecommendations(params?: {
+    limit?: number;
+  }): Promise<{ success: boolean; data: any; message: string }> {
+    const response = await api.get(
+      `${process.env.NEXT_PUBLIC_API_URL}/discovery/recommendations/personalized`,
+      { params }
+    );
     return response.data;
   }
 
@@ -212,17 +225,20 @@ class DiscoveryService {
    * Get user preferences
    */
   public async getUserPreferences(): Promise<{ success: boolean; data: any; message: string }> {
-    const response = await api.get("/discovery/recommendations/preferences");
+    const response = await api.get(
+      `${process.env.NEXT_PUBLIC_API_URL}/discovery/recommendations/preferences`
+    );
     return response.data;
   }
 
   /**
    * Get personalized feed
    */
-  public async getPersonalizedFeed(
-    params?: { limit?: number; skip?: number }
-  ): Promise<{ success: boolean; data: any[]; message: string }> {
-    const response = await api.get("/discovery/feed", { params });
+  public async getPersonalizedFeed(params?: {
+    limit?: number;
+    skip?: number;
+  }): Promise<{ success: boolean; data: any[]; message: string }> {
+    const response = await api.get(`${process.env.NEXT_PUBLIC_API_URL}/discovery/feed`, { params });
     return response.data;
   }
 
@@ -230,17 +246,18 @@ class DiscoveryService {
    * Get discovery stats
    */
   public async getDiscoveryStats(): Promise<{ success: boolean; data: any; message: string }> {
-    const response = await api.get("/discovery/stats");
+    const response = await api.get(`${process.env.NEXT_PUBLIC_API_URL}/discovery/stats`);
     return response.data;
   }
 
   /**
    * Get all trending content
    */
-  public async getAllTrendingContent(
-    params?: { period?: "day" | "week" | "month" | "all"; limit?: number }
-  ): Promise<{ success: boolean; data: any; message: string }> {
-    const response = await api.get("/discovery/trending/all", { params });
+  public async getAllTrendingContent(params?: {
+    period?: "day" | "week" | "month" | "all";
+    limit?: number;
+  }): Promise<{ success: boolean; data: any; message: string }> {
+    const response = await api.get(`${process.env.NEXT_PUBLIC_API_URL}/discovery/trending/all`, { params });
     return response.data;
   }
 

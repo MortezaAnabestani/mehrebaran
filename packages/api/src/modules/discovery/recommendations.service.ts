@@ -91,7 +91,7 @@ class RecommendationsService {
       confidence: 0.5,
       reasons: [
         {
-          type: "random",
+          type: "popular" as const,
           description: "پیشنهاد عمومی",
           weight: 1,
         },
@@ -247,7 +247,7 @@ class RecommendationsService {
       confidence: 0.5,
       reasons: [
         {
-          type: "random",
+          type: "similar_users" as const,
           description: "پیشنهاد عمومی",
           weight: 1,
         },
@@ -390,7 +390,7 @@ class RecommendationsService {
       confidence: 0.5,
       reasons: [
         {
-          type: "random",
+          type: "category_match" as const,
           description: "پیشنهاد عمومی",
           weight: 1,
         },

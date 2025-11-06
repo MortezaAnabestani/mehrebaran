@@ -30,31 +30,44 @@ class RecommendationsService {
     strategy: RecommendationStrategy = "hybrid",
     limit: number = 20
   ): Promise<INeedRecommendation[]> {
+    console.log("🟢 recommendNeeds service called - userId:", userId, "strategy:", strategy, "limit:", limit);
+
     const preferences = await this.getUserPreferences(userId);
+    console.log("🟢 Got user preferences:", {
+      favoriteCategories: preferences.favoriteCategories.length,
+      favoriteTags: preferences.favoriteTags.length,
+      interactedNeeds: preferences.interactedNeeds.length
+    });
 
     let recommendations: INeedRecommendation[] = [];
 
     switch (strategy) {
       case "collaborative":
+        console.log("🟢 Using collaborative strategy");
         recommendations = await this.collaborativeFilteringNeeds(userId, preferences, limit);
         break;
       case "content_based":
+        console.log("🟢 Using content_based strategy");
         recommendations = await this.contentBasedFilteringNeeds(userId, preferences, limit);
         break;
       case "popular":
+        console.log("🟢 Using popular strategy");
         recommendations = await this.popularNeeds(userId, limit);
         break;
       case "trending":
+        console.log("🟢 Using trending strategy");
         recommendations = await this.trendingNeeds(userId, limit);
         break;
       case "hybrid":
       default:
+        console.log("🟢 Using hybrid strategy");
         // ترکیب چند استراتژی
         const [collaborative, contentBased, popular] = await Promise.all([
           this.collaborativeFilteringNeeds(userId, preferences, limit / 2),
           this.contentBasedFilteringNeeds(userId, preferences, limit / 2),
           this.popularNeeds(userId, limit / 4),
         ]);
+        console.log("🟢 Hybrid results - collaborative:", collaborative.length, "contentBased:", contentBased.length, "popular:", popular.length);
         recommendations = this.mergeAndRankRecommendations([
           ...collaborative,
           ...contentBased,
@@ -63,11 +76,16 @@ class RecommendationsService {
         break;
     }
 
+    console.log("🟢 Total recommendations before fallback:", recommendations.length);
+
     // Fallback: اگر هیچ recommendation نیافتیم، نیازهای تصادفی برگردون
     if (recommendations.length === 0) {
+      console.log("🟡 No recommendations found, using fallback");
       recommendations = await this.getRandomNeeds(userId, limit);
+      console.log("🟢 Fallback returned:", recommendations.length, "needs");
     }
 
+    console.log("🟢 Final recommendations count:", recommendations.length);
     return recommendations;
   }
 

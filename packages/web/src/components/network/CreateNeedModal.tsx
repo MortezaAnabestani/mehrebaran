@@ -6,6 +6,7 @@ import SmartButton from "@/components/ui/SmartButton";
 import PersianDatePicker from "@/components/ui/PersianDatePicker";
 import LocationPicker from "@/components/ui/LocationPicker";
 import FileUploader from "@/components/ui/FileUploader";
+import { getProvinceNames, getCitiesByProvince } from "@/data/iranLocations";
 
 interface CreateNeedModalProps {
   isOpen: boolean;
@@ -16,6 +17,7 @@ interface CreateNeedModalProps {
 const CreateNeedModal: React.FC<CreateNeedModalProps> = ({ isOpen, onClose, onSubmit }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<string[]>([]);
 
   // Form data
   const [formData, setFormData] = useState({
@@ -67,17 +69,68 @@ const CreateNeedModal: React.FC<CreateNeedModalProps> = ({ isOpen, onClose, onSu
 
   const updateFormData = (field: string, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+    // Clear validation errors when user starts typing
+    if (validationErrors.length > 0) {
+      setValidationErrors([]);
+    }
+  };
+
+  // Validation function for each step
+  const validateCurrentStep = (): boolean => {
+    const errors: string[] = [];
+
+    switch (currentStep) {
+      case 0: // Step 1: Basic Info - REQUIRED FIELDS
+        if (!formData.title.trim()) {
+          errors.push("عنوان نیاز الزامی است");
+        } else if (formData.title.trim().length < 10) {
+          errors.push("عنوان نیاز باید حداقل ۱۰ کاراکتر باشد");
+        }
+
+        if (!formData.description.trim()) {
+          errors.push("توضیحات کامل الزامی است");
+        } else if (formData.description.trim().length < 50) {
+          errors.push("توضیحات باید حداقل ۵۰ کاراکتر باشد");
+        }
+
+        if (!formData.category) {
+          errors.push("انتخاب دسته‌بندی الزامی است");
+        }
+        break;
+
+      case 1: // Step 2: Details - No required fields
+        break;
+
+      case 2: // Step 3: Location - No required fields
+        break;
+
+      case 3: // Step 4: Timeline - No required fields
+        break;
+
+      case 4: // Step 5: Budget - No required fields
+        break;
+
+      case 5: // Step 6: Files - No required fields
+        break;
+    }
+
+    setValidationErrors(errors);
+    return errors.length === 0;
   };
 
   const nextStep = () => {
-    if (currentStep < steps.length - 1) {
-      setCurrentStep(currentStep + 1);
+    if (validateCurrentStep()) {
+      if (currentStep < steps.length - 1) {
+        setCurrentStep(currentStep + 1);
+        setValidationErrors([]);
+      }
     }
   };
 
   const prevStep = () => {
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
+      setValidationErrors([]);
     }
   };
 
@@ -98,12 +151,12 @@ const CreateNeedModal: React.FC<CreateNeedModalProps> = ({ isOpen, onClose, onSu
   const progress = ((currentStep + 1) / steps.length) * 100;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-8 lg:p-12 bg-black/50 backdrop-blur-sm">
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.9 }}
-        className="w-full max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden"
+        className="w-full max-w-4xl max-h-[85vh] bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col"
       >
         {/* Header */}
         <div className="bg-gradient-to-r from-mblue to-mblue/80 text-white p-6">
@@ -158,7 +211,30 @@ const CreateNeedModal: React.FC<CreateNeedModalProps> = ({ isOpen, onClose, onSu
         </div>
 
         {/* Body */}
-        <div className="p-8 min-h-[400px] max-h-[60vh] overflow-y-auto">
+        <div className="p-8 flex-1 overflow-y-auto">
+          {/* Validation Errors */}
+          {validationErrors.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-6 p-4 bg-red-50 border-2 border-red-200 rounded-lg"
+            >
+              <div className="flex items-start gap-3">
+                <span className="text-2xl">⚠️</span>
+                <div className="flex-1">
+                  <h4 className="font-bold text-red-800 mb-2">لطفاً موارد زیر را تکمیل کنید:</h4>
+                  <ul className="list-disc list-inside space-y-1">
+                    {validationErrors.map((error, index) => (
+                      <li key={index} className="text-sm text-red-700">
+                        {error}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
           <AnimatePresence mode="wait">
             <motion.div
               key={currentStep}
@@ -438,11 +514,61 @@ const Step2Details: React.FC<any> = ({ formData, updateFormData }) => {
 
 // Placeholder components for other steps (will implement next)
 const Step3Location: React.FC<any> = ({ formData, updateFormData }) => {
+  const provinces = getProvinceNames();
+  const cities = formData.location.province ? getCitiesByProvince(formData.location.province) : [];
+
+  const handleProvinceChange = (province: string) => {
+    updateFormData("location", {
+      ...formData.location,
+      province: province,
+      city: "", // Reset city when province changes
+    });
+  };
+
   return (
     <div className="space-y-6 animate-fadeIn">
       <div>
         <h3 className="text-xl font-bold mb-2 text-mblue">موقعیت مکانی</h3>
         <p className="text-sm text-gray-600">محل اجرای نیاز را روی نقشه مشخص کنید</p>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-bold mb-2">استان</label>
+          <select
+            value={formData.location.province}
+            onChange={(e) => handleProvinceChange(e.target.value)}
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mblue"
+          >
+            <option value="">انتخاب استان</option>
+            {provinces.map((province) => (
+              <option key={province} value={province}>
+                {province}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-bold mb-2">شهر</label>
+          <select
+            value={formData.location.city}
+            onChange={(e) =>
+              updateFormData("location", { ...formData.location, city: e.target.value })
+            }
+            disabled={!formData.location.province}
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mblue disabled:bg-gray-100 disabled:cursor-not-allowed"
+          >
+            <option value="">
+              {formData.location.province ? "انتخاب شهر" : "ابتدا استان را انتخاب کنید"}
+            </option>
+            {cities.map((city) => (
+              <option key={city} value={city}>
+                {city}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {/* نقشه انتخاب موقعیت */}
@@ -453,34 +579,6 @@ const Step3Location: React.FC<any> = ({ formData, updateFormData }) => {
         }
         label="انتخاب موقعیت روی نقشه"
       />
-
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-bold mb-2">استان</label>
-          <input
-            type="text"
-            value={formData.location.province}
-            onChange={(e) =>
-              updateFormData("location", { ...formData.location, province: e.target.value })
-            }
-            placeholder="مثال: تهران"
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mblue"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-bold mb-2">شهر</label>
-          <input
-            type="text"
-            value={formData.location.city}
-            onChange={(e) =>
-              updateFormData("location", { ...formData.location, city: e.target.value })
-            }
-            placeholder="مثال: تهران"
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mblue"
-          />
-        </div>
-      </div>
 
       <div>
         <label className="block text-sm font-bold mb-2">آدرس کامل</label>

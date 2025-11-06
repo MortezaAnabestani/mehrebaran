@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import DatePicker, { DayValue } from "react-modern-calendar-datepicker";
 import "react-modern-calendar-datepicker/lib/DatePicker.css";
 
@@ -21,24 +21,45 @@ const PersianDatePicker: React.FC<PersianDatePickerProps> = ({
   minimumDate,
   maximumDate,
 }) => {
+  const [mounted, setMounted] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Ensure component is mounted on client side
+  useEffect(() => {
+    setMounted(true);
+    return () => {
+      setMounted(false);
+    };
+  }, []);
+
   // Convert ISO string to Persian date object
   const isoToPersian = (isoDate: string): DayValue => {
     if (!isoDate) return null;
-    const date = new Date(isoDate);
-    // Simple conversion (you may want to use a library like moment-jalaali for accurate conversion)
-    const year = date.getFullYear();
-    const month = date.getMonth() + 1;
-    const day = date.getDate();
-    return { year, month, day };
+    try {
+      const date = new Date(isoDate);
+      // Simple conversion (you may want to use a library like moment-jalaali for accurate conversion)
+      const year = date.getFullYear();
+      const month = date.getMonth() + 1;
+      const day = date.getDate();
+      return { year, month, day };
+    } catch (error) {
+      console.error("Error converting ISO to Persian:", error);
+      return null;
+    }
   };
 
   // Convert Persian date object to ISO string
   const persianToIso = (persianDate: DayValue): string => {
     if (!persianDate) return "";
-    // Simple conversion (you may want to use a library like moment-jalaali for accurate conversion)
-    const { year, month, day } = persianDate;
-    const date = new Date(year, month - 1, day);
-    return date.toISOString();
+    try {
+      // Simple conversion (you may want to use a library like moment-jalaali for accurate conversion)
+      const { year, month, day } = persianDate;
+      const date = new Date(year, month - 1, day);
+      return date.toISOString();
+    } catch (error) {
+      console.error("Error converting Persian to ISO:", error);
+      return "";
+    }
   };
 
   const [selectedDay, setSelectedDay] = useState<DayValue>(
@@ -49,6 +70,18 @@ const PersianDatePicker: React.FC<PersianDatePickerProps> = ({
     setSelectedDay(date);
     onChange(persianToIso(date));
   };
+
+  // Don't render until mounted to avoid SSR issues
+  if (!mounted) {
+    return (
+      <div className="w-full">
+        {label && <label className="block text-sm font-bold mb-2">{label}</label>}
+        <div className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50">
+          <span className="text-gray-400">در حال بارگذاری تقویم...</span>
+        </div>
+      </div>
+    );
+  }
 
   const myCustomLocale = {
     // months list by order

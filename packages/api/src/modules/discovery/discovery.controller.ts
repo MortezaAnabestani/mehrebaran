@@ -185,7 +185,10 @@ class DiscoveryController {
 
     const recommendations = await recommendationsService.recommendNeeds(userId, strategy, limit);
 
-    res.status(200).json({ message: "نیازهای پیشنهادی با موفقیت دریافت شدند.", data: recommendations });
+    // Extract only the items from recommendations
+    const needs = recommendations.map((rec) => rec.item);
+
+    res.status(200).json({ message: "نیازهای پیشنهادی با موفقیت دریافت شدند.", data: needs });
   });
 
   /**
@@ -198,7 +201,10 @@ class DiscoveryController {
 
     const recommendations = await recommendationsService.recommendUsers(userId, limit);
 
-    res.status(200).json({ message: "کاربران پیشنهادی با موفقیت دریافت شدند.", data: recommendations });
+    // Extract only the items from recommendations
+    const users = recommendations.map((rec) => rec.item);
+
+    res.status(200).json({ message: "کاربران پیشنهادی با موفقیت دریافت شدند.", data: users });
   });
 
   /**
@@ -211,7 +217,10 @@ class DiscoveryController {
 
     const recommendations = await recommendationsService.recommendTeams(userId, limit);
 
-    res.status(200).json({ message: "تیم‌های پیشنهادی با موفقیت دریافت شدند.", data: recommendations });
+    // Extract only the items from recommendations
+    const teams = recommendations.map((rec) => rec.item);
+
+    res.status(200).json({ message: "تیم‌های پیشنهادی با موفقیت دریافت شدند.", data: teams });
   });
 
   /**

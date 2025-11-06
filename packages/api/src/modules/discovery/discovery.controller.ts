@@ -179,11 +179,14 @@ class DiscoveryController {
    * توصیه نیازها به کاربر
    */
   public recommendNeeds = asyncHandler(async (req: Request, res: Response) => {
+    console.log("🔵 recommendNeeds called - userId:", (req as any).user?.id);
     const userId = (req as any).user.id;
     const strategy = (req.query.strategy as RecommendationStrategy) || "hybrid";
     const limit = parseInt(req.query.limit as string) || 20;
 
+    console.log("🔵 Calling recommendationsService.recommendNeeds...");
     const recommendations = await recommendationsService.recommendNeeds(userId, strategy, limit);
+    console.log("🔵 Got recommendations:", recommendations.length);
 
     // Extract only the items from recommendations
     const needs = recommendations.map((rec) => rec.item);

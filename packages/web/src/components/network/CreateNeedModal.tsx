@@ -3,6 +3,9 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import SmartButton from "@/components/ui/SmartButton";
+import PersianDatePicker from "@/components/ui/PersianDatePicker";
+import LocationPicker from "@/components/ui/LocationPicker";
+import FileUploader from "@/components/ui/FileUploader";
 
 interface CreateNeedModalProps {
   isOpen: boolean;
@@ -32,7 +35,10 @@ const CreateNeedModal: React.FC<CreateNeedModalProps> = ({ isOpen, onClose, onSu
       address: "",
       city: "",
       province: "",
-      coordinates: [0, 0],
+      coordinates: {
+        latitude: 35.6892,
+        longitude: 51.389,
+      },
     },
 
     // Step 4: زمان‌بندی
@@ -47,11 +53,7 @@ const CreateNeedModal: React.FC<CreateNeedModalProps> = ({ isOpen, onClose, onSu
     }>,
 
     // Step 6: فایل‌ها
-    attachments: [] as Array<{
-      fileType: "image" | "video" | "audio" | "document";
-      url: string;
-      fileName?: string;
-    }>,
+    attachments: [] as any[],
   });
 
   const steps = [
@@ -440,33 +442,44 @@ const Step3Location: React.FC<any> = ({ formData, updateFormData }) => {
     <div className="space-y-6 animate-fadeIn">
       <div>
         <h3 className="text-xl font-bold mb-2 text-mblue">موقعیت مکانی</h3>
-        <p className="text-sm text-gray-600">محل اجرای نیاز را مشخص کنید</p>
+        <p className="text-sm text-gray-600">محل اجرای نیاز را روی نقشه مشخص کنید</p>
       </div>
 
-      <div>
-        <label className="block text-sm font-bold mb-2">استان</label>
-        <input
-          type="text"
-          value={formData.location.province}
-          onChange={(e) =>
-            updateFormData("location", { ...formData.location, province: e.target.value })
-          }
-          placeholder="مثال: تهران"
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mblue"
-        />
-      </div>
+      {/* نقشه انتخاب موقعیت */}
+      <LocationPicker
+        value={formData.location.coordinates}
+        onChange={(coords) =>
+          updateFormData("location", { ...formData.location, coordinates: coords })
+        }
+        label="انتخاب موقعیت روی نقشه"
+      />
 
-      <div>
-        <label className="block text-sm font-bold mb-2">شهر</label>
-        <input
-          type="text"
-          value={formData.location.city}
-          onChange={(e) =>
-            updateFormData("location", { ...formData.location, city: e.target.value })
-          }
-          placeholder="مثال: تهران"
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mblue"
-        />
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-bold mb-2">استان</label>
+          <input
+            type="text"
+            value={formData.location.province}
+            onChange={(e) =>
+              updateFormData("location", { ...formData.location, province: e.target.value })
+            }
+            placeholder="مثال: تهران"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mblue"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-bold mb-2">شهر</label>
+          <input
+            type="text"
+            value={formData.location.city}
+            onChange={(e) =>
+              updateFormData("location", { ...formData.location, city: e.target.value })
+            }
+            placeholder="مثال: تهران"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mblue"
+          />
+        </div>
       </div>
 
       <div>
@@ -489,19 +502,25 @@ const Step4Timeline: React.FC<any> = ({ formData, updateFormData }) => {
     <div className="space-y-6 animate-fadeIn">
       <div>
         <h3 className="text-xl font-bold mb-2 text-mblue">زمان‌بندی</h3>
-        <p className="text-sm text-gray-600">مهلت اجرای نیاز را تعیین کنید</p>
+        <p className="text-sm text-gray-600">مهلت اجرای نیاز را با تقویم شمسی انتخاب کنید</p>
       </div>
 
       <div>
-        <label className="block text-sm font-bold mb-2">مهلت اتمام (Deadline)</label>
-        <input
-          type="date"
+        <PersianDatePicker
           value={formData.deadline}
-          onChange={(e) => updateFormData("deadline", e.target.value)}
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mblue"
+          onChange={(date) => updateFormData("deadline", date)}
+          label="مهلت اتمام (Deadline)"
+          placeholder="انتخاب تاریخ"
         />
         <p className="text-xs text-gray-500 mt-2">
           💡 انتخاب مهلت اتمام به مدیریت بهتر پروژه کمک می‌کند
+        </p>
+      </div>
+
+      <div className="bg-blue-50 p-4 rounded-lg">
+        <p className="text-sm text-gray-700">
+          <strong>نکته:</strong> تعیین یک مهلت واقع‌گرایانه به جذب حامیان کمک می‌کند و
+          نشان می‌دهد که برنامه‌ریزی دقیقی برای اجرای نیاز دارید.
         </p>
       </div>
     </div>
@@ -624,22 +643,13 @@ const Step6Files: React.FC<any> = ({ formData, updateFormData }) => {
         </p>
       </div>
 
-      <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-        <div className="text-6xl mb-4">📎</div>
-        <p className="text-gray-600 mb-2">فایل‌های خود را اینجا رها کنید</p>
-        <p className="text-sm text-gray-500 mb-4">یا روی دکمه زیر کلیک کنید</p>
-        <SmartButton type="button" variant="mblue" size="sm">
-          انتخاب فایل
-        </SmartButton>
-        <p className="text-xs text-gray-400 mt-4">
-          فرمت‌های مجاز: JPG, PNG, PDF, MP4 | حداکثر حجم: 10MB
-        </p>
-      </div>
-
-      <div className="bg-blue-50 p-4 rounded-lg text-sm text-gray-700">
-        💡 <strong>نکته:</strong> افزودن تصاویر و اسناد، اعتبار نیاز شما را افزایش می‌دهد و احتمال
-        حمایت را بیشتر می‌کند.
-      </div>
+      <FileUploader
+        value={formData.attachments}
+        onChange={(files) => updateFormData("attachments", files)}
+        maxFiles={10}
+        maxSize={10}
+        acceptedTypes={["image/*", "video/*", "audio/*", ".pdf", ".doc", ".docx", ".xls", ".xlsx"]}
+      />
     </div>
   );
 };

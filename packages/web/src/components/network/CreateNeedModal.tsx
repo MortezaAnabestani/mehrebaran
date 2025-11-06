@@ -1,12 +1,30 @@
 "use client";
 
 import React, { useState } from "react";
+import dynamic from "next/dynamic";
 import { motion, AnimatePresence } from "framer-motion";
 import SmartButton from "@/components/ui/SmartButton";
-import PersianDatePicker from "@/components/ui/PersianDatePicker";
-import LocationPicker from "@/components/ui/LocationPicker";
 import FileUploader from "@/components/ui/FileUploader";
 import { getProvinceNames, getCitiesByProvince } from "@/data/iranLocations";
+
+// Import components with SSR disabled to avoid window/document errors
+const PersianDatePicker = dynamic(() => import("@/components/ui/PersianDatePicker"), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50">
+      <span className="text-gray-400">در حال بارگذاری تقویم...</span>
+    </div>
+  ),
+});
+
+const LocationPicker = dynamic(() => import("@/components/ui/LocationPicker"), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-[400px] bg-gray-100 rounded-lg flex items-center justify-center">
+      <p className="text-gray-600">در حال بارگذاری نقشه...</p>
+    </div>
+  ),
+});
 
 interface CreateNeedModalProps {
   isOpen: boolean;

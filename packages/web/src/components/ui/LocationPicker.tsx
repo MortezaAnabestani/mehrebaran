@@ -40,9 +40,19 @@ const LocationPicker: React.FC<LocationPickerProps> = ({ value, onChange, label 
       : L.latLng(35.6892, 51.389) // Default to Tehran
   );
   const [mounted, setMounted] = useState(false);
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
     setMounted(true);
+    // Add a small delay to ensure DOM is fully ready
+    const timer = setTimeout(() => {
+      setIsReady(true);
+    }, 100);
+    return () => {
+      clearTimeout(timer);
+      setMounted(false);
+      setIsReady(false);
+    };
   }, []);
 
   useEffect(() => {
@@ -71,10 +81,13 @@ const LocationPicker: React.FC<LocationPickerProps> = ({ value, onChange, label 
     }
   };
 
-  if (!mounted) {
+  if (!mounted || !isReady) {
     return (
-      <div className="w-full h-[400px] bg-gray-100 rounded-lg flex items-center justify-center">
-        <p className="text-gray-600">در حال بارگذاری نقشه...</p>
+      <div className="w-full">
+        {label && <label className="block text-sm font-bold mb-2">{label}</label>}
+        <div className="w-full h-[400px] bg-gray-100 rounded-lg flex items-center justify-center">
+          <p className="text-gray-600">در حال بارگذاری نقشه...</p>
+        </div>
       </div>
     );
   }

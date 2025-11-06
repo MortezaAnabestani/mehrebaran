@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import DatePicker, { DayValue } from "react-modern-calendar-datepicker";
 import "react-modern-calendar-datepicker/lib/DatePicker.css";
 
@@ -22,13 +22,19 @@ const PersianDatePicker: React.FC<PersianDatePickerProps> = ({
   maximumDate,
 }) => {
   const [mounted, setMounted] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const [isReady, setIsReady] = useState(false);
 
   // Ensure component is mounted on client side
   useEffect(() => {
     setMounted(true);
+    // Add a small delay to ensure DOM is fully ready
+    const timer = setTimeout(() => {
+      setIsReady(true);
+    }, 100);
     return () => {
+      clearTimeout(timer);
       setMounted(false);
+      setIsReady(false);
     };
   }, []);
 
@@ -71,8 +77,8 @@ const PersianDatePicker: React.FC<PersianDatePickerProps> = ({
     onChange(persianToIso(date));
   };
 
-  // Don't render until mounted to avoid SSR issues
-  if (!mounted) {
+  // Don't render until mounted and ready to avoid SSR and DOM issues
+  if (!mounted || !isReady) {
     return (
       <div className="w-full">
         {label && <label className="block text-sm font-bold mb-2">{label}</label>}

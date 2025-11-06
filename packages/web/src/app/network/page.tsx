@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import OptimizedImage from "@/components/ui/OptimizedImage";
 import SmartButton from "@/components/ui/SmartButton";
 import NeedCard from "@/components/network/NeedCard";
+import CreateNeedModal from "@/components/network/CreateNeedModal";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { needService, GetNeedsParams } from "@/services/need.service";
 import { INeed } from "common-types";
@@ -23,10 +24,6 @@ const NetworkPage: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [selectedStatus, setSelectedStatus] = useState<"active" | "completed" | "">("");
   const [sortBy, setSortBy] = useState<"newest" | "popular" | "progress" | "trending">("newest");
-
-  // New need form
-  const [newNeedText, setNewNeedText] = useState<string>("");
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   // دریافت لیست نیازها
   // دریافت لیست نیازها بر اساس نوع فید
@@ -87,30 +84,31 @@ const NetworkPage: React.FC = () => {
   }, [searchQuery]);
 
   // ارسال نیاز جدید
-  const handleSubmitNewNeed = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!newNeedText.trim()) {
-      return;
-    }
-
+  const handleSubmitNewNeed = async (formData: any) => {
     try {
-      setIsSubmitting(true);
-
       await needService.createNeed({
-        title: newNeedText.substring(0, 100),
-        description: newNeedText,
-        // Let backend assign default category
+        title: formData.title,
+        description: formData.description,
+        category: formData.category,
+        urgencyLevel: formData.urgencyLevel,
+        estimatedDuration: formData.estimatedDuration,
+        requiredSkills: formData.requiredSkills,
+        tags: formData.tags,
+        location: formData.location.city ? {
+          address: formData.location.address,
+          city: formData.location.city,
+          province: formData.location.province,
+          coordinates: formData.location.coordinates,
+        } : undefined,
+        deadline: formData.deadline ? new Date(formData.deadline) : undefined,
       });
 
-      setNewNeedText("");
       fetchNeeds(); // رفرش لیست
       alert("نیاز شما با موفقیت ثبت شد و پس از بررسی منتشر خواهد شد.");
     } catch (err: any) {
       console.error("Failed to create need:", err);
       alert(err.message || "خطا در ثبت نیاز");
-    } finally {
-      setIsSubmitting(false);
+      throw err;
     }
   };
 
@@ -243,46 +241,46 @@ const NetworkPage: React.FC = () => {
           )}
 
           {/* Create Need Section */}
-          <div className="w-full flex justify-between items-center mt-16 mb-5">
-            <div>
-              <h1 className="flex items-center gap-2 font-extrabold">
-                <span className="w-5 h-5 rounded-sm bg-morange block"></span>
-                شبکۀ نیازسنجی
-              </h1>
-              <h2 className="mt-5 text-xs/relaxed md:text-base/relaxed">
-                آیا به مسئلۀ تازه‌ای برخورده‌اید؟ آن را با ما در میان بگذارید. پس از فرایند بررسی و تأیید، با
-                حمایت جمعی به مرحلۀ اجرا خواهد رسید
-              </h2>
+          <div className="w-full mt-16 mb-5">
+            <div className="bg-gradient-to-r from-mblue/10 to-morange/10 rounded-2xl p-8 border-2 border-dashed border-mblue/30">
+              <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                <div className="flex-1">
+                  <h1 className="flex items-center gap-2 font-extrabold text-2xl mb-3">
+                    <span className="w-6 h-6 rounded-sm bg-morange block"></span>
+                    نیاز جدیدی دارید؟
+                  </h1>
+                  <h2 className="text-sm md:text-base text-gray-700 leading-relaxed">
+                    آیا به مسئلۀ تازه‌ای برخورده‌اید؟ آن را با ما در میان بگذارید. پس از فرایند بررسی و تأیید، با
+                    حمایت جمعی به مرحلۀ اجرا خواهد رسید
+                  </h2>
+                  <SmartButton
+                    variant="morange"
+                    size="lg"
+                    onClick={() => setShowCreateModal(true)}
+                    className="mt-6 shadow-lg hover:shadow-xl transition-shadow"
+                  >
+                    ✨ ثبت نیاز جدید
+                  </SmartButton>
+                </div>
+                <OptimizedImage
+                  src="/icons/needsNetwork_blue.svg"
+                  alt="network icon"
+                  width={120}
+                  height={120}
+                  className="hidden md:block opacity-70"
+                  unoptimized
+                />
+              </div>
             </div>
-            <OptimizedImage
-              src="/icons/needsNetwork_blue.svg"
-              alt="network icon"
-              width={50}
-              height={50}
-              className="hidden md:block"
-            />
           </div>
-
-          {/* Create Need Form */}
-          <form onSubmit={handleSubmitNewNeed} className="relative w-full mt-3">
-            <textarea
-              value={newNeedText}
-              onChange={(e) => setNewNeedText(e.target.value)}
-              className="w-full h-40 min-h-40 p-5 rounded-md bg-white border border-mgray/30 focus:outline-mblue/50"
-              placeholder="یک نیاز جدید معرفی کن..."
-              disabled={isSubmitting}
-            />
-            <SmartButton
-              type="submit"
-              variant="morange"
-              size="sm"
-              className="absolute bottom-0 left-0 m-5"
-              disabled={isSubmitting || !newNeedText.trim()}
-            >
-              {isSubmitting ? "در حال ارسال..." : "ارسال"}
-            </SmartButton>
-          </form>
         </div>
+
+        {/* Create Need Modal */}
+        <CreateNeedModal
+          isOpen={showCreateModal}
+          onClose={() => setShowCreateModal(false)}
+          onSubmit={handleSubmitNewNeed}
+        />
       </div>
     </ProtectedRoute>
   );

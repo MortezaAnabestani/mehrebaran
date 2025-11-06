@@ -63,7 +63,48 @@ class RecommendationsService {
         break;
     }
 
+    // Fallback: اگر هیچ recommendation نیافتیم، نیازهای تصادفی برگردون
+    if (recommendations.length === 0) {
+      recommendations = await this.getRandomNeeds(userId, limit);
+    }
+
     return recommendations;
+  }
+
+  /**
+   * دریافت نیازهای تصادفی (Fallback)
+   */
+  private async getRandomNeeds(userId: string, limit: number): Promise<INeedRecommendation[]> {
+    const needs = await this.NeedModel.find({
+      status: { $in: ["active", "in_progress"] },
+      createdBy: { $ne: userId },
+    })
+      .populate("createdBy", "name avatar")
+      .populate("category", "name slug")
+      .limit(limit)
+      .lean();
+
+    return needs.map((need: any, index) => ({
+      item: need,
+      itemType: "needs" as const,
+      score: Math.round(((limit - index) / limit) * 50), // امتیاز متوسط
+      confidence: 0.5,
+      reasons: [
+        {
+          type: "random",
+          description: "پیشنهاد عمومی",
+          weight: 1,
+        },
+      ],
+      strategy: "popular" as const,
+      matchScore: {
+        categoryMatch: 0,
+        tagMatch: 0,
+        locationMatch: 0,
+        skillMatch: 0,
+        popularityScore: 0.5,
+      },
+    }));
   }
 
   /**
@@ -178,7 +219,47 @@ class RecommendationsService {
       })
     );
 
-    return recommendationResults.filter((r) => r !== null) as IUserRecommendation[];
+    const filteredResults = recommendationResults.filter((r) => r !== null) as IUserRecommendation[];
+
+    // Fallback: اگر هیچ recommendation نیافتیم، کاربران تصادفی برگردون
+    if (filteredResults.length === 0) {
+      return await this.getRandomUsers(userId, limit);
+    }
+
+    return filteredResults;
+  }
+
+  /**
+   * دریافت کاربران تصادفی (Fallback)
+   */
+  private async getRandomUsers(userId: string, limit: number): Promise<IUserRecommendation[]> {
+    const users = await this.UserModel.find({
+      _id: { $ne: userId },
+    })
+      .select("name email avatar bio skills interests")
+      .limit(limit)
+      .lean();
+
+    return users.map((user: any, index) => ({
+      item: user,
+      itemType: "users" as const,
+      score: Math.round(((limit - index) / limit) * 50),
+      confidence: 0.5,
+      reasons: [
+        {
+          type: "random",
+          description: "پیشنهاد عمومی",
+          weight: 1,
+        },
+      ],
+      strategy: "collaborative" as const,
+      matchScore: {
+        mutualConnections: 0,
+        similarInterests: 0,
+        complementarySkills: 0,
+        activityLevel: 0.5,
+      },
+    }));
   }
 
   /**
@@ -279,7 +360,49 @@ class RecommendationsService {
 
     // مرتب‌سازی و محدود کردن
     recommendations.sort((a, b) => b.score - a.score);
-    return recommendations.slice(0, limit);
+    const limitedRecommendations = recommendations.slice(0, limit);
+
+    // Fallback: اگر هیچ recommendation نیافتیم، تیم‌های تصادفی برگردون
+    if (limitedRecommendations.length === 0) {
+      return await this.getRandomTeams(userId, limit);
+    }
+
+    return limitedRecommendations;
+  }
+
+  /**
+   * دریافت تیم‌های تصادفی (Fallback)
+   */
+  private async getRandomTeams(userId: string, limit: number): Promise<ITeamRecommendation[]> {
+    const teams = await this.TeamModel.find({
+      members: { $ne: userId },
+      status: "active",
+    })
+      .populate("need", "title category tags")
+      .populate("lead", "name")
+      .limit(limit)
+      .lean();
+
+    return teams.map((team: any, index) => ({
+      item: team,
+      itemType: "teams" as const,
+      score: Math.round(((limit - index) / limit) * 50),
+      confidence: 0.5,
+      reasons: [
+        {
+          type: "random",
+          description: "پیشنهاد عمومی",
+          weight: 1,
+        },
+      ],
+      strategy: "content_based" as const,
+      matchScore: {
+        categoryMatch: 0,
+        skillMatch: 0,
+        needMatch: 0,
+        activityLevel: 0.5,
+      },
+    }));
   }
 
   /**

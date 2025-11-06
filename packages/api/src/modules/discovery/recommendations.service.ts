@@ -304,11 +304,11 @@ class RecommendationsService {
 
     // پیدا کردن تیم‌هایی که کاربر عضو نیست
     const teams = await this.TeamModel.find({
-      members: { $ne: userId },
+      "members.user": { $ne: userId },
       status: "active",
     })
       .populate("need", "title category tags")
-      .populate("lead", "name")
+      .populate("createdBy", "name avatar")
       .limit(limit * 2)
       .lean();
 
@@ -405,11 +405,11 @@ class RecommendationsService {
    */
   private async getRandomTeams(userId: string, limit: number): Promise<ITeamRecommendation[]> {
     const teams = await this.TeamModel.find({
-      members: { $ne: userId },
+      "members.user": { $ne: userId },
       status: "active",
     })
       .populate("need", "title category tags")
-      .populate("lead", "name")
+      .populate("createdBy", "name avatar")
       .limit(limit)
       .lean();
 

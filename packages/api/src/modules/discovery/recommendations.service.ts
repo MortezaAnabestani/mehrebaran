@@ -107,9 +107,9 @@ class RecommendationsService {
   private async getRandomNeeds(userId: string, limit: number): Promise<INeedRecommendation[]> {
     const needs = await this.NeedModel.find({
       status: { $in: ["active", "in_progress"] },
-      createdBy: { $ne: userId },
+      "submittedBy.user": { $ne: userId },
     })
-      .populate("createdBy", "name avatar")
+      .populate("submittedBy.user", "name avatar")
       .populate("category", "name slug")
       .limit(limit)
       .lean();
@@ -593,7 +593,7 @@ class RecommendationsService {
       _id: { $in: needIds },
       status: { $in: ["active", "in_progress"] },
     })
-      .populate("createdBy", "name avatar")
+      .populate("submittedBy.user", "name avatar")
       .populate("category", "name slug")
       .lean();
 
@@ -644,7 +644,7 @@ class RecommendationsService {
     const query: any = {
       status: { $in: ["active", "in_progress"] },
       _id: { $nin: preferences.interactedNeeds },
-      createdBy: { $ne: userId },
+      "submittedBy.user": { $ne: userId },
     };
 
     if (preferences.favoriteCategories.length > 0) {
@@ -652,7 +652,7 @@ class RecommendationsService {
     }
 
     const needs = await this.NeedModel.find(query)
-      .populate("createdBy", "name avatar")
+      .populate("submittedBy.user", "name avatar")
       .populate("category", "name slug")
       .limit(limit * 2)
       .lean();
@@ -747,7 +747,7 @@ class RecommendationsService {
       status: { $in: ["active", "in_progress"] },
       _id: { $nin: preferences.interactedNeeds },
     })
-      .populate("createdBy", "name avatar")
+      .populate("submittedBy.user", "name avatar")
       .populate("category", "name slug")
       .sort({ "supporters.length": -1 })
       .limit(limit)

@@ -62,17 +62,29 @@ class RecommendationsService {
       default:
         console.log("🟢 Using hybrid strategy");
         // ترکیب چند استراتژی
-        const [collaborative, contentBased, popular] = await Promise.all([
-          this.collaborativeFilteringNeeds(userId, preferences, limit / 2),
-          this.contentBasedFilteringNeeds(userId, preferences, limit / 2),
-          this.popularNeeds(userId, limit / 4),
-        ]);
-        console.log("🟢 Hybrid results - collaborative:", collaborative.length, "contentBased:", contentBased.length, "popular:", popular.length);
-        recommendations = this.mergeAndRankRecommendations([
-          ...collaborative,
-          ...contentBased,
-          ...popular,
-        ]).slice(0, limit);
+        try {
+          console.log("🟢 Calling collaborativeFilteringNeeds...");
+          const collaborative = await this.collaborativeFilteringNeeds(userId, preferences, limit / 2);
+          console.log("🟢 collaborativeFilteringNeeds done:", collaborative.length);
+
+          console.log("🟢 Calling contentBasedFilteringNeeds...");
+          const contentBased = await this.contentBasedFilteringNeeds(userId, preferences, limit / 2);
+          console.log("🟢 contentBasedFilteringNeeds done:", contentBased.length);
+
+          console.log("🟢 Calling popularNeeds...");
+          const popular = await this.popularNeeds(userId, limit / 4);
+          console.log("🟢 popularNeeds done:", popular.length);
+
+          console.log("🟢 Hybrid results - collaborative:", collaborative.length, "contentBased:", contentBased.length, "popular:", popular.length);
+          recommendations = this.mergeAndRankRecommendations([
+            ...collaborative,
+            ...contentBased,
+            ...popular,
+          ]).slice(0, limit);
+        } catch (error) {
+          console.error("🔴 Error in hybrid strategy:", error);
+          throw error;
+        }
         break;
     }
 

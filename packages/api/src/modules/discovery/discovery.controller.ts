@@ -12,6 +12,19 @@ import type {
 } from "common-types";
 
 class DiscoveryController {
+  /**
+   * Helper function to map frontend period format to backend format
+   */
+  private mapPeriodToBackend(period?: string): TrendingPeriod {
+    const mapping: Record<string, TrendingPeriod> = {
+      day: "24h",
+      week: "7d",
+      month: "30d",
+      all: "30d", // Use 30d for "all" to avoid performance issues
+    };
+    return mapping[period || "week"] || "7d";
+  }
+
   // ============= Leaderboard Endpoints =============
 
   /**
@@ -126,10 +139,14 @@ class DiscoveryController {
    * دریافت نیازهای ترندینگ
    */
   public getTrendingNeeds = asyncHandler(async (req: Request, res: Response) => {
-    const period = (req.query.period as TrendingPeriod) || "24h";
+    const period = this.mapPeriodToBackend(req.query.period as string);
     const limit = parseInt(req.query.limit as string) || 20;
 
+    console.log(`🔍 getTrendingNeeds - period: ${req.query.period} -> ${period}, limit: ${limit}`);
+
     const trendingNeeds = await trendingService.getTrendingNeeds(period, limit);
+
+    console.log(`✅ Found ${trendingNeeds.length} trending needs`);
 
     res.status(200).json({ message: "نیازهای ترندینگ با موفقیت دریافت شدند.", data: trendingNeeds });
   });
@@ -139,10 +156,14 @@ class DiscoveryController {
    * دریافت کاربران ترندینگ
    */
   public getTrendingUsers = asyncHandler(async (req: Request, res: Response) => {
-    const period = (req.query.period as TrendingPeriod) || "24h";
+    const period = this.mapPeriodToBackend(req.query.period as string);
     const limit = parseInt(req.query.limit as string) || 20;
 
+    console.log(`🔍 getTrendingUsers - period: ${req.query.period} -> ${period}, limit: ${limit}`);
+
     const trendingUsers = await trendingService.getTrendingUsers(period, limit);
+
+    console.log(`✅ Found ${trendingUsers.length} trending users`);
 
     res.status(200).json({ message: "کاربران ترندینگ با موفقیت دریافت شدند.", data: trendingUsers });
   });
@@ -152,10 +173,14 @@ class DiscoveryController {
    * دریافت تگ‌های ترندینگ
    */
   public getTrendingTags = asyncHandler(async (req: Request, res: Response) => {
-    const period = (req.query.period as TrendingPeriod) || "7d";
+    const period = this.mapPeriodToBackend(req.query.period as string);
     const limit = parseInt(req.query.limit as string) || 20;
 
+    console.log(`🔍 getTrendingTags - period: ${req.query.period} -> ${period}, limit: ${limit}`);
+
     const trendingTags = await trendingService.getTrendingTags(period, limit);
+
+    console.log(`✅ Found ${trendingTags.length} trending tags`);
 
     res.status(200).json({ message: "تگ‌های ترندینگ با موفقیت دریافت شدند.", data: trendingTags });
   });
@@ -165,9 +190,13 @@ class DiscoveryController {
    * دریافت همه موارد ترندینگ
    */
   public getAllTrending = asyncHandler(async (req: Request, res: Response) => {
-    const period = (req.query.period as TrendingPeriod) || "24h";
+    const period = this.mapPeriodToBackend(req.query.period as string);
+
+    console.log(`🔍 getAllTrending - period: ${req.query.period} -> ${period}`);
 
     const allTrending = await trendingService.getAllTrending(period);
+
+    console.log(`✅ Found ${allTrending.needs.length} needs, ${allTrending.users.length} users, ${allTrending.tags.length} tags`);
 
     res.status(200).json({ message: "موارد ترندینگ با موفقیت دریافت شدند.", data: allTrending });
   });

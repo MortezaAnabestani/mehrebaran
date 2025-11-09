@@ -275,7 +275,8 @@ class GamificationService {
     limit: number = 100
   ): Promise<{ data: ILeaderboardResponse }> {
     try {
-      const response = await api.get("/gamification/leaderboard", {
+      console.log("🔍 Fetching leaderboard with params:", { category, period, limit });
+      const response = await api.get("/discovery/leaderboard", {
         params: { category, period, limit },
       });
       return response.data;

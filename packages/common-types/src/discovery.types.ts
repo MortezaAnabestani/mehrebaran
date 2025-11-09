@@ -33,6 +33,7 @@ export interface ILeaderboardResponse {
   period: LeaderboardPeriod;
   entries: ILeaderboardEntry[];
   totalUsers: number;
+  totalParticipants?: number; // Alias for totalUsers (frontend compatibility)
   lastUpdated: Date;
   userEntry?: ILeaderboardEntry; // رتبه کاربر فعلی
 }

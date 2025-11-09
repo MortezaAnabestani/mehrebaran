@@ -1,11 +1,10 @@
 import { UserStatsModel } from "../modules/gamification/userStats.model";
-import type { IUser } from "common-types";
 
 /**
  * Gamification Seeder - ایجاد UserStats برای کاربران
  */
 
-export async function seedGamification(users: IUser[]) {
+export async function seedGamification(users: any[]) {
   console.log("🌱 Starting gamification seeder...");
 
   try {

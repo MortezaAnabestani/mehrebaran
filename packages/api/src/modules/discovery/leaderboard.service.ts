@@ -24,8 +24,11 @@ class LeaderboardService {
     limit: number = 100,
     userId?: string
   ): Promise<ILeaderboardResponse> {
+    console.log(`🔍 LeaderboardService.getLeaderboard - category: ${category}, period: ${period}, limit: ${limit}, userId: ${userId}`);
+
     // انتخاب فیلد مناسب برای مرتب‌سازی
     const sortField = this.getCategoryField(category);
+    console.log(`📊 Sort field: ${sortField}`);
 
     // فیلتر زمانی (برای دوره‌های غیر از all_time)
     const dateFilter = this.getDateFilter(period);
@@ -34,11 +37,16 @@ class LeaderboardService {
 
     if (period === "all_time") {
       // برای all_time از UserStats استفاده می‌کنیم
+      const statsCount = await this.UserStatsModel.countDocuments();
+      console.log(`📈 Total UserStats in DB: ${statsCount}`);
+
       const stats = await this.UserStatsModel.find()
         .sort({ [sortField]: -1 })
         .limit(limit)
         .populate("userId", "name email avatar")
         .lean();
+
+      console.log(`✅ Found ${stats.length} stats for leaderboard`);
 
       entries = stats.map((stat, index) => ({
         user: stat.userId,

@@ -139,7 +139,7 @@ const ProfilePage: React.FC = () => {
                       showTitle={true}
                     />
                   )}
-                  {pointSummary && (
+                  {pointSummary && pointSummary.rank && (
                     <div className="text-sm opacity-90">
                       رتبه {pointSummary.rank.toLocaleString("fa-IR")} در جدول امتیازات
                     </div>

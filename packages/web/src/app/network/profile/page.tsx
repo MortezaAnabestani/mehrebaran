@@ -173,32 +173,32 @@ const ProfilePage: React.FC = () => {
                     points={pointSummary.totalPoints}
                     size="lg"
                     variant="detailed"
-                    changeAmount={pointSummary.pointsEarnedToday}
+                    changeAmount={pointSummary.pointsEarnedToday || 0}
                   />
 
                   <div className="grid grid-cols-3 gap-4 mt-6">
                     <div className="text-center p-3 bg-blue-50 rounded-md">
                       <p className="text-xs text-gray-600 mb-1">امروز</p>
                       <p className="font-bold text-mblue">
-                        {pointSummary.pointsEarnedToday.toLocaleString("fa-IR")}
+                        {(pointSummary.pointsEarnedToday || 0).toLocaleString("fa-IR")}
                       </p>
                     </div>
                     <div className="text-center p-3 bg-green-50 rounded-md">
                       <p className="text-xs text-gray-600 mb-1">این هفته</p>
                       <p className="font-bold text-green-600">
-                        {pointSummary.pointsEarnedThisWeek.toLocaleString("fa-IR")}
+                        {(pointSummary.pointsEarnedThisWeek || 0).toLocaleString("fa-IR")}
                       </p>
                     </div>
                     <div className="text-center p-3 bg-purple-50 rounded-md">
                       <p className="text-xs text-gray-600 mb-1">این ماه</p>
                       <p className="font-bold text-purple-600">
-                        {pointSummary.pointsEarnedThisMonth.toLocaleString("fa-IR")}
+                        {(pointSummary.pointsEarnedThisMonth || 0).toLocaleString("fa-IR")}
                       </p>
                     </div>
                   </div>
 
                   {/* Level Progress */}
-                  {pointSummary.nextLevel && (
+                  {pointSummary.nextLevel && pointSummary.progressPercentage !== undefined && (
                     <div className="mt-6 p-4 bg-mgray/10 rounded-md">
                       <div className="flex justify-between items-center mb-2">
                         <span className="text-sm font-bold">پیشرفت تا سطح بعد:</span>
@@ -213,7 +213,7 @@ const ProfilePage: React.FC = () => {
                         ></div>
                       </div>
                       <p className="text-xs text-gray-600">
-                        {pointSummary.pointsToNextLevel.toLocaleString("fa-IR")} امتیاز تا{" "}
+                        {(pointSummary.pointsToNextLevel || 0).toLocaleString("fa-IR")} امتیاز تا{" "}
                         {pointSummary.nextLevel.title}
                       </p>
                     </div>

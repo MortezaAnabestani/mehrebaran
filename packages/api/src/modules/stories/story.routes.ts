@@ -41,6 +41,12 @@ router.get("/feed", storyController.getStoryFeed);
 router.get("/stats", storyController.getStats);
 
 /**
+ * GET /api/v1/stories/my
+ * دریافت استوری‌های کاربر فعلی
+ */
+router.get("/my", storyController.getMyStories);
+
+/**
  * GET /api/v1/stories/user/:userId
  * دریافت استوری‌های کاربر
  */

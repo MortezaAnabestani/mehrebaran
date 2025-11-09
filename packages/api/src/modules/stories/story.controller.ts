@@ -78,6 +78,22 @@ class StoryController {
   });
 
   /**
+   * GET /api/v1/stories/my
+   * دریافت استوری‌های کاربر فعلی
+   */
+  public getMyStories = asyncHandler(async (req: Request, res: Response) => {
+    const userId = req.user!._id.toString();
+
+    const stories = await storyService.getUserStories(userId, userId);
+
+    res.status(200).json({
+      success: true,
+      message: "استوری‌های شما با موفقیت دریافت شد.",
+      data: stories,
+    });
+  });
+
+  /**
    * GET /api/v1/stories/user/:userId
    * دریافت استوری‌های کاربر
    */

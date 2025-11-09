@@ -120,6 +120,7 @@ class LeaderboardService {
       period,
       entries,
       totalUsers,
+      totalParticipants: totalUsers, // Alias for frontend compatibility
       lastUpdated: new Date(),
       userEntry,
     };

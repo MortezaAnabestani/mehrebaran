@@ -268,7 +268,7 @@ const LeaderboardPage: React.FC = () => {
               <div className="mt-6 text-center text-sm text-gray-600">
                 <p>
                   تعداد کل شرکت‌کنندگان:{" "}
-                  <span className="font-bold">{leaderboard.totalParticipants.toLocaleString("fa-IR")}</span>
+                  <span className="font-bold">{(leaderboard.totalParticipants || 0).toLocaleString("fa-IR")}</span>
                 </p>
               </div>
             </>

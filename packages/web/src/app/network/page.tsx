@@ -8,7 +8,7 @@ import RightSidebar from "@/components/network/RightSidebar";
 import StoriesCarousel from "@/components/network/StoriesCarousel";
 import CreateStoryModal from "@/components/network/CreateStoryModal";
 import CreateNeedModal from "@/components/network/CreateNeedModal";
-import NeedCard from "@/components/network/NeedCard";
+import InstagramNeedCard from "@/components/network/InstagramNeedCard";
 import { needService, GetNeedsParams } from "@/services/need.service";
 import { INeed } from "common-types";
 import { useAuth } from "@/contexts/AuthContext";
@@ -181,9 +181,7 @@ const NetworkPage: React.FC = () => {
           ) : (
             // Needs List
             needs.map((need) => (
-              <div key={need._id} className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-                <NeedCard need={need} variant="feed" onUpdate={fetchNeeds} />
-              </div>
+              <InstagramNeedCard key={need._id} need={need} onUpdate={fetchNeeds} />
             ))
           )}
         </div>

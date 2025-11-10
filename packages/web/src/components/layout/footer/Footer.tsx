@@ -19,27 +19,27 @@ const Footer: React.FC<Props> = ({}) => {
 
   const footerBg = isNetworkPage ? "bg-morange" : "bg-mblue";
 
-  // Minimal footer for network pages
+  // Minimal footer for network pages - compact version with all components
   if (isNetworkPage) {
     return (
       <footer className="bg-white border-t border-gray-200 py-3">
         <div className="max-w-[1440px] mx-auto px-4">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-2 text-xs text-gray-600">
-            <div className="flex items-center gap-2">
-              <span>© {new Date().getFullYear()} مهر باران</span>
-              <span className="hidden md:inline">•</span>
-              <span>همه حقوق محفوظ است</span>
+          {/* Compact layout - all in one row on desktop, stacked on mobile */}
+          <div className="flex flex-col md:flex-row items-center justify-between gap-3 text-xs">
+            {/* Social Media - Compact */}
+            <div className="scale-75 md:scale-90">
+              <SocialMedia setWave={setWave} />
             </div>
-            <div className="flex items-center gap-1">
-              <span>Developed by</span>
-              <a
-                href="https://codabiat.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-bold text-morange hover:text-orange-600 transition-colors"
-              >
-                Codabiat
-              </a>
+
+            {/* Menu - Compact */}
+            <div className="scale-75 md:scale-90">
+              <Menu />
+            </div>
+
+            {/* License + Codabiat - Combined */}
+            <div className="flex flex-col items-center gap-1 scale-75 md:scale-90">
+              <License />
+              <Codabiat />
             </div>
           </div>
         </div>

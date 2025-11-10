@@ -11,6 +11,12 @@ const nextConfig: NextConfig = {
         pathname: "/uploads/**",
       },
       {
+        protocol: "http",
+        hostname: "127.0.0.1",
+        port: "5001",
+        pathname: "/uploads/**",
+      },
+      {
         protocol: "https",
         hostname: "example.com",
         pathname: "/images/**",
@@ -43,6 +49,10 @@ const nextConfig: NextConfig = {
     ],
     // Allow unoptimized for better compatibility
     unoptimized: false,
+  },
+  // Allow private network access for development
+  experimental: {
+    allowPrivateNetworking: true,
   },
 };
 

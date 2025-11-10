@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { AnimatePresence } from "framer-motion";
+import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import PageTransition from "@/components/ui/PageTransition";
 import TopNav from "@/components/network/TopNav";
@@ -9,21 +10,63 @@ import InstagramLayout from "@/components/network/InstagramLayout";
 import LeftSidebar from "@/components/network/LeftSidebar";
 import RightSidebar from "@/components/network/RightSidebar";
 import StoriesCarousel from "@/components/network/StoriesCarousel";
-import CreateStoryModal from "@/components/network/CreateStoryModal";
-import CreateNeedModal from "@/components/network/CreateNeedModal";
 import InstagramNeedCard from "@/components/network/InstagramNeedCard";
 import { needService, GetNeedsParams } from "@/services/need.service";
 import { INeed } from "common-types";
 import { useAuth } from "@/contexts/AuthContext";
 
+// Lazy load heavy modals
+const CreateStoryModal = lazy(() => import("@/components/network/CreateStoryModal"));
+const CreateNeedModal = lazy(() => import("@/components/network/CreateNeedModal"));
+
 const NetworkPage: React.FC = () => {
   // State
   const { user } = useAuth();
-  const [needs, setNeeds] = useState<INeed[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const queryClient = useQueryClient();
   const [showCreateStory, setShowCreateStory] = useState<boolean>(false);
   const [showCreateNeed, setShowCreateNeed] = useState<boolean>(false);
+  const loadMoreRef = useRef<HTMLDivElement>(null);
+
+  // Infinite query for needs
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+    isError,
+    error,
+  } = useInfiniteQuery({
+    queryKey: ["needs"],
+    queryFn: ({ pageParam = 1 }) => needService.getNeeds({ page: pageParam, limit: 10 }),
+    getNextPageParam: (lastPage) => {
+      if (!lastPage.pagination) return undefined;
+      const { page, pages } = lastPage.pagination;
+      return page < pages ? page + 1 : undefined;
+    },
+    initialPageParam: 1,
+  });
+
+  // Flatten all pages into a single array of needs
+  const needs = data?.pages.flatMap((page) => page.data) ?? [];
+
+  // Intersection Observer for infinite scroll
+  useEffect(() => {
+    if (!loadMoreRef.current || !hasNextPage || isFetchingNextPage) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          fetchNextPage();
+        }
+      },
+      { threshold: 0.5 }
+    );
+
+    observer.observe(loadMoreRef.current);
+
+    return () => observer.disconnect();
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   // Mock Stories Data - Will be replaced with API call
   const mockStoryGroups = [
@@ -93,26 +136,6 @@ const NetworkPage: React.FC = () => {
     },
   ];
 
-  // دریافت لیست نیازها
-  const fetchNeeds = async () => {
-    try {
-      setIsLoading(true);
-      setError(null);
-
-      const response = await needService.getNeeds({ limit: 20 });
-      setNeeds(response.data);
-    } catch (err: any) {
-      console.error("Failed to fetch needs:", err);
-      setError(err.message || "خطا در دریافت نیازها");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchNeeds();
-  }, []);
-
   // Handle story creation
   const handleCreateStory = async (file: File) => {
     try {
@@ -136,12 +159,17 @@ const NetworkPage: React.FC = () => {
       // TODO: Implement API call to create need
       console.log("Creating need with data:", needData);
 
-      // Refresh needs list after creation
-      await fetchNeeds();
+      // Invalidate and refetch needs after creation
+      queryClient.invalidateQueries({ queryKey: ["needs"] });
     } catch (err) {
       console.error("Failed to create need:", err);
       throw err;
     }
+  };
+
+  // Handle need update (for like, support actions)
+  const handleNeedUpdate = () => {
+    queryClient.invalidateQueries({ queryKey: ["needs"] });
   };
 
   return (
@@ -164,17 +192,17 @@ const NetworkPage: React.FC = () => {
         {/* Feed */}
         <div className="space-y-6">
           {isLoading ? (
-            // Loading State
+            // Initial Loading State
             <div className="flex items-center justify-center py-20">
               <div className="flex flex-col items-center gap-3">
                 <div className="w-16 h-16 border-4 border-mblue border-t-transparent rounded-full animate-spin"></div>
                 <p className="text-gray-500">در حال بارگذاری...</p>
               </div>
             </div>
-          ) : error ? (
+          ) : isError ? (
             // Error State
             <div className="bg-white border border-red-200 rounded-lg p-6 text-center">
-              <p className="text-red-600">{error}</p>
+              <p className="text-red-600">{error?.message || "خطا در دریافت نیازها"}</p>
             </div>
           ) : needs.length === 0 ? (
             // Empty State
@@ -184,35 +212,62 @@ const NetworkPage: React.FC = () => {
               <p className="text-gray-500">اولین نیاز را شما ایجاد کنید!</p>
             </div>
           ) : (
-            // Needs List
-            needs.map((need) => (
-              <InstagramNeedCard key={need._id} need={need} onUpdate={fetchNeeds} />
-            ))
+            <>
+              {/* Needs List */}
+              {needs.map((need) => (
+                <InstagramNeedCard key={need._id} need={need} onUpdate={handleNeedUpdate} />
+              ))}
+
+              {/* Infinite Scroll Trigger */}
+              {hasNextPage && (
+                <div ref={loadMoreRef} className="flex items-center justify-center py-8">
+                  {isFetchingNextPage ? (
+                    <div className="flex flex-col items-center gap-2">
+                      <div className="w-10 h-10 border-4 border-mblue border-t-transparent rounded-full animate-spin"></div>
+                      <p className="text-sm text-gray-500">در حال بارگذاری بیشتر...</p>
+                    </div>
+                  ) : (
+                    <div className="text-gray-400 text-sm">اسکرول کنید برای بارگذاری بیشتر</div>
+                  )}
+                </div>
+              )}
+
+              {/* End of Feed */}
+              {!hasNextPage && needs.length > 0 && (
+                <div className="text-center py-8 text-gray-400 text-sm">
+                  همه نیازها نمایش داده شدند
+                </div>
+              )}
+            </>
           )}
         </div>
       </InstagramLayout>
     </PageTransition>
 
-    {/* Modals with AnimatePresence */}
-    <AnimatePresence>
-      {showCreateStory && (
-        <CreateStoryModal
-          isOpen={showCreateStory}
-          onClose={() => setShowCreateStory(false)}
-          onSubmit={handleCreateStory}
-        />
-      )}
-    </AnimatePresence>
+    {/* Modals with AnimatePresence and Lazy Loading */}
+    <Suspense fallback={null}>
+      <AnimatePresence>
+        {showCreateStory && (
+          <CreateStoryModal
+            isOpen={showCreateStory}
+            onClose={() => setShowCreateStory(false)}
+            onSubmit={handleCreateStory}
+          />
+        )}
+      </AnimatePresence>
+    </Suspense>
 
-    <AnimatePresence>
-      {showCreateNeed && (
-        <CreateNeedModal
-          isOpen={showCreateNeed}
-          onClose={() => setShowCreateNeed(false)}
-          onSubmit={handleCreateNeed}
-        />
-      )}
-    </AnimatePresence>
+    <Suspense fallback={null}>
+      <AnimatePresence>
+        {showCreateNeed && (
+          <CreateNeedModal
+            isOpen={showCreateNeed}
+            onClose={() => setShowCreateNeed(false)}
+            onSubmit={handleCreateNeed}
+          />
+        )}
+      </AnimatePresence>
+    </Suspense>
   </ProtectedRoute>
 );
 };

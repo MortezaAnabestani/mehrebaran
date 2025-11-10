@@ -47,12 +47,8 @@ const nextConfig: NextConfig = {
         pathname: "/**",
       },
     ],
-    // Allow unoptimized for better compatibility
-    unoptimized: false,
-  },
-  // Allow private network access for development
-  experimental: {
-    allowPrivateNetworking: true,
+    // Disable optimization for development to bypass private IP restriction
+    unoptimized: true,
   },
 };
 

@@ -5,15 +5,88 @@ import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import InstagramLayout from "@/components/network/InstagramLayout";
 import LeftSidebar from "@/components/network/LeftSidebar";
 import RightSidebar from "@/components/network/RightSidebar";
+import StoriesCarousel from "@/components/network/StoriesCarousel";
+import CreateStoryModal from "@/components/network/CreateStoryModal";
 import NeedCard from "@/components/network/NeedCard";
 import { needService, GetNeedsParams } from "@/services/need.service";
 import { INeed } from "common-types";
+import { useAuth } from "@/contexts/AuthContext";
 
 const NetworkPage: React.FC = () => {
   // State
+  const { user } = useAuth();
   const [needs, setNeeds] = useState<INeed[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [showCreateStory, setShowCreateStory] = useState<boolean>(false);
+
+  // Mock Stories Data - Will be replaced with API call
+  const mockStoryGroups = [
+    {
+      userId: "1",
+      userName: "علی محمدی",
+      userAvatar: undefined,
+      hasNew: true,
+      stories: [
+        {
+          id: "1",
+          userId: "1",
+          userName: "علی محمدی",
+          userAvatar: undefined,
+          mediaUrl: "https://picsum.photos/500/800?random=1",
+          mediaType: "image" as const,
+          createdAt: new Date().toISOString(),
+          duration: 5,
+        },
+        {
+          id: "2",
+          userId: "1",
+          userName: "علی محمدی",
+          userAvatar: undefined,
+          mediaUrl: "https://picsum.photos/500/800?random=2",
+          mediaType: "image" as const,
+          createdAt: new Date().toISOString(),
+          duration: 5,
+        },
+      ],
+    },
+    {
+      userId: "2",
+      userName: "زهرا احمدی",
+      userAvatar: undefined,
+      hasNew: true,
+      stories: [
+        {
+          id: "3",
+          userId: "2",
+          userName: "زهرا احمدی",
+          userAvatar: undefined,
+          mediaUrl: "https://picsum.photos/500/800?random=3",
+          mediaType: "image" as const,
+          createdAt: new Date().toISOString(),
+          duration: 5,
+        },
+      ],
+    },
+    {
+      userId: "3",
+      userName: "محمد رضایی",
+      userAvatar: undefined,
+      hasNew: false,
+      stories: [
+        {
+          id: "4",
+          userId: "3",
+          userName: "محمد رضایی",
+          userAvatar: undefined,
+          mediaUrl: "https://picsum.photos/500/800?random=4",
+          mediaType: "image" as const,
+          createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+          duration: 5,
+        },
+      ],
+    },
+  ];
 
   // دریافت لیست نیازها
   const fetchNeeds = async () => {
@@ -35,36 +108,36 @@ const NetworkPage: React.FC = () => {
     fetchNeeds();
   }, []);
 
+  // Handle story creation
+  const handleCreateStory = async (file: File) => {
+    try {
+      // TODO: Implement API call to upload story
+      console.log("Creating story with file:", file);
+
+      // Mock success for now
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // Refresh stories list
+      // await fetchStories();
+    } catch (err) {
+      console.error("Failed to create story:", err);
+      throw err;
+    }
+  };
+
   return (
     <ProtectedRoute>
       <InstagramLayout
         leftSidebar={<LeftSidebar />}
         rightSidebar={<RightSidebar />}
       >
-        {/* Stories Section - Coming Soon */}
+        {/* Stories Section */}
         <div className="mb-6">
-          <div className="bg-white border border-gray-200 rounded-lg p-4">
-            <div className="flex gap-4 overflow-x-auto">
-              <div className="flex flex-col items-center gap-2 flex-shrink-0">
-                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white text-2xl cursor-pointer">
-                  +
-                </div>
-                <span className="text-xs">استوری شما</span>
-              </div>
-
-              {/* Placeholder stories */}
-              {[1, 2, 3, 4, 5].map((i) => (
-                <div key={i} className="flex flex-col items-center gap-2 flex-shrink-0">
-                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 p-0.5 cursor-pointer">
-                    <div className="w-full h-full rounded-full bg-white flex items-center justify-center text-lg">
-                      👤
-                    </div>
-                  </div>
-                  <span className="text-xs">کاربر {i}</span>
-                </div>
-              ))}
-            </div>
-          </div>
+          <StoriesCarousel
+            storyGroups={mockStoryGroups}
+            currentUserId={user?._id}
+            onCreateStory={() => setShowCreateStory(true)}
+          />
         </div>
 
         {/* Feed */}
@@ -98,6 +171,13 @@ const NetworkPage: React.FC = () => {
             ))
           )}
         </div>
+
+        {/* Create Story Modal */}
+        <CreateStoryModal
+          isOpen={showCreateStory}
+          onClose={() => setShowCreateStory(false)}
+          onSubmit={handleCreateStory}
+        />
       </InstagramLayout>
     </ProtectedRoute>
   );

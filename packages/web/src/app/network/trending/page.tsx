@@ -1,8 +1,6 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import NeedCard from "@/components/network/NeedCard";
 import UserCard from "@/components/social/UserCard";
 import SmartButton from "@/components/ui/SmartButton";
@@ -17,12 +15,11 @@ import type { IUser } from "common-types";
 type Period = "day" | "week" | "month" | "all";
 type Category = "needs" | "users";
 
-// ===========================
-// Trending Page Component
-// ===========================
-
+/**
+ * Trending Page - Popular needs and users
+ * Displayed within the InstagramLayout from layout.tsx
+ */
 const TrendingPage: React.FC = () => {
-  const router = useRouter();
 
   // State
   const [activeCategory, setActiveCategory] = useState<Category>("needs");
@@ -180,71 +177,67 @@ const TrendingPage: React.FC = () => {
   // ===========================
 
   return (
-    <ProtectedRoute>
-      <div className="min-h-screen bg-gray-50 py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2 flex items-center gap-3">
-              <span className="text-4xl">📈</span>
-              محتوای ترند
-            </h1>
-            <p className="text-gray-600">محبوب‌ترین نیازها و کاربران</p>
-          </div>
+    <>
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2 flex items-center gap-3">
+          <span className="text-4xl">📈</span>
+          محتوای ترند
+        </h1>
+        <p className="text-gray-600">محبوب‌ترین نیازها و کاربران</p>
+      </div>
 
-          {/* Category Tabs */}
-          <div className="flex gap-4 mb-6 border-b border-gray-200 overflow-x-auto pb-2">
-            {(["needs", "users"] as Category[]).map((category) => (
-              <button
-                key={category}
-                onClick={() => setActiveCategory(category)}
-                className={`pb-4 px-6 font-semibold transition-colors relative whitespace-nowrap ${
-                  activeCategory === category ? "text-mblue" : "text-gray-500 hover:text-gray-700"
-                }`}
-              >
-                <span className="mr-2">{getCategoryIcon(category)}</span>
-                {getCategoryLabel(category)}
-                {activeCategory === category && (
-                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-mblue"></div>
-                )}
-              </button>
-            ))}
-          </div>
+      {/* Category Tabs */}
+      <div className="flex gap-4 mb-6 border-b border-gray-200 overflow-x-auto pb-2">
+        {(["needs", "users"] as Category[]).map((category) => (
+          <button
+            key={category}
+            onClick={() => setActiveCategory(category)}
+            className={`pb-4 px-6 font-semibold transition-colors relative whitespace-nowrap ${
+              activeCategory === category ? "text-mblue" : "text-gray-500 hover:text-gray-700"
+            }`}
+          >
+            <span className="mr-2">{getCategoryIcon(category)}</span>
+            {getCategoryLabel(category)}
+            {activeCategory === category && (
+              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-mblue"></div>
+            )}
+          </button>
+        ))}
+      </div>
 
-          {/* Period Filters */}
-          <div className="flex flex-wrap gap-3 mb-8">
-            <span className="text-gray-600 font-medium py-2">بازه زمانی:</span>
-            {(["day", "week", "month", "all"] as Period[]).map((period) => (
-              <SmartButton
-                key={period}
-                onClick={() => setActivePeriod(period)}
-                variant={activePeriod === period ? "primary" : "outline"}
-                size="sm"
-              >
-                {getPeriodLabel(period)}
-              </SmartButton>
-            ))}
-          </div>
+      {/* Period Filters */}
+      <div className="flex flex-wrap gap-3 mb-8">
+        <span className="text-gray-600 font-medium py-2">بازه زمانی:</span>
+        {(["day", "week", "month", "all"] as Period[]).map((period) => (
+          <SmartButton
+            key={period}
+            onClick={() => setActivePeriod(period)}
+            variant={activePeriod === period ? "primary" : "outline"}
+            size="sm"
+          >
+            {getPeriodLabel(period)}
+          </SmartButton>
+        ))}
+      </div>
 
-          {/* Stats Summary */}
-          <div className="bg-gradient-to-r from-mblue to-cyan-500 rounded-lg p-6 mb-8 text-white shadow-lg">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="text-center">
-                <div className="text-4xl font-bold mb-2">{trendingNeeds.length}</div>
-                <div className="text-sm opacity-90">نیاز ترند</div>
-              </div>
-              <div className="text-center">
-                <div className="text-4xl font-bold mb-2">{trendingUsers.length}</div>
-                <div className="text-sm opacity-90">کاربر ترند</div>
-              </div>
-            </div>
+      {/* Stats Summary */}
+      <div className="bg-gradient-to-r from-mblue to-cyan-500 rounded-lg p-6 mb-8 text-white shadow-lg">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="text-center">
+            <div className="text-4xl font-bold mb-2">{trendingNeeds.length}</div>
+            <div className="text-sm opacity-90">نیاز ترند</div>
           </div>
-
-          {/* Content */}
-          <div>{renderContent()}</div>
+          <div className="text-center">
+            <div className="text-4xl font-bold mb-2">{trendingUsers.length}</div>
+            <div className="text-sm opacity-90">کاربر ترند</div>
+          </div>
         </div>
       </div>
-    </ProtectedRoute>
+
+      {/* Content */}
+      <div>{renderContent()}</div>
+    </>
   );
 };
 

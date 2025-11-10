@@ -23,19 +23,19 @@ const InstagramLayout: React.FC<InstagramLayoutProps> = ({
   showRightSidebar = true,
 }) => {
   return (
-    <div className="h-screen bg-gray-50 pt-[54px] md:pt-[104px] overflow-hidden">
+    <div className="h-screen bg-gray-50 pt-[48px] md:pt-[64px] overflow-hidden">
       {/* Main Container */}
-      <div className="mx-auto max-w-[1440px] h-[calc(100vh-54px)] md:h-[calc(100vh-104px)]">
+      <div className="mx-auto max-w-[1440px] h-[calc(100vh-48px)] md:h-[calc(100vh-64px)]">
         <div className="flex gap-4 px-0 lg:px-4 h-full items-start">
           {/* Left Sidebar - Navigation */}
           {showLeftSidebar && (
-            <aside className="hidden lg:block w-64 xl:w-72 flex-shrink-0 h-full overflow-y-auto pt-8 pb-6 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
+            <aside className="hidden lg:block w-64 xl:w-72 flex-shrink-0 h-full overflow-y-auto pt-4 pb-4 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
               {leftSidebar}
             </aside>
           )}
 
           {/* Main Feed */}
-          <main className="flex-1 min-w-0 h-full overflow-y-auto pt-8 pb-6 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
+          <main className="flex-1 min-w-0 h-full overflow-y-auto pt-4 pb-4 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
             <div className="max-w-[630px] mx-auto">
               {children}
             </div>
@@ -43,7 +43,7 @@ const InstagramLayout: React.FC<InstagramLayoutProps> = ({
 
           {/* Right Sidebar - Suggestions */}
           {showRightSidebar && (
-            <aside className="hidden xl:block w-80 flex-shrink-0 h-full overflow-y-auto pt-8 pb-6 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
+            <aside className="hidden xl:block w-80 flex-shrink-0 h-full overflow-y-auto pt-4 pb-4 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
               {rightSidebar}
             </aside>
           )}

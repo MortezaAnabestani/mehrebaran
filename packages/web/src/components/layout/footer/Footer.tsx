@@ -20,14 +20,14 @@ const Footer: React.FC<Props> = ({}) => {
   const footerBg = isNetworkPage ? "bg-morange" : "bg-mblue";
 
   return (
-    <footer className={`${footerBg} w-full h-fit ${wave ? "pt-18" : "pt-7"} relative duration-700`}>
+    <footer className={`${footerBg} w-full h-fit ${wave ? "pt-18" : isNetworkPage ? "pt-3" : "pt-7"} relative duration-700`}>
       {wave && <Wave />}
-      <div className="md:w-8/10 container mx-auto flex flex-col gap-6 justify-between items-center text-white">
+      <div className={`md:w-8/10 container mx-auto flex flex-col ${isNetworkPage ? "gap-2" : "gap-6"} justify-between items-center text-white ${isNetworkPage ? "py-2" : ""}`}>
         <SocialMedia setWave={setWave} />
-        <Menu />
+        {!isNetworkPage && <Menu />}
         <License />
       </div>
-      <Codabiat />
+      {!isNetworkPage && <Codabiat />}
     </footer>
   );
 };

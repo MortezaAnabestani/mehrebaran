@@ -25,7 +25,7 @@ const InstagramLayout: React.FC<InstagramLayoutProps> = ({
   return (
     <div className="h-screen bg-gray-50 pt-16 overflow-hidden">
       {/* Main Container */}
-      <div className="mx-auto max-w-[1440px] h-[calc(100vh-64px)]">
+      <div className="mx-auto max-w-[1440px] h-[calc(100vh-112px)]">
         <div className="flex gap-4 px-0 lg:px-4 h-full items-start">
           {/* Left Sidebar - Navigation */}
           {showLeftSidebar && (

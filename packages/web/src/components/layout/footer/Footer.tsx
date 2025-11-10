@@ -19,9 +19,32 @@ const Footer: React.FC<Props> = ({}) => {
 
   const footerBg = isNetworkPage ? "bg-morange" : "bg-mblue";
 
-  // Don't render footer on network pages
+  // Minimal footer for network pages
   if (isNetworkPage) {
-    return null;
+    return (
+      <footer className="bg-white border-t border-gray-200 py-3">
+        <div className="max-w-[1440px] mx-auto px-4">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-2 text-xs text-gray-600">
+            <div className="flex items-center gap-2">
+              <span>© {new Date().getFullYear()} مهر باران</span>
+              <span className="hidden md:inline">•</span>
+              <span>همه حقوق محفوظ است</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <span>Developed by</span>
+              <a
+                href="https://codabiat.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-bold text-morange hover:text-orange-600 transition-colors"
+              >
+                Codabiat
+              </a>
+            </div>
+          </div>
+        </div>
+      </footer>
+    );
   }
 
   return (

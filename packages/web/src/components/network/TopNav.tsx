@@ -94,16 +94,32 @@ const TopNav: React.FC = () => {
     <nav className="fixed top-0 left-0 right-0 bg-white border-b border-gray-200 z-50">
       <div className="max-w-[1440px] mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <Link href="/network" className="flex-shrink-0">
-            <OptimizedImage
-              src="/icons/logo.svg"
-              alt="مهر باران"
-              width={100}
-              height={40}
-              priority="up"
-            />
-          </Link>
+          {/* Logo & Home Link */}
+          <div className="flex items-center gap-4">
+            <Link href="/network" className="flex-shrink-0">
+              <OptimizedImage
+                src="/icons/logo.svg"
+                alt="مهر باران"
+                width={100}
+                height={40}
+                priority="up"
+              />
+            </Link>
+            <Link
+              href="/"
+              className="hidden md:flex items-center gap-1 text-sm text-gray-600 hover:text-morange transition-colors px-3 py-1 rounded-md hover:bg-gray-50"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                />
+              </svg>
+              <span className="font-medium">صفحه اصلی</span>
+            </Link>
+          </div>
 
           {/* Search Bar */}
           <div className="hidden md:flex flex-1 max-w-[600px] mx-8 relative" ref={searchRef}>
@@ -173,9 +189,25 @@ const TopNav: React.FC = () => {
           </div>
 
           {/* Right Section - Icons & User Menu */}
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-4 md:gap-6">
+            {/* Home Link (Mobile Only) */}
+            <Link
+              href="/"
+              className="md:hidden text-gray-600 hover:text-morange transition-colors"
+              title="صفحه اصلی"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                />
+              </svg>
+            </Link>
+
             {/* Notifications */}
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3 md:gap-4">
               {/* Likes Notification */}
               <Link
                 href="/network/notifications?type=likes"

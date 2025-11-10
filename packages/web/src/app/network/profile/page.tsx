@@ -1,80 +1,86 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { useAuth } from "@/contexts/AuthContext";
-import SmartButton from "@/components/ui/SmartButton";
-import LevelBadge from "@/components/gamification/LevelBadge";
-import PointsDisplay from "@/components/gamification/PointsDisplay";
-import AchievementCard from "@/components/gamification/AchievementCard";
-import {
-  gamificationService,
-  IPointSummary,
-  IUserStats,
-  IUserBadge,
-  IPointTransaction,
-  getLevelByPoints,
-} from "@/services/gamification.service";
+import InstagramLayout from "@/components/network/InstagramLayout";
+import LeftSidebar from "@/components/network/LeftSidebar";
+import RightSidebar from "@/components/network/RightSidebar";
+import InstagramProfileHeader from "@/components/network/InstagramProfileHeader";
+import StoryHighlights from "@/components/network/StoryHighlights";
+import InstagramProfileTabs, { TabType } from "@/components/network/InstagramProfileTabs";
+import InstagramProfileGrid from "@/components/network/InstagramProfileGrid";
+import { needService } from "@/services/need.service";
+import { INeed } from "common-types";
 
-const ProfilePage: React.FC = () => {
-  const router = useRouter();
+const InstagramProfilePage: React.FC = () => {
   const { user } = useAuth();
+  const [activeTab, setActiveTab] = useState<TabType>("posts");
+  const [needs, setNeeds] = useState<INeed[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // State
-  const [pointSummary, setPointSummary] = useState<IPointSummary | null>(null);
-  const [userStats, setUserStats] = useState<IUserStats | null>(null);
-  const [userBadges, setUserBadges] = useState<IUserBadge[]>([]);
-  const [recentTransactions, setRecentTransactions] = useState<IPointTransaction[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  const [claimingBonus, setClaimingBonus] = useState<boolean>(false);
-
-  // دریافت اطلاعات
-  const fetchData = async () => {
-    try {
-      setIsLoading(true);
-      setError(null);
-
-      const [summaryRes, statsRes, badgesRes, transactionsRes] = await Promise.all([
-        gamificationService.getPointSummary(),
-        gamificationService.getUserStats(),
-        gamificationService.getUserBadges(),
-        gamificationService.getPointTransactions(10),
-      ]);
-
-      setPointSummary(summaryRes.data);
-      setUserStats(statsRes.data);
-      setUserBadges(badgesRes.data);
-      setRecentTransactions(transactionsRes.data);
-    } catch (err: any) {
-      console.error("Failed to fetch profile data:", err);
-      setError(err.message || "خطا در دریافت اطلاعات پروفایل");
-    } finally {
-      setIsLoading(false);
-    }
+  // Mock stats - will be replaced with API
+  const stats = {
+    posts: needs.length,
+    followers: 1234,
+    following: 567,
   };
 
+  // Mock highlights
+  const highlights = [
+    { id: "1", title: "نیازهای اضطراری", coverImage: undefined, storiesCount: 5 },
+    { id: "2", title: "پروژه‌های تکمیل شده", coverImage: undefined, storiesCount: 12 },
+    { id: "3", title: "همکاری‌ها", coverImage: undefined, storiesCount: 8 },
+  ];
+
+  // Fetch user's needs
   useEffect(() => {
-    fetchData();
-  }, []);
+    const fetchNeeds = async () => {
+      if (!user) return;
 
-  // دریافت پاداش روزانه
-  const handleClaimDailyBonus = async () => {
-    try {
-      setClaimingBonus(true);
-      const response = await gamificationService.claimDailyBonus();
-      alert(`🎉 ${response.data.message}\n+${response.data.pointsEarned} امتیاز!`);
-      fetchData(); // رفرش داده‌ها
-    } catch (err: any) {
-      alert(err.message || "خطا در دریافت پاداش روزانه");
-    } finally {
-      setClaimingBonus(false);
+      try {
+        setIsLoading(true);
+        // Get all needs and filter by user
+        const response = await needService.getNeeds({ limit: 100 });
+        // Filter needs created by current user
+        const userNeeds = response.data.filter((need) => {
+          const creatorId =
+            typeof need.createdBy === "string" ? need.createdBy : need.createdBy?._id;
+          return creatorId === user._id;
+        });
+        setNeeds(userNeeds);
+      } catch (error) {
+        console.error("Failed to fetch user needs:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchNeeds();
+  }, [user]);
+
+  // Get needs based on active tab
+  const getTabNeeds = (): INeed[] => {
+    switch (activeTab) {
+      case "posts":
+        return needs;
+      case "tagged":
+        // TODO: Get needs where user is tagged
+        return [];
+      case "saved":
+        // TODO: Get saved needs
+        return [];
+      default:
+        return needs;
     }
   };
 
-  if (isLoading) {
+  const handleEditProfile = () => {
+    // TODO: Open edit profile modal
+    console.log("Edit profile");
+  };
+
+  if (!user) {
     return (
       <ProtectedRoute>
         <div className="flex items-center justify-center min-h-screen">
@@ -87,264 +93,56 @@ const ProfilePage: React.FC = () => {
     );
   }
 
-  if (error) {
-    return (
-      <ProtectedRoute>
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="text-center">
-            <p className="text-red-500 mb-4">{error}</p>
-            <SmartButton variant="mblue" size="sm" onClick={fetchData}>
-              تلاش مجدد
-            </SmartButton>
-          </div>
-        </div>
-      </ProtectedRoute>
-    );
-  }
-
-  const currentLevel = pointSummary
-    ? pointSummary.currentLevel
-    : getLevelByPoints(userStats?.totalPoints || 0);
-
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-mgray/5 pb-10">
-        {/* Header */}
-        <div className="bg-gradient-to-r from-mblue to-cyan-600 text-white py-12">
-          <div className="w-9/10 md:w-8/10 mx-auto">
-            <div className="mb-4 text-sm opacity-90">
-              <Link href="/network" className="hover:underline">
-                شبکه نیازسنجی
-              </Link>
-              <span className="mx-2">←</span>
-              <span>پروفایل من</span>
-            </div>
+      <InstagramLayout
+        leftSidebar={<LeftSidebar />}
+        rightSidebar={<RightSidebar />}
+        showLeftSidebar={false}
+        showRightSidebar={false}
+      >
+        <div className="max-w-4xl mx-auto bg-white">
+          {/* Profile Header */}
+          <InstagramProfileHeader
+            user={user}
+            stats={stats}
+            isOwnProfile={true}
+            onEditProfile={handleEditProfile}
+          />
 
-            <div className="flex flex-col md:flex-row items-center gap-6">
-              {/* Avatar */}
-              <div className="w-24 h-24 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-4xl font-bold shadow-xl">
-                {user?.name.charAt(0)}
-              </div>
+          {/* Story Highlights */}
+          <StoryHighlights
+            highlights={highlights}
+            isOwnProfile={true}
+            onAddHighlight={() => console.log("Add highlight")}
+            onHighlightClick={(id) => console.log("View highlight:", id)}
+          />
 
-              {/* User Info */}
-              <div className="flex-1 text-center md:text-right">
-                <h1 className="text-3xl font-extrabold mb-2">{user?.name}</h1>
-                <div className="flex flex-col md:flex-row items-center gap-4">
-                  {pointSummary && (
-                    <LevelBadge
-                      currentLevel={currentLevel}
-                      currentPoints={pointSummary.totalPoints}
-                      size="md"
-                      showProgress={false}
-                      showTitle={true}
-                    />
-                  )}
-                  {pointSummary && pointSummary.rank && (
-                    <div className="text-sm opacity-90">
-                      رتبه {pointSummary.rank.toLocaleString("fa-IR")} در جدول امتیازات
-                    </div>
-                  )}
-                </div>
-              </div>
+          {/* Tabs */}
+          <InstagramProfileTabs
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+            isOwnProfile={true}
+          />
 
-              {/* Daily Bonus Button */}
-              <SmartButton
-                variant="morange"
-                size="md"
-                onClick={handleClaimDailyBonus}
-                disabled={claimingBonus}
-              >
-                {claimingBonus ? "در حال دریافت..." : "🎁 پاداش روزانه"}
-              </SmartButton>
-            </div>
+          {/* Grid Content */}
+          <div className="min-h-screen">
+            <InstagramProfileGrid
+              needs={getTabNeeds()}
+              isLoading={isLoading}
+              emptyMessage={
+                activeTab === "posts"
+                  ? "هنوز پستی ایجاد نکرده‌اید"
+                  : activeTab === "tagged"
+                  ? "هیچ پستی شما را تگ نکرده است"
+                  : "هیچ پستی ذخیره نکرده‌اید"
+              }
+            />
           </div>
         </div>
-
-        {/* Main Content */}
-        <div className="w-9/10 md:w-8/10 mx-auto mt-8">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Main Column */}
-            <div className="lg:col-span-2 space-y-6">
-              {/* Points Card */}
-              {pointSummary && (
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                  <h2 className="font-bold text-xl mb-4">امتیازات من</h2>
-                  <PointsDisplay
-                    points={pointSummary.totalPoints}
-                    size="lg"
-                    variant="detailed"
-                    changeAmount={pointSummary.pointsEarnedToday || 0}
-                  />
-
-                  <div className="grid grid-cols-3 gap-4 mt-6">
-                    <div className="text-center p-3 bg-blue-50 rounded-md">
-                      <p className="text-xs text-gray-600 mb-1">امروز</p>
-                      <p className="font-bold text-mblue">
-                        {(pointSummary.pointsEarnedToday || 0).toLocaleString("fa-IR")}
-                      </p>
-                    </div>
-                    <div className="text-center p-3 bg-green-50 rounded-md">
-                      <p className="text-xs text-gray-600 mb-1">این هفته</p>
-                      <p className="font-bold text-green-600">
-                        {(pointSummary.pointsEarnedThisWeek || 0).toLocaleString("fa-IR")}
-                      </p>
-                    </div>
-                    <div className="text-center p-3 bg-purple-50 rounded-md">
-                      <p className="text-xs text-gray-600 mb-1">این ماه</p>
-                      <p className="font-bold text-purple-600">
-                        {(pointSummary.pointsEarnedThisMonth || 0).toLocaleString("fa-IR")}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Level Progress */}
-                  {pointSummary.nextLevel && pointSummary.progressPercentage !== undefined && (
-                    <div className="mt-6 p-4 bg-mgray/10 rounded-md">
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm font-bold">پیشرفت تا سطح بعد:</span>
-                        <span className="text-sm font-bold text-mblue">
-                          {pointSummary.progressPercentage}%
-                        </span>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden mb-2">
-                        <div
-                          className="bg-gradient-to-r from-mblue to-cyan-500 h-full rounded-full transition-all"
-                          style={{ width: `${pointSummary.progressPercentage}%` }}
-                        ></div>
-                      </div>
-                      <p className="text-xs text-gray-600">
-                        {(pointSummary.pointsToNextLevel || 0).toLocaleString("fa-IR")} امتیاز تا{" "}
-                        {pointSummary.nextLevel.title}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Recent Transactions */}
-              {recentTransactions.length > 0 && (
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                  <h2 className="font-bold text-xl mb-4">تراکنش‌های اخیر</h2>
-                  <div className="space-y-3">
-                    {recentTransactions.map((transaction) => (
-                      <div
-                        key={transaction._id}
-                        className="flex items-center justify-between p-3 bg-gray-50 rounded-md"
-                      >
-                        <div className="flex-1">
-                          <p className="text-sm font-bold">{transaction.reason}</p>
-                          <p className="text-xs text-gray-500">
-                            {new Date(transaction.createdAt).toLocaleDateString("fa-IR")}
-                          </p>
-                        </div>
-                        <span
-                          className={`font-bold ${
-                            transaction.points > 0 ? "text-green-600" : "text-red-600"
-                          }`}
-                        >
-                          {transaction.points > 0 ? "+" : ""}
-                          {transaction.points}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* My Badges */}
-              {userBadges.length > 0 && (
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <h2 className="font-bold text-xl">نشان‌های من</h2>
-                    <Link href="/network/achievements" className="text-sm text-mblue hover:underline">
-                      مشاهده همه
-                    </Link>
-                  </div>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    {userBadges.slice(0, 6).map((userBadge) => (
-                      <AchievementCard
-                        key={userBadge.badge._id}
-                        badge={userBadge}
-                        earned={true}
-                        variant="card"
-                      />
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Sidebar */}
-            <div className="space-y-6">
-              {/* Stats Card */}
-              {userStats && (
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                  <h3 className="font-bold text-lg mb-4">آمار فعالیت</h3>
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-600">نیازهای ایجاد شده:</span>
-                      <span className="font-bold text-mblue">{userStats.needsCreated}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-600">نیازهای پشتیبانی شده:</span>
-                      <span className="font-bold text-green-600">{userStats.needsSupported}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-600">تسک‌های تکمیل شده:</span>
-                      <span className="font-bold text-purple-600">{userStats.tasksCompleted}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-600">تیم‌های عضو:</span>
-                      <span className="font-bold text-orange-600">{userStats.teamsJoined}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-600">نظرات ارسالی:</span>
-                      <span className="font-bold text-gray-600">{userStats.commentsPosted}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-600">نشان‌های دریافتی:</span>
-                      <span className="font-bold text-morange">{userStats.badgesEarned}</span>
-                    </div>
-                    <div className="pt-3 border-t border-gray-200">
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-gray-600">استریک روزانه:</span>
-                        <span className="font-bold text-red-600">🔥 {userStats.streak} روز</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Quick Links */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <h3 className="font-bold text-lg mb-4">دسترسی سریع</h3>
-                <div className="space-y-2">
-                  <Link
-                    href="/network/leaderboard"
-                    className="block p-3 bg-mblue/5 hover:bg-mblue/10 rounded-md text-sm font-bold text-mblue transition-colors"
-                  >
-                    🏆 جدول امتیازات
-                  </Link>
-                  <Link
-                    href="/network/achievements"
-                    className="block p-3 bg-morange/5 hover:bg-morange/10 rounded-md text-sm font-bold text-morange transition-colors"
-                  >
-                    🏅 نشان‌ها و دستاوردها
-                  </Link>
-                  <Link
-                    href="/network/teams"
-                    className="block p-3 bg-green-50 hover:bg-green-100 rounded-md text-sm font-bold text-green-600 transition-colors"
-                  >
-                    👥 تیم‌های من
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      </InstagramLayout>
     </ProtectedRoute>
   );
 };
 
-export default ProfilePage;
+export default InstagramProfilePage;

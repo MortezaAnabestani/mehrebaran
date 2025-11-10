@@ -1,7 +1,9 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { AnimatePresence } from "framer-motion";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import PageTransition from "@/components/ui/PageTransition";
 import TopNav from "@/components/network/TopNav";
 import InstagramLayout from "@/components/network/InstagramLayout";
 import LeftSidebar from "@/components/network/LeftSidebar";
@@ -145,12 +147,13 @@ const NetworkPage: React.FC = () => {
   return (
     <ProtectedRoute>
       <TopNav />
-      <InstagramLayout
-        leftSidebar={<LeftSidebar onCreateNeed={() => setShowCreateNeed(true)} />}
-        rightSidebar={<RightSidebar />}
-      >
-        {/* Stories Section */}
-        <div className="mb-6">
+      <PageTransition>
+        <InstagramLayout
+          leftSidebar={<LeftSidebar onCreateNeed={() => setShowCreateNeed(true)} />}
+          rightSidebar={<RightSidebar />}
+        >
+          {/* Stories Section */}
+          <div className="mb-6">
           <StoriesCarousel
             storyGroups={mockStoryGroups}
             currentUserId={user?._id}
@@ -187,23 +190,31 @@ const NetworkPage: React.FC = () => {
             ))
           )}
         </div>
+      </InstagramLayout>
+    </PageTransition>
 
-        {/* Create Story Modal */}
+    {/* Modals with AnimatePresence */}
+    <AnimatePresence>
+      {showCreateStory && (
         <CreateStoryModal
           isOpen={showCreateStory}
           onClose={() => setShowCreateStory(false)}
           onSubmit={handleCreateStory}
         />
+      )}
+    </AnimatePresence>
 
-        {/* Create Need Modal */}
+    <AnimatePresence>
+      {showCreateNeed && (
         <CreateNeedModal
           isOpen={showCreateNeed}
           onClose={() => setShowCreateNeed(false)}
           onSubmit={handleCreateNeed}
         />
-      </InstagramLayout>
-    </ProtectedRoute>
-  );
+      )}
+    </AnimatePresence>
+  </ProtectedRoute>
+);
 };
 
 export default NetworkPage;

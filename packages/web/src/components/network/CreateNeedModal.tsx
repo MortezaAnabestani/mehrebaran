@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import SmartButton from "@/components/ui/SmartButton";
 import FileUploader from "@/components/ui/FileUploader";
 import { getProvinceNames, getCitiesByProvince } from "@/data/iranLocations";
+import { modalSlideUp, backdropFade } from "@/utils/animations";
 
 // Import components with SSR disabled to avoid window/document errors
 const PersianDatePicker = dynamic(() => import("@/components/ui/PersianDatePicker"), {
@@ -169,11 +170,18 @@ const CreateNeedModal: React.FC<CreateNeedModalProps> = ({ isOpen, onClose, onSu
   const progress = ((currentStep + 1) / steps.length) * 100;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-8 lg:p-12 bg-black/50 backdrop-blur-sm">
+    <motion.div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-8 lg:p-12 bg-black/50 backdrop-blur-sm"
+      variants={backdropFade}
+      initial="hidden"
+      animate="visible"
+      exit="exit"
+    >
       <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.9 }}
+        variants={modalSlideUp}
+        initial="hidden"
+        animate="visible"
+        exit="exit"
         className="w-full max-w-4xl max-h-[85vh] bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col"
       >
         {/* Header */}
@@ -316,7 +324,7 @@ const CreateNeedModal: React.FC<CreateNeedModalProps> = ({ isOpen, onClose, onSu
           )}
         </div>
       </motion.div>
-    </div>
+    </motion.div>
   );
 };
 

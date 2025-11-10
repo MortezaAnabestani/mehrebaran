@@ -3,10 +3,12 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 import OptimizedImage from "@/components/ui/OptimizedImage";
 import { INeed } from "common-types";
 import { needService } from "@/services/need.service";
 import { useAuth } from "@/contexts/AuthContext";
+import { cardHover, heartBounce, buttonClick } from "@/utils/animations";
 
 interface InstagramNeedCardProps {
   need: INeed;
@@ -193,7 +195,13 @@ const InstagramNeedCard: React.FC<InstagramNeedCardProps> = ({ need, onUpdate })
   };
 
   return (
-    <article className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+    <motion.article
+      className="bg-white border border-gray-200 rounded-lg overflow-hidden"
+      variants={cardHover}
+      initial="rest"
+      whileHover="hover"
+      whileTap="tap"
+    >
       {/* Header - User Info */}
       <div className="flex items-center justify-between p-3">
         <div className="flex items-center gap-3">
@@ -294,7 +302,13 @@ const InstagramNeedCard: React.FC<InstagramNeedCardProps> = ({ need, onUpdate })
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-4">
             {/* Like */}
-            <button onClick={handleLike} className="hover:opacity-60 transition-opacity">
+            <motion.button
+              onClick={handleLike}
+              className="hover:opacity-60 transition-opacity"
+              variants={heartBounce}
+              initial="initial"
+              animate={isLiked ? "liked" : "unliked"}
+            >
               {isLiked ? (
                 <svg className="w-7 h-7 text-red-500 fill-current" viewBox="0 0 24 24">
                   <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
@@ -309,7 +323,7 @@ const InstagramNeedCard: React.FC<InstagramNeedCardProps> = ({ need, onUpdate })
                   />
                 </svg>
               )}
-            </button>
+            </motion.button>
 
             {/* Comment */}
             <Link href={`/network/needs/${need._id}#comments`} onClick={(e) => e.stopPropagation()}>
@@ -433,26 +447,34 @@ const InstagramNeedCard: React.FC<InstagramNeedCardProps> = ({ need, onUpdate })
 
         {/* Action Buttons */}
         <div className="mt-3 flex items-center gap-2">
-          <button
+          <motion.button
             onClick={handleFollow}
             className={`flex-1 font-semibold py-2 px-4 rounded-lg transition-colors ${
               isFollowing
                 ? "bg-gray-200 text-gray-700 hover:bg-gray-300"
                 : "bg-mblue hover:bg-blue-600 text-white"
             }`}
+            variants={buttonClick}
+            initial="rest"
+            whileHover="hover"
+            whileTap="tap"
           >
             {isFollowing ? "در حال حمایت ✓" : "حمایت از این نیاز"}
-          </button>
+          </motion.button>
 
-          <button
+          <motion.button
             onClick={handleViewDetails}
             className="flex-1 bg-morange hover:bg-orange-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
+            variants={buttonClick}
+            initial="rest"
+            whileHover="hover"
+            whileTap="tap"
           >
             مشاهده جزئیات
-          </button>
+          </motion.button>
         </div>
       </div>
-    </article>
+    </motion.article>
   );
 };
 

@@ -53,9 +53,7 @@ const LeaderboardTable: React.FC<LeaderboardTableProps> = ({
             <div
               key={entry.user._id}
               className={`flex items-center gap-3 p-3 rounded-md ${
-                isCurrentUser
-                  ? "bg-morange/10 border-2 border-morange"
-                  : "bg-white border border-gray-200"
+                isCurrentUser ? "bg-morange/10 border-2 border-morange" : "bg-white border border-gray-200"
               }`}
             >
               {/* Rank */}
@@ -70,9 +68,7 @@ const LeaderboardTable: React.FC<LeaderboardTableProps> = ({
                 </div>
                 <div>
                   <p className="font-bold text-sm">{entry.user.name}</p>
-                  {showLevel && (
-                    <p className="text-xs text-gray-500">سطح {entry.level}</p>
-                  )}
+                  {showLevel && <p className="text-xs text-gray-500">سطح {entry.level}</p>}
                 </div>
               </div>
 
@@ -105,16 +101,14 @@ const LeaderboardTable: React.FC<LeaderboardTableProps> = ({
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-200">
-          {entries.map((entry) => {
+          {entries.map((entry, index) => {
             const isCurrentUser = currentUserId && entry.user._id === currentUserId;
 
             return (
               <tr
-                key={entry.user._id}
+                key={index}
                 className={`transition-colors ${
-                  isCurrentUser
-                    ? "bg-morange/10 font-bold"
-                    : "hover:bg-gray-50"
+                  isCurrentUser ? "bg-morange/10 font-bold" : "hover:bg-gray-50"
                 }`}
               >
                 {/* Rank */}
@@ -128,13 +122,11 @@ const LeaderboardTable: React.FC<LeaderboardTableProps> = ({
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-mblue text-white flex items-center justify-center font-bold">
-                      {entry.user.name.charAt(0)}
+                      {entry?.user.name}
                     </div>
                     <div>
                       <p className="font-bold text-sm">{entry.user.name}</p>
-                      {isCurrentUser && (
-                        <span className="text-xs text-morange">شما</span>
-                      )}
+                      {isCurrentUser && <span className="text-xs text-morange">شما</span>}
                     </div>
                   </div>
                 </td>
@@ -161,9 +153,7 @@ const LeaderboardTable: React.FC<LeaderboardTableProps> = ({
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center gap-1">
                     <span className="text-morange">⭐</span>
-                    <span className="font-bold text-morange text-lg">
-                      {formatScore(entry.score)}
-                    </span>
+                    <span className="font-bold text-morange text-lg">{formatScore(entry.score)}</span>
                   </div>
                 </td>
               </tr>

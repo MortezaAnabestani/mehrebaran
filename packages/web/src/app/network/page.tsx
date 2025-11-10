@@ -42,7 +42,7 @@ const NetworkPage: React.FC = () => {
         rightSidebar={<RightSidebar />}
       >
         {/* Stories Section - Coming Soon */}
-        <div className="mb-6 pt-8">
+        <div className="mb-6">
           <div className="bg-white border border-gray-200 rounded-lg p-4">
             <div className="flex gap-4 overflow-x-auto">
               <div className="flex flex-col items-center gap-2 flex-shrink-0">

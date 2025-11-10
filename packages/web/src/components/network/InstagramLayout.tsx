@@ -23,14 +23,14 @@ const InstagramLayout: React.FC<InstagramLayoutProps> = ({
   showRightSidebar = true,
 }) => {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 pt-[54px] md:pt-[104px]">
       {/* Main Container */}
       <div className="mx-auto max-w-[1440px]">
         <div className="flex gap-4 px-0 lg:px-4">
           {/* Left Sidebar - Navigation */}
           {showLeftSidebar && (
             <aside className="hidden lg:block w-64 xl:w-72 flex-shrink-0">
-              <div className="fixed top-0 w-64 xl:w-72 h-screen overflow-y-auto pt-8 pb-6">
+              <div className="fixed top-[104px] w-64 xl:w-72 h-[calc(100vh-104px)] overflow-y-auto pt-8 pb-6">
                 {leftSidebar}
               </div>
             </aside>
@@ -46,7 +46,7 @@ const InstagramLayout: React.FC<InstagramLayoutProps> = ({
           {/* Right Sidebar - Suggestions */}
           {showRightSidebar && (
             <aside className="hidden xl:block w-80 flex-shrink-0">
-              <div className="fixed top-0 w-80 h-screen overflow-y-auto pt-8 pb-6">
+              <div className="fixed top-[104px] w-80 h-[calc(100vh-104px)] overflow-y-auto pt-8 pb-6">
                 {rightSidebar}
               </div>
             </aside>

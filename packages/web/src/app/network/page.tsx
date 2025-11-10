@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import TopNav from "@/components/network/TopNav";
 import InstagramLayout from "@/components/network/InstagramLayout";
 import LeftSidebar from "@/components/network/LeftSidebar";
 import RightSidebar from "@/components/network/RightSidebar";
@@ -143,6 +144,7 @@ const NetworkPage: React.FC = () => {
 
   return (
     <ProtectedRoute>
+      <TopNav />
       <InstagramLayout
         leftSidebar={<LeftSidebar onCreateNeed={() => setShowCreateNeed(true)} />}
         rightSidebar={<RightSidebar />}

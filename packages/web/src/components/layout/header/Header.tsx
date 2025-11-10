@@ -37,8 +37,13 @@ const Header: React.FC<Props> = ({}) => {
 
   const mobileBg = isNetworkPage ? "bg-morange" : "bg-mblue";
 
+  // Don't render header on network pages (TopNav is used instead)
+  if (isNetworkPage) {
+    return null;
+  }
+
   return (
-    <header className={isNetworkPage ? "h-12 md:h-16" : "h-13.5 md:h-26"}>
+    <header className="h-13.5 md:h-26">
       <div className={`w-full fixed ${headerBg} ${isNetworkPage ? "py-1" : "py-2"} z-20 duration-300 transition-all`}>
         <div
           className={`flex items-center justify-between w-8/10 mx-auto relative ${

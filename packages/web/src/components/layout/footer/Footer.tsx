@@ -19,6 +19,11 @@ const Footer: React.FC<Props> = ({}) => {
 
   const footerBg = isNetworkPage ? "bg-morange" : "bg-mblue";
 
+  // Don't render footer on network pages
+  if (isNetworkPage) {
+    return null;
+  }
+
   return (
     <footer className={`${footerBg} w-full h-fit ${wave ? "pt-18" : isNetworkPage ? "pt-3" : "pt-7"} relative duration-700`}>
       {wave && <Wave />}

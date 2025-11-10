@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import OptimizedImage from "@/components/ui/OptimizedImage";
 import { INeed } from "common-types";
 import { needService } from "@/services/need.service";
@@ -17,6 +18,7 @@ interface InstagramNeedCardProps {
  */
 const InstagramNeedCard: React.FC<InstagramNeedCardProps> = ({ need, onUpdate }) => {
   const { user } = useAuth();
+  const router = useRouter();
 
   // Check if user has liked/followed this need
   const userHasLiked = user && need.upvotes ? need.upvotes.includes(user._id) : false;
@@ -118,6 +120,11 @@ const InstagramNeedCard: React.FC<InstagramNeedCardProps> = ({ need, onUpdate })
       console.error("Follow error:", error);
       setIsFollowing(previousFollowing);
     }
+  };
+
+  // مشاهده جزئیات نیاز
+  const handleViewDetails = () => {
+    router.push(`/network/needs/${need._id}`);
   };
 
   // دریافت اطلاعات کاربر
@@ -389,15 +396,26 @@ const InstagramNeedCard: React.FC<InstagramNeedCardProps> = ({ need, onUpdate })
           </div>
         )}
 
-        {/* Follow Button */}
-        {!isFollowing && (
+        {/* Action Buttons */}
+        <div className="mt-3 flex items-center gap-2">
           <button
             onClick={handleFollow}
-            className="w-full mt-3 bg-mblue hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
+            className={`flex-1 font-semibold py-2 px-4 rounded-lg transition-colors ${
+              isFollowing
+                ? "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                : "bg-mblue hover:bg-blue-600 text-white"
+            }`}
           >
-            حمایت از این نیاز
+            {isFollowing ? "در حال حمایت ✓" : "حمایت از این نیاز"}
           </button>
-        )}
+
+          <button
+            onClick={handleViewDetails}
+            className="flex-1 bg-morange hover:bg-orange-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
+          >
+            مشاهده جزئیات
+          </button>
+        </div>
       </div>
     </article>
   );

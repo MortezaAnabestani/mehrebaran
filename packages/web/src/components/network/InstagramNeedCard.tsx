@@ -129,15 +129,42 @@ const InstagramNeedCard: React.FC<InstagramNeedCardProps> = ({ need, onUpdate })
 
   // دریافت اطلاعات کاربر
   const getCreatorName = (): string => {
-    if (!need.createdBy) return "کاربر";
-    if (typeof need.createdBy === "string") return "کاربر";
-    return need.createdBy.name || "کاربر";
+    // Try createdBy first (for backward compatibility)
+    if (need.createdBy && typeof need.createdBy === "object" && need.createdBy.name) {
+      return need.createdBy.name;
+    }
+    // Then try submittedBy.user (new structure)
+    if (need.submittedBy?.user && typeof need.submittedBy.user === "object") {
+      return need.submittedBy.user.name || "کاربر";
+    }
+    // Fallback to guestName
+    if (need.submittedBy?.guestName) {
+      return need.submittedBy.guestName;
+    }
+    return "کاربر";
   };
 
   const getCreatorAvatar = (): string => {
-    if (!need.createdBy) return "/images/default-avatar.png";
-    if (typeof need.createdBy === "string") return "/images/default-avatar.png";
-    return need.createdBy.avatar || "/images/default-avatar.png";
+    // Try createdBy first (for backward compatibility)
+    if (need.createdBy && typeof need.createdBy === "object" && need.createdBy.avatar) {
+      return need.createdBy.avatar;
+    }
+    // Then try submittedBy.user (new structure)
+    if (need.submittedBy?.user && typeof need.submittedBy.user === "object") {
+      return need.submittedBy.user.avatar || "/images/default-avatar.png";
+    }
+    return "/images/default-avatar.png";
+  };
+
+  // دریافت شناسه کاربر برای لینک پروفایل
+  const getCreatorId = (): string => {
+    if (need.createdBy && typeof need.createdBy === "object") {
+      return need.createdBy._id || "";
+    }
+    if (need.submittedBy?.user && typeof need.submittedBy.user === "object") {
+      return need.submittedBy.user._id || "";
+    }
+    return "";
   };
 
   // تعداد تصاویر
@@ -149,7 +176,8 @@ const InstagramNeedCard: React.FC<InstagramNeedCardProps> = ({ need, onUpdate })
     console.log('InstagramNeedCard - Need ID:', need._id);
     console.log('InstagramNeedCard - Images:', images);
     console.log('InstagramNeedCard - Images length:', images.length);
-  }, [need._id, images]);
+    console.log('InstagramNeedCard - Attachments:', need.attachments);
+  }, [need._id, images, need.attachments]);
 
   // رفتن به عکس بعدی/قبلی
   const handleNextImage = (e: React.MouseEvent) => {
@@ -169,7 +197,7 @@ const InstagramNeedCard: React.FC<InstagramNeedCardProps> = ({ need, onUpdate })
       {/* Header - User Info */}
       <div className="flex items-center justify-between p-3">
         <div className="flex items-center gap-3">
-          <Link href={`/network/profile/${need.createdBy}`} onClick={(e) => e.stopPropagation()}>
+          <Link href={`/network/profile/${getCreatorId()}`} onClick={(e) => e.stopPropagation()}>
             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 p-0.5">
               <div className="w-full h-full rounded-full bg-white p-0.5">
                 <OptimizedImage
@@ -184,7 +212,7 @@ const InstagramNeedCard: React.FC<InstagramNeedCardProps> = ({ need, onUpdate })
           </Link>
           <div>
             <Link
-              href={`/network/profile/${need.createdBy}`}
+              href={`/network/profile/${getCreatorId()}`}
               onClick={(e) => e.stopPropagation()}
               className="font-semibold text-sm hover:text-gray-600"
             >
@@ -337,7 +365,7 @@ const InstagramNeedCard: React.FC<InstagramNeedCardProps> = ({ need, onUpdate })
         {/* Caption */}
         <div className="text-sm">
           <Link
-            href={`/network/profile/${need.createdBy}`}
+            href={`/network/profile/${getCreatorId()}`}
             onClick={(e) => e.stopPropagation()}
             className="font-semibold hover:text-gray-600"
           >

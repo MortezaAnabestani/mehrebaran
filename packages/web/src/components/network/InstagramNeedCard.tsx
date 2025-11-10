@@ -144,6 +144,13 @@ const InstagramNeedCard: React.FC<InstagramNeedCardProps> = ({ need, onUpdate })
   const images = need.images || [];
   const hasMultipleImages = images.length > 1;
 
+  // Debug: Log images
+  React.useEffect(() => {
+    console.log('InstagramNeedCard - Need ID:', need._id);
+    console.log('InstagramNeedCard - Images:', images);
+    console.log('InstagramNeedCard - Images length:', images.length);
+  }, [need._id, images]);
+
   // رفتن به عکس بعدی/قبلی
   const handleNextImage = (e: React.MouseEvent) => {
     e.preventDefault();

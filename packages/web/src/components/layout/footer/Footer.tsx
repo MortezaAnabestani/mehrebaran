@@ -6,6 +6,7 @@ import Menu from "./Menu";
 import Codabiat from "./Codabiat";
 import License from "./License";
 import Wave from "./Wave";
+import OptimizedImage from "@/components/ui/OptimizedImage";
 import { usePathname } from "next/navigation";
 
 interface Props {
@@ -19,26 +20,31 @@ const Footer: React.FC<Props> = ({}) => {
 
   const footerBg = isNetworkPage ? "bg-morange" : "bg-mblue";
 
-  // Minimal footer for network pages - compact version with all components
+  // Minimal footer for network pages - Logo, License, and Codabiat only
   if (isNetworkPage) {
     return (
-      <footer className="bg-white border-t border-gray-200 py-3">
+      <footer className="bg-white border-t border-gray-200 py-4">
         <div className="max-w-[1440px] mx-auto px-4">
-          {/* Compact layout - all in one row on desktop, stacked on mobile */}
-          <div className="flex flex-col md:flex-row items-center justify-between gap-3 text-xs">
-            {/* Social Media - Compact */}
-            <div className="scale-75 md:scale-90">
-              <SocialMedia setWave={setWave} />
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            {/* Left: Logo + License */}
+            <div className="flex flex-col md:flex-row items-center gap-3 md:gap-4">
+              {/* Logo */}
+              <div className="flex-shrink-0">
+                <OptimizedImage
+                  src="/icons/logo.svg"
+                  alt="مهر باران"
+                  width={80}
+                  height={32}
+                />
+              </div>
+              {/* License */}
+              <div className="text-center md:text-right">
+                <License />
+              </div>
             </div>
 
-            {/* Menu - Compact */}
-            <div className="scale-75 md:scale-90">
-              <Menu />
-            </div>
-
-            {/* License + Codabiat - Combined */}
-            <div className="flex flex-col items-center gap-1 scale-75 md:scale-90">
-              <License />
+            {/* Right: Codabiat */}
+            <div className="flex-shrink-0">
               <Codabiat />
             </div>
           </div>

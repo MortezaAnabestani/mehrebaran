@@ -7,6 +7,7 @@ import LeftSidebar from "@/components/network/LeftSidebar";
 import RightSidebar from "@/components/network/RightSidebar";
 import StoriesCarousel from "@/components/network/StoriesCarousel";
 import CreateStoryModal from "@/components/network/CreateStoryModal";
+import CreateNeedModal from "@/components/network/CreateNeedModal";
 import NeedCard from "@/components/network/NeedCard";
 import { needService, GetNeedsParams } from "@/services/need.service";
 import { INeed } from "common-types";
@@ -19,6 +20,7 @@ const NetworkPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [showCreateStory, setShowCreateStory] = useState<boolean>(false);
+  const [showCreateNeed, setShowCreateNeed] = useState<boolean>(false);
 
   // Mock Stories Data - Will be replaced with API call
   const mockStoryGroups = [
@@ -125,10 +127,24 @@ const NetworkPage: React.FC = () => {
     }
   };
 
+  // Handle need creation
+  const handleCreateNeed = async (needData: any) => {
+    try {
+      // TODO: Implement API call to create need
+      console.log("Creating need with data:", needData);
+
+      // Refresh needs list after creation
+      await fetchNeeds();
+    } catch (err) {
+      console.error("Failed to create need:", err);
+      throw err;
+    }
+  };
+
   return (
     <ProtectedRoute>
       <InstagramLayout
-        leftSidebar={<LeftSidebar />}
+        leftSidebar={<LeftSidebar onCreateNeed={() => setShowCreateNeed(true)} />}
         rightSidebar={<RightSidebar />}
       >
         {/* Stories Section */}
@@ -177,6 +193,13 @@ const NetworkPage: React.FC = () => {
           isOpen={showCreateStory}
           onClose={() => setShowCreateStory(false)}
           onSubmit={handleCreateStory}
+        />
+
+        {/* Create Need Modal */}
+        <CreateNeedModal
+          isOpen={showCreateNeed}
+          onClose={() => setShowCreateNeed(false)}
+          onSubmit={handleCreateNeed}
         />
       </InstagramLayout>
     </ProtectedRoute>

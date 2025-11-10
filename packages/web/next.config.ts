@@ -35,6 +35,11 @@ const nextConfig: NextConfig = {
         hostname: "www.w3.org",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "picsum.photos",
+        pathname: "/**",
+      },
     ],
     // Allow unoptimized for better compatibility
     unoptimized: false,

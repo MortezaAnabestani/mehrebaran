@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Logo from "@/components/ui/Logo";
@@ -12,12 +12,15 @@ interface NavItem {
   isActive?: boolean;
 }
 
+interface LeftSidebarProps {
+  onCreateNeed?: () => void;
+}
+
 /**
  * Instagram-Style Left Sidebar Navigation
  */
-const LeftSidebar: React.FC = () => {
+const LeftSidebar: React.FC<LeftSidebarProps> = ({ onCreateNeed }) => {
   const pathname = usePathname();
-  const [showCreateModal, setShowCreateModal] = useState(false);
 
   const navItems: NavItem[] = [
     {
@@ -94,7 +97,7 @@ const LeftSidebar: React.FC = () => {
       {/* Create Button */}
       <div className="mt-6 px-3">
         <button
-          onClick={() => setShowCreateModal(true)}
+          onClick={onCreateNeed}
           className="w-full bg-mblue hover:bg-blue-600 text-white font-bold py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
         >
           <span className="text-xl">+</span>

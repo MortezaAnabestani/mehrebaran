@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { usePathname } from "next/navigation";
 import { AnimatePresence } from "framer-motion";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import PageTransition from "@/components/ui/PageTransition";
@@ -19,11 +20,16 @@ interface NetworkLayoutProps {
 
 /**
  * Shared Layout for all /network routes
- * Provides consistent TopNav, LeftSidebar, and RightSidebar
- * Each route's content will be displayed in the main feed area
+ * Provides consistent TopNav and RightSidebar
+ * LeftSidebar only shows on /network (home) and /network/profile
+ * Other routes are two-column (content + right sidebar)
  */
 const NetworkLayout: React.FC<NetworkLayoutProps> = ({ children }) => {
+  const pathname = usePathname();
   const [showCreateNeed, setShowCreateNeed] = useState<boolean>(false);
+
+  // Only show LeftSidebar on main feed (/network) and profile pages
+  const showLeftSidebar = pathname === "/network" || pathname?.startsWith("/network/profile");
 
   // Handle need creation
   const handleCreateNeed = async (needData: any) => {
@@ -44,7 +50,9 @@ const NetworkLayout: React.FC<NetworkLayoutProps> = ({ children }) => {
       <TopNav />
       <PageTransition>
         <InstagramLayout
-          leftSidebar={<LeftSidebar onCreateNeed={() => setShowCreateNeed(true)} />}
+          leftSidebar={
+            showLeftSidebar ? <LeftSidebar onCreateNeed={() => setShowCreateNeed(true)} /> : undefined
+          }
           rightSidebar={<RightSidebar />}
         >
           {/* Dynamic content from each route */}

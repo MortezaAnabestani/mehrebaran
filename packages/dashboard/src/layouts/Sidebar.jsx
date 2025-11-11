@@ -469,6 +469,69 @@ const Sidebar = ({ sidebarOpen, me }) => {
                 )}
               </div>
 
+              {/* بخش ویژگی‌های اجتماعی */}
+              <div>
+                <li className="relative text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group ">
+                  <img
+                    src="/assets/images/dashboard/icons/social.svg"
+                    alt="social"
+                    className="w-6 h-6 ml-2"
+                  />
+                  <span className="ml-3 flex-1 whitespace-nowrap"> ویژگی‌های اجتماعی</span>
+                  <img
+                    src="/assets/images/dashboard/icons/downArrow.svg"
+                    className="h-6 w-6 absolute top-2 left-2 cursor-pointer"
+                    style={menuToggle === 15 ? { rotate: "90deg" } : { rotate: "0deg" }}
+                    onClick={() => toggleHandler(15)}
+                    alt="down arrow icon"
+                  />
+                </li>
+                {menuToggle === 15 && (
+                  <div className="flex flex-col w-full justify-start items-start bg-gray-50">
+                    <Link
+                      rel="preconnect"
+                      to={"/dashboard/social/follows"}
+                      className={`${pathname === "/dashboard/social/follows" ? "bg-gray-100" : ""} w-full`}
+                    >
+                      <li className="text-base text-gray-900 text-[14px]  font-normal rounded-lg hover:bg-gray-100 flex items-start p-2 group cursor-pointer">
+                        <span className="mr-5 text-red-300">*</span>
+                        <span className="d-block mr-1 flex-1 whitespace-nowrap">دنبال‌کنندگان</span>
+                      </li>
+                    </Link>
+                    <Link
+                      rel="preconnect"
+                      to={"/dashboard/social/mentions"}
+                      className={`${pathname === "/dashboard/social/mentions" ? "bg-gray-100" : ""} w-full`}
+                    >
+                      <li className="text-base text-gray-900 text-[14px]  font-normal rounded-lg hover:bg-gray-100 flex items-start p-2 group cursor-pointer">
+                        <span className="mr-5 text-red-300">*</span>
+                        <span className="d-block mr-1 flex-1 whitespace-nowrap">منشن‌ها</span>
+                      </li>
+                    </Link>
+                    <Link
+                      rel="preconnect"
+                      to={"/dashboard/social/tags"}
+                      className={`${pathname === "/dashboard/social/tags" ? "bg-gray-100" : ""} w-full`}
+                    >
+                      <li className="text-base text-gray-900 text-[14px]  font-normal rounded-lg hover:bg-gray-100 flex items-start p-2 group cursor-pointer">
+                        <span className="mr-5 text-red-300">*</span>
+                        <span className="d-block mr-1 flex-1 whitespace-nowrap">تگ‌های اجتماعی</span>
+                      </li>
+                    </Link>
+                    <Link
+                      rel="preconnect"
+                      to={"/dashboard/social/shares"}
+                      className={`${pathname === "/dashboard/social/shares" ? "bg-gray-100" : ""} w-full`}
+                    >
+                      <li className="text-base text-gray-900 text-[14px]  font-normal rounded-lg hover:bg-gray-100 flex items-start p-2 group cursor-pointer">
+                        <span className="mr-5 text-red-300">*</span>
+                        <span className="d-block mr-1 flex-1 whitespace-nowrap">اشتراک‌گذاری</span>
+                      </li>
+                    </Link>
+                  </div>
+                )}
+              </div>
+
               <div className={`${me?.role === "admin" && "disabled"}`}>
                 <li className="relative text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group">
                   <img

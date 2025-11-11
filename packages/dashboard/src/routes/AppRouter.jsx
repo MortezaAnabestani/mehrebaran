@@ -32,6 +32,10 @@ const Projects = lazy(() => import("../pages/projects/Projects"));
 const CreateProject = lazy(() => import("../pages/projects/CreateProject"));
 const EditProject = lazy(() => import("../pages/projects/EditProject"));
 const ProjectDetails = lazy(() => import("../pages/projects/ProjectDetails"));
+const Follows = lazy(() => import("../pages/social/Follows"));
+const Mentions = lazy(() => import("../pages/social/Mentions"));
+const SocialTags = lazy(() => import("../pages/social/SocialTags"));
+const Shares = lazy(() => import("../pages/social/Shares"));
 
 // صفحات کم‌استفاده یا سنگین (Lazy Load)
 const EditArticle = lazy(() => import("../pages/articles/EditArticle"));
@@ -109,6 +113,10 @@ const AppRouter = () => {
               <Route path="projects/create" element={<CreateProject />} />
               <Route path="projects/edit/:id" element={<EditProject />} />
               <Route path="projects/:id" element={<ProjectDetails />} />
+              <Route path="social/follows" element={<Follows />} />
+              <Route path="social/mentions" element={<Mentions />} />
+              <Route path="social/tags" element={<SocialTags />} />
+              <Route path="social/shares" element={<Shares />} />
               <Route path="sections" element={<Sections />} />
               <Route path="sections/edit/:id" element={<EditSection />} />
               <Route path="calendar" element={<CalendarPage />} />

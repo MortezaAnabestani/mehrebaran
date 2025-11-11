@@ -1,19 +1,37 @@
-import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { useEffect, useState, lazy, Suspense } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams, Link } from "react-router-dom";
-import { FormProvider } from "react-hook-form";
-import { useProjectForm } from "../../hooks/useProjectForm";
+import { useNavigate, useParams } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 import { fetchProjectById, updateProject } from "../../features/projectsSlice";
-import {
-  Card,
-  Button,
-  Typography,
-  Input,
-  Textarea,
-  Select,
-  Option,
-} from "@material-tailwind/react";
-import { ArrowRightIcon } from "@heroicons/react/24/outline";
+import Loading from "../../components/Loading";
+import SeoPart from "../../components/createContent/SeoPart";
+import styles from "../../styles/admin.module.css";
+import { Calendar } from "react-multi-date-picker";
+import persian from "react-date-object/calendars/persian";
+import persian_fa from "react-date-object/locales/persian_fa";
+import DateObject from "react-date-object";
+import "react-multi-date-picker/styles/colors/red.css";
+
+const TextEditor = lazy(() => import("../../components/textEditor/TextEditor"));
+
+// Schema validation
+const projectSchema = yup.object().shape({
+  title: yup.string().min(3).max(200).required("عنوان پروژه اجباری است"),
+  subtitle: yup.string().max(300),
+  description: yup.string().min(50).required("توضیحات پروژه اجباری است"),
+  excerpt: yup.string().max(500),
+  category: yup.string().required("دسته‌بندی اجباری است"),
+  status: yup.string().oneOf(["draft", "active", "completed"]).default("draft"),
+  targetAmount: yup.number().min(0).required("مبلغ هدف اجباری است"),
+  amountRaised: yup.number().min(0).default(0),
+  targetVolunteer: yup.number().min(0).required("تعداد داوطلب هدف اجباری است"),
+  collectedVolunteer: yup.number().min(0).default(0),
+  metaTitle: yup.string().max(60),
+  metaDescription: yup.string().max(160),
+});
 
 const EditProject = () => {
   const dispatch = useDispatch();
@@ -21,10 +39,18 @@ const EditProject = () => {
   const { id } = useParams();
 
   const { selectedProject, loading: fetchLoading } = useSelector((state) => state.projects);
-  const [loading, setLoading] = useState(false);
 
-  const methods = useProjectForm();
-  const { handleSubmit, register, formState: { errors }, setValue, watch, reset } = methods;
+  const { register, handleSubmit, formState: { errors }, setValue, reset } = useForm({
+    resolver: yupResolver(projectSchema),
+  });
+
+  const [editorContent, setEditorContent] = useState("");
+  const [previewImage, setPreviewImage] = useState(null);
+  const [imageFile, setImageFile] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // بارگذاری پروژه
   useEffect(() => {
@@ -36,6 +62,16 @@ const EditProject = () => {
   // پر کردن فرم با داده‌های پروژه
   useEffect(() => {
     if (selectedProject) {
+      setEditorContent(selectedProject.description || "");
+      setPreviewImage(selectedProject.featuredImage?.desktop || "");
+
+      // تبدیل deadline به تاریخ شمسی
+      if (selectedProject.deadline) {
+        const date = new DateObject(new Date(selectedProject.deadline));
+        date.convert(persian, persian_fa);
+        setSelectedDate(date);
+      }
+
       reset({
         title: selectedProject.title || "",
         subtitle: selectedProject.subtitle || "",
@@ -47,341 +83,220 @@ const EditProject = () => {
         amountRaised: selectedProject.amountRaised || 0,
         targetVolunteer: selectedProject.targetVolunteer || 0,
         collectedVolunteer: selectedProject.collectedVolunteer || 0,
-        deadline: selectedProject.deadline ? new Date(selectedProject.deadline).toISOString().split('T')[0] : "",
-        featuredImage: {
-          url: selectedProject.featuredImage?.url || "",
-          alt: selectedProject.featuredImage?.alt || "",
-          caption: selectedProject.featuredImage?.caption || "",
-        },
-        seo: {
-          metaTitle: selectedProject.seo?.metaTitle || "",
-          metaDescription: selectedProject.seo?.metaDescription || "",
-          keywords: selectedProject.seo?.keywords || [],
-          ogImage: selectedProject.seo?.ogImage || "",
-        },
+        metaTitle: selectedProject.seo?.metaTitle || "",
+        metaDescription: selectedProject.seo?.metaDescription || "",
       });
     }
   }, [selectedProject, reset]);
 
-  // ارسال فرم
+  useEffect(() => {
+    if (editorContent) setValue("description", editorContent);
+  }, [editorContent, setValue]);
+
+  const handleCoverImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImageFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => setPreviewImage(reader.result);
+      reader.readAsDataURL(file);
+    }
+  };
+
   const onSubmit = async (data) => {
-    setLoading(true);
+    setIsSubmitting(true);
+    setSubmitError(null);
+
     try {
-      await dispatch(updateProject({ id, projectData: data })).unwrap();
-      console.log("پروژه با موفقیت ویرایش شد");
-      navigate("/dashboard/projects");
+      if (!selectedDate) {
+        setSubmitError("لطفاً تاریخ پایان را انتخاب کنید");
+        setIsSubmitting(false);
+        return;
+      }
+
+      const gregorianDate = new DateObject(selectedDate).convert(persian, "en").toDate();
+      const formData = new FormData();
+
+      formData.append("title", data.title);
+      formData.append("subtitle", data.subtitle || "");
+      formData.append("description", data.description);
+      formData.append("excerpt", data.excerpt || "");
+      formData.append("category", data.category);
+      formData.append("status", data.status);
+      formData.append("targetAmount", data.targetAmount);
+      formData.append("amountRaised", data.amountRaised || 0);
+      formData.append("targetVolunteer", data.targetVolunteer);
+      formData.append("collectedVolunteer", data.collectedVolunteer || 0);
+      formData.append("deadline", gregorianDate.toISOString());
+      formData.append("metaTitle", data.metaTitle || "");
+      formData.append("metaDescription", data.metaDescription || "");
+
+      if (imageFile) formData.append("featuredImage", imageFile);
+
+      await dispatch(updateProject({ id, projectData: formData })).unwrap();
+      setSubmitSuccess(true);
+      setTimeout(() => navigate("/dashboard/projects"), 2000);
     } catch (error) {
-      console.error(error || "خطایی در ویرایش پروژه رخ داده است");
-      alert(error || "خطایی در ویرایش پروژه رخ داده است");
+      setSubmitError(error || "خطایی در ویرایش پروژه رخ داده است");
     } finally {
-      setLoading(false);
+      setIsSubmitting(false);
     }
   };
 
   if (fetchLoading) {
     return (
       <div className="flex justify-center items-center py-10">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-500"></div>
       </div>
     );
   }
 
   if (!selectedProject) {
     return (
-      <div className="p-6">
-        <Card className="p-6">
-          <Typography variant="h5" color="red">
-            پروژه یافت نشد
-          </Typography>
-        </Card>
+      <div className="p-6 bg-white rounded-md">
+        <h3 className="text-lg font-bold text-red-500">پروژه یافت نشد</h3>
       </div>
     );
   }
 
   return (
-    <div className="p-6">
-      <Card className="p-6">
-        {/* Header */}
-        <div className="flex items-center gap-4 mb-6">
-          <Link to="/dashboard/projects">
-            <Button variant="text" className="flex items-center gap-2">
-              <ArrowRightIcon className="w-5 h-5" />
-              بازگشت
-            </Button>
+    <div>
+      <div className="bg-white rounded-md mb-6">
+        <div className="flex items-center justify-between p-4">
+          <h2 className="flex gap-3 text-xl font-medium">ویرایش پروژه</h2>
+          <Link rel="preconnect" to="/dashboard/projects" className="px-3 py-[6px] bg-gray-600 rounded-md hover:bg-gray-700 text-white">
+            <span className="text-slate-50 w-1 animate-pulse">فهرست پروژه‌ها</span>
           </Link>
-          <Typography variant="h4" color="blue-gray">
-            ویرایش پروژه: {selectedProject.title}
-          </Typography>
+        </div>
+      </div>
+
+      {submitSuccess && (
+        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4">
+          <strong className="font-bold ml-1">موفقیت!</strong>
+          <span>پروژه با موفقیت ویرایش شد. در حال انتقال...</span>
+        </div>
+      )}
+
+      {submitError && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+          <strong className="font-bold ml-1">خطا!</strong>
+          <span>{submitError}</span>
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <div className={`${styles.createContent_title} mb-10`}>
+          <label className="text-[12px] mb-2 block" htmlFor="title">عنوان پروژه *</label>
+          <input type="text" id="title" className="px-3 py-2 text-xs rounded-md outline-0 border border-gray-300 focus:border-gray-400 h-10 w-full" {...register("title")} />
+          {errors.title && <p className="text-red-500 text-xs mt-1">{errors.title.message}</p>}
         </div>
 
-        {/* Form */}
-        <FormProvider {...methods}>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            {/* Basic Info */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Title */}
-              <div className="md:col-span-2">
-                <Input
-                  label="عنوان پروژه *"
-                  {...register("title")}
-                  error={!!errors.title}
-                />
-                {errors.title && (
-                  <Typography variant="small" color="red" className="mt-1">
-                    {errors.title.message}
-                  </Typography>
-                )}
-              </div>
+        <div className={`${styles.createContent_title} mb-10`}>
+          <label className="text-[12px] mb-2 block" htmlFor="subtitle">زیرعنوان</label>
+          <input type="text" id="subtitle" className="px-3 py-2 text-xs rounded-md outline-0 border border-gray-300 focus:border-gray-400 h-10 w-full" {...register("subtitle")} />
+        </div>
 
-              {/* Subtitle */}
-              <div className="md:col-span-2">
-                <Input
-                  label="زیرعنوان"
-                  {...register("subtitle")}
-                  error={!!errors.subtitle}
-                />
-                {errors.subtitle && (
-                  <Typography variant="small" color="red" className="mt-1">
-                    {errors.subtitle.message}
-                  </Typography>
-                )}
-              </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+          <div className={styles.createContent_title}>
+            <label className="text-[12px] mb-2 block">دسته‌بندی *</label>
+            <select className="px-3 py-2 text-xs rounded-md outline-0 border border-gray-300 focus:border-gray-400 h-10 w-full" {...register("category")}>
+              <option value="">انتخاب دسته‌بندی</option>
+              <option value="health">بهداشت و سلامت</option>
+              <option value="education">آموزش</option>
+              <option value="housing">مسکن</option>
+              <option value="food">غذا</option>
+              <option value="clothing">پوشاک</option>
+              <option value="other">سایر</option>
+            </select>
+            {errors.category && <p className="text-red-500 text-xs mt-1">{errors.category.message}</p>}
+          </div>
 
-              {/* Category */}
-              <div>
-                <Select
-                  label="دسته‌بندی *"
-                  value={watch("category")}
-                  onChange={(value) => setValue("category", value)}
-                  error={!!errors.category}
-                >
-                  <Option value="">انتخاب دسته‌بندی</Option>
-                  <Option value="health">بهداشت و سلامت</Option>
-                  <Option value="education">آموزش</Option>
-                  <Option value="housing">مسکن</Option>
-                  <Option value="food">غذا</Option>
-                  <Option value="clothing">پوشاک</Option>
-                  <Option value="other">سایر</Option>
-                </Select>
-                {errors.category && (
-                  <Typography variant="small" color="red" className="mt-1">
-                    {errors.category.message}
-                  </Typography>
-                )}
-              </div>
+          <div className={styles.createContent_title}>
+            <label className="text-[12px] mb-2 block">وضعیت *</label>
+            <select className="px-3 py-2 text-xs rounded-md outline-0 border border-gray-300 focus:border-gray-400 h-10 w-full" {...register("status")}>
+              <option value="draft">پیش‌نویس</option>
+              <option value="active">فعال</option>
+              <option value="completed">تکمیل شده</option>
+            </select>
+          </div>
+        </div>
 
-              {/* Status */}
-              <div>
-                <Select
-                  label="وضعیت *"
-                  value={watch("status") || "draft"}
-                  onChange={(value) => setValue("status", value)}
-                >
-                  <Option value="draft">پیش‌نویس</Option>
-                  <Option value="active">فعال</Option>
-                  <Option value="completed">تکمیل شده</Option>
-                </Select>
-              </div>
+        <Suspense fallback={<Loading />}>
+          <div className={`${styles.createContent_title} mb-10`}>
+            <label className="text-[12px] mb-2 block">توضیحات کامل پروژه *</label>
+            <TextEditor value={editorContent} onChange={setEditorContent} />
+            {errors.description && <p className="text-red-500 text-xs mt-1">{errors.description.message}</p>}
+          </div>
+        </Suspense>
+
+        <div className={`${styles.createContent_title} mb-10`}>
+          <label className="text-[12px] mb-2 block">خلاصه (Excerpt)</label>
+          <textarea rows="4" className="px-3 py-2 text-xs rounded-md outline-0 border border-gray-300 focus:border-gray-400 w-full" {...register("excerpt")} />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+          <div className="space-y-6">
+            <h3 className="text-sm font-bold text-gray-700">اهداف مالی</h3>
+            <div className={styles.createContent_title}>
+              <label className="text-[12px] mb-2 block">مبلغ هدف (تومان) *</label>
+              <input type="number" className="px-3 py-2 text-xs rounded-md outline-0 border border-gray-300 focus:border-gray-400 h-10 w-full" {...register("targetAmount")} />
+              {errors.targetAmount && <p className="text-red-500 text-xs mt-1">{errors.targetAmount.message}</p>}
             </div>
-
-            {/* Description */}
-            <div>
-              <Textarea
-                label="توضیحات کامل *"
-                rows={6}
-                {...register("description")}
-                error={!!errors.description}
-              />
-              {errors.description && (
-                <Typography variant="small" color="red" className="mt-1">
-                  {errors.description.message}
-                </Typography>
-              )}
+            <div className={styles.createContent_title}>
+              <label className="text-[12px] mb-2 block">مبلغ جمع‌آوری شده (تومان)</label>
+              <input type="number" className="px-3 py-2 text-xs rounded-md outline-0 border border-gray-300 focus:border-gray-400 h-10 w-full" {...register("amountRaised")} />
             </div>
+          </div>
 
-            {/* Excerpt */}
-            <div>
-              <Textarea
-                label="خلاصه (Excerpt)"
-                rows={3}
-                {...register("excerpt")}
-                error={!!errors.excerpt}
-              />
-              {errors.excerpt && (
-                <Typography variant="small" color="red" className="mt-1">
-                  {errors.excerpt.message}
-                </Typography>
-              )}
+          <div className="space-y-6">
+            <h3 className="text-sm font-bold text-gray-700">اهداف داوطلب</h3>
+            <div className={styles.createContent_title}>
+              <label className="text-[12px] mb-2 block">تعداد داوطلب هدف *</label>
+              <input type="number" className="px-3 py-2 text-xs rounded-md outline-0 border border-gray-300 focus:border-gray-400 h-10 w-full" {...register("targetVolunteer")} />
+              {errors.targetVolunteer && <p className="text-red-500 text-xs mt-1">{errors.targetVolunteer.message}</p>}
             </div>
+            <div className={styles.createContent_title}>
+              <label className="text-[12px] mb-2 block">تعداد داوطلب جمع‌آوری شده</label>
+              <input type="number" className="px-3 py-2 text-xs rounded-md outline-0 border border-gray-300 focus:border-gray-400 h-10 w-full" {...register("collectedVolunteer")} />
+            </div>
+          </div>
+        </div>
 
-            {/* Financial & Volunteer Targets */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-6">
-                <Typography variant="h6" color="blue-gray">
-                  اهداف مالی
-                </Typography>
+        <div className={`${styles.createContent_title} mb-10`}>
+          <label className="text-[12px] mb-2 block">تاریخ پایان پروژه *</label>
+          <div className="border border-gray-300 rounded-md p-4 inline-block">
+            <Calendar className="red" calendar={persian} locale={persian_fa} value={selectedDate} onChange={setSelectedDate} calendarPosition="bottom-right" />
+          </div>
+          {selectedDate && <p className="text-xs text-gray-600 mt-2">تاریخ انتخاب شده: {selectedDate.format("YYYY/MM/DD")}</p>}
+        </div>
 
-                <div>
-                  <Input
-                    type="number"
-                    label="مبلغ هدف (تومان) *"
-                    {...register("targetAmount")}
-                    error={!!errors.targetAmount}
-                  />
-                  {errors.targetAmount && (
-                    <Typography variant="small" color="red" className="mt-1">
-                      {errors.targetAmount.message}
-                    </Typography>
-                  )}
-                </div>
+        <div className="w-full lg:w-[300px] mb-10">
+          <label className="block text-xs font-medium text-gray-400 mb-2">تصویر شاخص {!previewImage && "*"}</label>
+          <div className="bg-slate-100 rounded-md p-2 border border-gray-400 border-dotted">
+            <label htmlFor="coverImage" className="flex flex-row items-center justify-between text-xs font-medium cursor-pointer">
+              <span>برای تغییر عکس کلیک کنید</span>
+              <img className="w-8 h-8 animate-pulse" src="/assets/images/dashboard/icons/portrait.svg" alt="image" />
+            </label>
+            <input type="file" accept="image/*" className="hidden" id="coverImage" onChange={handleCoverImageChange} />
+            {previewImage && <img src={previewImage} alt="پیش‌نمایش" className="h-70 w-80 object-cover rounded-md mt-3 border border-red-300" />}
+          </div>
+        </div>
 
-                <div>
-                  <Input
-                    type="number"
-                    label="مبلغ جمع‌آوری شده (تومان)"
-                    {...register("amountRaised")}
-                    error={!!errors.amountRaised}
-                  />
-                  {errors.amountRaised && (
-                    <Typography variant="small" color="red" className="mt-1">
-                      {errors.amountRaised.message}
-                    </Typography>
-                  )}
-                </div>
+        <SeoPart register={register} errors={errors} />
+
+        <div className="mt-6 text-left">
+          <button type="submit" disabled={isSubmitting} className={`px-3 w-full lg:w-[120px] py-[6px] ${isSubmitting ? "bg-gray-400" : "bg-gray-600 hover:bg-gray-700"} rounded-md text-white cursor-pointer`}>
+            {isSubmitting ? (
+              <div className="flex items-center justify-center">
+                <div className="animate-spin h-4 w-4 border-2 border-white rounded-full border-t-transparent mr-2"></div>
+                <span>در حال ارسال...</span>
               </div>
-
-              <div className="space-y-6">
-                <Typography variant="h6" color="blue-gray">
-                  اهداف داوطلب
-                </Typography>
-
-                <div>
-                  <Input
-                    type="number"
-                    label="تعداد داوطلب هدف *"
-                    {...register("targetVolunteer")}
-                    error={!!errors.targetVolunteer}
-                  />
-                  {errors.targetVolunteer && (
-                    <Typography variant="small" color="red" className="mt-1">
-                      {errors.targetVolunteer.message}
-                    </Typography>
-                  )}
-                </div>
-
-                <div>
-                  <Input
-                    type="number"
-                    label="تعداد داوطلب جمع‌آوری شده"
-                    {...register("collectedVolunteer")}
-                    error={!!errors.collectedVolunteer}
-                  />
-                  {errors.collectedVolunteer && (
-                    <Typography variant="small" color="red" className="mt-1">
-                      {errors.collectedVolunteer.message}
-                    </Typography>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Deadline */}
-            <div>
-              <Input
-                type="date"
-                label="تاریخ پایان *"
-                {...register("deadline")}
-                error={!!errors.deadline}
-              />
-              {errors.deadline && (
-                <Typography variant="small" color="red" className="mt-1">
-                  {errors.deadline.message}
-                </Typography>
-              )}
-            </div>
-
-            {/* Featured Image */}
-            <div className="space-y-4">
-              <Typography variant="h6" color="blue-gray">
-                تصویر شاخص *
-              </Typography>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="md:col-span-2">
-                  <Input
-                    label="URL تصویر *"
-                    {...register("featuredImage.url")}
-                    error={!!errors.featuredImage?.url}
-                  />
-                  {errors.featuredImage?.url && (
-                    <Typography variant="small" color="red" className="mt-1">
-                      {errors.featuredImage.url.message}
-                    </Typography>
-                  )}
-                </div>
-                <div>
-                  <Input
-                    label="متن جایگزین (Alt)"
-                    {...register("featuredImage.alt")}
-                  />
-                </div>
-              </div>
-              {watch("featuredImage.url") && (
-                <div className="mt-4">
-                  <img
-                    src={watch("featuredImage.url")}
-                    alt="Preview"
-                    className="h-48 w-auto rounded-lg object-cover"
-                  />
-                </div>
-              )}
-            </div>
-
-            {/* SEO */}
-            <div className="space-y-4">
-              <Typography variant="h6" color="blue-gray">
-                تنظیمات سئو
-              </Typography>
-              <div>
-                <Input
-                  label="عنوان سئو (Meta Title)"
-                  {...register("seo.metaTitle")}
-                  error={!!errors.seo?.metaTitle}
-                />
-                {errors.seo?.metaTitle && (
-                  <Typography variant="small" color="red" className="mt-1">
-                    {errors.seo.metaTitle.message}
-                  </Typography>
-                )}
-              </div>
-              <div>
-                <Textarea
-                  label="توضیحات سئو (Meta Description)"
-                  rows={3}
-                  {...register("seo.metaDescription")}
-                  error={!!errors.seo?.metaDescription}
-                />
-                {errors.seo?.metaDescription && (
-                  <Typography variant="small" color="red" className="mt-1">
-                    {errors.seo.metaDescription.message}
-                  </Typography>
-                )}
-              </div>
-            </div>
-
-            {/* Actions */}
-            <div className="flex gap-4 justify-end border-t pt-6">
-              <Link to="/dashboard/projects">
-                <Button variant="outlined" color="gray">
-                  انصراف
-                </Button>
-              </Link>
-              <Button type="submit" color="blue" loading={loading}>
-                ذخیره تغییرات
-              </Button>
-            </div>
-          </form>
-        </FormProvider>
-      </Card>
+            ) : (
+              "ذخیره تغییرات"
+            )}
+          </button>
+        </div>
+      </form>
     </div>
   );
 };

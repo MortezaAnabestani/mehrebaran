@@ -45,7 +45,7 @@ const ProtectedRoute = ({ allowedRoles = [] }) => {
     return <Navigate to="/" />;
   }
 
-  if (allowedRoles.length && !allowedRoles?.includes(userRole)) {
+  if (allowedRoles.length && allowedRoles?.includes(userRole)) {
     return <div className="text-center p-10 text-red-500">دسترسی غیرمجاز</div>;
   }
 

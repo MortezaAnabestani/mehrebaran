@@ -4,4 +4,5 @@ dist/
 .env
 *.log
 *.lock
-.next/temp-dashboard/
+.next/
+temp-dashboard/

@@ -492,96 +492,105 @@ const NeedDetailPage: React.FC = () => {
                   {need.attachments && need.attachments.length > 0 && (
                     <div className="mb-6">
                       <h4 className="font-bold text-base mb-3">
-                        📎 فایل‌های پیوست ({need.attachments.filter((a: any) => a && a.url && a.url.trim() !== "").length})
+                        📎 فایل‌های پیوست (
+                        {need.attachments.filter((a: any) => a && a.url && a.url.trim() !== "").length})
                       </h4>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {need.attachments
-                          .filter((attachment: any) => attachment && attachment.url && attachment.url.trim() !== "")
+                          .filter(
+                            (attachment: any) => attachment && attachment.url && attachment.url.trim() !== ""
+                          )
                           .map((attachment: any, index: number) => (
-                          <div key={index}>
-                            {attachment.fileType === "image" && (
-                              <div className="relative w-full h-48 rounded-md overflow-hidden group cursor-pointer">
-                                <OptimizedImage
-                                  src={attachment.url || "/images/default-avatar.png"}
-                                  alt={attachment.fileName || `تصویر ${index + 1}`}
-                                  fill
-                                  className="object-cover transition-transform group-hover:scale-105"
-                                />
-                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors"></div>
-                              </div>
-                            )}
-                            {attachment.fileType === "video" && (
-                              <div className="relative w-full h-48 rounded-md overflow-hidden bg-black">
-                                <video src={attachment.url} controls className="w-full h-full object-contain">
-                                  مرورگر شما از پخش ویدیو پشتیبانی نمی‌کند.
-                                </video>
-                                {attachment.fileName && (
-                                  <p className="text-xs text-gray-500 mt-1 truncate">{attachment.fileName}</p>
-                                )}
-                              </div>
-                            )}
-                            {attachment.fileType === "audio" && (
-                              <div className="bg-mgray/10 rounded-md p-4">
-                                <div className="flex items-center gap-3 mb-2">
-                                  <span className="text-2xl">🎵</span>
-                                  <div className="flex-1 min-w-0">
-                                    {attachment.fileName && (
-                                      <p className="text-sm font-bold truncate">{attachment.fileName}</p>
-                                    )}
-                                    {attachment.fileSize && (
-                                      <p className="text-xs text-gray-500">
-                                        {formatFileSize(attachment.fileSize)}
-                                      </p>
-                                    )}
-                                  </div>
+                            <div key={index}>
+                              {attachment.fileType === "image" && (
+                                <div className="relative w-full h-48 rounded-md overflow-hidden group cursor-pointer">
+                                  <OptimizedImage
+                                    src={attachment.url || "/images/default-avatar.png"}
+                                    alt={attachment.fileName || `تصویر ${index + 1}`}
+                                    fill
+                                    className="object-cover transition-transform group-hover:scale-105"
+                                  />
+                                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors"></div>
                                 </div>
-                                <audio src={attachment.url} controls className="w-full">
-                                  مرورگر شما از پخش صدا پشتیبانی نمی‌کند.
-                                </audio>
-                              </div>
-                            )}
-                            {attachment.fileType === "document" && (
-                              <a
-                                href={attachment.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="block bg-mgray/10 rounded-md p-4 hover:bg-mgray/20 transition-colors border border-mgray/20"
-                              >
-                                <div className="flex items-start gap-3">
-                                  <div
-                                    className={`text-3xl flex-shrink-0 w-12 h-12 rounded-md flex items-center justify-center ${
-                                      getFileInfo(attachment.url, attachment.fileName).color
-                                    }`}
+                              )}
+                              {attachment.fileType === "video" && (
+                                <div className="relative w-full h-48 rounded-md overflow-hidden bg-black">
+                                  <video
+                                    src={attachment.url}
+                                    controls
+                                    className="w-full h-full object-contain"
                                   >
-                                    {getFileInfo(attachment.url, attachment.fileName).icon}
-                                  </div>
-                                  <div className="flex-1 min-w-0">
-                                    <p className="text-sm font-bold truncate">
-                                      {getFileInfo(attachment.url, attachment.fileName).name}
+                                    مرورگر شما از پخش ویدیو پشتیبانی نمی‌کند.
+                                  </video>
+                                  {attachment.fileName && (
+                                    <p className="text-xs text-gray-500 mt-1 truncate">
+                                      {attachment.fileName}
                                     </p>
-                                    <div className="flex items-center gap-2 mt-1">
-                                      <span className="text-xs font-bold text-mblue">
-                                        {getFileInfo(attachment.url, attachment.fileName).extension}
-                                      </span>
+                                  )}
+                                </div>
+                              )}
+                              {attachment.fileType === "audio" && (
+                                <div className="bg-mgray/10 rounded-md p-4">
+                                  <div className="flex items-center gap-3 mb-2">
+                                    <span className="text-2xl">🎵</span>
+                                    <div className="flex-1 min-w-0">
+                                      {attachment.fileName && (
+                                        <p className="text-sm font-bold truncate">{attachment.fileName}</p>
+                                      )}
                                       {attachment.fileSize && (
-                                        <>
-                                          <span className="text-xs text-gray-400">•</span>
-                                          <span className="text-xs text-gray-500">
-                                            {formatFileSize(attachment.fileSize)}
-                                          </span>
-                                        </>
+                                        <p className="text-xs text-gray-500">
+                                          {formatFileSize(attachment.fileSize)}
+                                        </p>
                                       )}
                                     </div>
-                                    <div className="flex items-center gap-1 mt-2 text-xs text-mblue">
-                                      <span>دانلود</span>
-                                      <span>↓</span>
+                                  </div>
+                                  <audio src={attachment.url} controls className="w-full">
+                                    مرورگر شما از پخش صدا پشتیبانی نمی‌کند.
+                                  </audio>
+                                </div>
+                              )}
+                              {attachment.fileType === "document" && (
+                                <a
+                                  href={attachment.url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="block bg-mgray/10 rounded-md p-4 hover:bg-mgray/20 transition-colors border border-mgray/20"
+                                >
+                                  <div className="flex items-start gap-3">
+                                    <div
+                                      className={`text-3xl flex-shrink-0 w-12 h-12 rounded-md flex items-center justify-center ${
+                                        getFileInfo(attachment.url, attachment.fileName).color
+                                      }`}
+                                    >
+                                      {getFileInfo(attachment.url, attachment.fileName).icon}
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                      <p className="text-sm font-bold truncate">
+                                        {getFileInfo(attachment.url, attachment.fileName).name}
+                                      </p>
+                                      <div className="flex items-center gap-2 mt-1">
+                                        <span className="text-xs font-bold text-mblue">
+                                          {getFileInfo(attachment.url, attachment.fileName).extension}
+                                        </span>
+                                        {attachment.fileSize && (
+                                          <>
+                                            <span className="text-xs text-gray-400">•</span>
+                                            <span className="text-xs text-gray-500">
+                                              {formatFileSize(attachment.fileSize)}
+                                            </span>
+                                          </>
+                                        )}
+                                      </div>
+                                      <div className="flex items-center gap-1 mt-2 text-xs text-mblue">
+                                        <span>دانلود</span>
+                                        <span>↓</span>
+                                      </div>
                                     </div>
                                   </div>
-                                </div>
-                              </a>
-                            )}
-                          </div>
-                        ))}
+                                </a>
+                              )}
+                            </div>
+                          ))}
                       </div>
                     </div>
                   )}
@@ -766,6 +775,7 @@ const NeedDetailPage: React.FC = () => {
                     <div className="flex items-center gap-2 text-gray-600">
                       <span className="text-xl">💬</span>
                       <span className="font-bold">{formatNumber(comments.length || 0)}</span>
+                      <span className="font-bold">{formatNumber(comments.length || 0)}</span>
                     </div>
 
                     <div className="flex items-center gap-2 text-gray-600">
@@ -782,6 +792,7 @@ const NeedDetailPage: React.FC = () => {
 
               {/* Comments Section */}
               <div className="bg-white rounded-md shadow-sm border border-mgray/20 p-6">
+                <h3 className="font-bold text-lg mb-4">نظرات ({comments.length || 0})</h3>
                 <h3 className="font-bold text-lg mb-4">نظرات ({comments.length || 0})</h3>
 
                 {/* Comment Form */}
@@ -936,6 +947,7 @@ const NeedDetailPage: React.FC = () => {
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-gray-600">نظرات:</span>
+                    <span className="font-bold">{formatNumber(comments.length || 0)}</span>
                     <span className="font-bold">{formatNumber(comments.length || 0)}</span>
                   </div>
                   <div className="flex justify-between items-center">

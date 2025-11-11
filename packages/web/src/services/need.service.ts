@@ -133,47 +133,47 @@ class NeedService {
   /**
    * دنبال کردن نیاز
    */
-  public async supportNeed(id: string): Promise<void> {
+  public async followNeed(id: string): Promise<void> {
     try {
       await api.post(`/needs/${id}/support`);
     } catch (error: any) {
-      console.error("Support need failed:", error);
-      throw new Error(error.response?.data?.message || "خطا در حمایت از نیاز");
+      console.error("Follow need failed:", error);
+      throw new Error(error.response?.data?.message || "خطا در دنبال کردن نیاز");
     }
   }
 
   /**
    * لغو دنبال کردن نیاز (same endpoint, it toggles)
    */
-  public async unsupportNeed(id: string): Promise<void> {
+  public async unfollowNeed(id: string): Promise<void> {
     try {
       await api.post(`/needs/${id}/support`);
     } catch (error: any) {
-      console.error("Unsupport need failed:", error);
-      throw new Error(error.response?.data?.message || "خطا در لغو حمایت");
+      console.error("Unfollow need failed:", error);
+      throw new Error(error.response?.data?.message || "خطا در لغو دنبال کردن");
     }
   }
 
   /**
    * لایک کردن نیاز (upvote)
    */
-  public async upvoteNeed(id: string): Promise<void> {
+  public async likeNeed(id: string): Promise<void> {
     try {
       await api.post(`/needs/${id}/upvote`);
     } catch (error: any) {
-      console.error("Upvote need failed:", error);
-      throw new Error(error.response?.data?.message || "خطا در لایک کردن نیاز");
+      console.error("Like need failed:", error);
+      throw new Error(error.response?.data?.message || "خطا در لایک کردن");
     }
   }
 
   /**
    * حذف لایک نیاز (same endpoint, it toggles)
    */
-  public async unvoteNeed(id: string): Promise<void> {
+  public async unlikeNeed(id: string): Promise<void> {
     try {
       await api.post(`/needs/${id}/upvote`);
     } catch (error: any) {
-      console.error("Unvote need failed:", error);
+      console.error("Unlike need failed:", error);
       throw new Error(error.response?.data?.message || "خطا در حذف لایک");
     }
   }

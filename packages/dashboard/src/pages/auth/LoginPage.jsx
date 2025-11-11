@@ -24,8 +24,9 @@ const Login = () => {
 
       const { token, user } = res.data.data;
 
-      // بررسی role کاربر - فقط admin و super_admin مجاز هستند
-      if (user.role !== "admin" && user.role !== "super_admin") {
+      // بررسی role کاربر - فقط admin، manager و super_admin مجاز هستند
+      const allowedRoles = ["admin", "manager", "super_admin"];
+      if (!allowedRoles.includes(user.role)) {
         setStatus("شما مجوز دسترسی به پنل مدیریت را ندارید!");
         setLoading(false);
         return;

@@ -13,14 +13,44 @@ const UploadImage = () => {
   const { imageUploadCenter, loading, error } = useSelector((state) => state.imageUploadCenter);
   const [images, setImages] = useState([]);
 
+  // بارگذاری اولیه تصاویر
   useEffect(() => {
-    dispatch(fetchImageUploadCenter()).unwrap();
+    dispatch(fetchImageUploadCenter());
+  }, [dispatch]);
+
+  // به‌روزرسانی لیست تصاویر
+  useEffect(() => {
     setImages(imageUploadCenter);
-  }, [dispatch, images, imageUploadCenter.length]);
+  }, [imageUploadCenter]);
+
+  // cleanup برای URL.createObjectURL
+  useEffect(() => {
+    return () => {
+      if (preview) {
+        URL.revokeObjectURL(preview);
+      }
+    };
+  }, [preview]);
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
+      // بررسی نوع فایل
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+      if (!allowedTypes.includes(selectedFile.type)) {
+        alert('❌ فقط فایل‌های تصویری مجاز هستند! (JPEG, PNG, GIF, WebP)');
+        e.target.value = ''; // پاک کردن input
+        return;
+      }
+
+      // بررسی حجم فایل (حداکثر 5MB)
+      const maxSize = 5 * 1024 * 1024; // 5MB
+      if (selectedFile.size > maxSize) {
+        alert('❌ حداکثر حجم فایل 5 مگابایت است!');
+        e.target.value = ''; // پاک کردن input
+        return;
+      }
+
       setFile(selectedFile);
       setPreview(URL.createObjectURL(selectedFile));
       setImageUrl(null); // پاک کردن `URL` قبلی

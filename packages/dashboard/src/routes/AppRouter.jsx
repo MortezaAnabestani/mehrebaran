@@ -19,6 +19,12 @@ const Teams = lazy(() => import("../pages/teams/Teams"));
 const CreateTeam = lazy(() => import("../pages/teams/CreateTeam"));
 const EditTeam = lazy(() => import("../pages/teams/EditTeam"));
 const TeamDetails = lazy(() => import("../pages/teams/TeamDetails"));
+const Badges = lazy(() => import("../pages/gamification/Badges"));
+const CreateBadge = lazy(() => import("../pages/gamification/CreateBadge"));
+const EditBadge = lazy(() => import("../pages/gamification/EditBadge"));
+const Leaderboard = lazy(() => import("../pages/gamification/Leaderboard"));
+const UserStats = lazy(() => import("../pages/gamification/UserStats"));
+const PointTransactions = lazy(() => import("../pages/gamification/PointTransactions"));
 
 // صفحات کم‌استفاده یا سنگین (Lazy Load)
 const EditArticle = lazy(() => import("../pages/articles/EditArticle"));
@@ -82,6 +88,13 @@ const AppRouter = () => {
               <Route path="teams/create/:needId" element={<CreateTeam />} />
               <Route path="teams/edit/:teamId" element={<EditTeam />} />
               <Route path="teams/:teamId" element={<TeamDetails />} />
+              <Route path="gamification/badges" element={<Badges />} />
+              <Route path="gamification/badges/create" element={<CreateBadge />} />
+              <Route path="gamification/badges/edit/:badgeId" element={<EditBadge />} />
+              <Route path="gamification/leaderboard" element={<Leaderboard />} />
+              <Route path="gamification/user-stats" element={<UserStats />} />
+              <Route path="gamification/user-stats/:userId" element={<UserStats />} />
+              <Route path="gamification/point-transactions" element={<PointTransactions />} />
               <Route path="sections" element={<Sections />} />
               <Route path="sections/edit/:id" element={<EditSection />} />
               <Route path="calendar" element={<CalendarPage />} />

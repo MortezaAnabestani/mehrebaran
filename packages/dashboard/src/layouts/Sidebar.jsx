@@ -320,6 +320,69 @@ const Sidebar = ({ sidebarOpen, me }) => {
                 )}
               </div>
 
+              {/* بخش گیمیفیکیشن */}
+              <div>
+                <li className="relative text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group ">
+                  <img
+                    src="/assets/images/dashboard/icons/trophy.svg"
+                    alt="gamification"
+                    className="w-6 h-6 ml-2"
+                  />
+                  <span className="ml-3 flex-1 whitespace-nowrap"> گیمیفیکیشن</span>
+                  <img
+                    src="/assets/images/dashboard/icons/downArrow.svg"
+                    className="h-6 w-6 absolute top-2 left-2 cursor-pointer"
+                    style={menuToggle === 12 ? { rotate: "90deg" } : { rotate: "0deg" }}
+                    onClick={() => toggleHandler(12)}
+                    alt="down arrow icon"
+                  />
+                </li>
+                {menuToggle === 12 && (
+                  <div className="flex flex-col w-full justify-start items-start bg-gray-50">
+                    <Link
+                      rel="preconnect"
+                      to={"/dashboard/gamification/badges"}
+                      className={`${pathname === "/dashboard/gamification/badges" || pathname.startsWith("/dashboard/gamification/badges/") ? "bg-gray-100" : ""} w-full`}
+                    >
+                      <li className="text-base text-gray-900 text-[14px]  font-normal rounded-lg hover:bg-gray-100 flex items-start p-2 group cursor-pointer">
+                        <span className="mr-5 text-red-300">*</span>
+                        <span className="d-block mr-1 flex-1 whitespace-nowrap">نشان‌ها</span>
+                      </li>
+                    </Link>
+                    <Link
+                      rel="preconnect"
+                      to={"/dashboard/gamification/leaderboard"}
+                      className={`${pathname === "/dashboard/gamification/leaderboard" ? "bg-gray-100" : ""} w-full`}
+                    >
+                      <li className="text-base text-gray-900 text-[14px]  font-normal rounded-lg hover:bg-gray-100 flex items-start p-2 group cursor-pointer">
+                        <span className="mr-5 text-red-300">*</span>
+                        <span className="d-block mr-1 flex-1 whitespace-nowrap">جدول امتیازات</span>
+                      </li>
+                    </Link>
+                    <Link
+                      rel="preconnect"
+                      to={"/dashboard/gamification/user-stats"}
+                      className={`${pathname === "/dashboard/gamification/user-stats" || pathname.startsWith("/dashboard/gamification/user-stats/") ? "bg-gray-100" : ""} w-full`}
+                    >
+                      <li className="text-base text-gray-900 text-[14px]  font-normal rounded-lg hover:bg-gray-100 flex items-start p-2 group cursor-pointer">
+                        <span className="mr-5 text-red-300">*</span>
+                        <span className="d-block mr-1 flex-1 whitespace-nowrap">آمار کاربران</span>
+                      </li>
+                    </Link>
+                    <Link
+                      rel="preconnect"
+                      to={"/dashboard/gamification/point-transactions"}
+                      className={`${pathname === "/dashboard/gamification/point-transactions" ? "bg-gray-100" : ""} w-full`}
+                    >
+                      <li className="text-base text-gray-900 text-[14px]  font-normal rounded-lg hover:bg-gray-100 flex items-start p-2 group cursor-pointer">
+                        <span className="mr-5 text-red-300">*</span>
+                        <span className="d-block mr-1 flex-1 whitespace-nowrap">تراکنش‌های امتیاز</span>
+                      </li>
+                    </Link>
+                  </div>
+                )}
+              </div>
+
               <div className={`${me?.role === "admin" && "disabled"}`}>
                 <li className="relative text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group">
                   <img

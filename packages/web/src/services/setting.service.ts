@@ -1,5 +1,5 @@
 import api from "@/lib/api";
-import { IHomePageHeroSetting } from "common-types";
+import { IHomePageHeroSetting, IBlogBackgroundSetting } from "common-types";
 
 export const getSetting = async (key: string): Promise<any | null> => {
   try {
@@ -13,4 +13,8 @@ export const getSetting = async (key: string): Promise<any | null> => {
 
 export const getHomePageHeroSettings = async (): Promise<IHomePageHeroSetting | null> => {
   return getSetting("homePageHero");
+};
+
+export const getBlogBackgroundSettings = async (): Promise<IBlogBackgroundSetting | null> => {
+  return getSetting("blogBackground");
 };

@@ -39,6 +39,9 @@ const Shares = lazy(() => import("../pages/social/Shares"));
 const Notifications = lazy(() => import("../pages/notifications/Notifications"));
 const NotificationSettings = lazy(() => import("../pages/notifications/NotificationSettings"));
 const PushTokens = lazy(() => import("../pages/notifications/PushTokens"));
+const SiteSettings = lazy(() => import("../pages/settings/SiteSettings"));
+const HomePageHeroSettings = lazy(() => import("../pages/settings/HomePageHeroSettings"));
+const BlogBackgroundSettings = lazy(() => import("../pages/settings/BlogBackgroundSettings"));
 
 // صفحات کم‌استفاده یا سنگین (Lazy Load)
 const EditArticle = lazy(() => import("../pages/articles/EditArticle"));
@@ -123,6 +126,9 @@ const AppRouter = () => {
               <Route path="notifications" element={<Notifications />} />
               <Route path="notifications/settings" element={<NotificationSettings />} />
               <Route path="notifications/push-tokens" element={<PushTokens />} />
+              <Route path="settings" element={<SiteSettings />} />
+              <Route path="settings/home-hero" element={<HomePageHeroSettings />} />
+              <Route path="settings/blog-background" element={<BlogBackgroundSettings />} />
               <Route path="sections" element={<Sections />} />
               <Route path="sections/edit/:id" element={<EditSection />} />
               <Route path="calendar" element={<CalendarPage />} />

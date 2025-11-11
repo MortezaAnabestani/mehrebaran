@@ -11,8 +11,13 @@ const homePageHeroSchema = z.object({
   description: z.string().min(10, "زیرعنوان باید حداقل 10 حرف باشد."),
 });
 
+const blogBackgroundSchema = z.object({
+  image: z.string().url("URL تصویر معتبر نیست."),
+});
+
 export const valueSchemas = {
   homePageHero: homePageHeroSchema,
+  blogBackground: blogBackgroundSchema,
 };
 
 export const updateSettingSchema = z.object({

@@ -17,6 +17,7 @@ import storiesReducer from "../features/storiesSlice";
 import projectsReducer from "../features/projectsSlice";
 import socialReducer from "../features/socialSlice";
 import notificationsReducer from "../features/notificationsSlice";
+import settingsReducer from "../features/settingsSlice";
 
 export const store = configureStore({
   reducer: {
@@ -38,6 +39,7 @@ export const store = configureStore({
     projects: projectsReducer,
     social: socialReducer,
     notifications: notificationsReducer,
+    settings: settingsReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

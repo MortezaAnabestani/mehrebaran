@@ -1,13 +1,16 @@
 import React from "react";
 import HeadTitle from "./HeadTitle";
 import SmartButton from "@/components/ui/SmartButton";
+import { IBlogBackgroundSetting } from "common-types";
 
-const BlogSection: React.FC = ({}) => {
+const BlogSection: React.FC<{ settings: IBlogBackgroundSetting | null }> = ({ settings }) => {
+  const backgroundImage = settings?.image || "/images/blog_img.jpg";
+
   return (
     <section
       className="w-full relative h-[80vh] mt-10 mb-6 bg-mblue md:p-[100px]"
       style={{
-        backgroundImage: "url('/images/blog_img.jpg')",
+        backgroundImage: `url('${backgroundImage}')`,
         backgroundPosition: "center",
         backgroundBlendMode: "soft-light",
       }}

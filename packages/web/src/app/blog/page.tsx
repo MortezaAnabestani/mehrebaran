@@ -2,15 +2,20 @@ import HeadTitle from "@/components/features/home/HeadTitle";
 import HeroShared_views from "@/components/views/shared/HeroShared_views";
 import { cardItems } from "@/fakeData/fakeData";
 import { CardType } from "@/types/types";
+import { getSetting } from "@/services/setting.service";
+import { IBlogBackgroundSetting } from "common-types";
 import React from "react";
 
-const Blog: React.FC = ({}) => {
+export default async function Blog() {
+  const blogBgSettings = await getSetting("blogBackground") as IBlogBackgroundSetting | null;
+  const backgroundImage = blogBgSettings?.image || "/images/blog_img.jpg";
+
   return (
     <div>
       <div
         className="md:w-full relative h-[60vh] bg-mblue/70 bg-no-repeat bg-cover object-cover"
         style={{
-          backgroundImage: "url('/images/blog_img.jpg')",
+          backgroundImage: `url('${backgroundImage}')`,
           backgroundPosition: "center",
           backgroundBlendMode: "darken",
         }}
@@ -33,6 +38,4 @@ const Blog: React.FC = ({}) => {
       </div>
     </div>
   );
-};
-
-export default Blog;
+}

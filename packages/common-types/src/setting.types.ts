@@ -13,3 +13,7 @@ export interface IHomePageHeroSetting {
   title: string;
   subtitle: string;
 }
+
+export interface IBlogBackgroundSetting {
+  image: string; // URL تصویر پس‌زمینه بخش بلاگ
+}

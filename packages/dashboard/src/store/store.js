@@ -11,6 +11,7 @@ import imageUploadCenterReducer from "../features/imageUploadCenter";
 import visitorReducer from "../features/visitorSlice";
 import viewReducer from "../features/viewSlice";
 import needsReducer from "../features/needsSlice";
+import teamsReducer from "../features/teamsSlice";
 
 export const store = configureStore({
   reducer: {
@@ -26,6 +27,7 @@ export const store = configureStore({
     visitor: visitorReducer,
     view: viewReducer,
     needs: needsReducer,
+    teams: teamsReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

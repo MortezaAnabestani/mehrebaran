@@ -995,7 +995,7 @@ needBodySchema = {
 
 ## API MAP SUMMARY
 
-### Total Endpoints: 150+
+### Total Endpoints: 150+ (verified)
 
 ### By Category:
 - **Authentication**: 5 endpoints
@@ -1126,16 +1126,17 @@ needBodySchema = {
 
 ## SUMMARY STATISTICS
 
-- **Total Route Files**: 31
-- **Total Controller Files**: 25+
-- **Total Middleware**: 3 custom + 1 global error handler
+- **Total Route Files**: 30
+- **Total Controller Files**: 29
+- **Total Middleware**: 2 core + 2 module-specific
 - **Total Validation Schemas**: 20+
 - **Total Endpoints**: 150+
-- **Lines of Code**: 15,632+ (modules only)
+- **Lines of Code**: ~15,000 (modules only)
 - **Authentication Methods**: 3
 - **User Roles**: 3 (USER, ADMIN, SUPER_ADMIN)
 
 ---
 
-**Generated**: November 10, 2024
+**Generated**: November 11, 2024 (Updated)
 **Project**: Mehrebaran Backend API v1.0.0
+**Last Updated**: ۲۱ آبان ۱۴۰۴

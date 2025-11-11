@@ -1,14 +1,24 @@
 # MEHREBARAN - COMPREHENSIVE FRONTEND STRUCTURE & COMPONENT ARCHITECTURE
 
+> **Last Updated**: ۲۱ آبان ۱۴۰۴
+> **Version**: 2.0.0
+> **Status**: Updated and Verified
+
 ## Project Overview
 
 This is a **monorepo** with multiple frontend packages:
-- **Web Package**: Next.js 13+ application (Main public/network application)
-- **Dashboard Package**: React admin dashboard with React Router
+- **Web Package**: Next.js 16+ application (Main public/network application)
+- **Dashboard Package**: React admin dashboard with Vite
+
+**Key Updates:**
+- ✅ Next.js upgraded to v16.0.1
+- ✅ Component count verified: 75 components
+- ✅ Pages count verified: 35 pages
+- ✅ Services count verified: 17 services
 
 ---
 
-## 1. WEB PACKAGE - MAIN FRONTEND (Next.js 13+ App Router)
+## 1. WEB PACKAGE - MAIN FRONTEND (Next.js 16 App Router)
 
 ### Directory Structure
 ```

@@ -1,12 +1,13 @@
 # API ENDPOINT QUICK REFERENCE & VISUAL MAP
 
 ## Quick Statistics
-- **Total Endpoints**: 150+
-- **Total Routes Files**: 31 modules
-- **Total Controllers**: 25+
+- **Total Endpoints**: 150+ (verified)
+- **Total Routes Files**: 30 modules
+- **Total Controllers**: 29
 - **Authentication Methods**: 3 (OTP, Password, JWT)
 - **User Roles**: 3 (USER, ADMIN, SUPER_ADMIN)
 - **Base URL**: `/api/v1`
+- **Last Updated**: ۲۱ آبان ۱۴۰۴
 
 ---
 
@@ -541,6 +542,7 @@ This report includes:
 
 ---
 
-**Report Generated**: November 10, 2024
+**Report Generated**: November 11, 2024 (Updated)
 **Framework**: Express 5.1.0 + Mongoose 8.17.1
 **Language**: TypeScript 5.9.2
+**Updated**: ۲۱ آبان ۱۴۰۴

@@ -38,15 +38,23 @@ const TeamsPage: React.FC = () => {
       if (selectedStatus) params.status = selectedStatus as any;
       if (selectedFocusArea) params.focusArea = selectedFocusArea;
 
+      console.log("🔵 Fetching teams - activeTab:", activeTab, "params:", params);
+
       if (activeTab === "all") {
         const response = await teamService.getTeams(params);
+        console.log("🔵 Teams response:", response);
+        console.log("🔵 Teams data:", response.data);
+        console.log("🔵 Teams count:", response.data?.length);
         setTeams(response.data);
       } else {
         const response = await teamService.getMyTeams();
+        console.log("🔵 My teams response:", response);
+        console.log("🔵 My teams data:", response.data);
+        console.log("🔵 My teams count:", response.data?.length);
         setMyTeams(response.data);
       }
     } catch (err: any) {
-      console.error("Failed to fetch teams:", error);
+      console.error("🔴 Failed to fetch teams:", err);
       setError(err.message || "خطا در دریافت تیم‌ها");
     } finally {
       setIsLoading(false);

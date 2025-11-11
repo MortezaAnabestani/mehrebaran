@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import OptimizedImage from "@/components/ui/OptimizedImage";
 import { INeed } from "common-types";
 import { needService } from "@/services/need.service";
@@ -18,6 +19,7 @@ interface NeedCardProps {
  */
 const NeedCard: React.FC<NeedCardProps> = ({ need, variant = "feed", onUpdate }) => {
   const { user } = useAuth();
+  const router = useRouter();
 
   // Check if user has liked/followed this need
   const userHasLiked = user && need.upvotes ? need.upvotes.includes(user._id) : false;
@@ -80,16 +82,17 @@ const NeedCard: React.FC<NeedCardProps> = ({ need, variant = "feed", onUpdate })
       return;
     }
 
+    // Store previous state outside try block for catch access
+    const previousLiked = isLiked;
+    const previousCount = likesCount;
+
     try {
       // Optimistic update first
-      const previousLiked = isLiked;
-      const previousCount = likesCount;
-
       setIsLiked(!isLiked);
       setLikesCount((prev) => (isLiked ? prev - 1 : prev + 1));
 
-      // Call API
-      await needService.likeNeed(need._id);
+      // Call API - use correct method name
+      await needService.upvoteNeed(need._id);
 
       // No need to refetch - optimistic update is enough
     } catch (error) {
@@ -110,14 +113,15 @@ const NeedCard: React.FC<NeedCardProps> = ({ need, variant = "feed", onUpdate })
       return;
     }
 
+    // Store previous state outside try block for catch access
+    const previousFollowing = isFollowing;
+
     try {
       // Optimistic update first
-      const previousFollowing = isFollowing;
-
       setIsFollowing(!isFollowing);
 
-      // Call API
-      await needService.followNeed(need._id);
+      // Call API - use correct method name
+      await needService.supportNeed(need._id);
 
       // No need to refetch - optimistic update is enough
     } catch (error) {
@@ -125,6 +129,11 @@ const NeedCard: React.FC<NeedCardProps> = ({ need, variant = "feed", onUpdate })
       // Revert on error
       setIsFollowing(previousFollowing);
     }
+  };
+
+  // مشاهده جزئیات نیاز
+  const handleViewDetails = () => {
+    router.push(`/network/needs/${need._id}`);
   };
 
   // دریافت نام کاربر
@@ -156,21 +165,20 @@ const NeedCard: React.FC<NeedCardProps> = ({ need, variant = "feed", onUpdate })
   }
 
   return (
-    <Link href={`/network/needs/${need._id}`}>
-      <div className="bg-white rounded-md shadow-sm hover:shadow-md transition-shadow border border-mgray/20 overflow-hidden">
-        {/* Header - User Info */}
-        <div className="flex items-center justify-between p-4 border-b border-mgray/20">
-          <div className="flex items-center gap-3">
-            <div className="relative w-10 h-10 rounded-full overflow-hidden">
-              <OptimizedImage src={getCreatorAvatar()} alt={getCreatorName()} fill className="object-cover" />
-            </div>
-            <div>
-              <h4 className="font-bold text-sm">{getCreatorName()}</h4>
-              <p className="text-xs text-gray-500">{getTimeAgo()}</p>
-            </div>
+    <div className="bg-white rounded-md shadow-sm hover:shadow-md transition-shadow border border-mgray/20 overflow-hidden">
+      {/* Header - User Info */}
+      <div className="flex items-center justify-between p-4 border-b border-mgray/20">
+        <div className="flex items-center gap-3">
+          <div className="relative w-10 h-10 rounded-full overflow-hidden">
+            <OptimizedImage src={getCreatorAvatar()} alt={getCreatorName()} fill className="object-cover" />
           </div>
-          <button className="text-gray-500 hover:text-mblue">⋯</button>
+          <div>
+            <h4 className="font-bold text-sm">{getCreatorName()}</h4>
+            <p className="text-xs text-gray-500">{getTimeAgo()}</p>
+          </div>
         </div>
+        <button className="text-gray-500 hover:text-mblue">⋯</button>
+      </div>
 
         {/* Content */}
         <div className="p-4">
@@ -230,8 +238,9 @@ const NeedCard: React.FC<NeedCardProps> = ({ need, variant = "feed", onUpdate })
         </div>
 
         {/* Footer - Actions */}
-        <div className="flex items-center justify-between p-4 border-t border-mgray/20">
-          <div className="flex items-center gap-4">
+        <div className="p-4 border-t border-mgray/20">
+          {/* Social Actions */}
+          <div className="flex items-center gap-4 mb-3">
             <button
               onClick={handleLike}
               className={`flex items-center gap-1 text-sm ${
@@ -253,24 +262,33 @@ const NeedCard: React.FC<NeedCardProps> = ({ need, variant = "feed", onUpdate })
             </button>
           </div>
 
-          <button
-            onClick={handleFollow}
-            className={`text-xs font-bold px-3 py-1 rounded-full ${
-              isFollowing ? "bg-mgray text-gray-700" : "bg-mblue text-white hover:bg-mblue/80"
-            } transition-colors`}
-          >
-            {isFollowing ? "دنبال‌شده ✓" : "دنبال کردن"}
-          </button>
+          {/* Action Buttons */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleFollow}
+              className={`flex-1 text-xs font-bold px-3 py-2 rounded-md ${
+                isFollowing ? "bg-mgray text-gray-700" : "bg-mblue text-white hover:bg-mblue/80"
+              } transition-colors`}
+            >
+              {isFollowing ? "در حال حمایت ✓" : "حمایت از این نیاز"}
+            </button>
+
+            <button
+              onClick={handleViewDetails}
+              className="flex-1 text-xs font-bold px-3 py-2 rounded-md bg-morange text-white hover:bg-morange/80 transition-colors"
+            >
+              مشاهده جزئیات بیشتر
+            </button>
+          </div>
         </div>
 
-        {/* Trending Badge */}
-        {need.isTrending && (
-          <div className="absolute top-2 left-2 bg-morange text-white text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1">
-            🔥 Trending
-          </div>
-        )}
-      </div>
-    </Link>
+      {/* Trending Badge */}
+      {need.isTrending && (
+        <div className="absolute top-2 left-2 bg-morange text-white text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1">
+          🔥 Trending
+        </div>
+      )}
+    </div>
   );
 };
 

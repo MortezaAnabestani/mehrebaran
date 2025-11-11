@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { SmartButton } from "@/components/ui/SmartButton";
+import SmartButton from "@/components/ui/SmartButton";
 
 // ===========================
 // Types & Interfaces

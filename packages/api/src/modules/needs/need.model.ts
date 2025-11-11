@@ -341,6 +341,17 @@ needSchema.virtual("comments", {
   match: { postType: "Need" },
 });
 
+// Virtual field for images (extract image URLs from attachments)
+needSchema.virtual("images").get(function () {
+  if (!this.attachments || this.attachments.length === 0) {
+    return [];
+  }
+  // Return only image type attachments' URLs
+  return this.attachments
+    .filter((attachment: any) => attachment.fileType === "image")
+    .map((attachment: any) => attachment.url);
+});
+
 // Calculate overall progress from milestones
 needSchema.virtual("overallProgress").get(function () {
   if (!this.milestones || this.milestones.length === 0) {

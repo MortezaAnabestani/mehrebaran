@@ -26,15 +26,20 @@ class TeamController {
     });
   });
 
-  // Get all teams for a need
+  // Get all teams (optionally filtered by needId)
   public getTeams = asyncHandler(async (req: Request, res: Response) => {
     const { needId } = req.params;
     const { status, focusArea } = req.query;
+
+    console.log("🔍 getTeams called with needId:", needId);
+    console.log("🔍 Query params:", { status, focusArea });
 
     const teams = await teamService.getTeams(needId, {
       status: status as any,
       focusArea: focusArea as any,
     });
+
+    console.log(`✅ Found ${teams.length} teams`);
 
     res.status(200).json({
       results: teams.length,

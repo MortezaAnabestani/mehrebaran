@@ -37,9 +37,14 @@ const Header: React.FC<Props> = ({}) => {
 
   const mobileBg = isNetworkPage ? "bg-morange" : "bg-mblue";
 
+  // Don't render header on network pages (TopNav is used instead)
+  if (isNetworkPage) {
+    return null;
+  }
+
   return (
     <header className="h-13.5 md:h-26">
-      <div className={`w-full fixed ${headerBg} py-2 z-20 duration-300 transition-all`}>
+      <div className={`w-full fixed ${headerBg} ${isNetworkPage ? "py-1" : "py-2"} z-20 duration-300 transition-all`}>
         <div
           className={`flex items-center justify-between w-8/10 mx-auto relative ${
             //این قسمت پس از تصمیم تیم سازمان اصلاح خواهد شد
@@ -68,8 +73,8 @@ const Header: React.FC<Props> = ({}) => {
             <OptimizedImage
               src={"/icons/logo.svg"}
               alt="لوگوی مهر باران"
-              width={150}
-              height={60}
+              width={isNetworkPage ? 100 : 150}
+              height={isNetworkPage ? 40 : 60}
               placeholder="blur"
               blurDataURL="/icons/blur-logo.svg"
               priority="down"

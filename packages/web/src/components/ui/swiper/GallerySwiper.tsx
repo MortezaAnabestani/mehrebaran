@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import type { Swiper as SwiperType } from "swiper";
 import { FreeMode, Navigation, Thumbs } from "swiper/modules";
+import OptimizedImage from "@/components/ui/OptimizedImage";
 
 import "swiper/css";
 import "swiper/css/free-mode";
@@ -35,7 +36,15 @@ const GallerySwiper: React.FC<GallerySwiperProps> = ({ images }) => {
       >
         {images.map((image, index) => (
           <SwiperSlide key={index} className="mb-2">
-            <img src={image} alt="عکس گالری" className="w-full h-[200px] md:h-[420px] object-cover" />
+            <div className="relative w-full h-[200px] md:h-[420px]">
+              <OptimizedImage
+                src={image}
+                alt="عکس گالری"
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              />
+            </div>
           </SwiperSlide>
         ))}
       </Swiper>
@@ -52,11 +61,15 @@ const GallerySwiper: React.FC<GallerySwiperProps> = ({ images }) => {
       >
         {images.map((image, index) => (
           <SwiperSlide key={index}>
-            <img
-              src={image}
-              alt="عکس گالری"
-              className="w-full h-[60px] md:h-[80px] object-cover cursor-pointer"
-            />
+            <div className="relative w-full h-[60px] md:h-[80px] cursor-pointer">
+              <OptimizedImage
+                src={image}
+                alt="عکس گالری"
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 25vw, 150px"
+              />
+            </div>
           </SwiperSlide>
         ))}
       </Swiper>

@@ -17,6 +17,86 @@ const categoryMap: Record<string, string> = {
   culture: "فرهنگ و هنر",
 };
 
+// Sample attachments for different file types
+const sampleAttachments = [
+  // Images
+  {
+    fileType: "image",
+    url: "https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?w=800",
+    fileName: "hospital-patient.jpg",
+    fileSize: 256000,
+  },
+  {
+    fileType: "image",
+    url: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=800",
+    fileName: "children-school.jpg",
+    fileSize: 312000,
+  },
+  {
+    fileType: "image",
+    url: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800",
+    fileName: "family-home.jpg",
+    fileSize: 289000,
+  },
+  {
+    fileType: "image",
+    url: "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=800",
+    fileName: "food-basket.jpg",
+    fileSize: 278000,
+  },
+  // Videos
+  {
+    fileType: "video",
+    url: "https://www.w3schools.com/html/mov_bbb.mp4",
+    fileName: "project-introduction.mp4",
+    fileSize: 5242880,
+  },
+  {
+    fileType: "video",
+    url: "https://www.w3schools.com/html/movie.mp4",
+    fileName: "beneficiary-interview.mp4",
+    fileSize: 3145728,
+  },
+  // Audio
+  {
+    fileType: "audio",
+    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+    fileName: "project-description.mp3",
+    fileSize: 1048576,
+  },
+  {
+    fileType: "audio",
+    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+    fileName: "testimonial-audio.mp3",
+    fileSize: 987654,
+  },
+  // Documents
+  {
+    fileType: "document",
+    url: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+    fileName: "medical-report.pdf",
+    fileSize: 524288,
+  },
+  {
+    fileType: "document",
+    url: "https://example.com/documents/project-proposal.pdf",
+    fileName: "project-proposal.pdf",
+    fileSize: 1048576,
+  },
+  {
+    fileType: "document",
+    url: "https://example.com/documents/financial-report.xlsx",
+    fileName: "financial-report.xlsx",
+    fileSize: 327680,
+  },
+  {
+    fileType: "document",
+    url: "https://example.com/documents/beneficiary-list.docx",
+    fileName: "beneficiary-list.docx",
+    fileSize: 245760,
+  },
+];
+
 const needTemplates = [
   // ... محتوای آرایه بدون تغییر
   {
@@ -223,6 +303,27 @@ export async function seedNeeds(users: any[], categories: any[]) {
       let status: "draft" | "pending" | "approved" | "in_progress" | "completed" =
         progressPercent >= 0.99 ? "completed" : progressPercent >= 0.5 ? "in_progress" : "approved";
 
+      // Select random attachments for this need (2-5 attachments)
+      const attachmentCount = Math.floor(Math.random() * 4) + 2; // 2 to 5 attachments
+      const selectedAttachments = [];
+      const attachmentIndices = new Set<number>();
+
+      // Make sure we have at least one image
+      const imageAttachments = sampleAttachments.filter(a => a.fileType === "image");
+      if (imageAttachments.length > 0) {
+        const randomImage = imageAttachments[Math.floor(Math.random() * imageAttachments.length)];
+        selectedAttachments.push(randomImage);
+      }
+
+      // Add random attachments (could be any type)
+      while (selectedAttachments.length < attachmentCount && selectedAttachments.length < sampleAttachments.length) {
+        const randomIndex = Math.floor(Math.random() * sampleAttachments.length);
+        if (!attachmentIndices.has(randomIndex)) {
+          attachmentIndices.add(randomIndex);
+          selectedAttachments.push(sampleAttachments[randomIndex]);
+        }
+      }
+
       const needData = {
         // نام متغیر را به needData تغییر دادیم تا با متغیر need در حلقه بعدی تداخل نکند
         title: template.title,
@@ -247,6 +348,16 @@ export async function seedNeeds(users: any[], categories: any[]) {
         upvotes: supporters.slice(0, Math.floor(supporters.length * 0.6)),
         viewsCount: Math.floor(Math.random() * 500) + 50,
         budgetItems,
+        attachments: selectedAttachments,
+        estimatedDuration: ["۱ ماه", "۲ ماه", "۳ ماه", "۶ ماه", "۱ سال"][Math.floor(Math.random() * 5)],
+        requiredSkills: [
+          ["پزشکی", "پرستاری"],
+          ["آموزش", "مدیریت کلاس"],
+          ["ساختمان‌سازی", "تعمیرات"],
+          ["آشپزی", "توزیع غذا"],
+          ["خیاطی", "طراحی"],
+          ["کشاورزی", "باغبانی"],
+        ][i % 6],
       };
 
       // **به جای push کردن، مستقیماً نیاز را ایجاد می‌کنیم**

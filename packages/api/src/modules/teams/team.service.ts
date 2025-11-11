@@ -41,9 +41,14 @@ class TeamService {
     return team.populate("members.user", "name email");
   }
 
-  // Get all teams for a need
-  public async getTeams(needId: string, filters?: { status?: TeamStatus; focusArea?: TeamFocusArea }): Promise<ITeam[]> {
-    const query: any = { need: needId };
+  // Get all teams (optionally filtered by needId)
+  public async getTeams(needId?: string, filters?: { status?: TeamStatus; focusArea?: TeamFocusArea }): Promise<ITeam[]> {
+    const query: any = {};
+
+    // Only filter by needId if provided
+    if (needId) {
+      query.need = needId;
+    }
 
     if (filters?.status) {
       query.status = filters.status;
@@ -52,10 +57,14 @@ class TeamService {
       query.focusArea = filters.focusArea;
     }
 
+    console.log("🔍 TeamService.getTeams - Query:", JSON.stringify(query));
+
     const teams = await TeamModel.find(query)
       .populate("members.user", "name email")
       .populate("createdBy", "name email")
       .sort({ createdAt: -1 });
+
+    console.log(`✅ TeamService.getTeams - Found ${teams.length} teams`);
 
     return teams;
   }

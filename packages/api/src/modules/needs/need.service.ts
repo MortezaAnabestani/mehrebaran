@@ -57,7 +57,9 @@ class NeedService {
       .limitFields()
       .paginate();
 
-    features.query.populate("category", "name slug");
+    features.query
+      .populate("category", "name slug")
+      .populate("submittedBy.user", "name avatar");
     return features.query;
   }
 

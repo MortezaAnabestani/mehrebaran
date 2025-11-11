@@ -35,12 +35,14 @@ router.post(
 
 // Public badges
 router.get("/badges", gamificationController.getAllBadges);
-router.get("/badges/:badgeId", gamificationController.getBadgeById);
 
-// User badges (protected)
+// User badges (protected) - MUST come before /:badgeId to avoid route conflict
 router.get("/badges/my-badges", protect, gamificationController.getUserBadges);
-router.get("/badges/:badgeId/progress", protect, gamificationController.getBadgeProgress);
 router.post("/badges/check", protect, gamificationController.checkBadges);
+
+// Badge details - /:badgeId routes come AFTER specific routes
+router.get("/badges/:badgeId", gamificationController.getBadgeById);
+router.get("/badges/:badgeId/progress", protect, gamificationController.getBadgeProgress);
 
 // Get specific user's badges (public)
 router.get("/users/:userId/badges", gamificationController.getUserBadges);

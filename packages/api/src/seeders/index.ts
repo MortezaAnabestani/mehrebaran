@@ -4,6 +4,7 @@ import { seedNeedCategories } from "./needCategory.seeder";
 import { seedNeeds } from "./need.seeder";
 import { seedTeams } from "./team.seeder";
 import { seedSocialInteractions } from "./social.seeder";
+import { seedGamification } from "./gamification.seeder";
 
 /**
  * Master Seeder - اجرای تمام seeders
@@ -37,6 +38,9 @@ async function runSeeders() {
     console.log("");
     // ====================================================================
 
+    const gamificationStats = await seedGamification(users);
+    console.log("");
+
     // خلاصه نتایج
     console.log("=".repeat(50));
     console.log("🎉 Seeding completed successfully!");
@@ -45,6 +49,7 @@ async function runSeeders() {
     console.log(`✓ ${categories.length} need categories created`);
     console.log(`✓ ${needs.length} needs created`);
     console.log(`✓ ${teams.length} teams created`);
+    console.log(`✓ ${gamificationStats.length} user stats created`);
 
     // ======================= این سه خط حذف شدند =======================
     // console.log(`✓ ${social.follows.length} follows created`);

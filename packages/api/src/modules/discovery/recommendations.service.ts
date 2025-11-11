@@ -30,40 +30,111 @@ class RecommendationsService {
     strategy: RecommendationStrategy = "hybrid",
     limit: number = 20
   ): Promise<INeedRecommendation[]> {
+    console.log("🟢 recommendNeeds service called - userId:", userId, "strategy:", strategy, "limit:", limit);
+
     const preferences = await this.getUserPreferences(userId);
+    console.log("🟢 Got user preferences:", {
+      favoriteCategories: preferences.favoriteCategories.length,
+      favoriteTags: preferences.favoriteTags.length,
+      interactedNeeds: preferences.interactedNeeds.length
+    });
 
     let recommendations: INeedRecommendation[] = [];
 
     switch (strategy) {
       case "collaborative":
+        console.log("🟢 Using collaborative strategy");
         recommendations = await this.collaborativeFilteringNeeds(userId, preferences, limit);
         break;
       case "content_based":
+        console.log("🟢 Using content_based strategy");
         recommendations = await this.contentBasedFilteringNeeds(userId, preferences, limit);
         break;
       case "popular":
+        console.log("🟢 Using popular strategy");
         recommendations = await this.popularNeeds(userId, limit);
         break;
       case "trending":
+        console.log("🟢 Using trending strategy");
         recommendations = await this.trendingNeeds(userId, limit);
         break;
       case "hybrid":
       default:
+        console.log("🟢 Using hybrid strategy");
         // ترکیب چند استراتژی
-        const [collaborative, contentBased, popular] = await Promise.all([
-          this.collaborativeFilteringNeeds(userId, preferences, limit / 2),
-          this.contentBasedFilteringNeeds(userId, preferences, limit / 2),
-          this.popularNeeds(userId, limit / 4),
-        ]);
-        recommendations = this.mergeAndRankRecommendations([
-          ...collaborative,
-          ...contentBased,
-          ...popular,
-        ]).slice(0, limit);
+        try {
+          console.log("🟢 Calling collaborativeFilteringNeeds...");
+          const collaborative = await this.collaborativeFilteringNeeds(userId, preferences, limit / 2);
+          console.log("🟢 collaborativeFilteringNeeds done:", collaborative.length);
+
+          console.log("🟢 Calling contentBasedFilteringNeeds...");
+          const contentBased = await this.contentBasedFilteringNeeds(userId, preferences, limit / 2);
+          console.log("🟢 contentBasedFilteringNeeds done:", contentBased.length);
+
+          console.log("🟢 Calling popularNeeds...");
+          const popular = await this.popularNeeds(userId, limit / 4);
+          console.log("🟢 popularNeeds done:", popular.length);
+
+          console.log("🟢 Hybrid results - collaborative:", collaborative.length, "contentBased:", contentBased.length, "popular:", popular.length);
+          recommendations = this.mergeAndRankRecommendations([
+            ...collaborative,
+            ...contentBased,
+            ...popular,
+          ]).slice(0, limit);
+        } catch (error) {
+          console.error("🔴 Error in hybrid strategy:", error);
+          throw error;
+        }
         break;
     }
 
+    console.log("🟢 Total recommendations before fallback:", recommendations.length);
+
+    // Fallback: اگر هیچ recommendation نیافتیم، نیازهای تصادفی برگردون
+    if (recommendations.length === 0) {
+      console.log("🟡 No recommendations found, using fallback");
+      recommendations = await this.getRandomNeeds(userId, limit);
+      console.log("🟢 Fallback returned:", recommendations.length, "needs");
+    }
+
+    console.log("🟢 Final recommendations count:", recommendations.length);
     return recommendations;
+  }
+
+  /**
+   * دریافت نیازهای تصادفی (Fallback)
+   */
+  private async getRandomNeeds(userId: string, limit: number): Promise<INeedRecommendation[]> {
+    const needs = await this.NeedModel.find({
+      status: { $in: ["active", "in_progress"] },
+      "submittedBy.user": { $ne: userId },
+    })
+      .populate("submittedBy.user", "name avatar")
+      .populate("category", "name slug")
+      .limit(limit)
+      .lean();
+
+    return needs.map((need: any, index) => ({
+      item: need,
+      itemType: "needs" as const,
+      score: Math.round(((limit - index) / limit) * 50), // امتیاز متوسط
+      confidence: 0.5,
+      reasons: [
+        {
+          type: "popular" as const,
+          description: "پیشنهاد عمومی",
+          weight: 1,
+        },
+      ],
+      strategy: "popular" as const,
+      matchScore: {
+        categoryMatch: 0,
+        tagMatch: 0,
+        locationMatch: 0,
+        skillMatch: 0,
+        popularityScore: 0.5,
+      },
+    }));
   }
 
   /**
@@ -178,7 +249,47 @@ class RecommendationsService {
       })
     );
 
-    return recommendationResults.filter((r) => r !== null) as IUserRecommendation[];
+    const filteredResults = recommendationResults.filter((r) => r !== null) as IUserRecommendation[];
+
+    // Fallback: اگر هیچ recommendation نیافتیم، کاربران تصادفی برگردون
+    if (filteredResults.length === 0) {
+      return await this.getRandomUsers(userId, limit);
+    }
+
+    return filteredResults;
+  }
+
+  /**
+   * دریافت کاربران تصادفی (Fallback)
+   */
+  private async getRandomUsers(userId: string, limit: number): Promise<IUserRecommendation[]> {
+    const users = await this.UserModel.find({
+      _id: { $ne: userId },
+    })
+      .select("name email avatar bio skills interests")
+      .limit(limit)
+      .lean();
+
+    return users.map((user: any, index) => ({
+      item: user,
+      itemType: "users" as const,
+      score: Math.round(((limit - index) / limit) * 50),
+      confidence: 0.5,
+      reasons: [
+        {
+          type: "similar_users" as const,
+          description: "پیشنهاد عمومی",
+          weight: 1,
+        },
+      ],
+      strategy: "collaborative" as const,
+      matchScore: {
+        mutualConnections: 0,
+        similarInterests: 0,
+        complementarySkills: 0,
+        activityLevel: 0.5,
+      },
+    }));
   }
 
   /**
@@ -193,11 +304,11 @@ class RecommendationsService {
 
     // پیدا کردن تیم‌هایی که کاربر عضو نیست
     const teams = await this.TeamModel.find({
-      members: { $ne: userId },
+      "members.user": { $ne: userId },
       status: "active",
     })
       .populate("need", "title category tags")
-      .populate("lead", "name")
+      .populate("createdBy", "name avatar")
       .limit(limit * 2)
       .lean();
 
@@ -279,7 +390,49 @@ class RecommendationsService {
 
     // مرتب‌سازی و محدود کردن
     recommendations.sort((a, b) => b.score - a.score);
-    return recommendations.slice(0, limit);
+    const limitedRecommendations = recommendations.slice(0, limit);
+
+    // Fallback: اگر هیچ recommendation نیافتیم، تیم‌های تصادفی برگردون
+    if (limitedRecommendations.length === 0) {
+      return await this.getRandomTeams(userId, limit);
+    }
+
+    return limitedRecommendations;
+  }
+
+  /**
+   * دریافت تیم‌های تصادفی (Fallback)
+   */
+  private async getRandomTeams(userId: string, limit: number): Promise<ITeamRecommendation[]> {
+    const teams = await this.TeamModel.find({
+      "members.user": { $ne: userId },
+      status: "active",
+    })
+      .populate("need", "title category tags")
+      .populate("createdBy", "name avatar")
+      .limit(limit)
+      .lean();
+
+    return teams.map((team: any, index) => ({
+      item: team,
+      itemType: "teams" as const,
+      score: Math.round(((limit - index) / limit) * 50),
+      confidence: 0.5,
+      reasons: [
+        {
+          type: "category_match" as const,
+          description: "پیشنهاد عمومی",
+          weight: 1,
+        },
+      ],
+      strategy: "content_based" as const,
+      matchScore: {
+        categoryMatch: 0,
+        skillMatch: 0,
+        needMatch: 0,
+        activityLevel: 0.5,
+      },
+    }));
   }
 
   /**
@@ -440,7 +593,7 @@ class RecommendationsService {
       _id: { $in: needIds },
       status: { $in: ["active", "in_progress"] },
     })
-      .populate("createdBy", "name avatar")
+      .populate("submittedBy.user", "name avatar")
       .populate("category", "name slug")
       .lean();
 
@@ -491,7 +644,7 @@ class RecommendationsService {
     const query: any = {
       status: { $in: ["active", "in_progress"] },
       _id: { $nin: preferences.interactedNeeds },
-      createdBy: { $ne: userId },
+      "submittedBy.user": { $ne: userId },
     };
 
     if (preferences.favoriteCategories.length > 0) {
@@ -499,7 +652,7 @@ class RecommendationsService {
     }
 
     const needs = await this.NeedModel.find(query)
-      .populate("createdBy", "name avatar")
+      .populate("submittedBy.user", "name avatar")
       .populate("category", "name slug")
       .limit(limit * 2)
       .lean();
@@ -594,7 +747,7 @@ class RecommendationsService {
       status: { $in: ["active", "in_progress"] },
       _id: { $nin: preferences.interactedNeeds },
     })
-      .populate("createdBy", "name avatar")
+      .populate("submittedBy.user", "name avatar")
       .populate("category", "name slug")
       .sort({ "supporters.length": -1 })
       .limit(limit)

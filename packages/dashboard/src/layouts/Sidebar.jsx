@@ -383,6 +383,49 @@ const Sidebar = ({ sidebarOpen, me }) => {
                 )}
               </div>
 
+              {/* بخش استوری‌ها */}
+              <div>
+                <li className="relative text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group ">
+                  <img
+                    src="/assets/images/dashboard/icons/story.svg"
+                    alt="stories"
+                    className="w-6 h-6 ml-2"
+                  />
+                  <span className="ml-3 flex-1 whitespace-nowrap"> استوری‌ها</span>
+                  <img
+                    src="/assets/images/dashboard/icons/downArrow.svg"
+                    className="h-6 w-6 absolute top-2 left-2 cursor-pointer"
+                    style={menuToggle === 13 ? { rotate: "90deg" } : { rotate: "0deg" }}
+                    onClick={() => toggleHandler(13)}
+                    alt="down arrow icon"
+                  />
+                </li>
+                {menuToggle === 13 && (
+                  <div className="flex flex-col w-full justify-start items-start bg-gray-50">
+                    <Link
+                      rel="preconnect"
+                      to={"/dashboard/stories"}
+                      className={`${pathname === "/dashboard/stories" || pathname.startsWith("/dashboard/stories/") ? "bg-gray-100" : ""} w-full`}
+                    >
+                      <li className="text-base text-gray-900 text-[14px]  font-normal rounded-lg hover:bg-gray-100 flex items-start p-2 group cursor-pointer">
+                        <span className="mr-5 text-red-300">*</span>
+                        <span className="d-block mr-1 flex-1 whitespace-nowrap">لیست استوری‌ها</span>
+                      </li>
+                    </Link>
+                    <Link
+                      rel="preconnect"
+                      to={"/dashboard/stories/highlights"}
+                      className={`${pathname === "/dashboard/stories/highlights" ? "bg-gray-100" : ""} w-full`}
+                    >
+                      <li className="text-base text-gray-900 text-[14px]  font-normal rounded-lg hover:bg-gray-100 flex items-start p-2 group cursor-pointer">
+                        <span className="mr-5 text-red-300">*</span>
+                        <span className="d-block mr-1 flex-1 whitespace-nowrap">هایلایت‌ها</span>
+                      </li>
+                    </Link>
+                  </div>
+                )}
+              </div>
+
               <div className={`${me?.role === "admin" && "disabled"}`}>
                 <li className="relative text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group">
                   <img

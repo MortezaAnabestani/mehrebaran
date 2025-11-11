@@ -13,6 +13,7 @@ import viewReducer from "../features/viewSlice";
 import needsReducer from "../features/needsSlice";
 import teamsReducer from "../features/teamsSlice";
 import gamificationReducer from "../features/gamificationSlice";
+import storiesReducer from "../features/storiesSlice";
 
 export const store = configureStore({
   reducer: {
@@ -30,6 +31,7 @@ export const store = configureStore({
     needs: needsReducer,
     teams: teamsReducer,
     gamification: gamificationReducer,
+    stories: storiesReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

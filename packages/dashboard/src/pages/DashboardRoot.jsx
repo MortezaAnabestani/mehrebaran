@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchArticles } from "../features/articlesSlice";
 import DashboardTop from "../components/root/DashboardTop";
-import DashboardHead from "../components/root/DashboardHead";
 const SiteViewChart = lazy(() => import("../pages/charts/SiteVieweChart"));
 const CarouselWithContent = lazy(() => import("../components/root/Carousel"));
 import api from "../services/api";
@@ -42,11 +41,7 @@ const RootIndex = () => {
 
   return (
     <div className="relative mt-6 hidden md:block">
-      <DashboardHead />
-      <DashboardTop
-        selectedArticle={selectedArticle}
-        selectedComments={selectedComments}
-      />
+      <DashboardTop selectedArticle={selectedArticle} selectedComments={selectedComments} />
       <SiteViewChart root={true} />
       <div className="bg-white p-6 mt-8 rounded-lg shadow-md">
         <div className="flex items-center justify-between mb-4 border-b border-gray-500">

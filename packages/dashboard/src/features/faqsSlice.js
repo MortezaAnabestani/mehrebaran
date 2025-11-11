@@ -1,63 +1,57 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
-
-const BASE_URL = import.meta.env.VITE_SERVER_PUBLIC_API_URL;
+import api from "../services/api";
 
 //   1. `POST` ایجاد پرسشاپاسخ جدید
 export const createFaq = createAsyncThunk("faqs/create", async (formData, { rejectWithValue }) => {
   try {
-    const response = await axios.post(`${BASE_URL}/faqs`, formData, {
+    const response = await api.post("/faqs", formData, {
       headers: { "Content-Type": "application/json" },
     });
     return response.data;
   } catch (error) {
-    return rejectWithValue(error.response?.data?.error || "خطایی رخ داده است!");
+    return rejectWithValue(error.response?.data?.message || "خطایی در ایجاد پرسشاپاسخ رخ داده است!");
   }
 });
 
-//   2. `PUT` ویرایش پرسشاپاسخ
+//   2. `PATCH` ویرایش پرسشاپاسخ
 export const updateFaq = createAsyncThunk("faqs/update", async ({ id, formData }, { rejectWithValue }) => {
   try {
-    const response = await axios.put(`${BASE_URL}/faqs/${id}`, formData, {
+    const response = await api.patch(`/faqs/${id}`, formData, {
       headers: { "Content-Type": "application/json" },
     });
-
-    console.log("successfully!", response.data);
-
     return response.data;
   } catch (error) {
-    console.log("rejected!", error.response?.data?.error);
-    return rejectWithValue(error.response?.data?.error || "ویرایش پرسشاپاسخ انجام نشد!");
+    return rejectWithValue(error.response?.data?.message || "خطایی در ویرایش پرسشاپاسخ رخ داده است!");
   }
 });
 
 //   3. `DELETE` حذف پرسشاپاسخ
 export const deleteFaq = createAsyncThunk("faqs/delete", async (id, { rejectWithValue }) => {
   try {
-    await axios.delete(`${BASE_URL}/faqs/${id}`);
+    await api.delete(`/faqs/${id}`);
     console.log("حذف شما با موفقیت انجام شد");
     return id;
   } catch (error) {
-    return rejectWithValue(error.response?.data?.error || "حذف پرسشاپاسخ انجام نشد!");
+    return rejectWithValue(error.response?.data?.message || "خطایی در حذف پرسشاپاسخ رخ داده است!");
   }
 });
 
-//   4. `GET` دریافت لیست نویسندگان
-export const fetchFaqs = createAsyncThunk("faqs/fetch", async (_, { rejectWithValue }) => {
+//   4. `GET` دریافت لیست پرسش‌ها و پاسخ‌ها
+export const fetchFaqs = createAsyncThunk("faqs/fetch", async (params = {}, { rejectWithValue }) => {
   try {
-    const response = await axios.get(`${BASE_URL}/faqs`);
+    const response = await api.get("/faqs", { params });
     return response.data;
   } catch (error) {
-    return rejectWithValue(error.response?.data?.error || "بارگیری نویسندگان انجام نشد!");
+    return rejectWithValue(error.response?.data?.message || "خطایی در دریافت پرسش‌ها و پاسخ‌ها رخ داده است!");
   }
 });
 
 export const fetchFaqById = createAsyncThunk("faqs/fetchById", async (id, { rejectWithValue }) => {
   try {
-    const response = await axios.get(`${BASE_URL}/faqs/${id}`);
+    const response = await api.get(`/faqs/${id}`);
     return response.data;
   } catch (error) {
-    return rejectWithValue(error.response?.data?.error || "بارگیری پرسشاپاسخ انجام نشد!");
+    return rejectWithValue(error.response?.data?.message || "خطایی در دریافت پرسشاپاسخ رخ داده است!");
   }
 });
 
@@ -79,72 +73,94 @@ const faqsSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      //   مدیریت `POST`
+      //   مدیریت `POST` - ایجاد پرسشاپاسخ
       .addCase(createFaq.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(createFaq.fulfilled, (state, action) => {
         state.loading = false;
-        state.faqs.push(action.payload);
+        // اگر faqs یک آرایه باشد
+        if (Array.isArray(state.faqs)) {
+          state.faqs.push(action.payload.data);
+        }
       })
       .addCase(createFaq.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        state.error = action.payload || action.error.message;
       })
 
-      //   مدیریت `PUT`
+      //   مدیریت `PATCH` - ویرایش پرسشاپاسخ
       .addCase(updateFaq.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(updateFaq.fulfilled, (state, action) => {
         state.loading = false;
-        state.selectedFaq = action.payload;
+        state.selectedFaq = action.payload.data;
+
+        // بروزرسانی پرسشاپاسخ در لیست پرسش‌ها و پاسخ‌ها
+        if (Array.isArray(state.faqs)) {
+          const index = state.faqs.findIndex(
+            (faq) => faq._id === action.payload.data._id
+          );
+          if (index !== -1) {
+            state.faqs[index] = action.payload.data;
+          }
+        }
       })
       .addCase(updateFaq.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        state.error = action.payload || action.error.message;
       })
 
-      //   مدیریت `DELETE`
+      //   مدیریت `DELETE` - حذف پرسشاپاسخ
       .addCase(deleteFaq.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(deleteFaq.fulfilled, (state, action) => {
         state.loading = false;
-        state.faqs = state.faqs.filter((faq) => faq._id !== action.payload);
+
+        // حذف پرسشاپاسخ از لیست پرسش‌ها و پاسخ‌ها
+        if (Array.isArray(state.faqs)) {
+          state.faqs = state.faqs.filter(
+            (faq) => faq._id !== action.payload
+          );
+        }
       })
       .addCase(deleteFaq.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        state.error = action.payload || action.error.message;
       })
 
-      //   مدیریت `GET`
+      //   مدیریت `GET` - دریافت لیست پرسش‌ها و پاسخ‌ها
       .addCase(fetchFaqs.pending, (state) => {
         state.loading = true;
+        state.error = null;
       })
       .addCase(fetchFaqs.fulfilled, (state, action) => {
         state.loading = false;
-        state.faqs = action.payload;
+        state.faqs = action.payload.data || action.payload;
       })
       .addCase(fetchFaqs.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        state.error = action.payload || action.error.message;
       })
 
-      //   مدیریت `GET` برای یک پرسشاپاسخ
+      //   مدیریت `GET` - دریافت یک پرسشاپاسخ
       .addCase(fetchFaqById.pending, (state) => {
         state.loading = true;
+        state.error = null;
+        state.selectedFaq = null;
       })
       .addCase(fetchFaqById.fulfilled, (state, action) => {
         state.loading = false;
-        state.selectedFaq = action.payload;
+        state.selectedFaq = action.payload.data;
       })
       .addCase(fetchFaqById.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        state.error = action.payload || action.error.message;
       });
   },
 });

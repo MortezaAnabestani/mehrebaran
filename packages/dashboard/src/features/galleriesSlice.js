@@ -1,68 +1,62 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
-
-const BASE_URL = import.meta.env.VITE_SERVER_PUBLIC_API_URL;
+import api from "../services/api";
 
 //   1. `POST` ایجاد گالری‌ جدید
 export const createGallery = createAsyncThunk("galleries/create", async (formData, { rejectWithValue }) => {
   try {
-    const response = await axios.post(`${BASE_URL}/galleries`, formData, {
+    const response = await api.post("/blog/gallery", formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
     return response.data;
   } catch (error) {
-    return rejectWithValue(error.response?.data?.error || "خطایی رخ داده است!");
+    return rejectWithValue(error.response?.data?.message || "خطایی در ایجاد گالری رخ داده است!");
   }
 });
 
-//   2. `PUT` ویرایش گالری‌
+//   2. `PATCH` ویرایش گالری‌
 export const updateGallery = createAsyncThunk(
   "galleries/update",
-  async ({ slug, formData }, { rejectWithValue }) => {
+  async ({ id, formData }, { rejectWithValue }) => {
     try {
-      const response = await axios.put(`${BASE_URL}/galleries/${slug}`, formData, {
+      const response = await api.patch(`/blog/gallery/${id}`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-
-      console.log("successfully!", response.data);
-
       return response.data;
     } catch (error) {
-      console.log("rejected!", error.response?.data?.error);
-      return rejectWithValue(error.response?.data?.error || "ویرایش گالری‌ انجام نشد!");
+      return rejectWithValue(error.response?.data?.message || "خطایی در ویرایش گالری رخ داده است!");
     }
   }
 );
 
 //   3. `DELETE` حذف گالری‌
-export const deleteGallery = createAsyncThunk("galleries/delete", async (slug, { rejectWithValue }) => {
+export const deleteGallery = createAsyncThunk("galleries/delete", async (id, { rejectWithValue }) => {
   try {
-    await axios.delete(`${BASE_URL}/galleries/${slug}`);
+    await api.delete(`/blog/gallery/${id}`);
     console.log("حذف شما با موفقیت انجام شد");
-    return slug;
+    return id;
   } catch (error) {
-    return rejectWithValue(error.response?.data?.error || "حذف گالری‌ انجام نشد!");
+    return rejectWithValue(error.response?.data?.message || "خطایی در حذف گالری رخ داده است!");
   }
 });
 
 //   4. `GET` دریافت لیست گالری‌ها
-export const fetchGalleries = createAsyncThunk("galleries/fetch", async (_, { rejectWithValue }) => {
+export const fetchGalleries = createAsyncThunk("galleries/fetch", async (params = {}, { rejectWithValue }) => {
   try {
-    const response = await axios.get(`${BASE_URL}/galleries`);
+    const response = await api.get("/blog/gallery", { params });
     return response.data;
   } catch (error) {
-    return rejectWithValue(error.response?.data?.error || "بارگیری گالری‌ها انجام نشد!");
+    return rejectWithValue(error.response?.data?.message || "خطایی در دریافت گالری‌ها رخ داده است!");
   }
 });
 
 export const fetchGalleryBySlug = createAsyncThunk(
   "galleries/fetchBySlug",
-  async (slug, { rejectWithValue }) => {
+  async (identifier, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`${BASE_URL}/galleries/${slug}`);
+      const response = await api.get(`/blog/gallery/${identifier}`);
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.error || "بارگیری گالری‌ انجام نشد!");
+      return rejectWithValue(error.response?.data?.message || "خطایی در دریافت گالری رخ داده است!");
     }
   }
 );
@@ -85,72 +79,94 @@ const galleriesSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      //   مدیریت `POST`
+      //   مدیریت `POST` - ایجاد گالری
       .addCase(createGallery.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(createGallery.fulfilled, (state, action) => {
         state.loading = false;
-        state.galleries.push(action.payload);
+        // اگر galleries یک آرایه باشد
+        if (Array.isArray(state.galleries)) {
+          state.galleries.push(action.payload.data);
+        }
       })
       .addCase(createGallery.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        state.error = action.payload || action.error.message;
       })
 
-      //   مدیریت `PUT`
+      //   مدیریت `PATCH` - ویرایش گالری
       .addCase(updateGallery.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(updateGallery.fulfilled, (state, action) => {
         state.loading = false;
-        state.selectedGallery = action.payload;
+        state.selectedGallery = action.payload.data;
+
+        // بروزرسانی گالری در لیست گالری‌ها
+        if (Array.isArray(state.galleries)) {
+          const index = state.galleries.findIndex(
+            (gallery) => gallery._id === action.payload.data._id
+          );
+          if (index !== -1) {
+            state.galleries[index] = action.payload.data;
+          }
+        }
       })
       .addCase(updateGallery.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        state.error = action.payload || action.error.message;
       })
 
-      //   مدیریت `DELETE`
+      //   مدیریت `DELETE` - حذف گالری
       .addCase(deleteGallery.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(deleteGallery.fulfilled, (state, action) => {
         state.loading = false;
-        state.galleries = state.galleries.filter((gallery) => gallery._id !== action.payload);
+
+        // حذف گالری از لیست گالری‌ها
+        if (Array.isArray(state.galleries)) {
+          state.galleries = state.galleries.filter(
+            (gallery) => gallery._id !== action.payload
+          );
+        }
       })
       .addCase(deleteGallery.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        state.error = action.payload || action.error.message;
       })
 
-      //   مدیریت `GET`
+      //   مدیریت `GET` - دریافت لیست گالری‌ها
       .addCase(fetchGalleries.pending, (state) => {
         state.loading = true;
+        state.error = null;
       })
       .addCase(fetchGalleries.fulfilled, (state, action) => {
         state.loading = false;
-        state.galleries = action.payload;
+        state.galleries = action.payload.data || action.payload;
       })
       .addCase(fetchGalleries.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        state.error = action.payload || action.error.message;
       })
 
-      //   مدیریت `GET` برای یک گالری‌
+      //   مدیریت `GET` - دریافت یک گالری
       .addCase(fetchGalleryBySlug.pending, (state) => {
         state.loading = true;
+        state.error = null;
+        state.selectedGallery = null;
       })
       .addCase(fetchGalleryBySlug.fulfilled, (state, action) => {
         state.loading = false;
-        state.selectedGallery = action.payload;
+        state.selectedGallery = action.payload.data;
       })
       .addCase(fetchGalleryBySlug.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        state.error = action.payload || action.error.message;
       });
   },
 });

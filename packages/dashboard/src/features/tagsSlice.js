@@ -1,63 +1,57 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
-
-const BASE_URL = import.meta.env.VITE_SERVER_PUBLIC_API_URL;
+import api from "../services/api";
 
 //  1. `POST` ایجاد برچسب جدید
 export const createTag = createAsyncThunk("tags/create", async (formData, { rejectWithValue }) => {
   try {
-    const response = await axios.post(`${BASE_URL}/tags`, formData, {
+    const response = await api.post("/tags", formData, {
       headers: { "Content-Type": "application/json" },
     });
     return response.data;
   } catch (error) {
-    return rejectWithValue(error.response?.data?.error || "خطایی رخ داده است!");
+    return rejectWithValue(error.response?.data?.message || "خطایی در ایجاد برچسب رخ داده است!");
   }
 });
 
-//  2. `PUT` ویرایش برچسب
+//  2. `PATCH` ویرایش برچسب
 export const updateTag = createAsyncThunk("tags/update", async ({ id, formData }, { rejectWithValue }) => {
   try {
-    const response = await axios.put(`${BASE_URL}/tags/${id}`, formData, {
+    const response = await api.patch(`/tags/${id}`, formData, {
       headers: { "Content-Type": "application/json" },
     });
-
-    console.log("successfully!", response.data);
-
     return response.data;
   } catch (error) {
-    console.log("rejected!", error.response?.data?.error);
-    return rejectWithValue(error.response?.data?.error || "ویرایش برچسب انجام نشد!");
+    return rejectWithValue(error.response?.data?.message || "خطایی در ویرایش برچسب رخ داده است!");
   }
 });
 
 //  3. `DELETE` حذف برچسب
 export const deleteTag = createAsyncThunk("tags/delete", async (id, { rejectWithValue }) => {
   try {
-    await axios.delete(`${BASE_URL}/tags/${id}`);
+    await api.delete(`/tags/${id}`);
     console.log("حذف شما با موفقیت انجام شد");
     return id;
   } catch (error) {
-    return rejectWithValue(error.response?.data?.error || "حذف برچسب انجام نشد!");
+    return rejectWithValue(error.response?.data?.message || "خطایی در حذف برچسب رخ داده است!");
   }
 });
 
-//  4. `GET` دریافت لیست نویسندگان
-export const fetchTags = createAsyncThunk("tags/fetch", async (_, { rejectWithValue }) => {
+//  4. `GET` دریافت لیست برچسب‌ها
+export const fetchTags = createAsyncThunk("tags/fetch", async (params = {}, { rejectWithValue }) => {
   try {
-    const response = await axios.get(`${BASE_URL}/tags`);
+    const response = await api.get("/tags", { params });
     return response.data;
   } catch (error) {
-    return rejectWithValue(error.response?.data?.error || "بارگیری نویسندگان انجام نشد!");
+    return rejectWithValue(error.response?.data?.message || "خطایی در دریافت برچسب‌ها رخ داده است!");
   }
 });
 
 export const fetchTagById = createAsyncThunk("tags/fetchById", async (id, { rejectWithValue }) => {
   try {
-    const response = await axios.get(`${BASE_URL}/tags/${id}`);
+    const response = await api.get(`/tags/${id}`);
     return response.data;
   } catch (error) {
-    return rejectWithValue(error.response?.data?.error || "بارگیری برچسب انجام نشد!");
+    return rejectWithValue(error.response?.data?.message || "خطایی در دریافت برچسب رخ داده است!");
   }
 });
 
@@ -79,72 +73,94 @@ const tagsSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      //  مدیریت `POST`
+      //  مدیریت `POST` - ایجاد برچسب
       .addCase(createTag.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(createTag.fulfilled, (state, action) => {
         state.loading = false;
-        state.tags.push(action.payload);
+        // اگر tags یک آرایه باشد
+        if (Array.isArray(state.tags)) {
+          state.tags.push(action.payload.data);
+        }
       })
       .addCase(createTag.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        state.error = action.payload || action.error.message;
       })
 
-      //  مدیریت `PUT`
+      //  مدیریت `PATCH` - ویرایش برچسب
       .addCase(updateTag.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(updateTag.fulfilled, (state, action) => {
         state.loading = false;
-        state.selectedTag = action.payload;
+        state.selectedTag = action.payload.data;
+
+        // بروزرسانی برچسب در لیست برچسب‌ها
+        if (Array.isArray(state.tags)) {
+          const index = state.tags.findIndex(
+            (tag) => tag._id === action.payload.data._id
+          );
+          if (index !== -1) {
+            state.tags[index] = action.payload.data;
+          }
+        }
       })
       .addCase(updateTag.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        state.error = action.payload || action.error.message;
       })
 
-      //  مدیریت `DELETE`
+      //  مدیریت `DELETE` - حذف برچسب
       .addCase(deleteTag.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(deleteTag.fulfilled, (state, action) => {
         state.loading = false;
-        state.tags = state.tags.filter((tag) => tag._id !== action.payload);
+
+        // حذف برچسب از لیست برچسب‌ها
+        if (Array.isArray(state.tags)) {
+          state.tags = state.tags.filter(
+            (tag) => tag._id !== action.payload
+          );
+        }
       })
       .addCase(deleteTag.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        state.error = action.payload || action.error.message;
       })
 
-      //  مدیریت `GET`
+      //  مدیریت `GET` - دریافت لیست برچسب‌ها
       .addCase(fetchTags.pending, (state) => {
         state.loading = true;
+        state.error = null;
       })
       .addCase(fetchTags.fulfilled, (state, action) => {
         state.loading = false;
-        state.tags = action.payload;
+        state.tags = action.payload.data || action.payload;
       })
       .addCase(fetchTags.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        state.error = action.payload || action.error.message;
       })
 
-      //  مدیریت `GET` برای یک برچسب
+      //  مدیریت `GET` - دریافت یک برچسب
       .addCase(fetchTagById.pending, (state) => {
         state.loading = true;
+        state.error = null;
+        state.selectedTag = null;
       })
       .addCase(fetchTagById.fulfilled, (state, action) => {
         state.loading = false;
-        state.selectedTag = action.payload;
+        state.selectedTag = action.payload.data;
       })
       .addCase(fetchTagById.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        state.error = action.payload || action.error.message;
       });
   },
 });

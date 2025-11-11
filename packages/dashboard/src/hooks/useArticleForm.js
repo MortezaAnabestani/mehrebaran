@@ -317,7 +317,12 @@ const useArticleForm = (isEdit = false) => {
       // ارسال درخواست به سرور
       let response;
       if (isEdit) {
-        response = dispatch(updateArticle({ slug, formData }));
+        // استفاده از _id به جای slug برای ویرایش
+        const articleId = selectedArticle?._id;
+        if (!articleId) {
+          throw new Error("شناسه مقاله یافت نشد");
+        }
+        response = dispatch(updateArticle({ id: articleId, formData }));
         console.log("مقاله با موفقیت ویرایش شد:", response);
       } else {
         response = dispatch(createArticle(formData));

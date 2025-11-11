@@ -1,77 +1,62 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
-
-const BASE_URL = import.meta.env.VITE_SERVER_PUBLIC_API_URL;
+import api from "../services/api";
 
 //   1. `POST` ایجاد نویسنده جدید
 export const createAuthor = createAsyncThunk("authors/create", async (formData, { rejectWithValue }) => {
   try {
-    const response = await axios.post(`${BASE_URL}/authors`, formData, {
+    const response = await api.post("/authors", formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
     return response.data;
   } catch (error) {
-    return rejectWithValue(error.response?.data?.error || "خطایی رخ داده است!");
+    return rejectWithValue(error.response?.data?.message || "خطایی در ایجاد نویسنده رخ داده است!");
   }
 });
 
-//   2. `PUT` ویرایش نویسنده
+//   2. `PATCH` ویرایش نویسنده
 export const updateAuthor = createAsyncThunk(
   "authors/update",
-  async ({ slug, formData }, { rejectWithValue }) => {
+  async ({ id, formData }, { rejectWithValue }) => {
     try {
-      const response = await axios.put(`${BASE_URL}/authors/${slug}`, formData, {
+      const response = await api.patch(`/authors/${id}`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-
-      console.log("successfully!", response.data);
-
       return response.data;
     } catch (error) {
-      console.log("rejected!", error.response?.data?.error);
-      return rejectWithValue(error.response?.data?.error || "ویرایش نویسنده انجام نشد!");
+      return rejectWithValue(error.response?.data?.message || "خطایی در ویرایش نویسنده رخ داده است!");
     }
   }
 );
 
 //   3. `DELETE` حذف نویسنده
-export const deleteAuthor = createAsyncThunk("authors/delete", async (slug, { rejectWithValue }) => {
+export const deleteAuthor = createAsyncThunk("authors/delete", async (id, { rejectWithValue }) => {
   try {
-    await axios.delete(`${BASE_URL}/authors/${slug}`);
+    await api.delete(`/authors/${id}`);
     console.log("حذف شما با موفقیت انجام شد");
-    return slug;
+    return id;
   } catch (error) {
-    return rejectWithValue(error.response?.data?.error || "حذف نویسنده انجام نشد!");
+    return rejectWithValue(error.response?.data?.message || "خطایی در حذف نویسنده رخ داده است!");
   }
 });
 
 //   4. `GET` دریافت لیست نویسندگان
 export const fetchAuthors = createAsyncThunk("authors/fetch", async (params = {}, { rejectWithValue }) => {
   try {
-    const queryParams = new URLSearchParams();
-    if (params.name) queryParams.append("name", params.name);
-
-    if (params.page) queryParams.append("page", params.page);
-    if (params.limit) queryParams.append("limit", params.limit);
-
-    if (params.sort) queryParams.append("sort", params.sort);
-    const response = await axios.get(
-      `${BASE_URL}/authors${queryParams.toString() ? `?${queryParams.toString()}` : ""}`
-    );
+    const response = await api.get("/authors", { params });
     return response.data;
   } catch (error) {
-    return rejectWithValue(error.response?.data?.error || "بارگیری نویسندگان انجام نشد!");
+    return rejectWithValue(error.response?.data?.message || "خطایی در دریافت نویسندگان رخ داده است!");
   }
 });
 
 export const fetchAuthorBySlug = createAsyncThunk(
   "authors/fetchBySlug",
-  async (slug, { rejectWithValue }) => {
+  async (identifier, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`${BASE_URL}/authors/${slug}`);
+      const response = await api.get(`/authors/${identifier}`);
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.error || "بارگیری نویسنده انجام نشد!");
+      return rejectWithValue(error.response?.data?.message || "خطایی در دریافت نویسنده رخ داده است!");
     }
   }
 );
@@ -102,79 +87,105 @@ const authorsSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      //   مدیریت `POST`
+      //   مدیریت `POST` - ایجاد نویسنده
       .addCase(createAuthor.pending, (state) => {
         state.loading = true;
         state.error = null;
+        state.success = false;
       })
       .addCase(createAuthor.fulfilled, (state, action) => {
         state.loading = false;
-        state.authors.push(action.payload);
         state.success = true;
+        // اگر authors یک آرایه باشد
+        if (Array.isArray(state.authors)) {
+          state.authors.push(action.payload.data);
+        }
       })
       .addCase(createAuthor.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        state.error = action.payload || action.error.message;
+        state.success = false;
       })
 
-      //   مدیریت `PUT`
+      //   مدیریت `PATCH` - ویرایش نویسنده
       .addCase(updateAuthor.pending, (state) => {
         state.loading = true;
         state.error = null;
+        state.success = false;
       })
       .addCase(updateAuthor.fulfilled, (state, action) => {
         state.loading = false;
-        state.selectedAuthor = action.payload;
+        state.selectedAuthor = action.payload.data;
         state.success = true;
+
+        // بروزرسانی نویسنده در لیست نویسندگان
+        if (Array.isArray(state.authors)) {
+          const index = state.authors.findIndex(
+            (author) => author._id === action.payload.data._id
+          );
+          if (index !== -1) {
+            state.authors[index] = action.payload.data;
+          }
+        }
       })
       .addCase(updateAuthor.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        state.error = action.payload || action.error.message;
+        state.success = false;
       })
 
-      //   مدیریت `DELETE`
+      //   مدیریت `DELETE` - حذف نویسنده
       .addCase(deleteAuthor.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(deleteAuthor.fulfilled, (state, action) => {
         state.loading = false;
-        state.authors = state.authors.filter((author) => author._id !== action.payload);
         state.success = true;
+
+        // حذف نویسنده از لیست نویسندگان
+        if (Array.isArray(state.authors)) {
+          state.authors = state.authors.filter(
+            (author) => author._id !== action.payload
+          );
+        }
       })
       .addCase(deleteAuthor.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        state.error = action.payload || action.error.message;
+        state.success = false;
       })
 
-      //   مدیریت `GET`
+      //   مدیریت `GET` - دریافت لیست نویسندگان
       .addCase(fetchAuthors.pending, (state) => {
         state.loading = true;
+        state.error = null;
       })
       .addCase(fetchAuthors.fulfilled, (state, action) => {
         state.loading = false;
-        state.authors = action.payload;
-        state.totalPages = action.payload.totalPages || 1;
-        state.currentPage = action.payload.page || 1;
-        state.total = action.payload.total || 0;
-        state.success = true;
+        state.authors = action.payload.data || action.payload;
+        state.totalPages = action.payload.pagination?.totalPages || 1;
+        state.currentPage = action.payload.pagination?.page || 1;
+        state.total = action.payload.pagination?.total || 0;
       })
       .addCase(fetchAuthors.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        state.error = action.payload || action.error.message;
       })
 
-      //   مدیریت `GET` برای یک نویسنده
+      //   مدیریت `GET` - دریافت یک نویسنده
       .addCase(fetchAuthorBySlug.pending, (state) => {
         state.loading = true;
+        state.error = null;
+        state.selectedAuthor = null;
       })
       .addCase(fetchAuthorBySlug.fulfilled, (state, action) => {
         state.loading = false;
-        state.selectedAuthor = action.payload;
+        state.selectedAuthor = action.payload.data;
       })
       .addCase(fetchAuthorBySlug.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        state.error = action.payload || action.error.message;
       });
   },
 });

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, lazy, Suspense } from "react";
+import React, { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { AnimatePresence } from "framer-motion";
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import StoriesCarousel from "@/components/network/StoriesCarousel";
@@ -23,24 +23,17 @@ const NetworkPage: React.FC = () => {
   const loadMoreRef = useRef<HTMLDivElement>(null);
 
   // Infinite query for needs
-  const {
-    data,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    isLoading,
-    isError,
-    error,
-  } = useInfiniteQuery({
-    queryKey: ["needs"],
-    queryFn: ({ pageParam = 1 }) => needService.getNeeds({ page: pageParam, limit: 10 }),
-    getNextPageParam: (lastPage) => {
-      if (!lastPage.pagination) return undefined;
-      const { page, pages } = lastPage.pagination;
-      return page < pages ? page + 1 : undefined;
-    },
-    initialPageParam: 1,
-  });
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError, error } =
+    useInfiniteQuery({
+      queryKey: ["needs"],
+      queryFn: ({ pageParam = 1 }) => needService.getNeeds({ page: pageParam, limit: 10 }),
+      getNextPageParam: (lastPage) => {
+        if (!lastPage.pagination) return undefined;
+        const { page, pages } = lastPage.pagination;
+        return page < pages ? page + 1 : undefined;
+      },
+      initialPageParam: 1,
+    });
 
   // Flatten all pages into a single array of needs
   const needs = data?.pages.flatMap((page) => page.data) ?? [];
@@ -210,9 +203,7 @@ const NetworkPage: React.FC = () => {
 
             {/* End of Feed */}
             {!hasNextPage && needs.length > 0 && (
-              <div className="text-center py-8 text-gray-400 text-sm">
-                همه نیازها نمایش داده شدند
-              </div>
+              <div className="text-center py-8 text-gray-400 text-sm">همه نیازها نمایش داده شدند</div>
             )}
           </>
         )}

@@ -29,7 +29,7 @@ const NetworkLayout: React.FC<NetworkLayoutProps> = ({ children }) => {
   const [showCreateNeed, setShowCreateNeed] = useState<boolean>(false);
 
   // Only show LeftSidebar on main feed (/network) and profile pages
-  const showLeftSidebar = pathname === "/network" || pathname?.startsWith("/network/profile");
+  const showRightSidebar = pathname === "/network" || pathname?.startsWith("/network/profile");
 
   // Handle need creation
   const handleCreateNeed = async (needData: any) => {
@@ -50,10 +50,8 @@ const NetworkLayout: React.FC<NetworkLayoutProps> = ({ children }) => {
       <TopNav />
       <PageTransition>
         <InstagramLayout
-          leftSidebar={
-            showLeftSidebar ? <LeftSidebar onCreateNeed={() => setShowCreateNeed(true)} /> : undefined
-          }
-          rightSidebar={<RightSidebar />}
+          rightSidebar={showRightSidebar ? <RightSidebar /> : undefined}
+          leftSidebar={<LeftSidebar onCreateNeed={() => setShowCreateNeed(true)} />}
         >
           {/* Dynamic content from each route */}
           {children}

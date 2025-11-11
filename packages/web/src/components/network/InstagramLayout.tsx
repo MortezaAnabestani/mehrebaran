@@ -30,7 +30,7 @@ const InstagramLayout: React.FC<InstagramLayoutProps> = ({
 }) => {
   // Determine if left sidebar should be shown (only if provided and showLeftSidebar is true)
   const hasLeftSidebar = leftSidebar && showLeftSidebar;
-
+  const hasRightSidebar = rightSidebar && showRightSidebar;
   return (
     <div className="min-h-screen bg-gray-50 pt-16 flex flex-col">
       {/* Main Container */}
@@ -44,14 +44,16 @@ const InstagramLayout: React.FC<InstagramLayoutProps> = ({
           )}
 
           {/* Main Feed (Always visible, wider when no left sidebar) */}
-          <main className={`flex-1 min-w-0 py-4 w-full ${hasLeftSidebar ? 'md:max-w-[630px] lg:max-w-none md:mx-auto lg:mx-0' : 'max-w-[900px] mx-auto'}`}>
-            <div className={hasLeftSidebar ? 'max-w-[630px] mx-auto lg:mx-0' : 'w-full'}>
-              {children}
-            </div>
+          <main
+            className={`flex-1 min-w-0 py-4 w-full ${
+              hasLeftSidebar ? "md:max-w-[630px] lg:max-w-none md:mx-auto lg:mx-0" : "max-w-[900px] mx-auto"
+            }`}
+          >
+            <div className={!hasLeftSidebar ? "max-w-[630px] mx-auto lg:mx-0" : "w-full"}>{children}</div>
           </main>
 
           {/* Right Sidebar - Suggestions (Tablet & Desktop: >= 768px) */}
-          {showRightSidebar && (
+          {hasRightSidebar && (
             <aside className="hidden md:block w-72 lg:w-80 flex-shrink-0 sticky top-16 h-[calc(100vh-64px)] overflow-y-auto pt-4 pb-4 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
               {rightSidebar}
             </aside>

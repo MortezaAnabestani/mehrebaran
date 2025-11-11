@@ -9,6 +9,7 @@ import Loading from "../components/Loading";
 
 // صفحات اصلی (بارگذاری معمولی)
 const Articles = lazy(() => import("../pages/articles/Articles"));
+const News = lazy(() => import("../pages/news/News"));
 const Authors = lazy(() => import("../pages/authors/Authors"));
 const Tags = lazy(() => import("../pages/tags/Tags"));
 const Users = lazy(() => import("../pages/users/Users"));
@@ -46,6 +47,8 @@ const BlogBackgroundSettings = lazy(() => import("../pages/settings/BlogBackgrou
 // صفحات کم‌استفاده یا سنگین (Lazy Load)
 const EditArticle = lazy(() => import("../pages/articles/EditArticle"));
 const CreateArticle = lazy(() => import("../pages/articles/CreateArticle"));
+const CreateNews = lazy(() => import("../pages/news/CreateNews"));
+const EditNews = lazy(() => import("../pages/news/EditNews"));
 const CreateAuthor = lazy(() => import("../pages/authors/CreateAuthor"));
 const EditAuthor = lazy(() => import("../pages/authors/EditAuthor"));
 const Galleries = lazy(() => import("../pages/galleries/Galleries"));
@@ -87,6 +90,9 @@ const AppRouter = () => {
               <Route path="articles" element={<Articles />} />
               <Route path="articles/create" element={<CreateArticle />} />
               <Route path="articles/edit/:slug" element={<EditArticle />} />
+              <Route path="news" element={<News />} />
+              <Route path="news/create" element={<CreateNews />} />
+              <Route path="news/edit/:id" element={<EditNews />} />
               <Route path="authors" element={<Authors />} />
               <Route path="authors/create" element={<CreateAuthor />} />
               <Route path="authors/edit/:slug" element={<EditAuthor />} />

@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import { Outlet, Navigate } from "react-router-dom";
-import axios from "axios";
-
-axios.defaults.withCredentials = true;
+import api from "../services/api";
 
 const ProtectedRoute = ({ allowedRoles = [] }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(null);
@@ -11,19 +9,33 @@ const ProtectedRoute = ({ allowedRoles = [] }) => {
   useEffect(() => {
     const verifyUser = async () => {
       try {
-        const res = await axios.get(
-          `${import.meta.env.VITE_SERVER_PUBLIC_API_URL_WITHOUT_API}/api/admins/me`
-        );
+        // بررسی وجود token در localStorage
+        const token = localStorage.getItem("token");
+        if (!token) {
+          setIsAuthenticated(false);
+          return;
+        }
+
+        // دریافت اطلاعات کاربر از سرور
+        const res = await api.get("/auth/me");
+        const user = res.data.data;
+
+        // ذخیره اطلاعات کاربر در localStorage
+        localStorage.setItem("user", JSON.stringify(user));
+
         setIsAuthenticated(true);
-        setUserRole(res?.data?.admin?.role);
+        setUserRole(user.role);
       } catch (err) {
-        console.log("err: ", err);
+        console.error("خطا در بررسی احراز هویت:", err);
         setIsAuthenticated(false);
+        // حذف token و user در صورت خطا
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
       }
     };
 
     verifyUser();
-  }, [userRole]);
+  }, []);
 
   if (isAuthenticated === null) {
     return <div className="text-center p-10">در حال بررسی دسترسی...</div>;

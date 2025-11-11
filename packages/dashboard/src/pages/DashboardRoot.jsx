@@ -8,11 +8,9 @@ import DashboardTop from "../components/root/DashboardTop";
 import DashboardHead from "../components/root/DashboardHead";
 const SiteViewChart = lazy(() => import("../pages/charts/SiteVieweChart"));
 const CarouselWithContent = lazy(() => import("../components/root/Carousel"));
-import axios from "axios";
+import api from "../services/api";
 
 const RootIndex = () => {
-  const BASE_URL = import.meta.env.VITE_SERVER_PUBLIC_API_URL;
-
   const { articles } = useSelector((state) => state.articles);
   const [selectedArticle, setSelectedArticle] = useState(null);
   const [selectedComments, setSelectedComments] = useState(null);
@@ -22,7 +20,7 @@ const RootIndex = () => {
     setSelectedArticle(null);
 
     async function fetchComments() {
-      const { data } = await axios.get(`${BASE_URL}/comments`);
+      const { data } = await api.get("/comments");
       setSelectedComments(data?.comments);
     }
     fetchComments();

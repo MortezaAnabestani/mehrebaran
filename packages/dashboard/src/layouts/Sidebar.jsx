@@ -1,4 +1,3 @@
-import axios from "axios";
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Search from "../components/lists/Search";
@@ -7,20 +6,13 @@ const Sidebar = ({ sidebarOpen, me }) => {
   const [menuToggle, setMenuToggle] = useState(null);
   const { pathname } = useLocation();
   const navigate = useNavigate();
-  const logoutHandler = async () => {
-    try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_SERVER_PUBLIC_API_URL_WITHOUT_API}/api/admins/logout`,
-        {
-          withCredentials: true,
-        }
-      );
 
-      return response.data && navigate("/");
-    } catch (error) {
-      console.error("خطا در خروج:", error);
-      throw error;
-    }
+  const logoutHandler = () => {
+    // حذف token و user از localStorage
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    // هدایت به صفحه ورود
+    navigate("/");
   };
 
   const toggleHandler = (id) => {

@@ -14,6 +14,7 @@ import needsReducer from "../features/needsSlice";
 import teamsReducer from "../features/teamsSlice";
 import gamificationReducer from "../features/gamificationSlice";
 import storiesReducer from "../features/storiesSlice";
+import projectsReducer from "../features/projectsSlice";
 
 export const store = configureStore({
   reducer: {
@@ -32,6 +33,7 @@ export const store = configureStore({
     teams: teamsReducer,
     gamification: gamificationReducer,
     stories: storiesReducer,
+    projects: projectsReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

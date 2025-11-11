@@ -3,7 +3,6 @@ import { lazy } from "react";
 
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchIssues } from "../features/issuesSlice";
 import { fetchArticles } from "../features/articlesSlice";
 import DashboardTop from "../components/root/DashboardTop";
 import DashboardHead from "../components/root/DashboardHead";
@@ -17,12 +16,10 @@ const RootIndex = () => {
   const { articles } = useSelector((state) => state.articles);
   const [selectedArticle, setSelectedArticle] = useState(null);
   const [selectedComments, setSelectedComments] = useState(null);
-  const [selectedIssue, setSelectedIssue] = useState(null);
   const dispatch = useDispatch();
   useEffect(() => {
     let ignore = false;
     setSelectedArticle(null);
-    setSelectedIssue(null);
 
     async function fetchComments() {
       const { data } = await axios.get(`${BASE_URL}/comments`);
@@ -32,11 +29,6 @@ const RootIndex = () => {
     dispatch(fetchArticles()).then((result) => {
       if (!ignore) {
         setSelectedArticle(result.payload.articles[0]);
-      }
-    });
-    dispatch(fetchIssues()).then((result) => {
-      if (!ignore) {
-        setSelectedIssue(result.payload.issues[0]);
       }
     });
 
@@ -55,7 +47,6 @@ const RootIndex = () => {
       <DashboardHead />
       <DashboardTop
         selectedArticle={selectedArticle}
-        selectedIssue={selectedIssue}
         selectedComments={selectedComments}
       />
       <SiteViewChart root={true} />

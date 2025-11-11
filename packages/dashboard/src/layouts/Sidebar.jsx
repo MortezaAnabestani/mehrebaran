@@ -57,47 +57,6 @@ const Sidebar = ({ sidebarOpen, me }) => {
                   <span className="ml-3">میز کار</span>
                 </Link>
               </li>
-              <div>
-                <li className="relative text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group ">
-                  <img
-                    src="/assets/images/dashboard/icons/pubnum.svg"
-                    alt="writers"
-                    className="w-6 h-6 ml-2"
-                  />
-                  <span className="ml-3 flex-1 whitespace-nowrap"> شمارۀ نشریه</span>
-                  <img
-                    src="/assets/images/dashboard/icons/downArrow.svg"
-                    className="h-6 w-6 absolute top-2 left-2 cursor-pointer"
-                    style={menuToggle === 4 ? { rotate: "90deg" } : { rotate: "0deg" }}
-                    onClick={() => toggleHandler(4)}
-                    alt="down arrow icon"
-                  />
-                </li>
-                {menuToggle === 4 && (
-                  <div className="flex flex-col w-full justify-start items-start bg-gray-50">
-                    <Link
-                      rel="preconnect"
-                      to={"/dashboard/issues/create"}
-                      className={`${pathname === "/dashboard/issues/create" ? "bg-gray-100" : ""} w-full`}
-                    >
-                      <li className="text-base text-gray-900 text-[14px]  font-normal rounded-lg hover:bg-gray-100 flex items-start p-2 group cursor-pointer">
-                        <span className="mr-5 text-red-300">*</span>
-                        <span className="d-block mr-1 flex-1 whitespace-nowrap">ایجاد شمارۀ جدید</span>
-                      </li>
-                    </Link>
-                    <Link
-                      rel="preconnect"
-                      to={"/dashboard/issues"}
-                      className={`${pathname === "/dashboard/issues" ? "bg-gray-100" : ""} w-full`}
-                    >
-                      <li className="text-base text-gray-900 text-[14px]  font-normal rounded-lg hover:bg-gray-100 flex items-start p-2 group cursor-pointer">
-                        <span className="mr-5 text-red-300">*</span>
-                        <span className="d-block mr-1 flex-1 whitespace-nowrap">فهرست شماره‌ها</span>
-                      </li>
-                    </Link>
-                  </div>
-                )}
-              </div>
               <Link
                 rel="preconnect"
                 to={"/dashboard/sections"}
@@ -154,90 +113,6 @@ const Sidebar = ({ sidebarOpen, me }) => {
               <div>
                 <li className="relative text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group ">
                   <img
-                    src="/assets/images/dashboard/icons/video_playlist.svg"
-                    alt="writers"
-                    className="w-6 h-6 ml-2"
-                  />
-                  <span className="ml-3 flex-1 whitespace-nowrap"> آموزش‌های تصویری</span>
-                  <img
-                    src="/assets/images/dashboard/icons/downArrow.svg"
-                    className="h-6 w-6 absolute top-2 left-2 cursor-pointer"
-                    style={menuToggle === 6 ? { rotate: "90deg" } : { rotate: "0deg" }}
-                    onClick={() => toggleHandler(6)}
-                    alt="down arrow icon 2"
-                  />
-                </li>
-                {menuToggle === 6 && (
-                  <div className="flex flex-col w-full justify-start items-start bg-gray-50">
-                    <Link
-                      rel="preconnect"
-                      to={"/dashboard/educations/create"}
-                      className={`${pathname === "/dashboard/educations/create" ? "bg-gray-100" : ""} w-full`}
-                    >
-                      <li className="text-base text-gray-900 text-[14px]  font-normal rounded-lg hover:bg-gray-100 flex items-start p-2 group cursor-pointer">
-                        <span className="mr-5 text-red-300">*</span>
-                        <span className="d-block mr-1 flex-1 whitespace-nowrap">
-                          ایجاد محتوای آموزشی جدید
-                        </span>
-                      </li>
-                    </Link>
-                    <Link
-                      rel="preconnect"
-                      to={"/dashboard/educations"}
-                      className={`${pathname === "/dashboard/educations" ? "bg-gray-100" : ""} w-full`}
-                    >
-                      <li className="text-base text-gray-900 text-[14px]  font-normal rounded-lg hover:bg-gray-100 flex items-start p-2 group cursor-pointer">
-                        <span className="mr-5 text-red-300">*</span>
-                        <span className="d-block mr-1 flex-1 whitespace-nowrap">فهرست محتواهای آموزشی</span>
-                      </li>
-                    </Link>
-                  </div>
-                )}
-              </div>
-              <div>
-                <li className="relative text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group ">
-                  <img
-                    src="/assets/images/dashboard/icons/stage.svg"
-                    alt="writers"
-                    className="w-6 h-6 ml-2"
-                  />
-                  <span className="ml-3 flex-1 whitespace-nowrap"> رویدادها</span>
-                  <img
-                    src="/assets/images/dashboard/icons/downArrow.svg"
-                    className="h-6 w-6 absolute top-2 left-2 cursor-pointer"
-                    style={menuToggle === 7 ? { rotate: "90deg" } : { rotate: "0deg" }}
-                    onClick={() => toggleHandler(7)}
-                    alt="down arrow icon"
-                  />
-                </li>
-                {menuToggle === 7 && (
-                  <div className="flex flex-col w-full justify-start items-start bg-gray-50">
-                    <Link
-                      rel="preconnect"
-                      to={"/dashboard/events/create"}
-                      className={`${pathname === "/dashboard/events/create" ? "bg-gray-100" : ""} w-full`}
-                    >
-                      <li className="text-base text-gray-900 text-[14px]  font-normal rounded-lg hover:bg-gray-100 flex items-start p-2 group cursor-pointer">
-                        <span className="mr-5 text-red-300">*</span>
-                        <span className="d-block mr-1 flex-1 whitespace-nowrap">ایجاد رویداد جدید</span>
-                      </li>
-                    </Link>
-                    <Link
-                      rel="preconnect"
-                      to={"/dashboard/events"}
-                      className={`${pathname === "/dashboard/events" ? "bg-gray-100" : ""} w-full`}
-                    >
-                      <li className="text-base text-gray-900 text-[14px]  font-normal rounded-lg hover:bg-gray-100 flex items-start p-2 group cursor-pointer">
-                        <span className="mr-5 text-red-300">*</span>
-                        <span className="d-block mr-1 flex-1 whitespace-nowrap">فهرست رویدادها</span>
-                      </li>
-                    </Link>
-                  </div>
-                )}
-              </div>
-              <div>
-                <li className="relative text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group ">
-                  <img
                     src="/assets/images/dashboard/icons/photo_gallery.svg"
                     alt="photo_gallery"
                     className="w-6 h-6 ml-2"
@@ -276,62 +151,6 @@ const Sidebar = ({ sidebarOpen, me }) => {
                   </div>
                 )}
               </div>
-              <div>
-                <li className="relative text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group ">
-                  <img
-                    loading="lazy"
-                    src="/assets/images/dashboard/icons/medal.svg"
-                    alt="medal"
-                    className="w-6 h-6 ml-2"
-                  />
-                  <span className="ml-3 flex-1 whitespace-nowrap">افتخارات</span>
-                  <img
-                    src="/assets/images/dashboard/icons/downArrow.svg"
-                    className="h-6 w-6 absolute top-2 left-2 cursor-pointer"
-                    style={menuToggle === 11 ? { rotate: "90deg" } : { rotate: "0deg" }}
-                    onClick={() => toggleHandler(11)}
-                    alt="down arrow icon"
-                  />
-                </li>
-                {menuToggle === 11 && (
-                  <div className="flex flex-col w-full justify-start items-start bg-gray-50">
-                    <Link
-                      rel="preconnect"
-                      to={"/dashboard/honors/create"}
-                      className={`${pathname === "/dashboard/honors/create" ? "bg-gray-100" : ""} w-full`}
-                    >
-                      <li className="text-base text-gray-900 text-[14px]  font-normal rounded-lg hover:bg-gray-100 flex items-start p-2 group cursor-pointer">
-                        <span className="mr-5 text-red-300">*</span>
-                        <span className="d-block mr-1 flex-1 whitespace-nowrap">ایجاد افتخار جدید</span>
-                      </li>
-                    </Link>
-                    <Link
-                      rel="preconnect"
-                      to={"/dashboard/honors"}
-                      className={`${pathname === "/dashboard/honors" ? "bg-gray-100" : ""} w-full`}
-                    >
-                      <li className="text-base text-gray-900 text-[14px]  font-normal rounded-lg hover:bg-gray-100 flex items-start p-2 group cursor-pointer">
-                        <span className="mr-5 text-red-300">*</span>
-                        <span className="d-block mr-1 flex-1 whitespace-nowrap">فهرست افتخارات</span>
-                      </li>
-                    </Link>
-                  </div>
-                )}
-              </div>
-              <Link
-                rel="preconnect"
-                to={"/dashboard/banner"}
-                className={`${pathname === "/dashboard/banner" ? "bg-gray-100" : ""} block`}
-              >
-                <li className="text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group ">
-                  <img
-                    src="/assets/images/dashboard/icons/billboard.svg"
-                    alt="billboard"
-                    className="w-6 h-6 ml-2"
-                  />
-                  <span className="ml-3 flex-1 whitespace-nowrap">بنر اطلاع‌رسانی</span>
-                </li>
-              </Link>
               <Link
                 rel="preconnect"
                 to={"/dashboard/tags"}
@@ -421,24 +240,6 @@ const Sidebar = ({ sidebarOpen, me }) => {
                     className="w-6 h-6 ml-2"
                   />
                   <span className="ml-3 flex-1 whitespace-nowrap"> مخاطبان</span>
-                </li>
-              </Link>
-              <Link
-                rel="preconnect"
-                to={"/dashboard/applications"}
-                onClick={(e) => me?.role === "admin" && e.preventDefault()}
-                className={`${pathname === "/dashboard/applications" ? "bg-gray-100" : ""} ${
-                  me?.role === "admin" && "disabled"
-                } block`}
-              >
-                <li className="text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group ">
-                  <img
-                    loading="lazy"
-                    src="/assets/images/dashboard/icons/cv.svg"
-                    alt="users"
-                    className="w-6 h-6 ml-2"
-                  />
-                  <span className="ml-3 flex-1 whitespace-nowrap"> درخواست‌های همکاری</span>
                 </li>
               </Link>
               <div>
@@ -572,16 +373,6 @@ const Sidebar = ({ sidebarOpen, me }) => {
                     </Link>
                     <Link
                       rel="preconnect"
-                      to={"/dashboard/chart/camp"}
-                      className={`${pathname === "/dashboard/chart/camp" ? "bg-gray-100" : ""} w-full`}
-                    >
-                      <li className="text-base text-gray-900 text-[14px]  font-normal rounded-lg hover:bg-gray-100 flex items-start p-2 group cursor-pointer">
-                        <span className="mr-5 text-red-300">*</span>
-                        <span className="d-block mr-1 flex-1 whitespace-nowrap">کمپین</span>
-                      </li>
-                    </Link>
-                    <Link
-                      rel="preconnect"
                       to={"/dashboard/chart/users"}
                       className={`${pathname === "/dashboard/chart/users" ? "bg-gray-100" : ""} w-full`}
                     >
@@ -607,20 +398,6 @@ const Sidebar = ({ sidebarOpen, me }) => {
                     className="w-6 h-6 ml-2"
                   />
                   <span className="ml-3 flex-1 whitespace-nowrap"> تقویم</span>
-                </li>
-              </Link>
-              <Link
-                rel="preconnect"
-                to={"/dashboard/camp"}
-                className={`hidden lg:block ${pathname === "/dashboard/camp" ? "bg-gray-100" : ""} block `}
-              >
-                <li className="text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group ">
-                  <img
-                    src="/assets/images/dashboard/icons/camp.svg"
-                    alt="category"
-                    className="w-6 h-6 ml-2"
-                  />
-                  <span className="ml-3 flex-1 whitespace-nowrap"> ایجاد پیوند کمپین</span>
                 </li>
               </Link>
               <Link

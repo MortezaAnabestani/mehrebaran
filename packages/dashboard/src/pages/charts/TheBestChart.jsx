@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchArticles } from "../../features/articlesSlice";
 import { fetchAuthors } from "../../features/authorsSlice";
-import { fetchHonors } from "../../features/honorsSlice";
 import {
   BarChart,
   PieChart,
@@ -25,13 +24,12 @@ import {
 const TheBestChart = () => {
   const { articles } = useSelector((state) => state.articles);
   const { authors } = useSelector((state) => state.authors);
-  const { honors } = useSelector((state) => state.honors);
   const dispatch = useDispatch();
 
   useEffect(() => {
     const loadInitialData = async () => {
       try {
-        await Promise.all([dispatch(fetchArticles()), dispatch(fetchAuthors()), dispatch(fetchHonors())]);
+        await Promise.all([dispatch(fetchArticles()), dispatch(fetchAuthors())]);
       } catch (err) {
         console.error("خطا در بارگذاری داده‌های اولیه:", err);
       }
@@ -43,7 +41,6 @@ const TheBestChart = () => {
   const processData = () => {
     const articleList = Array.isArray(articles?.articles) ? articles.articles : [];
     const authorList = Array.isArray(authors?.authors) ? authors?.authors : [];
-    const honorsList = Array.isArray(honors) ? honors : [];
 
     // پربازدیدترین مقالات
     const topViewedArticles = [...articleList]
@@ -100,26 +97,12 @@ const TheBestChart = () => {
       .slice(0, 8)
       .map(([name, count]) => ({ name, count }));
 
-    // جوایز و افتخارات
-    const honorsByAuthor = {};
-    honorsList.forEach((honor) => {
-      const authorName = honor.author?.name;
-      if (authorName) {
-        honorsByAuthor[authorName] = (honorsByAuthor[authorName] || 0) + 1;
-      }
-    });
-    const topHonoredAuthors = Object.entries(honorsByAuthor)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 5)
-      .map(([name, count]) => ({ name, count }));
-
     return {
       topViewedArticles,
       topRatedAuthors,
       mostProductiveAuthors,
       mostTaggedArticles,
       topTags,
-      topHonoredAuthors,
     };
   };
 
@@ -129,7 +112,6 @@ const TheBestChart = () => {
     mostProductiveAuthors,
     mostTaggedArticles,
     topTags,
-    topHonoredAuthors,
   } = processData();
 
   // پالت رنگ برای نمودارها
@@ -245,26 +227,6 @@ const TheBestChart = () => {
                 />
                 <Legend />
               </PieChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        {/* نویسندگان برنده جایزه */}
-        <div className="bg-white p-6 rounded-xl shadow-md">
-          <h2 className="text-xl text-right font-semibold text-gray-700 mb-4">وقایع‌نگاران برگزیده</h2>
-          <div className="h-80">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={topHonoredAuthors}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip
-                  formatter={(value) => [`${value} جایزه`, "تعداد جوایز"]}
-                  labelFormatter={(label) => `نویسنده: ${label}`}
-                />
-                <Legend />
-                <Bar dataKey="count" name="تعداد جوایز" fill="#FF6B6B" />
-              </BarChart>
             </ResponsiveContainer>
           </div>
         </div>

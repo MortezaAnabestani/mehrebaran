@@ -8,7 +8,6 @@ import { createArticle, updateArticle, fetchArticleBySlug, fetchArticles } from 
 import { fetchSections } from "../features/sectionsSlice";
 import { fetchAuthors } from "../features/authorsSlice";
 import { fetchTemplates } from "../features/templatesSlice";
-import { fetchIssueById, fetchIssues } from "../features/issuesSlice";
 import { fetchTags } from "../features/tagsSlice";
 
 const schema = yup.object().shape({
@@ -21,7 +20,6 @@ const schema = yup.object().shape({
   status: yup.string().oneOf(["draft", "published", "rejected"]).default("draft"),
   section: yup.string().required("انتخاب بخش اجباری است"),
   template: yup.string().required("انتخاب قالب اجباری است"),
-  issue: yup.string().required("انتخاب شماره اجباری است"),
   author: yup.string().required("انتخاب نویسنده اجباری است"),
   tags: yup.array(),
   relatedArticles: yup.array(),
@@ -54,7 +52,6 @@ const useArticleForm = (isEdit = false) => {
   const { sections } = useSelector((state) => state.sections);
   const { authors } = useSelector((state) => state.authors);
   const { templates } = useSelector((state) => state.templates);
-  const { issues } = useSelector((state) => state.issues);
   const { tags } = useSelector((state) => state.tags);
   const { articles } = useSelector((state) => state.articles);
 
@@ -79,7 +76,6 @@ const useArticleForm = (isEdit = false) => {
       content: "",
       metaDescription: "",
       section: "",
-      issue: "",
       author: "",
       tags: [],
       relatedArticles: [],
@@ -106,7 +102,6 @@ const useArticleForm = (isEdit = false) => {
       try {
         await Promise.all([
           dispatch(fetchTemplates()),
-          dispatch(fetchIssues()),
           dispatch(fetchSections()),
           dispatch(fetchAuthors({limit: 1000})),
           dispatch(fetchTags()),
@@ -129,32 +124,23 @@ const useArticleForm = (isEdit = false) => {
       // مرحله اول: فقط reset با template
       reset({
         template: selectedArticle?.template?._id || "",
-        issue: selectedArticle?.issue?._id || "",
         section: selectedArticle?.section?._id || "",
         author: selectedArticle?.author?._id || "",
       });
 
-      // مرحله دوم: پس از template و لود issues
+      // مرحله دوم: پس از template لود شدن
       setStep2Data({
         ready: true,
         article: selectedArticle,
       });
     }
-  }, [isEdit, selectedArticle, templates, reset, issues, sections, authors]);
+  }, [isEdit, selectedArticle, templates, reset, sections, authors]);
 
   // پر کردن فرم با داده‌های مقاله در حالت ویرایش
   useEffect(() => {
     if (!step2Data.ready || !step2Data.article) return;
 
     const { article } = step2Data;
-    // صبر کن تا IssueNumber لیست خودش رو آپدیت کنه
-    const issueExists = templates
-      ?.find((t) => t?._id === article?.template?._id)
-      ?.issues?.some((iss) => iss?._id === article?.issue?._id);
-
-    if (issueExists) {
-      setValue("issue", article?.issue?._id);
-    }
 
     // بقیه مقادیر
     setValue("status", article.status || "draft");
@@ -289,7 +275,6 @@ const useArticleForm = (isEdit = false) => {
       // افزودن فیلدهای ارتباطی
       if (data.section) formData.append("section", data.section);
       if (data.template) formData.append("template", data.template);
-      if (data.issue) formData.append("issue", data.issue);
       if (data.author) formData.append("author", data.author);
 
       if (removedServerImages.length > 0) {
@@ -396,7 +381,6 @@ const useArticleForm = (isEdit = false) => {
     sections,
     authors,
     templates,
-    issues,
     tags,
     loading,
     error,

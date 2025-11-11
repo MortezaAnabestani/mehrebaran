@@ -10,6 +10,7 @@ import articlesReducer from "../features/articlesSlice";
 import imageUploadCenterReducer from "../features/imageUploadCenter";
 import visitorReducer from "../features/visitorSlice";
 import viewReducer from "../features/viewSlice";
+import needsReducer from "../features/needsSlice";
 
 export const store = configureStore({
   reducer: {
@@ -24,6 +25,7 @@ export const store = configureStore({
     imageUploadCenter: imageUploadCenterReducer,
     visitor: visitorReducer,
     view: viewReducer,
+    needs: needsReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

@@ -14,6 +14,7 @@ const Tags = lazy(() => import("../pages/tags/Tags"));
 const Users = lazy(() => import("../pages/users/Users"));
 const Comments = lazy(() => import("../pages/comments/Comments"));
 const FAQs = lazy(() => import("../pages/faqs/FAQs"));
+const Needs = lazy(() => import("../pages/needs/Needs"));
 
 // صفحات کم‌استفاده یا سنگین (Lazy Load)
 const EditArticle = lazy(() => import("../pages/articles/EditArticle"));
@@ -25,6 +26,9 @@ const CreateGallery = lazy(() => import("../pages/galleries/CreateGallery"));
 const EditGallery = lazy(() => import("../pages/galleries/EditGallery"));
 const CreateFAQ = lazy(() => import("../pages/faqs/CreateFAQ"));
 const EditFAQ = lazy(() => import("../pages/faqs/EditFAQ"));
+const CreateNeed = lazy(() => import("../pages/needs/CreateNeed"));
+const EditNeed = lazy(() => import("../pages/needs/EditNeed"));
+const NeedDetails = lazy(() => import("../pages/needs/NeedDetails"));
 const Sections = lazy(() => import("../pages/sections/Sections"));
 const EditSection = lazy(() => import("../pages/sections/EditSection"));
 const CalendarPage = lazy(() => import("../pages/calendar/CalendarPage"));
@@ -66,6 +70,10 @@ const AppRouter = () => {
               <Route path="faqs" element={<FAQs />} />
               <Route path="faqs/create" element={<CreateFAQ />} />
               <Route path="faqs/edit/:id" element={<EditFAQ />} />
+              <Route path="needs" element={<Needs />} />
+              <Route path="needs/create" element={<CreateNeed />} />
+              <Route path="needs/edit/:id" element={<EditNeed />} />
+              <Route path="needs/:id" element={<NeedDetails />} />
               <Route path="sections" element={<Sections />} />
               <Route path="sections/edit/:id" element={<EditSection />} />
               <Route path="calendar" element={<CalendarPage />} />

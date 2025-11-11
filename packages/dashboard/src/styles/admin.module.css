@@ -1,0 +1,209 @@
+.dashboardWrapper {
+  display: flex;
+  min-height: 100vh;
+  max-height: max-content;
+  width: 100%;
+}
+
+.headerWrapper {
+  width: -webkit-fill-available;
+}
+
+.searchWrapper {
+  width: 25%;
+}
+
+.notificationWrapper {
+  width: 20%;
+}
+
+/* create content admin */
+.createContentWrapper {
+  padding: 15px;
+  width: 70%;
+  display: block;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+  border-radius: 5px;
+  margin-top: 10px;
+  margin-bottom: 30px;
+}
+
+.formWrapper {
+  width: 100%;
+  align-self: flex-start;
+  margin: 15px 0px;
+}
+
+.createContent_title {
+  margin: 20px 0px;
+  position: relative;
+}
+
+.createContent_title input {
+  height: 30px;
+  box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+}
+
+.createContent_title select {
+  width: -webkit-fill-available;
+  height: 30px;
+  border: none;
+  box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+  padding: 3px;
+  border-radius: 5px;
+  margin-right: 5px;
+  font-size: 11px;
+  outline: none;
+}
+
+input[type="file"]::-webkit-file-upload-button {
+  visibility: hidden;
+}
+input[type="file"]:before {
+  content: "انتخاب عکس";
+  width: 100%;
+  display: block;
+  text-align: center;
+  line-height: 25px;
+  color: white;
+}
+
+.createContent_delete,
+.createContent_delete_quotation {
+  position: absolute;
+  bottom: -21px;
+  left: 0;
+  margin-left: 15px;
+  color: white;
+  padding: 3px 10px;
+  border-bottom: none;
+  border-radius: 0 0 25px 25px;
+  box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+  background-color: #fd5b5e;
+  font-size: 10px;
+  cursor: pointer;
+}
+
+.createContent_delete_quotation {
+  bottom: -12px;
+}
+
+.createContent_title label,
+.createContent_tag label {
+  margin-right: 15px;
+  color: white;
+  padding: 2px 15px;
+  border-bottom: none;
+  border-radius: 3px 3px 0 0;
+  box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+  background-color: gray;
+}
+
+.imageCard {
+  padding: 1px;
+
+  border-radius: 10px;
+  box-shadow: rgba(14, 63, 126, 0.06) 0px 0px 0px 1px, rgba(42, 51, 70, 0.03) 0px 1px 1px -0.5px,
+    rgba(42, 51, 70, 0.04) 0px 2px 2px -1px, rgba(42, 51, 70, 0.04) 0px 3px 3px -1.5px,
+    rgba(42, 51, 70, 0.03) 0px 5px 5px -2.5px, rgba(42, 51, 70, 0.03) 0px 10px 10px -5px,
+    rgba(42, 51, 70, 0.03) 0px 24px 24px -8px;
+}
+
+.createContent_tag {
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+
+.createContent_tag_input {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.createContent_tag_input input {
+  width: 70%;
+  height: 30px;
+  border: none;
+  box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+  padding: 3px;
+  border-radius: 0 5px 5px 0;
+  margin-right: 5px;
+  font-size: 11px;
+  outline: none;
+}
+
+.createContent_tag_input button {
+  height: 29px;
+  width: 30%;
+  border-radius: 5px 0 0 5px;
+  border: none;
+  box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+  cursor: pointer;
+  background-color: #87ceeb;
+  color: black;
+  outline: none;
+  font-size: 11px;
+}
+
+.createContent_tag_input button:hover {
+  background-color: #92d7f2;
+}
+
+.selectedtags {
+  margin: 5px;
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+}
+.selectedtags button {
+  border: none;
+  outline: none;
+  color: red;
+  background-color: transparent;
+  cursor: pointer;
+  font-size: 14px;
+  margin-right: 3px;
+}
+
+.selectedtag {
+  padding: 2px 7px;
+  border-radius: 5px;
+  border: 1px solid #87ceeb;
+}
+
+.tagSuggest {
+  margin-right: 12px;
+  margin-left: 10px;
+  padding: 2px 7px;
+  border-radius: 0 0 5px 5px;
+  background-color: #e0f3fb;
+  font-size: 13px;
+  line-height: 25px;
+}
+.tagSuggest li {
+  border-bottom: 1px dotted #87ceeb;
+  cursor: pointer;
+}
+
+.tagSuggest li:last-child {
+  border-bottom: none;
+}
+
+@media only screen and (max-width: 768px) {
+  .searchWrapper {
+    width: 100%;
+  }
+  .notificationWrapper {
+    width: 100%;
+  }
+  .createContentWrapper {
+    width: 94%;
+  }
+}

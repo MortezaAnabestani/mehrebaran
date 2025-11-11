@@ -1,9 +1,152 @@
-@import "tailwindcss/preflight";
-@import "tailwindcss/utilities";
+@import "tailwindcss";
+
+@font-face {
+  font-display: "swap";
+  font-family: "Dibaj";
+  font-weight: 400;
+  font-style: normal;
+  src: url("/fonts/Dibaj-Regular.woff2") format("woff2");
+}
+
+@layer utilities {
+  .ltr {
+    direction: ltr;
+  }
+}
 
 * {
+  font-family: "Dibaj";
+}
+
+*::before,
+*::after {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
-  direction: rtl;
+  list-style-type: none;
+  text-decoration: none;
+}
+
+html,
+body {
+  width: 100%;
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+}
+
+input {
+  outline: none;
+  box-shadow: none;
+}
+
+input:focus,
+input:hover {
+  outline: none;
+  box-shadow: none;
+}
+
+/* custom scrollbar */
+::-webkit-scrollbar {
+  width: 20px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #d6dee1;
+  border-radius: 20px;
+  border: 6px solid transparent;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #a8bbbf;
+}
+
+/* custom allowed */
+.disabled {
+  color: gray; /* رنگ خاکستری */
+  opacity: 0.5; /* کاهش شفافیت */
+  cursor: not-allowed; /* نشانگر موس */
+  position: relative; /* برای نمایش پیام با ::after */
+}
+
+.disabled::after {
+  content: "شما دسترسی ندارید"; /* متن پیام */
+  position: absolute;
+  bottom: 16%; /* پیام بالای لینک ظاهر شود */
+  left: 21%;
+  transform: translateX(-50%);
+  background-color: black; /* پس‌زمینه پیام */
+  color: white; /* رنگ متن پیام */
+  padding: 5px 10px;
+  font-size: 12px;
+  border-radius: 5px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden; /* پیش‌فرض: پیام پنهان */
+  transition: opacity 0.3s, visibility 0.3s;
+  z-index: 1000; /* برای اطمینان از دیده‌شدن پیام */
+}
+
+.disabled:hover::after {
+  opacity: 1;
+  visibility: visible; /* نمایش پیام هنگام hover */
+}
+
+.disabled.no-click {
+  pointer-events: none; /* جلوگیری از کلیک */
+}
+
+/*custom editor*/
+@media (max-width: 768px) {
+  .tox.tox-tinymce {
+    height: 300px !important; /* تنظیم ارتفاع برای نمایش ویرایشگر در موبایل */
+    min-height: 300px !important;
+  }
+
+  .tox-editor-container {
+    height: 100% !important;
+  }
+
+  .tox .tox-toolbar {
+    flex-wrap: wrap !important;
+  }
+}
+
+/* star shape */
+.star {
+  width: 300px;
+  aspect-ratio: 1;
+  background: #f8ca00;
+
+  clip-path: polygon(
+    50% 0,
+    calc(50% * (1 + sin(0.4turn))) calc(50% * (1 - cos(0.4turn))),
+    calc(50% * (1 - sin(0.2turn))) calc(50% * (1 - cos(0.2turn))),
+    calc(50% * (1 + sin(0.2turn))) calc(50% * (1 - cos(0.2turn))),
+    calc(50% * (1 - sin(0.4turn))) calc(50% * (1 - cos(0.4turn)))
+  );
+}
+
+.star1 {
+  width: 315px;
+  aspect-ratio: 1;
+  margin-right: -7px;
+  margin-top: -7px;
+  clip-path: polygon(
+    50% 0,
+    calc(50% * (1 + sin(0.4turn))) calc(50% * (1 - cos(0.4turn))),
+    calc(50% * (1 - sin(0.2turn))) calc(50% * (1 - cos(0.2turn))),
+    calc(50% * (1 + sin(0.2turn))) calc(50% * (1 - cos(0.2turn))),
+    calc(50% * (1 - sin(0.4turn))) calc(50% * (1 - cos(0.4turn)))
+  );
 }

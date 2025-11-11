@@ -532,6 +532,59 @@ const Sidebar = ({ sidebarOpen, me }) => {
                 )}
               </div>
 
+              {/* بخش اعلانات */}
+              <div>
+                <li className="relative text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group ">
+                  <img
+                    src="/assets/images/dashboard/icons/bell.svg"
+                    alt="notifications"
+                    className="w-6 h-6 ml-2"
+                  />
+                  <span className="ml-3 flex-1 whitespace-nowrap"> اعلانات</span>
+                  <img
+                    src="/assets/images/dashboard/icons/downArrow.svg"
+                    className="h-6 w-6 absolute top-2 left-2 cursor-pointer"
+                    style={menuToggle === 16 ? { rotate: "90deg" } : { rotate: "0deg" }}
+                    onClick={() => toggleHandler(16)}
+                    alt="down arrow icon"
+                  />
+                </li>
+                {menuToggle === 16 && (
+                  <div className="flex flex-col w-full justify-start items-start bg-gray-50">
+                    <Link
+                      rel="preconnect"
+                      to={"/dashboard/notifications"}
+                      className={`${pathname === "/dashboard/notifications" && !pathname.includes("/settings") && !pathname.includes("/push-tokens") ? "bg-gray-100" : ""} w-full`}
+                    >
+                      <li className="text-base text-gray-900 text-[14px]  font-normal rounded-lg hover:bg-gray-100 flex items-start p-2 group cursor-pointer">
+                        <span className="mr-5 text-red-300">*</span>
+                        <span className="d-block mr-1 flex-1 whitespace-nowrap">لیست اعلانات</span>
+                      </li>
+                    </Link>
+                    <Link
+                      rel="preconnect"
+                      to={"/dashboard/notifications/settings"}
+                      className={`${pathname === "/dashboard/notifications/settings" ? "bg-gray-100" : ""} w-full`}
+                    >
+                      <li className="text-base text-gray-900 text-[14px]  font-normal rounded-lg hover:bg-gray-100 flex items-start p-2 group cursor-pointer">
+                        <span className="mr-5 text-red-300">*</span>
+                        <span className="d-block mr-1 flex-1 whitespace-nowrap">تنظیمات اعلانات</span>
+                      </li>
+                    </Link>
+                    <Link
+                      rel="preconnect"
+                      to={"/dashboard/notifications/push-tokens"}
+                      className={`${pathname === "/dashboard/notifications/push-tokens" ? "bg-gray-100" : ""} w-full`}
+                    >
+                      <li className="text-base text-gray-900 text-[14px]  font-normal rounded-lg hover:bg-gray-100 flex items-start p-2 group cursor-pointer">
+                        <span className="mr-5 text-red-300">*</span>
+                        <span className="d-block mr-1 flex-1 whitespace-nowrap">مدیریت دستگاه‌ها</span>
+                      </li>
+                    </Link>
+                  </div>
+                )}
+              </div>
+
               <div className={`${me?.role === "admin" && "disabled"}`}>
                 <li className="relative text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group">
                   <img

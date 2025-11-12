@@ -8,12 +8,13 @@ import WhatWeDidSection from "@/components/features/home/WhatWeDidSection";
 import { getSetting } from "@/services/setting.service";
 import { getProjects } from "@/services/project.service";
 import { getNews } from "@/services/news.service";
-import { IHomePageHeroSetting, IBlogBackgroundSetting } from "common-types";
+import { IHomePageHeroSetting, IBlogBackgroundSetting, IWhatWeDidStatistics } from "common-types";
 
 export default async function Home() {
-  const [heroSettings, blogBgSettings, projectsResponse, newsResponse] = await Promise.all([
+  const [heroSettings, blogBgSettings, whatWeDidStats, projectsResponse, newsResponse] = await Promise.all([
     getSetting("homePageHero") as Promise<IHomePageHeroSetting | null>,
     getSetting("blogBackground") as Promise<IBlogBackgroundSetting | null>,
+    getSetting("whatWeDidStatistics") as Promise<IWhatWeDidStatistics | null>,
     getProjects({ status: "active", limit: 3, sort: "-createdAt" }),
     getNews({ limit: 8, sort: "-createdAt" }),
   ]);
@@ -22,7 +23,7 @@ export default async function Home() {
     <section>
       <HeroSection settings={heroSettings} />
       <main className="md:w-8/10 container mx-auto flex-grow">
-        <WhatWeDidSection />
+        <WhatWeDidSection statistics={whatWeDidStats} />
 
         <RunningProjectsSection projects={projectsResponse.data} />
         <NewsSection newsItems={newsResponse.data} />

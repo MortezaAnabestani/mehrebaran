@@ -6,9 +6,9 @@ export type DonationStatus = "pending" | "completed" | "failed" | "refunded" | "
 export type Currency = "IRT" | "USD";
 
 export interface IDonorInfo {
-  name: string;
+  fullName?: string;
   email?: string;
-  phone?: string;
+  mobile?: string;
   isAnonymous: boolean;
 }
 

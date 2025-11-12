@@ -3,9 +3,9 @@ import { IDonation } from "common-types";
 
 const donorInfoSchema = new Schema(
   {
-    name: { type: String, required: true },
+    fullName: { type: String },
     email: { type: String },
-    phone: { type: String },
+    mobile: { type: String },
     isAnonymous: { type: Boolean, default: false },
   },
   { _id: false }

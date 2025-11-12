@@ -12,9 +12,9 @@ export const createDonationSchema = z.object({
     }),
     donorInfo: z
       .object({
-        name: z.string().min(2, "نام باید حداقل ۲ حرف باشد.").optional(),
+        fullName: z.string().min(2, "نام باید حداقل ۲ حرف باشد.").optional(),
         email: z.string().email("ایمیل نامعتبر است.").optional(),
-        phone: z
+        mobile: z
           .string()
           .regex(/^09\d{9}$/, "شماره موبایل نامعتبر است.")
           .optional(),

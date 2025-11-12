@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { donationService } from "./donation.service";
+import { DonationModel } from "./donation.model";
 import {
   createDonationSchema,
   uploadReceiptSchema,
@@ -173,9 +174,10 @@ class DonationController {
     }
 
     // Update donation with authority code
-    donation.authority = paymentResult.authority;
-    donation.paymentGateway = "zarinpal";
-    await donation.save();
+    await DonationModel.findByIdAndUpdate(donationId, {
+      authority: paymentResult.authority,
+      paymentGateway: "zarinpal",
+    });
 
     res.status(200).json({
       message: "درخواست پرداخت با موفقیت ایجاد شد.",
@@ -223,18 +225,12 @@ class DonationController {
 
     if (!verificationResult.success) {
       // Update donation status to failed
-      await donationService.updateStatus(donationId, "rejected");
+      await donationService.updateStatus(donationId, "failed");
       throw new ApiError(400, verificationResult.error || "تایید پرداخت با خطا مواجه شد.");
     }
 
-    // Update donation with payment details
-    donation.status = "completed";
-    donation.transactionId = verificationResult.refId;
-    donation.refId = verificationResult.refId;
-    await donation.save();
-
-    // Manually trigger project updates (since pre-save hook might not fire)
-    await donationService.updateStatus(donationId, "completed");
+    // Update donation with payment details and trigger project updates
+    await donationService.updateStatus(donationId, "completed", verificationResult.refId);
 
     // Generate certificate
     let certificateUrl = donation.certificateUrl;
@@ -246,9 +242,12 @@ class DonationController {
             donation as any,
             project as any
           );
-          donation.certificateUrl = certificateUrl;
-          donation.certificateGenerated = true;
-          await donation.save();
+          // Update donation with certificate
+          await DonationModel.findByIdAndUpdate(donationId, {
+            certificateUrl,
+            certificateGenerated: true,
+            certificateGeneratedAt: new Date(),
+          });
         }
       } catch (error) {
         console.error("Failed to generate certificate:", error);
@@ -256,10 +255,13 @@ class DonationController {
       }
     }
 
+    // Re-fetch donation to get updated data
+    const updatedDonation = await donationService.findById(donationId);
+
     res.status(200).json({
       message: "پرداخت شما با موفقیت تایید شد. از حمایت شما سپاسگزاریم!",
       data: {
-        donation,
+        donation: updatedDonation,
         refId: verificationResult.refId,
         certificateUrl,
       },

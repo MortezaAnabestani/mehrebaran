@@ -417,7 +417,7 @@ class CertificateService {
       await page.setContent(html, { waitUntil: "networkidle0" });
 
       await page.screenshot({
-        path: outputPath,
+        path: outputPath as `${string}.png`,
         type: "png",
         fullPage: false,
       });

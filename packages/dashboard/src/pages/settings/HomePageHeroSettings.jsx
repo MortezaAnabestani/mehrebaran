@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getSettingByKey, updateSettingByKey, clearMessages } from "../../features/settingsSlice";
-import { Card, CardBody, Typography, Input, Textarea, Button } from "@material-tailwind/react";
+import styles from "../../styles/admin.module.css";
 
 const HomePageHeroSettings = () => {
   const dispatch = useDispatch();
@@ -14,6 +14,9 @@ const HomePageHeroSettings = () => {
     mobileImage: "",
   });
 
+  const [previewDesktop, setPreviewDesktop] = useState("");
+  const [previewMobile, setPreviewMobile] = useState("");
+
   // بارگذاری تنظیمات فعلی
   useEffect(() => {
     dispatch(getSettingByKey("homePageHero"));
@@ -22,12 +25,15 @@ const HomePageHeroSettings = () => {
   // پر کردن فرم با داده‌های موجود
   useEffect(() => {
     if (settings.homePageHero) {
-      setFormData({
+      const data = {
         title: settings.homePageHero.title || "",
-        description: settings.homePageHero.subtitle || "",
+        description: settings.homePageHero.description || settings.homePageHero.subtitle || "",
         desktopImage: settings.homePageHero.image?.desktop || "",
         mobileImage: settings.homePageHero.image?.mobile || "",
-      });
+      };
+      setFormData(data);
+      setPreviewDesktop(data.desktopImage);
+      setPreviewMobile(data.mobileImage);
     }
   }, [settings.homePageHero]);
 
@@ -47,6 +53,13 @@ const HomePageHeroSettings = () => {
       ...prev,
       [name]: value,
     }));
+
+    // بروزرسانی پیش‌نمایش
+    if (name === "desktopImage") {
+      setPreviewDesktop(value);
+    } else if (name === "mobileImage") {
+      setPreviewMobile(value);
+    }
   };
 
   const handleSubmit = (e) => {
@@ -54,7 +67,7 @@ const HomePageHeroSettings = () => {
 
     const value = {
       title: formData.title,
-      subtitle: formData.description,
+      description: formData.description, // تغییر از subtitle به description
       image: {
         desktop: formData.desktopImage,
         mobile: formData.mobileImage,
@@ -65,134 +78,158 @@ const HomePageHeroSettings = () => {
   };
 
   return (
-    <div className="bg-white rounded-md p-6">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-medium">تنظیمات Hero Section صفحه اصلی</h2>
+    <div>
+      <div className="bg-white rounded-md mb-6">
+        <div className="flex items-center justify-between p-4">
+          <h2 className="text-xl font-medium">تنظیمات Hero Section صفحه اصلی</h2>
+        </div>
       </div>
 
       {/* پیام‌ها */}
       {successMessage && (
-        <div className="mb-4 p-4 bg-green-100 text-green-700 rounded-md">{successMessage}</div>
+        <div
+          className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4"
+          role="alert"
+        >
+          <strong className="font-bold ml-1">موفقیت!</strong>
+          <span className="block sm:inline">{successMessage}</span>
+        </div>
       )}
-      {error && <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-md">{error}</div>}
 
-      <Card>
-        <CardBody>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* عنوان */}
-            <div>
-              <Typography variant="h6" color="blue-gray" className="mb-2">
-                عنوان
-              </Typography>
-              <Input
-                type="text"
-                name="title"
-                value={formData.title}
-                onChange={handleChange}
-                label="عنوان صفحه اصلی"
-                required
+      {error && (
+        <div
+          className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"
+          role="alert"
+        >
+          <strong className="font-bold ml-1">خطا!</strong>
+          <span className="block sm:inline">{error}</span>
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit}>
+        {/* عنوان */}
+        <div className={styles.createContent_title}>
+          <label className="text-[12px] mb-0" htmlFor="title">
+            عنوان
+          </label>
+          <input
+            type="text"
+            id="title"
+            name="title"
+            value={formData.title}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border rounded-md border-gray-300 h-10"
+            required
+          />
+        </div>
+
+        {/* توضیحات */}
+        <div className={`${styles.createContent_title} mb-10`}>
+          <label className="text-[12px] mb-0" htmlFor="description">
+            توضیحات
+          </label>
+          <textarea
+            id="description"
+            name="description"
+            value={formData.description}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border rounded-md border-gray-300 focus:border-gray-500 outline-none transition"
+            rows={4}
+            required
+          />
+        </div>
+
+        {/* تصویر دسکتاپ */}
+        <div className={`${styles.createContent_title} mb-10`}>
+          <label className="text-[12px] mb-0" htmlFor="desktopImage">
+            URL تصویر دسکتاپ
+          </label>
+          <input
+            type="url"
+            id="desktopImage"
+            name="desktopImage"
+            value={formData.desktopImage}
+            onChange={handleChange}
+            placeholder="https://example.com/image.jpg"
+            className="w-full px-4 py-2 border rounded-md border-gray-300 h-10"
+            required
+          />
+          {previewDesktop && (
+            <div className="mt-3">
+              <p className="text-xs text-gray-600 mb-2">پیش‌نمایش تصویر دسکتاپ:</p>
+              <img
+                src={previewDesktop}
+                alt="پیش‌نمایش دسکتاپ"
+                className="w-full max-w-2xl h-64 object-cover rounded-md border border-gray-300"
+                onError={(e) => {
+                  e.target.style.display = "none";
+                }}
               />
             </div>
+          )}
+        </div>
 
-            {/* توضیحات */}
-            <div>
-              <Typography variant="h6" color="blue-gray" className="mb-2">
-                توضیحات
-              </Typography>
-              <Textarea
-                name="description"
-                value={formData.description}
-                onChange={handleChange}
-                label="توضیحات صفحه اصلی"
-                rows={4}
-                required
+        {/* تصویر موبایل */}
+        <div className={`${styles.createContent_title} mb-10`}>
+          <label className="text-[12px] mb-0" htmlFor="mobileImage">
+            URL تصویر موبایل
+          </label>
+          <input
+            type="url"
+            id="mobileImage"
+            name="mobileImage"
+            value={formData.mobileImage}
+            onChange={handleChange}
+            placeholder="https://example.com/image-mobile.jpg"
+            className="w-full px-4 py-2 border rounded-md border-gray-300 h-10"
+            required
+          />
+          {previewMobile && (
+            <div className="mt-3">
+              <p className="text-xs text-gray-600 mb-2">پیش‌نمایش تصویر موبایل:</p>
+              <img
+                src={previewMobile}
+                alt="پیش‌نمایش موبایل"
+                className="w-64 h-64 object-cover rounded-md border border-gray-300"
+                onError={(e) => {
+                  e.target.style.display = "none";
+                }}
               />
             </div>
+          )}
+        </div>
 
-            {/* تصویر دسکتاپ */}
-            <div>
-              <Typography variant="h6" color="blue-gray" className="mb-2">
-                URL تصویر دسکتاپ
-              </Typography>
-              <Input
-                type="url"
-                name="desktopImage"
-                value={formData.desktopImage}
-                onChange={handleChange}
-                label="مثال: https://example.com/image.jpg"
-                required
-              />
-              {formData.desktopImage && (
-                <div className="mt-2">
-                  <Typography variant="small" color="gray" className="mb-2">
-                    پیش‌نمایش تصویر دسکتاپ:
-                  </Typography>
-                  <img
-                    src={formData.desktopImage}
-                    alt="پیش‌نمایش دسکتاپ"
-                    className="w-full h-48 object-cover rounded-md"
-                    onError={(e) => {
-                      e.target.style.display = "none";
-                    }}
-                  />
-                </div>
-              )}
-            </div>
-
-            {/* تصویر موبایل */}
-            <div>
-              <Typography variant="h6" color="blue-gray" className="mb-2">
-                URL تصویر موبایل
-              </Typography>
-              <Input
-                type="url"
-                name="mobileImage"
-                value={formData.mobileImage}
-                onChange={handleChange}
-                label="مثال: https://example.com/image-mobile.jpg"
-                required
-              />
-              {formData.mobileImage && (
-                <div className="mt-2">
-                  <Typography variant="small" color="gray" className="mb-2">
-                    پیش‌نمایش تصویر موبایل:
-                  </Typography>
-                  <img
-                    src={formData.mobileImage}
-                    alt="پیش‌نمایش موبایل"
-                    className="w-48 h-48 object-cover rounded-md"
-                    onError={(e) => {
-                      e.target.style.display = "none";
-                    }}
-                  />
-                </div>
-              )}
-            </div>
-
-            {/* دکمه ذخیره */}
-            <div className="flex gap-4">
-              <Button type="submit" color="blue" disabled={loading}>
-                {loading ? "در حال ذخیره..." : "ذخیره تنظیمات"}
-              </Button>
-            </div>
-          </form>
-        </CardBody>
-      </Card>
+        {/* دکمه ذخیره */}
+        <div className="mt-6 text-left">
+          <button
+            type="submit"
+            disabled={loading}
+            className={`px-3 w-full lg:w-[120px] cursor-pointer py-[6px] ${
+              loading ? "bg-gray-400" : "bg-gray-600 hover:bg-gray-700"
+            } rounded-md text-white`}
+          >
+            {loading ? (
+              <div className="flex items-center justify-center">
+                <div className="animate-spin h-4 w-4 border-2 border-white rounded-full border-t-transparent mr-2"></div>
+                <span>در حال ذخیره...</span>
+              </div>
+            ) : (
+              "ذخیره تنظیمات"
+            )}
+          </button>
+        </div>
+      </form>
 
       {/* راهنما */}
-      <Card className="mt-6 bg-blue-50">
-        <CardBody>
-          <Typography variant="h6" color="blue-gray" className="mb-2">
-            💡 راهنما
-          </Typography>
-          <ul className="list-disc mr-6 space-y-1 text-sm text-gray-700">
-            <li>تصاویر باید به صورت URL کامل وارد شوند</li>
-            <li>برای آپلود تصویر، از بخش "مرکز فضای ابری" استفاده کنید</li>
-            <li>پس از آپلود، URL تصویر را کپی کرده و اینجا وارد کنید</li>
-            <li>توصیه می‌شود تصویر دسکتاپ با ابعاد 1920x1080 و تصویر موبایل با ابعاد 768x1024 باشد</li>
-          </ul>
-        </CardBody>
-      </Card>
+      <div className="bg-blue-50 rounded-md p-4 mt-6 border border-blue-200">
+        <h3 className="font-semibold text-gray-800 mb-2">💡 راهنما</h3>
+        <ul className="list-disc mr-6 space-y-1 text-sm text-gray-700">
+          <li>تصاویر باید به صورت URL کامل وارد شوند</li>
+          <li>برای آپلود تصویر، از بخش "مرکز فضای ابری" استفاده کنید</li>
+          <li>پس از آپلود، URL تصویر را کپی کرده و اینجا وارد کنید</li>
+          <li>توصیه می‌شود تصویر دسکتاپ با ابعاد 1920x1080 و تصویر موبایل با ابعاد 768x1024 باشد</li>
+        </ul>
+      </div>
     </div>
   );
 };

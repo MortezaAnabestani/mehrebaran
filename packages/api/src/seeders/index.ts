@@ -8,7 +8,6 @@ import { seedGamification } from "./gamification.seeder";
 import { seedCategories } from "./category.seeder";
 import { seedAuthors } from "./author.seeder";
 import { seedTags } from "./tag.seeder";
-import { seedSections } from "./section.seeder";
 import { seedArticles } from "./article.seeder";
 import { seedNews } from "./news.seeder";
 import { seedVideos } from "./video.seeder";
@@ -64,9 +63,6 @@ async function runSeeders() {
     const tags = await seedTags();
     console.log("");
 
-    const sections = await seedSections();
-    console.log("");
-
     const articles = await seedArticles();
     console.log("");
 
@@ -118,7 +114,6 @@ async function runSeeders() {
     console.log(`  ✓ ${categories.length} categories created`);
     console.log(`  ✓ ${authors.length} authors created`);
     console.log(`  ✓ ${tags.length} tags created`);
-    console.log(`  ✓ ${sections.length} sections created`);
     console.log(`  ✓ ${articles.length} articles created`);
     console.log(`  ✓ ${news.length} news items created`);
     console.log(`  ✓ ${videos.length} videos created`);

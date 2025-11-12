@@ -1,7 +1,7 @@
 import { NewsModel } from "../modules/news/news.model";
-import { AuthorModel } from "../modules/authors/author.model";
+import { AuthorModel } from "../modules/author/author.model";
 import { CategoryModel } from "../modules/categories/category.model";
-import { TagModel } from "../modules/tags/tag.model";
+import { TagModel } from "../modules/tag/tag.model";
 
 /**
  * News Seeder - ایجاد اخبار فیک

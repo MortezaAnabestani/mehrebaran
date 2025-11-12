@@ -1,7 +1,7 @@
 import { ArticleModel } from "../modules/blog/articles/article.model";
-import { AuthorModel } from "../modules/authors/author.model";
+import { AuthorModel } from "../modules/author/author.model";
 import { CategoryModel } from "../modules/categories/category.model";
-import { TagModel } from "../modules/tags/tag.model";
+import { TagModel } from "../modules/tag/tag.model";
 
 /**
  * Article Seeder - ایجاد مقالات فیک

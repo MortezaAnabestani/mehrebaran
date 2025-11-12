@@ -1,7 +1,7 @@
 import { GalleryModel } from "../modules/blog/gallery/gallery.model";
-import { AuthorModel } from "../modules/authors/author.model";
+import { AuthorModel } from "../modules/author/author.model";
 import { CategoryModel } from "../modules/categories/category.model";
-import { TagModel } from "../modules/tags/tag.model";
+import { TagModel } from "../modules/tag/tag.model";
 
 /**
  * Gallery Seeder - ایجاد گالری‌های تصویری

@@ -141,6 +141,45 @@ const Sidebar = ({ sidebarOpen, me }) => {
                   </Link>
                 </div>
               )}
+              <li className="relative text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group">
+                <img
+                  src="/assets/images/dashboard/icons/video_playlist.svg"
+                  alt="videos"
+                  className="w-6 h-6 ml-2"
+                />
+                <span className="ml-3 flex-1 whitespace-nowrap">ویدئوها</span>
+                <img
+                  src="/assets/images/dashboard/icons/downArrow.svg"
+                  className="h-6 w-6 absolute top-2 left-2 cursor-pointer"
+                  style={menuToggle === 10 ? { rotate: "90deg" } : { rotate: "0deg" }}
+                  onClick={() => toggleHandler(10)}
+                  alt="down arrow icon 10"
+                />
+              </li>
+              {menuToggle === 10 && (
+                <div className="flex flex-col w-full justify-start items-start bg-gray-50">
+                  <Link
+                    rel="preconnect"
+                    to={"/dashboard/videos/create"}
+                    className={`${pathname === "/dashboard/videos/create" ? "bg-gray-100" : ""} w-full`}
+                  >
+                    <li className="text-base text-gray-900 text-[14px] font-normal rounded-lg hover:bg-gray-100 flex items-start p-2 group cursor-pointer">
+                      <span className="mr-5 text-purple-400">*</span>
+                      <span className="d-block mr-1 flex-1 whitespace-nowrap">ایجاد ویدئوی جدید</span>
+                    </li>
+                  </Link>
+                  <Link
+                    rel="preconnect"
+                    to={"/dashboard/videos"}
+                    className={`${pathname === "/dashboard/videos" ? "bg-gray-100" : ""} w-full`}
+                  >
+                    <li className="text-base text-gray-900 text-[14px] font-normal rounded-lg hover:bg-gray-100 flex items-start p-2 group cursor-pointer">
+                      <span className="mr-5 text-purple-400">*</span>
+                      <span className="d-block mr-1 flex-1 whitespace-nowrap">فهرست ویدئوها</span>
+                    </li>
+                  </Link>
+                </div>
+              )}
               <div>
                 <li className="relative text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group ">
                   <img

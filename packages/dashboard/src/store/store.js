@@ -19,6 +19,7 @@ import socialReducer from "../features/socialSlice";
 import notificationsReducer from "../features/notificationsSlice";
 import settingsReducer from "../features/settingsSlice";
 import newsReducer from "../features/newsSlice";
+import videosReducer from "../features/videosSlice";
 
 export const store = configureStore({
   reducer: {
@@ -42,6 +43,7 @@ export const store = configureStore({
     notifications: notificationsReducer,
     settings: settingsReducer,
     news: newsReducer,
+    videos: videosReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

@@ -2,6 +2,7 @@ import { NewsModel } from "../modules/news/news.model";
 import { AuthorModel } from "../modules/author/author.model";
 import { CategoryModel } from "../modules/categories/category.model";
 import { TagModel } from "../modules/tag/tag.model";
+import { createPersianSlug } from "../core/utils/slug.utils";
 
 /**
  * News Seeder - ایجاد اخبار فیک
@@ -35,7 +36,8 @@ export async function seedNews() {
 کودکان این روستا پیش از این باید ۱۰ کیلومتر پیاده‌روی می‌کردند تا به نزدیکترین مدرسه برسند. حالا با افتتاح این مدرسه، آموزش در دسترس آن‌ها قرار گرفته است.
 
 مدیر پروژه گفت: "این فقط شروع است. ما قصد داریم در سال‌های آینده امکانات بیشتری به این مدرسه اضافه کنیم و کیفیت آموزش را بهبود بخشیم."`,
-        excerpt: "مدرسه جدید با ظرفیت ۲۰۰ دانش‌آموز در روستای محروم افتتاح شد و دسترسی کودکان به آموزش را تسهیل کرد.",
+        excerpt:
+          "مدرسه جدید با ظرفیت ۲۰۰ دانش‌آموز در روستای محروم افتتاح شد و دسترسی کودکان به آموزش را تسهیل کرد.",
         featuredImage: {
           desktop: "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=800",
           mobile: "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=400",
@@ -119,7 +121,8 @@ export async function seedNews() {
 تمام آثار نمایش داده شده برای فروش عرضه شد و درآمد آن به خود کودکان و خانواده‌هایشان اختصاص یافت. بازدیدکنندگان با استقبال گرم از این آثار، علاوه بر حمایت مالی، پیام محبت و امید را به این کودکان رساندند.
 
 سازمان‌دهندگان جشنواره اعلام کردند که این رویداد سالانه برگزار خواهد شد و کارگاه‌های هنری رایگان برای کودکان کار در طول سال ادامه خواهد داشت.`,
-        excerpt: "جشنواره هنری کودکان کار با نمایش آثار ۱۰۰ کودک و فروش آن‌ها برای حمایت از این کودکان برگزار شد.",
+        excerpt:
+          "جشنواره هنری کودکان کار با نمایش آثار ۱۰۰ کودک و فروش آن‌ها برای حمایت از این کودکان برگزار شد.",
         featuredImage: {
           desktop: "https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=800",
           mobile: "https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=400",
@@ -204,7 +207,8 @@ export async function seedNews() {
 شرکت‌کنندگان با اپلیکیشنی آشنا شدند که رستوران‌ها را با سازمان‌های خیریه مرتبط می‌کند تا غذاهای اضافی به جای دور ریختن، به نیازمندان اهدا شود. همچنین راهکارهایی برای بهینه‌سازی انبار و سفارش مواد اولیه ارائه شد.
 
 چند رستوران بزرگ قول دادند که از این پس غذاهای اضافی خود را به بانک غذا اهدا کنند. این تنها قدم اول است و امیدواریم این حرکت گسترش یابد.`,
-        excerpt: "کارگاه آموزش کاهش ضایعات غذایی برای رستوران‌داران برگزار شد و راهکارهای اهدای غذای اضافی آموزش داده شد.",
+        excerpt:
+          "کارگاه آموزش کاهش ضایعات غذایی برای رستوران‌داران برگزار شد و راهکارهای اهدای غذای اضافی آموزش داده شد.",
         featuredImage: {
           desktop: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800",
           mobile: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400",
@@ -248,8 +252,19 @@ export async function seedNews() {
     ];
 
     // ایجاد اخبار
-    const news = await NewsModel.insertMany(newsData.filter((n) => n.category && n.author));
-    console.log(`  ✓ Created ${news.length} news items (${newsData.filter((n) => n.status === "published").length} published, ${newsData.filter((n) => n.status === "draft").length} draft)`);
+    const validNews = newsData
+      .filter((n) => n.category && n.author)
+      .map((n) => ({
+        ...n,
+        slug: createPersianSlug(n.title),
+      }));
+
+    const news = await NewsModel.insertMany(validNews);
+    console.log(
+      `  ✓ Created ${news.length} news items (${
+        newsData.filter((n) => n.status === "published").length
+      } published, ${newsData.filter((n) => n.status === "draft").length} draft)`
+    );
 
     return news;
   } catch (error) {

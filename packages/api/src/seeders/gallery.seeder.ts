@@ -2,6 +2,7 @@ import { GalleryModel } from "../modules/blog/gallery/gallery.model";
 import { AuthorModel } from "../modules/author/author.model";
 import { CategoryModel } from "../modules/categories/category.model";
 import { TagModel } from "../modules/tag/tag.model";
+import { createPersianSlug } from "../core/utils/slug.utils";
 
 /**
  * Gallery Seeder - ایجاد گالری‌های تصویری
@@ -207,7 +208,14 @@ export async function seedGalleries() {
     ];
 
     // ایجاد گالری‌ها
-    const galleries = await GalleryModel.insertMany(galleryData.filter((g) => g.images && g.images.length > 0));
+    const validGalleries = galleryData
+      .filter((g) => g.images && g.images.length > 0)
+      .map((g) => ({
+        ...g,
+        slug: createPersianSlug(g.title),
+      }));
+
+    const galleries = await GalleryModel.insertMany(validGalleries);
     console.log(`  ✓ Created ${galleries.length} galleries`);
 
     return galleries;

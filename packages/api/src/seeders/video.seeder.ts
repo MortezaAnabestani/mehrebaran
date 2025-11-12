@@ -2,6 +2,7 @@ import { VideoModel } from "../modules/blog/videos/video.model";
 import { AuthorModel } from "../modules/author/author.model";
 import { CategoryModel } from "../modules/categories/category.model";
 import { TagModel } from "../modules/tag/tag.model";
+import { createPersianSlug } from "../core/utils/slug.utils";
 
 /**
  * Video Seeder - ایجاد ویدیوهای فیک
@@ -240,8 +241,19 @@ export async function seedVideos() {
     ];
 
     // ایجاد ویدیوها
-    const videos = await VideoModel.insertMany(videoData.filter((v) => v.coverImage && v.videoUrl));
-    console.log(`  ✓ Created ${videos.length} videos (${videoData.filter((v) => v.status === "published").length} published, ${videoData.filter((v) => v.status === "draft").length} draft)`);
+    const validVideos = videoData
+      .filter((v) => v.coverImage && v.videoUrl)
+      .map((v) => ({
+        ...v,
+        slug: createPersianSlug(v.title),
+      }));
+
+    const videos = await VideoModel.insertMany(validVideos);
+    console.log(
+      `  ✓ Created ${videos.length} videos (${
+        videoData.filter((v) => v.status === "published").length
+      } published, ${videoData.filter((v) => v.status === "draft").length} draft)`
+    );
 
     return videos;
   } catch (error) {

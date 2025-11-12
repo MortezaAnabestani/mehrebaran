@@ -1,5 +1,6 @@
 import { ProjectModel } from "../modules/projects/project.model";
 import { CategoryModel } from "../modules/categories/category.model";
+import { createPersianSlug } from "../core/utils/slug.utils";
 
 /**
  * Project Seeder - ایجاد پروژه‌های خیریه با تنظیمات کمک مالی و داوطلبی
@@ -347,9 +348,18 @@ export async function seedProjects() {
     ];
 
     // ایجاد پروژه‌ها
-    const projects = await ProjectModel.insertMany(projectData.filter((p) => p.category));
+    const validProjects = projectData
+      .filter((p) => p.category)
+      .map((p) => ({
+        ...p,
+        slug: createPersianSlug(p.title),
+      }));
+
+    const projects = await ProjectModel.insertMany(validProjects);
     console.log(
-      `  ✓ Created ${projects.length} projects (${projectData.filter((p) => p.status === "active").length} active, ${projectData.filter((p) => p.status === "completed").length} completed)`
+      `  ✓ Created ${projects.length} projects (${
+        projectData.filter((p) => p.status === "active").length
+      } active, ${projectData.filter((p) => p.status === "completed").length} completed)`
     );
 
     return projects;

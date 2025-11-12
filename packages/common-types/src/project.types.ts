@@ -28,6 +28,7 @@ export interface IProject {
   collectedVolunteer: number;
   views: number;
   deadline: Date;
+  isFeaturedInCompleted?: boolean; // نمایش در صفحه پروژه‌های تکمیل شده
   createdAt: Date;
   updatedAt: Date;
 }

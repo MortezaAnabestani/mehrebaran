@@ -43,6 +43,9 @@ const PushTokens = lazy(() => import("../pages/notifications/PushTokens"));
 const SiteSettings = lazy(() => import("../pages/settings/SiteSettings"));
 const HomePageHeroSettings = lazy(() => import("../pages/settings/HomePageHeroSettings"));
 const BlogBackgroundSettings = lazy(() => import("../pages/settings/BlogBackgroundSettings"));
+const WhatWeDidStatisticsSettings = lazy(() => import("../pages/settings/WhatWeDidStatisticsSettings"));
+const CompletedProjectsPageSettings = lazy(() => import("../pages/settings/CompletedProjectsPageSettings"));
+const FeaturedCompletedProjects = lazy(() => import("../pages/projects/FeaturedCompletedProjects"));
 
 // صفحات کم‌استفاده یا سنگین (Lazy Load)
 const EditArticle = lazy(() => import("../pages/articles/EditArticle"));
@@ -125,6 +128,7 @@ const AppRouter = () => {
               <Route path="projects/create" element={<CreateProject />} />
               <Route path="projects/edit/:id" element={<EditProject />} />
               <Route path="projects/:id" element={<ProjectDetails />} />
+              <Route path="projects/featured-completed" element={<FeaturedCompletedProjects />} />
               <Route path="social/follows" element={<Follows />} />
               <Route path="social/mentions" element={<Mentions />} />
               <Route path="social/tags" element={<SocialTags />} />
@@ -135,6 +139,8 @@ const AppRouter = () => {
               <Route path="settings" element={<SiteSettings />} />
               <Route path="settings/home-hero" element={<HomePageHeroSettings />} />
               <Route path="settings/blog-background" element={<BlogBackgroundSettings />} />
+              <Route path="settings/what-we-did-statistics" element={<WhatWeDidStatisticsSettings />} />
+              <Route path="settings/completed-projects-page" element={<CompletedProjectsPageSettings />} />
               <Route path="sections" element={<Sections />} />
               <Route path="sections/edit/:id" element={<EditSection />} />
               <Route path="calendar" element={<CalendarPage />} />

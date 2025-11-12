@@ -21,6 +21,7 @@ const projectSchema = new Schema<IProject>(
     collectedVolunteer: { type: Number, default: 0 },
     deadline: { type: Date, required: true },
     views: { type: Number, default: 0 },
+    isFeaturedInCompleted: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

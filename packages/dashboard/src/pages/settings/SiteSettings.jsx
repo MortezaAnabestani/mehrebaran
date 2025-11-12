@@ -15,6 +15,18 @@ const SiteSettings = () => {
       link: "/dashboard/settings/blog-background",
       icon: "/assets/images/dashboard/icons/paperIcon.svg",
     },
+    {
+      title: "آمارهای «در کنار هم چه کردیم»",
+      description: "مدیریت آمارهای نمایش داده شده در بخش دستاوردها در صفحه اصلی",
+      link: "/dashboard/settings/what-we-did-statistics",
+      icon: "/assets/images/dashboard/icons/chart.svg",
+    },
+    {
+      title: "تنظیمات صفحه پروژه‌های تکمیل شده",
+      description: "مدیریت تصویر پس‌زمینه، عنوان و توضیحات صفحه پروژه‌های تکمیل شده",
+      link: "/dashboard/settings/completed-projects-page",
+      icon: "/assets/images/dashboard/icons/category.svg",
+    },
   ];
 
   return (

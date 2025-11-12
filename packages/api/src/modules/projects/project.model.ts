@@ -3,6 +3,46 @@ import { IProject } from "common-types";
 import { createPersianSlug } from "../../core/utils/slug.utils";
 import { responsiveImageSchema, seoSchema } from "../../core/schemas/shared.schemas";
 
+const bankInfoSchema = new Schema(
+  {
+    bankName: { type: String, required: true },
+    accountNumber: { type: String, required: true },
+    cardNumber: { type: String, required: true },
+    iban: { type: String, required: true },
+    accountHolderName: { type: String, required: true },
+  },
+  { _id: false }
+);
+
+const donationSettingsSchema = new Schema(
+  {
+    enabled: { type: Boolean, default: true },
+    minimumAmount: { type: Number, default: 10000 }, // 10,000 تومان
+    allowAnonymous: { type: Boolean, default: true },
+    showDonors: { type: Boolean, default: true },
+  },
+  { _id: false }
+);
+
+const volunteerSettingsSchema = new Schema(
+  {
+    enabled: { type: Boolean, default: true },
+    requiredSkills: [{ type: String }],
+    maxVolunteers: { type: Number },
+    autoApprove: { type: Boolean, default: false },
+  },
+  { _id: false }
+);
+
+const certificateSettingsSchema = new Schema(
+  {
+    donationTemplate: { type: String },
+    volunteerTemplate: { type: String },
+    customMessage: { type: String },
+  },
+  { _id: false }
+);
+
 const projectSchema = new Schema<IProject>(
   {
     title: { type: String, required: true },
@@ -22,6 +62,23 @@ const projectSchema = new Schema<IProject>(
     deadline: { type: Date, required: true },
     views: { type: Number, default: 0 },
     isFeaturedInCompleted: { type: Boolean, default: false },
+
+    // Bank & Payment Information
+    bankInfo: { type: bankInfoSchema },
+    paymentGateway: { type: String, enum: ["zarinpal", "idpay", "zibal"] },
+    merchantId: { type: String },
+
+    // Donation Settings
+    donationSettings: { type: donationSettingsSchema, default: () => ({}) },
+    donorCount: { type: Number, default: 0 },
+
+    // Volunteer Settings
+    volunteerSettings: { type: volunteerSettingsSchema, default: () => ({}) },
+    volunteerCount: { type: Number, default: 0 },
+    pendingVolunteers: { type: Number, default: 0 },
+
+    // Certificate Settings
+    certificateSettings: { type: certificateSettingsSchema },
   },
   { timestamps: true }
 );

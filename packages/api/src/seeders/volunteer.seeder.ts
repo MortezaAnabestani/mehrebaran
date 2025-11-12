@@ -70,7 +70,7 @@ export async function seedVolunteers() {
           "آموزش محیط زیست",
         ];
         const skillCount = Math.floor(Math.random() * 3) + 1; // 1 تا 3 مهارت
-        const skills = [];
+        const skills: string[] = [];
         for (let j = 0; j < skillCount; j++) {
           const skill = allSkills[Math.floor(Math.random() * allSkills.length)];
           if (!skills.includes(skill)) skills.push(skill);
@@ -93,7 +93,7 @@ export async function seedVolunteers() {
 
         // در دسترس بودن
         const days = ["saturday", "sunday", "monday", "tuesday", "wednesday", "thursday", "friday"];
-        const availableDays = [];
+        const availableDays: string[] = [];
         const dayCount = Math.floor(Math.random() * 4) + 2; // 2 تا 5 روز
         for (let j = 0; j < dayCount; j++) {
           const day = days[Math.floor(Math.random() * days.length)];
@@ -101,7 +101,7 @@ export async function seedVolunteers() {
         }
 
         const timeSlots = ["morning", "afternoon", "evening"];
-        const availableTimeSlots = [];
+        const availableTimeSlots: string[] = [];
         const slotCount = Math.floor(Math.random() * 2) + 1; // 1 تا 2 بازه زمانی
         for (let j = 0; j < slotCount; j++) {
           const slot = timeSlots[Math.floor(Math.random() * timeSlots.length)];

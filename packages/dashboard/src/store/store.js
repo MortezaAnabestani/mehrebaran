@@ -20,6 +20,8 @@ import notificationsReducer from "../features/notificationsSlice";
 import settingsReducer from "../features/settingsSlice";
 import newsReducer from "../features/newsSlice";
 import videosReducer from "../features/videosSlice";
+import donationsReducer from "../features/donationsSlice";
+import volunteersReducer from "../features/volunteersSlice";
 
 export const store = configureStore({
   reducer: {
@@ -44,6 +46,8 @@ export const store = configureStore({
     settings: settingsReducer,
     news: newsReducer,
     videos: videosReducer,
+    donations: donationsReducer,
+    volunteers: volunteersReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

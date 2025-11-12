@@ -557,6 +557,38 @@ const Sidebar = ({ sidebarOpen, me }) => {
                 )}
               </div>
 
+              {/* بخش کمک‌های مالی */}
+              <Link
+                rel="preconnect"
+                to={"/dashboard/donations"}
+                className={`${pathname === "/dashboard/donations" || pathname.startsWith("/dashboard/donations/") ? "bg-gray-100" : ""} block`}
+              >
+                <li className="text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group ">
+                  <img
+                    src="/assets/images/dashboard/icons/money.svg"
+                    alt="donations"
+                    className="w-6 h-6 ml-2"
+                  />
+                  <span className="ml-3 flex-1 whitespace-nowrap"> کمک‌های مالی</span>
+                </li>
+              </Link>
+
+              {/* بخش داوطلبان */}
+              <Link
+                rel="preconnect"
+                to={"/dashboard/volunteers"}
+                className={`${pathname === "/dashboard/volunteers" || pathname.startsWith("/dashboard/volunteers/") ? "bg-gray-100" : ""} block`}
+              >
+                <li className="text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group ">
+                  <img
+                    src="/assets/images/dashboard/icons/users.svg"
+                    alt="volunteers"
+                    className="w-6 h-6 ml-2"
+                  />
+                  <span className="ml-3 flex-1 whitespace-nowrap"> داوطلبان</span>
+                </li>
+              </Link>
+
               {/* بخش ویژگی‌های اجتماعی */}
               <div>
                 <li className="relative text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group ">

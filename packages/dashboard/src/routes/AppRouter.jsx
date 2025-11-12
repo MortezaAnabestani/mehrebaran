@@ -34,6 +34,10 @@ const Projects = lazy(() => import("../pages/projects/Projects"));
 const CreateProject = lazy(() => import("../pages/projects/CreateProject"));
 const EditProject = lazy(() => import("../pages/projects/EditProject"));
 const ProjectDetails = lazy(() => import("../pages/projects/ProjectDetails"));
+const Donations = lazy(() => import("../pages/donations/Donations"));
+const DonationDetails = lazy(() => import("../pages/donations/DonationDetails"));
+const Volunteers = lazy(() => import("../pages/volunteers/Volunteers"));
+const VolunteerDetails = lazy(() => import("../pages/volunteers/VolunteerDetails"));
 const Follows = lazy(() => import("../pages/social/Follows"));
 const Mentions = lazy(() => import("../pages/social/Mentions"));
 const SocialTags = lazy(() => import("../pages/social/SocialTags"));
@@ -135,6 +139,10 @@ const AppRouter = () => {
               <Route path="projects/edit/:id" element={<EditProject />} />
               <Route path="projects/:id" element={<ProjectDetails />} />
               <Route path="projects/featured-completed" element={<FeaturedCompletedProjects />} />
+              <Route path="donations" element={<Donations />} />
+              <Route path="donations/:id" element={<DonationDetails />} />
+              <Route path="volunteers" element={<Volunteers />} />
+              <Route path="volunteers/:id" element={<VolunteerDetails />} />
               <Route path="social/follows" element={<Follows />} />
               <Route path="social/mentions" element={<Mentions />} />
               <Route path="social/tags" element={<SocialTags />} />

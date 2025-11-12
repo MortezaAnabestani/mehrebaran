@@ -8,7 +8,7 @@ export const createDonationSchema = z.object({
       .min(1000, "حداقل مبلغ کمک ۱۰۰۰ تومان است.")
       .max(1000000000, "حداکثر مبلغ کمک ۱ میلیارد تومان است."),
     paymentMethod: z.enum(["online", "bank_transfer", "cash"], {
-      errorMap: () => ({ message: "روش پرداخت نامعتبر است." }),
+      message: "روش پرداخت نامعتبر است.",
     }),
     donorInfo: z
       .object({

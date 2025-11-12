@@ -1,4 +1,4 @@
-import { AuthorModel } from "../modules/authors/author.model";
+import { AuthorModel } from "../modules/author/author.model";
 
 /**
  * Author Seeder - ایجاد نویسندگان فیک

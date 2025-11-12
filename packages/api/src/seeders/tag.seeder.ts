@@ -1,4 +1,4 @@
-import { TagModel } from "../modules/tags/tag.model";
+import { TagModel } from "../modules/tag/tag.model";
 
 /**
  * Tag Seeder - ایجاد برچسب‌های فیک

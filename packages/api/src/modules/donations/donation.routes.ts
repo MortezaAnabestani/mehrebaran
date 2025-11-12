@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { donationController } from "./donation.controller";
-import { protect, restrictTo } from "../../core/middleware/auth.middleware";
+import { protect, restrictTo } from "../auth/auth.middleware";
+import { UserRole } from "common-types";
 
 const router = Router();
 
@@ -27,7 +28,7 @@ router.get("/user/my-donations", donationController.getMyDonations); // Get user
 router.post("/:donationId/upload-receipt", donationController.uploadReceipt); // Upload receipt
 
 // Admin routes
-router.use(restrictTo("admin", "manager")); // Only admins and managers
+router.use(restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN)); // Only admins
 
 router.patch("/:donationId/verify", donationController.verifyBankTransfer); // Verify bank transfer
 

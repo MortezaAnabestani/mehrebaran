@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { volunteerController } from "./volunteer.controller";
-import { protect, restrictTo } from "../../core/middleware/auth.middleware";
+import { protect, restrictTo } from "../auth/auth.middleware";
+import { UserRole } from "common-types";
 
 const router = Router();
 
@@ -18,7 +19,7 @@ router.get("/:id", volunteerController.getOne); // Get specific registration
 router.post("/:id/withdraw", volunteerController.withdraw); // Withdraw from volunteering
 
 // Admin routes
-router.use(restrictTo("admin", "manager")); // Only admins and managers
+router.use(restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN)); // Only admins
 
 router.patch("/:id", volunteerController.update); // Update registration
 router.patch("/:id/approve", volunteerController.approve); // Approve volunteer

@@ -11,7 +11,9 @@ type PageProps = {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params;
+  console.log("🔍 [Metadata] Raw id:", id);
   const decodedId = decodeURIComponent(id);
+  console.log("🔍 [Metadata] Decoded id:", decodedId);
   const news = await getNewsByIdOrSlug(decodedId);
 
   if (!news) {

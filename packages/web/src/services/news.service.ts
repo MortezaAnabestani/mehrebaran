@@ -24,11 +24,18 @@ export const getNews = async (params: GetNewsParams): Promise<GetNewsResponse> =
 };
 
 export const getNewsByIdOrSlug = async (identifier: string): Promise<INews | null> => {
+  console.log("🔍 [Service] getNewsByIdOrSlug called with:", identifier);
   try {
-    const response = await api.get(`/news/${identifier}`);
+    const url = `/news/${identifier}`;
+    console.log("🔍 [Service] Full API URL:", url);
+    const response = await api.get(url);
+    console.log("🔍 [Service] Success! Status:", response.status);
     return response.data.data;
-  } catch (error) {
-    console.error(`Failed to fetch news with identifier "${identifier}":`, error);
+  } catch (error: any) {
+    console.error(`❌ [Service] Failed with identifier "${identifier}":`);
+    console.error("❌ Status:", error.response?.status);
+    console.error("❌ Message:", error.message);
+    console.error("❌ URL:", error.config?.url);
     return null;
   }
 };

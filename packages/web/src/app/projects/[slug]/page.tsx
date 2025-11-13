@@ -5,7 +5,7 @@ import ProjectDetailClient from "./ProjectDetailClient";
 import { cookies } from "next/headers";
 
 type PageProps = {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 };
 
 // Helper function to normalize slug (convert underscores to dashes)
@@ -14,7 +14,8 @@ function normalizeSlug(slug: string): string {
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const normalizedSlug = normalizeSlug(params.slug);
+  const { slug } = await params;
+  const normalizedSlug = normalizeSlug(slug);
   const project = await getProjectByIdOrSlug(normalizedSlug);
 
   if (!project) {
@@ -30,7 +31,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function ProjectDetailPage({ params }: PageProps) {
-  const normalizedSlug = normalizeSlug(params.slug);
+  const { slug } = await params;
+  const normalizedSlug = normalizeSlug(slug);
   const project = await getProjectByIdOrSlug(normalizedSlug);
 
   if (!project) {

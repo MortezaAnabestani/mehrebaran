@@ -1,15 +1,15 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { IProject } from "common-types";
 import HeadTitle from "@/components/features/home/HeadTitle";
 import ProgressBars from "@/components/features/home/runningProjects/ProgressBars";
 import OptimizedImage from "@/components/ui/OptimizedImage";
 import SmartButton from "@/components/ui/SmartButton";
 import SmartSwiper from "@/components/ui/swiper/SmartSwiper";
-import Modal from "@/components/ui/Modal";
 import DonationForm from "@/components/shared/DonationForm";
 import VolunteerForm from "@/components/shared/VolunteerForm";
+import Modal from "@/components/ui/Modal";
 
 interface Props {
   project: IProject;
@@ -24,9 +24,7 @@ export default function ProjectDetailClient({ project, isAuthenticated = false }
 
   const deadlineDate = new Date(project.deadline);
   const today = new Date();
-  const daysRemaining = Math.ceil(
-    (deadlineDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
-  );
+  const daysRemaining = Math.ceil((deadlineDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
 
   const reviewProject = [
     { item: daysRemaining > 0 ? daysRemaining : 0, title: "روز مانده تا پایان طرح" },
@@ -48,13 +46,7 @@ export default function ProjectDetailClient({ project, isAuthenticated = false }
                 key={index}
                 className="h-45 md:h-90 w-full rounded-xl border border-mblue/30 shadow-2xs shadow-mgray"
               >
-                <OptimizedImage
-                  src={image.desktop}
-                  alt={project.title}
-                  fill={true}
-                  priority="up"
-                  rounded
-                />
+                <OptimizedImage src={image.desktop} alt={project.title} fill={true} priority="up" rounded />
               </div>
             ))}
             showPagination
@@ -66,37 +58,11 @@ export default function ProjectDetailClient({ project, isAuthenticated = false }
         {/* Actions and Progress */}
         <div className="w-full md:w-1/2 h-full flex flex-col justify-between items-center gap-3">
           <div className="w-full">
-            <ProgressBars project={project} />
+            <ProgressBars project={project} detailpage={true} />
           </div>
 
           {/* Action Buttons */}
           <div className="w-full h-full flex flex-col justify-between items-center gap-3">
-            <div className="w-full p-4 bg-mgray rounded-xl">
-              <h3 className="font-bold mb-2">نوع اثرگذاری در این طرح</h3>
-              <div className="flex items-center justify-around text-white font-bold gap-3">
-                {project.donationSettings?.enabled && (
-                  <SmartButton
-                    variant="mblue"
-                    onClick={() => setShowDonationModal(true)}
-                    fullWidth={true}
-                    className="h-8 w-1/2 text-xs p-2 rounded-xs text-center"
-                  >
-                    💰 کمک مالی
-                  </SmartButton>
-                )}
-                {project.volunteerSettings?.enabled && (
-                  <SmartButton
-                    variant="mblue"
-                    onClick={() => setShowVolunteerModal(true)}
-                    fullWidth={true}
-                    className="h-8 w-1/2 text-xs p-2 rounded-xs text-center"
-                  >
-                    🙋 ثبت‌نام داوطلب
-                  </SmartButton>
-                )}
-              </div>
-            </div>
-
             {/* Quick Donation Amounts */}
             {project.donationSettings?.enabled && (
               <div className="w-full px-4 py-6 bg-mgray rounded-xl">
@@ -105,7 +71,6 @@ export default function ProjectDetailClient({ project, isAuthenticated = false }
                   {[50000, 100000, 200000].map((amount) => (
                     <SmartButton
                       key={amount}
-                      variant="outline"
                       onClick={() => setShowDonationModal(true)}
                       className="h-10 text-xs"
                     >

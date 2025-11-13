@@ -111,9 +111,7 @@ const DonationForm: React.FC<Props> = ({ project, onSuccess }) => {
               d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
             />
           </svg>
-          <h3 className="text-xl font-bold text-gray-800 mb-2">
-            درخواست کمک مالی ثبت شد
-          </h3>
+          <h3 className="text-xl font-bold text-gray-800 mb-2">درخواست کمک مالی ثبت شد</h3>
           <p className="text-gray-600 mb-4">
             کد پیگیری شما: <span className="font-bold text-mblue">{trackingCode}</span>
           </p>
@@ -155,8 +153,8 @@ const DonationForm: React.FC<Props> = ({ project, onSuccess }) => {
 
         <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-lg mb-4">
           <p className="text-sm text-yellow-800">
-            لطفاً پس از واریز، رسید خود را از طریق بخش "کمک‌های من" آپلود کنید تا پس از
-            بررسی، کمک شما تایید شود.
+            لطفاً پس از واریز، رسید خود را از طریق بخش "کمک‌های من" آپلود کنید تا پس از بررسی، کمک شما تایید
+            شود.
           </p>
         </div>
 
@@ -205,7 +203,9 @@ const DonationForm: React.FC<Props> = ({ project, onSuccess }) => {
           value={formData.amount}
           onChange={handleChange}
           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mblue"
-          placeholder={`حداقل ${(project.donationSettings.minimumAmount || 10000).toLocaleString("fa-IR")} تومان`}
+          placeholder={`حداقل ${(project.donationSettings.minimumAmount || 10000).toLocaleString(
+            "fa-IR"
+          )} تومان`}
           required
           min={project.donationSettings.minimumAmount || 0}
         />
@@ -338,8 +338,8 @@ const DonationForm: React.FC<Props> = ({ project, onSuccess }) => {
         {loading
           ? "در حال پردازش..."
           : formData.paymentMethod === "online"
-            ? "انتقال به درگاه پرداخت"
-            : "ثبت درخواست کمک"}
+          ? "انتقال به درگاه پرداخت"
+          : "ثبت درخواست کمک"}
       </SmartButton>
 
       {!project.donationSettings.enabled && (

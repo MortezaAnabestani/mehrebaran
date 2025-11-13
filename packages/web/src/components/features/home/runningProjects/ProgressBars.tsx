@@ -1,19 +1,40 @@
+"use client";
+
 import SmartButton from "@/components/ui/SmartButton";
 import { formatNumberHumanReadable } from "@/utils/formatNumberHumanReadable";
 import { IProject } from "common-types";
-import React from "react";
+import React, { useState } from "react";
+import Modal from "@/components/ui/Modal";
+import VolunteerForm from "@/components/shared/VolunteerForm";
+import DonationForm from "@/components/shared/DonationForm";
 
 type Props = {
   project: Pick<
     IProject,
-    "amountRaised" | "targetAmount" | "collectedVolunteer" | "targetVolunteer" | "slug"
+    | "amountRaised"
+    | "targetAmount"
+    | "collectedVolunteer"
+    | "targetVolunteer"
+    | "slug"
+    | "donationSettings"
+    | "volunteerSettings"
   >;
+  isAuthenticated?: boolean;
+  detailpage?: boolean;
 };
 
-const ProgressBars: React.FC<Props> = ({ project }) => {
+const ProgressBars: React.FC<Props> = ({ project, isAuthenticated = false, detailpage }) => {
+  const [showDonationModal, setShowDonationModal] = useState(false);
+  const [showVolunteerModal, setShowVolunteerModal] = useState(false);
   const amountProgress = project.targetAmount > 0 ? (project.amountRaised / project.targetAmount) * 100 : 0;
   const volunteerProgress =
     project.targetVolunteer > 0 ? (project.collectedVolunteer / project.targetVolunteer) * 100 : 0;
+
+  const linkStatus = detailpage ? undefined : `/projects/${project.slug}`;
+  const onClickStatusDonationModal = detailpage ? () => setShowDonationModal(true) : undefined;
+  const onClickStatusVolunteerModal = detailpage ? () => setShowVolunteerModal(true) : undefined;
+
+  const asLinkStatus = detailpage ? false : true;
 
   return (
     <div className="my-2 flex flex-col gap-1">
@@ -31,15 +52,18 @@ const ProgressBars: React.FC<Props> = ({ project }) => {
             ></span>
           </span>
         </div>
-        <SmartButton
-          variant="mblue"
-          href={`/projects/${project.slug}`}
-          asLink={true}
-          fullWidth={true}
-          className="h-8 md:w-26 md:min-w-26 text-xs p-2 rounded-xs text-center"
-        >
-          کمک مالی
-        </SmartButton>
+        {project.donationSettings?.enabled && (
+          <SmartButton
+            variant="mblue"
+            href={linkStatus}
+            asLink={asLinkStatus}
+            onClick={onClickStatusDonationModal}
+            fullWidth={true}
+            className="h-8 md:w-26 md:min-w-26 text-xs p-2 rounded-xs text-center"
+          >
+            کمک مالی
+          </SmartButton>
+        )}
       </div>
       <div className="my-2 w-full flex flex-col md:flex-row justify-between items-end gap-2 md:gap-5">
         <div className="w-full">
@@ -54,16 +78,47 @@ const ProgressBars: React.FC<Props> = ({ project }) => {
             ></span>
           </span>
         </div>
-        <SmartButton
-          variant="mblue"
-          href={`/projects/${project.slug}#signup`}
-          asLink={true}
-          fullWidth={true}
-          className="h-8 md:w-26 md:min-w-26 text-xs p-2 rounded-xs text-center"
-        >
-          ثبت‌نام
-        </SmartButton>
+        {project.volunteerSettings?.enabled && (
+          <SmartButton
+            variant="mblue"
+            href={linkStatus}
+            asLink={asLinkStatus}
+            onClick={onClickStatusVolunteerModal}
+            fullWidth={true}
+            className="h-8 md:w-26 md:min-w-26 text-xs p-2 rounded-xs text-center"
+          >
+            ثبت‌نام
+          </SmartButton>
+        )}
       </div>
+      <Modal
+        isOpen={showDonationModal}
+        onClose={() => setShowDonationModal(false)}
+        title="کمک مالی به پروژه"
+        maxWidth="xl"
+      >
+        <DonationForm
+          project={project}
+          onSuccess={() => {
+            setShowDonationModal(false);
+          }}
+        />
+      </Modal>
+
+      <Modal
+        isOpen={showVolunteerModal}
+        onClose={() => setShowVolunteerModal(false)}
+        title="ثبت‌نام به عنوان داوطلب"
+        maxWidth="xl"
+      >
+        <VolunteerForm
+          project={project}
+          isAuthenticated={isAuthenticated}
+          onSuccess={() => {
+            setShowVolunteerModal(false);
+          }}
+        />
+      </Modal>
     </div>
   );
 };

@@ -25,16 +25,11 @@ export const getProjects = async (params: GetProjectsParams): Promise<GetProject
 };
 
 export const getProjectByIdOrSlug = async (identifier: string): Promise<IProject | null> => {
-  console.log("🔍 [getProjectByIdOrSlug] Called with identifier:", identifier);
   try {
-    const url = `/projects/${identifier}`;
-    console.log("🔍 [getProjectByIdOrSlug] API URL:", url);
-    const response = await api.get(url);
-    console.log("🔍 [getProjectByIdOrSlug] API Response status:", response.status);
-    console.log("🔍 [getProjectByIdOrSlug] API Response data:", response.data);
+    const response = await api.get(`/projects/${identifier}`);
     return response.data.data;
-  } catch (error: any) {
-    console.error(`❌ Failed to fetch project ${identifier}:`, error.response?.status, error.message);
+  } catch (error) {
+    console.error(`Failed to fetch project ${identifier}:`, error);
     return null;
   }
 };

@@ -32,11 +32,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function ProjectDetailPage({ params }: PageProps) {
   const { slug } = await params;
-  console.log("🔍 [ProjectDetailPage] Raw slug:", slug);
   const normalizedSlug = normalizeSlug(slug);
-  console.log("🔍 [ProjectDetailPage] Normalized slug:", normalizedSlug);
   const project = await getProjectByIdOrSlug(normalizedSlug);
-  console.log("🔍 [ProjectDetailPage] Project found:", project ? "✅ Yes" : "❌ No");
 
   if (!project) {
     notFound();

@@ -66,12 +66,7 @@ export default function ProjectDetailClient({ project, isAuthenticated = false }
         {/* Actions and Progress */}
         <div className="w-full md:w-1/2 h-full flex flex-col justify-between items-center gap-3">
           <div className="w-full">
-            <ProgressBars
-              amountRaised={project.amountRaised}
-              collectedVolunteer={project.collectedVolunteer}
-              targetAmount={project.targetAmount}
-              targetVolunteer={project.targetVolunteer}
-            />
+            <ProgressBars project={project} />
           </div>
 
           {/* Action Buttons */}

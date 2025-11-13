@@ -8,8 +8,14 @@ type PageProps = {
   params: { slug: string };
 };
 
+// Helper function to normalize slug (convert underscores to dashes)
+function normalizeSlug(slug: string): string {
+  return slug.replace(/_/g, "-");
+}
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const project = await getProjectByIdOrSlug(params.slug);
+  const normalizedSlug = normalizeSlug(params.slug);
+  const project = await getProjectByIdOrSlug(normalizedSlug);
 
   if (!project) {
     return {
@@ -24,7 +30,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function ProjectDetailPage({ params }: PageProps) {
-  const project = await getProjectByIdOrSlug(params.slug);
+  const normalizedSlug = normalizeSlug(params.slug);
+  const project = await getProjectByIdOrSlug(normalizedSlug);
 
   if (!project) {
     notFound();

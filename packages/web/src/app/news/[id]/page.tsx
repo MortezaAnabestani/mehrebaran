@@ -27,7 +27,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function NewsDetailPage({ params }: PageProps) {
   const { id } = await params;
+  console.log("🔍 [NewsDetailPage] ID from params:", id);
+  console.log("🔍 [NewsDetailPage] ID type:", typeof id);
   const news = await getNewsByIdOrSlug(id);
+  console.log("🔍 [NewsDetailPage] News found:", news ? "✅ Yes" : "❌ No");
 
   if (!news) {
     notFound();

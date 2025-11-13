@@ -1,0 +1,36 @@
+.sidebarWrapper {
+  width: 100%;
+  min-height: 100vh;
+  height: auto;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.arrowIcon {
+  rotate: 90deg;
+  animation-name: arrowIcon;
+  animation-duration: 2s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  margin-top: 30px;
+}
+
+@keyframes arrowIcon {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .sidebarWrapper {
+    width: 100%;
+    height: fit-content;
+    min-height: auto;
+  }
+}

@@ -22,3 +22,5 @@ export * from "./notification.types";
 export * from "./story.types";
 export * from "./supporterSubmission.types";
 export * from "./poll.types";
+export * from "./donation.types";
+export * from "./volunteer.types";

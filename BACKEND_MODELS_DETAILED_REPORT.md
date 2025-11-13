@@ -1068,10 +1068,12 @@ Creates 8 predefined categories:
 
 ## DATABASE STATISTICS
 
-- **Total Models**: 39
-- **Total Collections**: 39 (one per model)
+- **Total Models**: 38
+- **Total Collections**: 38 (one per model)
 - **Embedded Schemas**: ~15 (within models)
 - **Relationships**: Complex multi-level relationships
 - **Database**: MongoDB
 - **ODM**: Mongoose
+
+**تفاوت با گزارش قبلی:** تعداد models از 39 به 38 اصلاح شد پس از بررسی دقیق ساختار واقعی پروژه.
 

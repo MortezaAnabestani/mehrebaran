@@ -1,8 +1,8 @@
 # 🏗️ نقشه جامع معماری سایت مهربران
 
-> **آخرین بروزرسانی:** ۲۲ بهمن ۱۴۰۳
-> **نسخه:** 1.0.0
-> **وضعیت:** جامع و کامل
+> **آخرین بروزرسانی:** ۲۱ آبان ۱۴۰۴
+> **نسخه:** 2.0.0
+> **وضعیت:** به‌روزرسانی شده و اصلاح‌شده
 
 ---
 
@@ -26,11 +26,11 @@
 **مهربران** یک پلتفرم جامع شبکه اجتماعی خیریه است که با معماری مدرن و مقیاس‌پذیر طراحی شده. این سیستم شامل:
 
 - **Backend API:** سرور Express.js + TypeScript با MongoDB
-- **Frontend Web:** اپلیکیشن Next.js 15 + React 19
+- **Frontend Web:** اپلیکیشن Next.js 16 + React 19
 - **Dashboard:** پنل مدیریت React + Vite
-- **Database:** MongoDB با 39 مدل Mongoose
-- **API Endpoints:** بیش از 200 endpoint
-- **Components:** بیش از 50 کامپوننت React
+- **Database:** MongoDB با 38 مدل Mongoose
+- **API Endpoints:** 150+ endpoint
+- **Components:** 75 کامپوننت React
 
 ### هدف اصلی پروژه
 
@@ -159,12 +159,12 @@
 
 | معیار | تعداد |
 |-------|-------|
-| **Total Code Lines** | 15,632+ خط |
-| **Models** | 39 مدل |
-| **API Endpoints** | 200+ endpoint |
-| **Route Modules** | 31 ماژول |
-| **Controllers** | 25+ کنترلر |
-| **Middleware Types** | 6 نوع |
+| **Total Code Lines** | 15,000+ خط |
+| **Models** | 38 مدل |
+| **API Endpoints** | 150+ endpoint |
+| **Route Modules** | 30 ماژول |
+| **Controllers** | 29 کنترلر |
+| **Middleware Types** | 4 نوع |
 | **Validation Schemas** | 20+ اسکیما |
 | **Authentication Methods** | 3 روش |
 | **User Roles** | 3 نقش |
@@ -173,18 +173,18 @@
 
 | معیار | تعداد |
 |-------|-------|
-| **Pages** | 40+ صفحه |
-| **Components** | 50+ کامپوننت |
+| **Pages** | 35 صفحه |
+| **Components** | 75 کامپوننت |
 | **Services** | 17 سرویس |
 | **Contexts** | 1 (Auth) |
-| **Hooks** | Multiple |
+| **Hooks** | 1 (custom) |
 | **Total Code Lines** | 10,000+ خط |
 
 ### Database Statistics
 
 | معیار | تعداد |
 |-------|-------|
-| **Collections** | 39 کالکشن |
+| **Collections** | 38 کالکشن |
 | **Indexes** | 100+ ایندکس |
 | **Relationships** | 50+ رابطه |
 | **Embedded Schemas** | 15+ اسکیما تودرتو |
@@ -655,26 +655,28 @@ Data Fetching:
 | **TypeScript** | 5.x | Type safety |
 | **MongoDB** | - | Database |
 | **Mongoose** | 8.17.1 | ODM (Object-Document Mapper) |
-| **Zod** | 3.24.1 | Schema validation |
+| **Zod** | 4.0.17 | Schema validation |
 | **JWT** | 9.0.2 | Authentication tokens |
-| **bcryptjs** | 2.4.3 | Password hashing |
-| **Multer** | 1.4.5-lts.1 | File uploads |
-| **Sharp** | 0.33.5 | Image processing |
+| **bcryptjs** | 3.0.2 | Password hashing |
+| **Multer** | 2.0.2 | File uploads |
+| **Sharp** | 0.34.3 | Image processing |
 | **Socket.io** | 4.8.1 | Real-time (partial) |
 
 ### Frontend Stack
 
 | Technology | Version | Purpose |
 |------------|---------|---------|
-| **Next.js** | 15.4.5 | React framework + SSR |
+| **Next.js** | 16.0.1 | React framework + SSR |
 | **React** | 19.1.0 | UI library |
 | **TypeScript** | 5.x | Type safety |
 | **Tailwind CSS** | 4.x | Styling |
 | **Axios** | 1.11.0 | HTTP client |
-| **Framer Motion** | 12.23.12 | Animations |
-| **React Three Fiber** | - | 3D graphics |
-| **Swiper** | - | Carousels |
-| **React Player** | - | Video player |
+| **Framer Motion** | 12.23.24 | Animations |
+| **React Three Fiber** | 9.3.0 | 3D graphics |
+| **Swiper** | 11.2.10 | Carousels |
+| **React Player** | 3.3.3 | Video player |
+| **TanStack Query** | 5.90.7 | State management |
+| **React Leaflet** | 5.0.0 | Maps |
 
 ### Development Tools
 
@@ -1063,8 +1065,24 @@ Data Fetching:
 ---
 
 **تاریخ ایجاد:** ۲۲ بهمن ۱۴۰۳
+**آخرین به‌روزرسانی:** ۲۱ آبان ۱۴۰۴
 **تهیه شده توسط:** Claude Code AI Agent
 **حجم کل مستندات:** 156+ KB از کد و مستندات
+
+---
+
+## 📝 یادداشت به‌روزرسانی
+
+**تغییرات نسخه 2.0.0:**
+- ✅ اصلاح تعداد Models: 39 → 38
+- ✅ اصلاح تعداد Pages: 40+ → 35
+- ✅ اصلاح تعداد Components: 50+ → 75
+- ✅ به‌روزرسانی Next.js: 15.4.5 → 16.0.1
+- ✅ به‌روزرسانی نسخه‌های کتابخانه‌ها
+- ✅ اصلاح تعداد Controllers: 25+ → 29
+- ✅ اصلاح تعداد Route Modules: 31 → 30
+- ✅ اصلاح تعداد API Endpoints: 200+ → 150+
+- ✅ افزودن TanStack Query و React Leaflet
 
 ---
 

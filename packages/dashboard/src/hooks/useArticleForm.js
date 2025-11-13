@@ -1,0 +1,406 @@
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+import { useNavigate, useParams } from "react-router-dom";
+import { createArticle, updateArticle, fetchArticleBySlug, fetchArticles } from "../features/articlesSlice";
+import { fetchSections } from "../features/sectionsSlice";
+import { fetchAuthors } from "../features/authorsSlice";
+import { fetchTemplates } from "../features/templatesSlice";
+import { fetchTags } from "../features/tagsSlice";
+
+const schema = yup.object().shape({
+  title: yup.string().required("عنوان مقاله اجباری است"),
+  metaTitle: yup.string(),
+  subTitle: yup.string(),
+  excerpt: yup.string(),
+  content: yup.string(),
+  metaDescription: yup.string(),
+  status: yup.string().oneOf(["draft", "published", "rejected"]).default("draft"),
+  section: yup.string().required("انتخاب بخش اجباری است"),
+  template: yup.string().required("انتخاب قالب اجباری است"),
+  author: yup.string().required("انتخاب نویسنده اجباری است"),
+  tags: yup.array(),
+  relatedArticles: yup.array(),
+  images: yup.array().test("fileSize", "هر تصویر باید کمتر از ۲۰ مگابایت باشد", (files) => {
+    if (!files || files.length === 0) return true;
+    return files.every((file) => file.size <= 20 * 1024 * 1024);
+  }),
+  coverImage: yup.mixed().test("fileSize", "حجم تصویر نباید بیشتر از 20MB باشد", (file) => {
+    if (!file || file.length === 0) return true;
+    return file.length > 0 ? file[0].size <= 20 * 1024 * 1024 : true; // اگر کاربر تصویری انتخاب نکرد، بررسی نشود
+  }),
+});
+
+const useArticleForm = (isEdit = false) => {
+  const dispatch = useDispatch();
+  const { slug } = useParams();
+  const navigate = useNavigate();
+
+  const [editorContent, setEditorContent] = useState("");
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
+  const [selectedTags, setSelectedTags] = useState([]);
+  const [selectedImages, setSelectedImages] = useState([]);
+  const [selectedRelatedArticles, setSelectedRelatedArticles] = useState([]);
+  const [previewImage, setPreviewImage] = useState(null);
+  const [step2Data, setStep2Data] = useState({ ready: false, article: null });
+  const [removedServerImages, setRemovedServerImages] = useState([]);
+
+  const { selectedArticle, loading, error } = useSelector((state) => state.articles);
+  const { sections } = useSelector((state) => state.sections);
+  const { authors } = useSelector((state) => state.authors);
+  const { templates } = useSelector((state) => state.templates);
+  const { tags } = useSelector((state) => state.tags);
+  const { articles } = useSelector((state) => state.articles);
+
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    getValues,
+    watch,
+    reset,
+    control,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    resolver: yupResolver(schema),
+    defaultValues: {
+      status: "draft",
+      template: "",
+      title: "",
+      metaTitle: "",
+      subTitle: "",
+      excerpt: "",
+      content: "",
+      metaDescription: "",
+      section: "",
+      author: "",
+      tags: [],
+      relatedArticles: [],
+      coverImage: "",
+      images: [],
+    },
+  });
+
+  // مدیریت مقداردهی اولیه هنگام ویرایش
+  useEffect(() => {
+    let ignore = false;
+
+    if (isEdit && slug && !ignore) {
+      dispatch(fetchArticleBySlug(slug));
+    }
+    return () => {
+      ignore = true;
+    };
+  }, [dispatch, isEdit, slug]);
+
+  // بارگذاری داده‌های پایه
+  useEffect(() => {
+    const loadInitialData = async () => {
+      try {
+        await Promise.all([
+          dispatch(fetchTemplates()),
+          dispatch(fetchSections()),
+          dispatch(fetchAuthors({limit: 1000})),
+          dispatch(fetchTags()),
+          dispatch(fetchArticles()),
+        ]);
+      } catch (err) {
+        console.error("خطا در بارگذاری داده‌های اولیه:", err);
+      }
+    };
+
+    loadInitialData();
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (
+      isEdit &&
+      selectedArticle &&
+      templates?.length > 0 // مطمئن شو که templates لود شده
+    ) {
+      // مرحله اول: فقط reset با template
+      reset({
+        template: selectedArticle?.template?._id || "",
+        section: selectedArticle?.section?._id || "",
+        author: selectedArticle?.author?._id || "",
+      });
+
+      // مرحله دوم: پس از template لود شدن
+      setStep2Data({
+        ready: true,
+        article: selectedArticle,
+      });
+    }
+  }, [isEdit, selectedArticle, templates, reset, sections, authors]);
+
+  // پر کردن فرم با داده‌های مقاله در حالت ویرایش
+  useEffect(() => {
+    if (!step2Data.ready || !step2Data.article) return;
+
+    const { article } = step2Data;
+
+    // بقیه مقادیر
+    setValue("status", article.status || "draft");
+    setValue("title", article.title || "");
+    setValue("metaTitle", article.metaTitle || "");
+    setValue("subTitle", article.subTitle || "");
+    setValue("excerpt", article.excerpt || "");
+    setValue("content", article.content || "");
+    setValue("metaDescription", article.metaDescription || "");
+    setValue("section", article.section?._id || "");
+    setValue("author", article.author?._id || "");
+    setValue("tags", article.tags?.map((tag) => tag._id) || []);
+    setValue("relatedArticles", article.relatedArticles || []);
+
+    if (article.images) {
+      const mappedImages = article.images.map((url) => ({
+        file: null, // چون فایل نداریم
+        preview: `${import.meta.env.VITE_SERVER_PUBLIC_API_URL_WITHOUT_API}/${url}`, // لینک کامل برای نمایش
+      }));
+
+      setSelectedImages(mappedImages);
+      setValue("images", article.images); // همچنان می‌تونی فقط رشته‌ها رو ذخیره کنی
+    }
+
+    setSelectedTags(article.tags?.map((tag) => tag._id) || []);
+    setSelectedRelatedArticles(article.relatedArticles || []);
+    setEditorContent(article.content || "");
+
+    if (article.coverImage) {
+      setPreviewImage(`${import.meta.env.VITE_SERVER_PUBLIC_API_URL_WITHOUT_API}/${article.coverImage}`);
+    }
+
+    // یکبار اجرا بشه
+    setStep2Data({ ready: false, article: null });
+  }, [step2Data, setValue, templates]);
+
+  // مدیریت تغییر تصویر اصلی
+  const handleCoverImageChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setPreviewImage(URL.createObjectURL(file));
+      setValue("coverImage", file);
+    }
+  };
+
+  // مدیریت انتخاب و حذف تصاویر گالری
+  const handleImageSelection = (event) => {
+    const files = Array.from(event.target.files);
+
+    // بررسی حجم فایل‌ها
+    const validFiles = files.filter((file) => file.size <= 20 * 1024 * 1024);
+    if (validFiles.length < files.length) {
+      alert("برخی از تصاویر انتخاب شده بیشتر از 20 مگابایت هستند و حذف شدند");
+    }
+
+    const newImages = validFiles.map((file) => ({
+      file,
+      preview: URL.createObjectURL(file),
+    }));
+
+    setSelectedImages([...selectedImages, ...newImages]);
+    setValue("images", [...selectedImages, ...validFiles]);
+  };
+
+  const removeImage = (index) => {
+    const updatedImages = [...selectedImages];
+
+    const removedImage = updatedImages[index];
+    // آزادسازی URL برای تصاویر آپلود شده جدید
+    if (removedImage?.preview) {
+      URL.revokeObjectURL(removedImage.preview);
+    }
+
+    // اگر تصویر موجود از نوع string بود یعنی از سرور بوده
+    if (removedImage.file === null) {
+      setRemovedServerImages([...removedServerImages, removedImage.preview]);
+    }
+    updatedImages.splice(index, 1);
+    setSelectedImages(updatedImages);
+
+    // فقط فایل‌های واقعی (File) رو به فرم ارسال کن
+    const formImages = updatedImages.filter((img) => img.file).map((img) => img.file);
+    setValue("images", formImages);
+  };
+
+  // مدیریت انتخاب و حذف تگ‌ها
+  const handleTagSelection = (tagId, setSearchQuery) => {
+    if (!selectedTags.includes(tagId)) {
+      const newTags = [...selectedTags, tagId];
+      setSelectedTags(newTags);
+      setValue("tags", newTags);
+      if (setSearchQuery) setSearchQuery(""); // پاک کردن جستجو بعد از انتخاب
+    }
+  };
+
+  const removeTag = (tagId) => {
+    const updatedTags = selectedTags.filter((id) => id !== tagId);
+    setSelectedTags(updatedTags);
+    setValue("tags", updatedTags);
+  };
+
+  // مدیریت انتخاب و حذف مقالات مرتبط
+  const handleRelatedArticleSelection = (articleId) => {
+    if (!selectedRelatedArticles.includes(articleId)) {
+      const newRelatedArticles = [...selectedRelatedArticles, articleId];
+      setSelectedRelatedArticles(newRelatedArticles);
+      setValue("relatedArticles", newRelatedArticles);
+    }
+  };
+
+  const removeRelatedArticle = (articleId) => {
+    const updatedArticles = selectedRelatedArticles.filter((id) => id !== articleId);
+    setSelectedRelatedArticles(updatedArticles);
+    setValue("relatedArticles", updatedArticles);
+  };
+
+  // مدیریت ارسال داده‌ها
+  const onSubmit = async (data) => {
+    try {
+      setSubmitError(null);
+      const formData = new FormData();
+
+      // افزودن فیلدهای متنی
+      formData.append("title", data.title.trim());
+      formData.append("metaTitle", data.metaTitle?.trim() || data.title.trim());
+      formData.append("subTitle", data.subTitle?.trim() || "");
+      formData.append("excerpt", data.excerpt?.trim() || "");
+      formData.append("content", editorContent || "");
+      formData.append("metaDescription", data.metaDescription?.trim() || "");
+      formData.append("status", data.status || "draft");
+
+      // افزودن فیلدهای ارتباطی
+      if (data.section) formData.append("section", data.section);
+      if (data.template) formData.append("template", data.template);
+      if (data.author) formData.append("author", data.author);
+
+      if (removedServerImages.length > 0) {
+        removedServerImages.forEach((imagePath) => {
+          formData.append("removedServerImages", imagePath);
+        });
+      }
+      const imageFile = data?.coverImage;
+      if (imageFile instanceof File) {
+        formData.append("coverImage", imageFile);
+      }
+
+      // افزودن تگ‌ها
+      if (selectedTags.length > 0) {
+        selectedTags.forEach((tagId, index) => {
+          formData.append(`tags[${index}]`, tagId);
+        });
+      }
+
+      // افزودن مقالات مرتبط
+      if (selectedRelatedArticles.length > 0) {
+        selectedRelatedArticles.forEach((articleId, index) => {
+          formData.append(`relatedArticles[${index}]`, articleId);
+        });
+      }
+
+      // افزودن تصاویر گالری
+      if (selectedImages.length > 0) {
+        selectedImages.forEach((image) => {
+          if (image instanceof File) {
+            formData.append("images", image); //   تغییر نام فیلد به "images"
+          } else if (image.file instanceof File) {
+            formData.append("images", image.file); //   تغییر نام فیلد به "images"
+          } else if (typeof image === "string") {
+            formData.append("existingImages", image); // اگر مسیر عکس باشد، در `existingImages` ارسال شود
+          }
+        });
+      }
+
+      // ارسال درخواست به سرور
+      let response;
+      if (isEdit) {
+        // استفاده از _id به جای slug برای ویرایش
+        const articleId = selectedArticle?._id;
+        if (!articleId) {
+          throw new Error("شناسه مقاله یافت نشد");
+        }
+        response = dispatch(updateArticle({ id: articleId, formData }));
+        console.log("مقاله با موفقیت ویرایش شد:", response);
+      } else {
+        response = dispatch(createArticle(formData));
+        console.log("مقاله با موفقیت ایجاد شد:", response);
+
+        // پاک کردن فرم پس از ایجاد موفق
+        reset();
+        setEditorContent("");
+        setSelectedTags([]);
+        setSelectedImages([]);
+        setSelectedRelatedArticles([]);
+        setPreviewImage(null);
+      }
+
+      setSubmitSuccess(true);
+
+      // هدایت به صفحه لیست مقالات پس از 2 ثانیه
+      setTimeout(() => {
+        navigate("/dashboard/articles");
+      }, 2000);
+    } catch (error) {
+      console.error("🚨 خطا در ارسال مقاله:", error);
+      setSubmitError(error?.message || "خطایی در ارسال مقاله رخ داد");
+      setSubmitSuccess(false);
+    }
+  };
+
+  // پاکسازی منابع هنگام خروج از کامپوننت
+  useEffect(() => {
+    return () => {
+      // آزادسازی URL های ایجاد شده برای پیش‌نمایش تصاویر
+      selectedImages.forEach((image) => {
+        if (image.preview) {
+          URL.revokeObjectURL(image.preview);
+        }
+      });
+
+      if (previewImage && previewImage.startsWith("blob:")) {
+        URL.revokeObjectURL(previewImage);
+      }
+    };
+  }, [selectedImages, previewImage]);
+
+  return {
+    register,
+    handleSubmit,
+    onSubmit,
+    errors,
+    previewImage,
+    handleCoverImageChange,
+    handleTagSelection,
+    removeTag,
+    selectedTags,
+    selectedImages,
+    handleImageSelection,
+    removeImage,
+
+    selectedRelatedArticles,
+    handleRelatedArticleSelection,
+    removeRelatedArticle,
+    sections,
+    authors,
+    templates,
+    tags,
+    loading,
+    error,
+    articles,
+    watch,
+    setSelectedTags,
+    setValue,
+    editorContent,
+    setEditorContent,
+    submitSuccess,
+    submitError,
+    isSubmitting,
+    getValues,
+    control,
+  };
+};
+
+export default useArticleForm;

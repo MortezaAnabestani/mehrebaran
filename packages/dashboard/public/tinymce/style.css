@@ -1,0 +1,34 @@
+@import url('skins/content/fonts/font.css');
+body {
+	background:#ccc url("img/orchid.png");
+	font-family: Vazir;
+	font-weight: normal;
+	margin: 0;
+}
+a {
+	text-decoration: none;
+}
+.container {
+	max-width: 1260px;
+	margin: 0 auto;
+}
+.tox {
+	margin-top: 10px;
+}
+
+.cr {
+	padding-top: 25px;
+	text-align: center;
+}
+.cr span {
+	background-color: #ffffffc9;
+	padding: 4px 8px;
+	border-radius: 3px;
+	font-size: 12px;
+}
+.text a {
+	color: black;
+}
+.text a:hover {
+	color: blue;
+}

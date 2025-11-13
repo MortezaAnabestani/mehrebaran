@@ -7,6 +7,7 @@ import React, { useState } from "react";
 import Modal from "@/components/ui/Modal";
 import VolunteerForm from "@/components/shared/VolunteerForm";
 import DonationForm from "@/components/shared/DonationForm";
+import { useAuth } from "@/contexts/AuthContext";
 
 type Props = {
   project: Pick<
@@ -19,11 +20,11 @@ type Props = {
     | "donationSettings"
     | "volunteerSettings"
   >;
-  isAuthenticated?: boolean;
   detailpage?: boolean;
 };
 
-const ProgressBars: React.FC<Props> = ({ project, isAuthenticated = false, detailpage }) => {
+const ProgressBars: React.FC<Props> = ({ project, detailpage }) => {
+  const { isAuthenticated } = useAuth();
   const [showDonationModal, setShowDonationModal] = useState(false);
   const [showVolunteerModal, setShowVolunteerModal] = useState(false);
   const amountProgress = project.targetAmount > 0 ? (project.amountRaised / project.targetAmount) * 100 : 0;

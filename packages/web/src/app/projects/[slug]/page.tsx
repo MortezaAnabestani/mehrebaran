@@ -8,9 +8,10 @@ type PageProps = {
   params: Promise<{ slug: string }>;
 };
 
-// Helper function to normalize slug (convert underscores to dashes)
+// Helper function to normalize slug (decode and convert underscores to dashes)
 function normalizeSlug(slug: string): string {
-  return slug.replace(/_/g, "-");
+  const decoded = decodeURIComponent(slug);
+  return decoded.replace(/_/g, "-");
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {

@@ -30,11 +30,7 @@ const Line: React.FC<Props> = ({ isCurrentTop, isNextBottom }) => {
   return (
     <div
       className={`absolute left-1/2 -z-10 top-1/5 ${
-        isCurrentTop && isNextBottom
-          ? "translate-y-6"
-          : isCurrentTop
-          ? "translate-y-4"
-          : "translate-y-10"
+        isCurrentTop && isNextBottom ? "translate-y-6" : isCurrentTop ? "translate-y-4" : "translate-y-10"
       } w-200 h-20 overflow-visible`}
     >
       <svg width="100%" height="100%" className="overflow-visible">
@@ -43,28 +39,13 @@ const Line: React.FC<Props> = ({ isCurrentTop, isNextBottom }) => {
           {/* Gradient برای جریان */}
           <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopColor="#ff9434" stopOpacity="0.3">
-              <animate
-                attributeName="offset"
-                values="0;1;0"
-                dur="3s"
-                repeatCount="indefinite"
-              />
+              <animate attributeName="offset" values="0;1;0" dur="3s" repeatCount="indefinite" />
             </stop>
             <stop offset="50%" stopColor="#ffb366" stopOpacity="1">
-              <animate
-                attributeName="offset"
-                values="0;1;0"
-                dur="3s"
-                repeatCount="indefinite"
-              />
+              <animate attributeName="offset" values="0;1;0" dur="3s" repeatCount="indefinite" />
             </stop>
             <stop offset="100%" stopColor="#ff9434" stopOpacity="0.3">
-              <animate
-                attributeName="offset"
-                values="0;1;0"
-                dur="3s"
-                repeatCount="indefinite"
-              />
+              <animate attributeName="offset" values="0;1;0" dur="3s" repeatCount="indefinite" />
             </stop>
           </linearGradient>
 
@@ -120,9 +101,9 @@ const Line: React.FC<Props> = ({ isCurrentTop, isNextBottom }) => {
             r="4"
             fill="#ffb366"
             filter="url(#glow)"
-            initial={{ offsetDistance: "0%", opacity: 0 }}
+            initial={{ offsetdistance: "0%", opacity: 0 }}
             animate={{
-              offsetDistance: ["0%", "100%"],
+              offsetdistance: ["0%", "100%"],
               opacity: [0, 1, 1, 0],
             }}
             transition={{

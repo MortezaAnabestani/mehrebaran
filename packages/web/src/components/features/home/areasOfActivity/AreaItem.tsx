@@ -282,7 +282,7 @@ const AreaItem: React.FC<AreasOfActivity> = ({ title, icon, description, color, 
             transition={{ duration: 0.3 }}
           />
 
-          <motion.p
+          <motion.div
             className={`relative h-25 flex items-center rounded-lg p-2 ${
               color === "mgray" ? "bg-mgray" : "bg-mblue text-white"
             } shadow-lg cursor-pointer`}
@@ -307,7 +307,7 @@ const AreaItem: React.FC<AreasOfActivity> = ({ title, icon, description, color, 
               animate={{ x: isHovered ? "200%" : "-100%" }}
               transition={{ duration: 0.8, ease: "easeInOut" }}
             />
-          </motion.p>
+          </motion.div>
         </motion.div>
       </motion.div>
 

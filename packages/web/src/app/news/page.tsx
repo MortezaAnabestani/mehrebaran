@@ -11,11 +11,10 @@ export const metadata: Metadata = {
 };
 
 const News: React.FC = async () => {
-  // Fetch published news from API
+  // Fetch all published news from API
   const newsResponse = await getNews({
     status: "published",
     sort: "-createdAt",
-    limit: 20
   });
 
   // Convert INews to CardType format
@@ -26,24 +25,29 @@ const News: React.FC = async () => {
     href: `/news/${news.slug}`,
   }));
 
-  // Split into two sections: featured (first 6) and more (remaining)
-  const featuredNews = newsCards.slice(0, 6);
-  const moreNews = newsCards.slice(6);
-
   return (
     <div className="w-8/10 mx-auto my-10">
       <HeadTitle
         title="اخبار"
         subTitle="گزارش آخرین رویدادها و فعالیت‌های کانون مسئولیت اجتماعی مهر باران"
       />
-      <HeroShared_views cardItems={featuredNews} page="news" />
+      <HeroShared_views cardItems={newsCards} page="news" />
 
-      {moreNews.length > 0 && (
-        <>
-          <HeadTitle title="اخبار بیش‌تر" />
-          <HeroShared_views cardItems={moreNews} horizontal={true} page="news" />
-        </>
-      )}
+      {/* Blog/Magazine Promotion Section */}
+      <div className="mt-16 mb-10">
+        <div className="bg-gradient-to-r from-primary-600 to-primary-800 rounded-2xl p-10 text-white text-center shadow-xl">
+          <h2 className="text-3xl font-bold mb-4">مجله مهرباران</h2>
+          <p className="text-lg mb-6 opacity-90">
+            مقالات، گزارش تصویری و ویدیوهای الهام‌بخش از فعالیت‌های خیریه
+          </p>
+          <a
+            href="/blog"
+            className="inline-block bg-white text-primary-700 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
+          >
+            مشاهده مجله
+          </a>
+        </div>
+      </div>
     </div>
   );
 };

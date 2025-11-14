@@ -73,7 +73,7 @@ const VolunteerForm: React.FC<Props> = ({ project, onSuccess, isAuthenticated })
         <p className="text-gray-600 mb-4">برای ثبت‌نام به عنوان داوطلب، باید وارد حساب کاربری خود شوید</p>
         <SmartButton
           variant="mblue"
-          onClick={() => router.push(`/auth/login?redirect=/projects/${project.slug}`)}
+          onClick={() => router.push(`/login?redirect=/projects/${project.slug}`)}
           fullWidth
         >
           ورود / ثبت‌نام
@@ -133,9 +133,7 @@ const VolunteerForm: React.FC<Props> = ({ project, onSuccess, isAuthenticated })
   const handleCheckboxChange = (category: "days" | "timeSlots", value: string) => {
     setFormData((prev) => {
       const array = prev.availability[category];
-      const newArray = array.includes(value)
-        ? array.filter((item) => item !== value)
-        : [...array, value];
+      const newArray = array.includes(value) ? array.filter((item) => item !== value) : [...array, value];
 
       return {
         ...prev,
@@ -232,11 +230,7 @@ const VolunteerForm: React.FC<Props> = ({ project, onSuccess, isAuthenticated })
                 className="bg-mblue text-white px-3 py-1 rounded-full text-sm flex items-center gap-2"
               >
                 {skill}
-                <button
-                  type="button"
-                  onClick={() => removeSkill(skill)}
-                  className="hover:text-red-300"
-                >
+                <button type="button" onClick={() => removeSkill(skill)} className="hover:text-red-300">
                   ×
                 </button>
               </span>

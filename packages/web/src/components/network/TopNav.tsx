@@ -73,7 +73,7 @@ const TopNav: React.FC = () => {
 
   const handleLogout = () => {
     logout();
-    router.push("/auth/login");
+    router.push("/login");
   };
 
   const handleSearchSelect = (needId: string) => {
@@ -97,13 +97,7 @@ const TopNav: React.FC = () => {
           {/* Logo & Home Link */}
           <div className="flex items-center gap-4">
             <Link href="/network" className="flex-shrink-0">
-              <OptimizedImage
-                src="/icons/logo.svg"
-                alt="مهر باران"
-                width={100}
-                height={40}
-                priority="up"
-              />
+              <OptimizedImage src="/icons/logo.svg" alt="مهر باران" width={100} height={40} priority="up" />
             </Link>
             <Link
               href="/"

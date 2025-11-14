@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import { motion, MotionValue, useMotionValue } from "framer-motion";
 import { icon } from "./settings";
 import { useIconTransform } from "./use-icon-transform";
@@ -13,12 +12,7 @@ interface ItemProps {
   images?: string[];
 }
 
-const defaultImages = [
-  "/images/1.png",
-  "/images/2.png",
-  "/images/hero_img.jpg",
-  "/images/blog_img.jpg",
-];
+const defaultImages = ["/images/1.png", "/images/2.png", "/images/hero_img.jpg", "/images/blog_img.jpg"];
 
 export function Item({ row, col, planeX, planeY, images }: ItemProps) {
   const x = useMotionValue(0);

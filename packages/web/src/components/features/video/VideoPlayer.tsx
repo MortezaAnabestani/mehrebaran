@@ -3,7 +3,7 @@
 import { useState } from "react";
 import OptimizedImage from "@/components/ui/OptimizedImage";
 import { IVideo } from "common-types";
-import ReactPlayer from "react-player/lazy";
+import ReactPlayer from "react-player";
 
 interface VideoPlayerProps {
   video: IVideo;

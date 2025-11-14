@@ -131,7 +131,7 @@ const AreaItem: React.FC<AreasOfActivity> = ({ title, icon, description, color, 
 
       {/* آیکون مرکزی */}
       <motion.div
-        className="relative cursor-pointer rounded-3xl bg-gradient-to-br from-blue-50 to-blue-200 border-2 border-b-4 border-r-4 border-mblue w-25 h-25 mx-auto rotate-45 flex items-center justify-center overflow-hidden group/icon"
+        className="relative cursor-pointer rounded-3xl bg-gradient-to-br from-blue-50 to-blue-200 border-2 border-b-4 border-r-4 border-mblue w-25 h-25 mx-auto rotate-45 flex items-center justify-center overflow-hidden group/icon z-10"
         style={{
           rotateX,
           rotateY,

@@ -50,7 +50,7 @@ export default async function ProjectsPage({
                   مشاهده همه →
                 </a>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 h-80">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 h-150">
                 {activeProjects.map((project) => (
                   <ProjectCard key={project._id} project={project} baseUrl="/projects/active" />
                 ))}

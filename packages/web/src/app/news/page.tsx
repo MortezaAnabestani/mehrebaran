@@ -27,15 +27,12 @@ const News: React.FC = async () => {
 
   return (
     <div className="w-8/10 mx-auto my-10">
-      <HeadTitle
-        title="اخبار"
-        subTitle="گزارش آخرین رویدادها و فعالیت‌های کانون مسئولیت اجتماعی مهر باران"
-      />
+      <HeadTitle title="اخبار" subTitle="گزارش آخرین رویدادها و فعالیت‌های کانون مسئولیت اجتماعی مهر باران" />
       <HeroShared_views cardItems={newsCards} page="news" />
 
       {/* Blog/Magazine Promotion Section */}
       <div className="mt-16 mb-10">
-        <div className="bg-gradient-to-r from-primary-600 to-primary-800 rounded-2xl p-10 text-white text-center shadow-xl">
+        <div className="bg-gradient-to-tr from-sky-50 via-sky-300 to-sky-50 rounded-2xl p-10 text-center shadow-xl">
           <h2 className="text-3xl font-bold mb-4">مجله مهرباران</h2>
           <p className="text-lg mb-6 opacity-90">
             مقالات، گزارش تصویری و ویدیوهای الهام‌بخش از فعالیت‌های خیریه

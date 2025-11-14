@@ -35,6 +35,7 @@ export interface CardType {
   title: string;
   description: string;
   href: string;
+  featuredImage: { desktop: string; mobile: string };
 }
 
 export interface AreasOfActivity {

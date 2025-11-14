@@ -9,6 +9,7 @@ type CardItem = (INews | IArticle | IProject | IVideo | IGallery) & {
   slug: string;
   title: string;
   excerpt: string;
+  featuredImage: { desktop: string; mobile: string };
 };
 
 interface CardProps {
@@ -19,7 +20,7 @@ interface CardProps {
 
 // Type guard to check if cardItem is CardType
 function isCardType(item: CardItem | CardType): item is CardType {
-  return 'img' in item && 'href' in item;
+  return "img" in item && "href" in item;
 }
 
 const Card: React.FC<CardProps> = ({ cardItem, horizontal = false, page = "news" }) => {
@@ -40,12 +41,7 @@ const Card: React.FC<CardProps> = ({ cardItem, horizontal = false, page = "news"
       } bg-white rounded-xl shadow-md border border-mgray/65 overflow-hidden h-full w-full`}
     >
       <div className={`${horizontal ? "w-40 md:w-70" : "w-full h-48"} relative `}>
-        <OptimizedImage
-          src={imageSrc}
-          alt={title}
-          fill={true}
-          className="object-cover min-h-43 max-h-43"
-        />
+        <OptimizedImage src={imageSrc} alt={title} fill={true} className="object-cover min-h-43 max-h-43" />
       </div>
       <div className="p-1 md:p-4 flex flex-col justify-between flex-1">
         <div>

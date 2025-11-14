@@ -37,9 +37,11 @@ const ProjectCard: React.FC<Props> = ({ project, baseUrl = "/projects" }) => {
       <div className="p-1 md:p-4 flex flex-col justify-between flex-1">
         <div>
           <h3 className="text-sm md:text-lg font-semibold mb-2">{project.title}</h3>
-          <p className="text-gray-600 text-xs md:text-sm text-justify line-clamp-3">{project.excerpt || project.description}</p>
+          <p className="text-gray-600 text-xs md:text-sm text-justify line-clamp-3">
+            {project.excerpt || project.description}
+          </p>
         </div>
-        <div className="text-left">
+        <div className="text-left mt-3">
           <SmartButton
             href={projectUrl}
             variant="mblue"

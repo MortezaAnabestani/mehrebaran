@@ -36,7 +36,7 @@ const BlogSection: React.FC<{ settings: IBlogBackgroundSetting | null }> = ({ se
           داوطلبانه و عام‌المنفعه سازمان دانشجویان جهاد بخشی از فرهنگ‌سازی جامعه هدف اس
         </h2>
         <div className="text-left text-xs">
-          <SmartButton href="/" variant="morange" asLink={true}>
+          <SmartButton href="/blog" variant="morange" asLink={true}>
             اطلاعات بیش‌تر
           </SmartButton>
         </div>

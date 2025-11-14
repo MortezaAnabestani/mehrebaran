@@ -147,12 +147,7 @@ const AreasOfActivitySection: React.FC = () => {
           const isNextBottom = next?.position === "bottom";
 
           return (
-            <motion.div
-              key={index}
-              variants={itemVariants}
-              className="relative"
-              whileHover={{ zIndex: 10 }}
-            >
+            <motion.div key={index} variants={itemVariants} className="relative " whileHover={{ zIndex: 10 }}>
               <AreaItem
                 title={activity.title}
                 icon={activity.icon}
@@ -184,64 +179,6 @@ const AreasOfActivitySection: React.FC = () => {
             </motion.div>
           );
         })}
-      </motion.div>
-
-      {/* دکمه Call to Action */}
-      <motion.div
-        className="text-center mt-16 mb-8"
-        initial={{ opacity: 0, y: 30 }}
-        animate={isInView ? { opacity: 1, y: 0 } : {}}
-        transition={{ duration: 0.8, delay: 0.8 }}
-      >
-        <motion.button
-          className="relative px-8 py-4 bg-gradient-to-r from-mblue to-blue-600 text-white font-bold rounded-full overflow-hidden group"
-          whileHover={{ scale: 1.05, boxShadow: "0 20px 40px rgba(59, 130, 246, 0.4)" }}
-          whileTap={{ scale: 0.95 }}
-        >
-          {/* گلو */}
-          <motion.div
-            className="absolute inset-0 bg-gradient-to-r from-blue-400 to-blue-600 opacity-0 group-hover:opacity-100"
-            transition={{ duration: 0.3 }}
-          />
-
-          {/* افکت shimmer */}
-          <motion.div
-            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
-            animate={{
-              x: ["-200%", "200%"],
-            }}
-            transition={{
-              duration: 2,
-              repeat: Infinity,
-              ease: "linear",
-            }}
-          />
-
-          <span className="relative z-10">مشاهده همه فعالیت‌ها</span>
-
-          {/* پارتیکل‌های hover */}
-          <motion.div className="absolute inset-0 opacity-0 group-hover:opacity-100">
-            {[...Array(8)].map((_, i) => (
-              <motion.div
-                key={i}
-                className="absolute w-1 h-1 bg-white rounded-full"
-                style={{
-                  left: `${12.5 * i}%`,
-                  top: "50%",
-                }}
-                animate={{
-                  y: [-20, 20, -20],
-                  opacity: [0, 1, 0],
-                }}
-                transition={{
-                  duration: 2,
-                  repeat: Infinity,
-                  delay: i * 0.1,
-                }}
-              />
-            ))}
-          </motion.div>
-        </motion.button>
       </motion.div>
     </section>
   );

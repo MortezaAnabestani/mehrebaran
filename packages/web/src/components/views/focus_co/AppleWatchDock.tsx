@@ -25,7 +25,7 @@ export function AppleWatchDock({ images }: AppleWatchDockProps) {
         drag
         dragConstraints={{ left: -650, right: 50, top: -600, bottom: 50 }}
         style={{
-          width: 800,
+          width: 600,
           height: 600,
           x,
           y,

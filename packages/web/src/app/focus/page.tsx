@@ -19,12 +19,7 @@ const DEFAULT_HERO_SETTINGS: IFocusPageHeroSetting = {
     volunteers: { label: "داوطلب", value: "۱۵۹۰+" },
     beneficiaries: { label: "ذینفع", value: "۱۴۱۰۰+" },
   },
-  dockImages: [
-    "/images/1.png",
-    "/images/2.png",
-    "/images/hero_img.jpg",
-    "/images/blog_img.jpg",
-  ],
+  dockImages: ["/images/1.png", "/images/2.png", "/images/hero_img.jpg", "/images/blog_img.jpg"],
 };
 
 const FocusPage: React.FC = () => {
@@ -56,7 +51,7 @@ const FocusPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50">
       {/* Hero Section with AppleWatchDock */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-mblue via-blue-600 to-purple-700">
+      <div className="relative overflow-hidden bg-gradient-to-br from-mblue via-blue-600 to-sky-300">
         {/* Animated Background */}
         <div className="absolute inset-0 opacity-20">
           <div className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full blur-3xl animate-pulse" />
@@ -173,9 +168,7 @@ const FocusPage: React.FC = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-4">
-            حوزه‌های تخصصی فعالیت
-          </h2>
+          <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-4">حوزه‌های تخصصی فعالیت</h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             ما در حوزه‌های کلیدی با هدف ایجاد تحول پایدار و ارتقای کیفیت زندگی جامعه فعالیت می‌کنیم
           </p>
@@ -230,7 +223,7 @@ const FocusPage: React.FC = () => {
       </div>
 
       {/* CTA Section */}
-      <div className="bg-gradient-to-r from-mblue to-purple-700 py-20">
+      <div className="bg-gradient-to-r from-mblue to-sky-400 py-20">
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -239,11 +232,9 @@ const FocusPage: React.FC = () => {
             transition={{ duration: 0.8 }}
             className="text-center text-white"
           >
-            <h2 className="text-4xl md:text-5xl font-black mb-6">
-              آماده‌اید برای ایجاد تغییر؟
-            </h2>
-            <p className="text-xl text-blue-100 mb-10 max-w-2xl mx-auto">
-              با پیوستن به کانون مهرباران، شما نیز می‌توانید بخشی از این تحول مثبت باشید
+            <h2 className="text-4xl md:text-5xl font-black mb-6">یه‌دَس صدا نداره!</h2>
+            <p className="text-xl text-blue-100 mb-5 max-w-2xl mx-auto">
+              با پیوستن به کانون مهرباران، شما نیز می‌توانید بخشی از این تحول باشید
             </p>
             <Link href="/signup">
               <motion.button

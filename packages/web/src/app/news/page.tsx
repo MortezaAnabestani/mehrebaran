@@ -11,22 +11,11 @@ export const metadata: Metadata = {
 };
 
 const News: React.FC = async () => {
-  // Fetch all news (without status filter to see all available news)
-  const allNewsResponse = await getNews({
-    sort: "-createdAt",
-  });
-
-  console.log("📰 Total news in DB (all statuses):", allNewsResponse.results);
-  console.log("📰 All news:", allNewsResponse.data.map(n => `${n.title} (${n.status})`));
-
-  // Fetch published news only
+  // Fetch all published news from API
   const newsResponse = await getNews({
     status: "published",
     sort: "-createdAt",
   });
-
-  console.log("📰 Published news count:", newsResponse.results);
-  console.log("📰 Published news:", newsResponse.data.map(n => n.title));
 
   // Convert INews to CardType format
   const newsCards: CardType[] = newsResponse.data.map((news) => ({

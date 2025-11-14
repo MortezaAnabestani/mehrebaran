@@ -35,7 +35,7 @@ const HeroShared_views: React.FC<HeroViewsProps> = ({ cardItems, horizontal = fa
           } else {
             return (
               <div className={` ${horizontal ? "md:flex-5/12" : "md:flex-3/12 h-80 md:h-100"} `} key={index}>
-                <Card cardItems={card} horizontal={horizontal} page={page} />
+                <Card cardItem={card} horizontal={horizontal} page={page} />
               </div>
             );
           }

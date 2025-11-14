@@ -51,6 +51,7 @@ const BlogBackgroundSettings = lazy(() => import("../pages/settings/BlogBackgrou
 const WhatWeDidStatisticsSettings = lazy(() => import("../pages/settings/WhatWeDidStatisticsSettings"));
 const CompletedProjectsPageSettings = lazy(() => import("../pages/settings/CompletedProjectsPageSettings"));
 const FeaturedCompletedProjects = lazy(() => import("../pages/projects/FeaturedCompletedProjects"));
+const FocusAreas = lazy(() => import("../pages/focus-areas/FocusAreas"));
 
 // صفحات کم‌استفاده یا سنگین (Lazy Load)
 const EditArticle = lazy(() => import("../pages/articles/EditArticle"));
@@ -155,6 +156,7 @@ const AppRouter = () => {
               <Route path="settings/blog-background" element={<BlogBackgroundSettings />} />
               <Route path="settings/what-we-did-statistics" element={<WhatWeDidStatisticsSettings />} />
               <Route path="settings/completed-projects-page" element={<CompletedProjectsPageSettings />} />
+              <Route path="focus-areas" element={<FocusAreas />} />
               <Route path="sections" element={<Sections />} />
               <Route path="sections/edit/:id" element={<EditSection />} />
               <Route path="calendar" element={<CalendarPage />} />

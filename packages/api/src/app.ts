@@ -31,6 +31,7 @@ import mediaRoutes from "./modules/stories/media.routes";
 import teamsRoutes from "./modules/teams/team.routes";
 import donationRoutes from "./modules/donations/donation.routes";
 import volunteerRoutes from "./modules/volunteers/volunteer.routes";
+import focusAreaRoutes from "./modules/focus-areas/focus-area.routes";
 
 const app = express();
 
@@ -67,6 +68,7 @@ app.use("/api/v1/media", mediaRoutes);
 app.use("/api/v1/teams", teamsRoutes);
 app.use("/api/v1/donations", donationRoutes);
 app.use("/api/v1/volunteers", volunteerRoutes);
+app.use("/api/v1/focus-areas", focusAreaRoutes);
 
 app.use(globalErrorHandler);
 

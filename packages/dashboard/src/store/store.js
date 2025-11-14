@@ -22,6 +22,7 @@ import newsReducer from "../features/newsSlice";
 import videosReducer from "../features/videosSlice";
 import donationsReducer from "../features/donationsSlice";
 import volunteersReducer from "../features/volunteersSlice";
+import focusAreasReducer from "../features/focusAreasSlice";
 
 export const store = configureStore({
   reducer: {
@@ -48,6 +49,7 @@ export const store = configureStore({
     videos: videosReducer,
     donations: donationsReducer,
     volunteers: volunteersReducer,
+    focusAreas: focusAreasReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

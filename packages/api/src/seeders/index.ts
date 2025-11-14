@@ -18,6 +18,7 @@ import { seedVolunteers } from "./volunteer.seeder";
 import { seedStories } from "./story.seeder";
 import { seedFaqs } from "./faq.seeder";
 import { seedSettings } from "./setting.seeder";
+import { seedFocusAreas } from "./focus-area.seeder";
 
 /**
  * Master Seeder - اجرای تمام seeders
@@ -99,6 +100,9 @@ async function runSeeders() {
     const settings = await seedSettings();
     console.log("");
 
+    const focusAreas = await seedFocusAreas();
+    console.log("");
+
     // خلاصه نتایج
     console.log("=".repeat(60));
     console.log("🎉 Seeding completed successfully!");
@@ -128,6 +132,7 @@ async function runSeeders() {
     console.log(`  ✓ ${stories.length} stories created`);
     console.log(`  ✓ ${faqs.length} FAQs created`);
     console.log(`  ✓ ${settings.length} settings created`);
+    console.log(`  ✓ ${focusAreas.length} focus areas created`);
     console.log("=".repeat(60));
     console.log("\n📝 Test Account:");
     console.log("   Mobile: 09120000000");

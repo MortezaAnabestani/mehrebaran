@@ -24,3 +24,4 @@ export * from "./supporterSubmission.types";
 export * from "./poll.types";
 export * from "./donation.types";
 export * from "./volunteer.types";
+export * from "./focus-area.types";

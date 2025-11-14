@@ -1,51 +1,33 @@
 "use client";
 
 import { AppleWatchDock } from "@/components/views/focus_co/AppleWatchDock";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
-
-// داده‌های حوزه‌های فعالیت
-const focusAreas = [
-  {
-    title: "شبکه نیازسنجی",
-    description: "شناسایی و پاسخگویی به نیازهای واقعی جامعه از طریق شبکه‌ای از داوطلبان متخصص و متعهد",
-    icon: "🤝",
-    gradient: "from-blue-500 to-cyan-600",
-  },
-  {
-    title: "محیط زیست",
-    description: "پاکسازی طبیعت، درخت‌کاری و ارتقای فرهنگ زیست‌محیطی در جامعه",
-    icon: "🌱",
-    gradient: "from-green-500 to-emerald-600",
-  },
-  {
-    title: "خیر مؤثر",
-    description: "کمک‌های هدفمند و مبتنی بر داده برای بیشینه‌سازی تأثیرگذاری اجتماعی",
-    icon: "💡",
-    gradient: "from-purple-500 to-pink-600",
-  },
-  {
-    title: "اردوهای جهادی",
-    description: "خدمت‌رسانی به مناطق محروم و کمک به توسعه پایدار زیرساخت‌ها",
-    icon: "⛺",
-    gradient: "from-orange-500 to-red-600",
-  },
-  {
-    title: "مسئولیت اجتماعی",
-    description: "آموزش، فرهنگ‌سازی و ارتقای سطح آگاهی و مشارکت اجتماعی",
-    icon: "🎯",
-    gradient: "from-amber-500 to-yellow-600",
-  },
-  {
-    title: "سلامت و بهداشت",
-    description: "کمپین‌های سلامت، ارائه خدمات پزشکی رایگان و آموزش بهداشت عمومی",
-    icon: "🏥",
-    gradient: "from-rose-500 to-red-600",
-  },
-];
+import { getFocusAreas } from "@/services/focus-area.service";
+import { IFocusArea } from "common-types";
 
 const FocusPage: React.FC = () => {
+  const [focusAreas, setFocusAreas] = useState<IFocusArea[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadFocusAreas = async () => {
+      try {
+        const response = await getFocusAreas({
+          isActive: true,
+          sort: "order",
+        });
+        setFocusAreas(response.data);
+      } catch (error) {
+        console.error("Error loading focus areas:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadFocusAreas();
+  }, []);
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50">
       {/* Hero Section with AppleWatchDock */}
@@ -171,11 +153,20 @@ const FocusPage: React.FC = () => {
             حوزه‌های تخصصی فعالیت
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            ما در شش حوزه کلیدی با هدف ایجاد تحول پایدار و ارتقای کیفیت زندگی جامعه فعالیت می‌کنیم
+            ما در حوزه‌های کلیدی با هدف ایجاد تحول پایدار و ارتقای کیفیت زندگی جامعه فعالیت می‌کنیم
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {loading ? (
+          <div className="text-center py-20">
+            <div className="text-xl text-gray-600">در حال بارگذاری...</div>
+          </div>
+        ) : focusAreas.length === 0 ? (
+          <div className="text-center py-20">
+            <div className="text-xl text-gray-600">هیچ حوزه فعالیتی یافت نشد.</div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {focusAreas.map((area, index) => (
             <motion.div
               key={index}
@@ -219,7 +210,8 @@ const FocusPage: React.FC = () => {
               </div>
             </motion.div>
           ))}
-        </div>
+          </div>
+        )}
       </div>
 
       {/* CTA Section */}

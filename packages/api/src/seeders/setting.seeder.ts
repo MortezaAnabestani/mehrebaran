@@ -41,6 +41,26 @@ const settingData = [
       description: "با افتخار گزارش می‌دهیم که با کمک حامیان و داوطلبان عزیز، پروژه‌های متعددی را با موفقیت تکمیل کرده‌ایم. هر پروژه داستان تلاش جمعی و مهربانی انسان‌هاست.",
     },
   },
+  {
+    key: "focusPageHero",
+    value: {
+      title: "حوزه‌های فعالیت",
+      subtitle: "کانون مهرباران",
+      description:
+        "فعالیت‌های داوطلبانه و عام‌المنفعه سازمان دانشجویان جهاد دانشگاهی خراسان رضوی جهت فرهنگ‌سازی، توسعه پایدار و ایجاد تحول مثبت در جامعه",
+      stats: {
+        projects: { label: "پروژه فعال", value: "۲۲۰+" },
+        volunteers: { label: "داوطلب", value: "۱۵۹۰+" },
+        beneficiaries: { label: "ذینفع", value: "۱۴۱۰۰+" },
+      },
+      dockImages: [
+        "/images/1.png",
+        "/images/2.png",
+        "/images/hero_img.jpg",
+        "/images/blog_img.jpg",
+      ],
+    },
+  },
 ];
 
 export async function seedSettings() {

@@ -10,52 +10,17 @@ interface ItemProps {
   col: number;
   planeX: MotionValue<number>;
   planeY: MotionValue<number>;
+  images?: string[];
 }
 
-const images = [
-  "/images/1.png",
-  "/images/2.png",
-  "/images/hero_img.jpg",
-  "/images/blog_img.jpg",
-  "/images/1.png",
-  "/images/2.png",
-  "/images/hero_img.jpg",
-  "/images/blog_img.jpg",
-  "/images/1.png",
-  "/images/2.png",
-  "/images/hero_img.jpg",
-  "/images/blog_img.jpg",
-  "/images/1.png",
-  "/images/2.png",
-  "/images/hero_img.jpg",
-  "/images/blog_img.jpg",
-  "/images/1.png",
-  "/images/2.png",
-  "/images/hero_img.jpg",
-  "/images/blog_img.jpg",
-  "/images/1.png",
-  "/images/2.png",
-  "/images/hero_img.jpg",
-  "/images/blog_img.jpg",
-  "/images/1.png",
-  "/images/2.png",
-  "/images/hero_img.jpg",
-  "/images/blog_img.jpg",
-  "/images/1.png",
-  "/images/2.png",
-  "/images/hero_img.jpg",
-  "/images/blog_img.jpg",
-  "/images/1.png",
-  "/images/2.png",
-  "/images/hero_img.jpg",
-  "/images/blog_img.jpg",
+const defaultImages = [
   "/images/1.png",
   "/images/2.png",
   "/images/hero_img.jpg",
   "/images/blog_img.jpg",
 ];
 
-export function Item({ row, col, planeX, planeY }: ItemProps) {
+export function Item({ row, col, planeX, planeY, images }: ItemProps) {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   const scale = useMotionValue(1);
@@ -65,8 +30,11 @@ export function Item({ row, col, planeX, planeY }: ItemProps) {
 
   useIconTransform({ x, y, scale, planeX, planeY, xOffset, yOffset });
 
+  // استفاده از تصاویر prop یا تصاویر پیش‌فرض
+  const imagesList = images && images.length >= 4 ? images : defaultImages;
+
   // محاسبه ایندکس تصویر برای این آیکون
-  const imageIndex = (row * 4 + col) % images.length;
+  const imageIndex = (row * 4 + col) % imagesList.length;
 
   // تولید رنگ حاشیه تصادفی بر اساس index
   const hue = (imageIndex * 50) % 360;
@@ -91,7 +59,7 @@ export function Item({ row, col, planeX, planeY }: ItemProps) {
       }}
     >
       <img
-        src={images[imageIndex]}
+        src={imagesList[imageIndex]}
         alt={`icon-${row}-${col}`}
         style={{
           width: "100%",

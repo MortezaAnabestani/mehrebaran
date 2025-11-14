@@ -30,11 +30,35 @@ const completedProjectsPageSchema = z.object({
   description: z.string().min(10, "توضیحات باید حداقل ۱۰ حرف باشد."),
 });
 
+const focusPageHeroSchema = z.object({
+  title: z.string().min(3, "عنوان باید حداقل ۳ حرف باشد."),
+  subtitle: z.string().min(3, "زیرعنوان باید حداقل ۳ حرف باشد."),
+  description: z.string().min(10, "توضیحات باید حداقل ۱۰ حرف باشد."),
+  stats: z.object({
+    projects: z.object({
+      label: z.string().min(1, "برچسب پروژه‌ها الزامی است."),
+      value: z.string().min(1, "مقدار پروژه‌ها الزامی است."),
+    }),
+    volunteers: z.object({
+      label: z.string().min(1, "برچسب داوطلبان الزامی است."),
+      value: z.string().min(1, "مقدار داوطلبان الزامی است."),
+    }),
+    beneficiaries: z.object({
+      label: z.string().min(1, "برچسب ذینفعان الزامی است."),
+      value: z.string().min(1, "مقدار ذینفعان الزامی است."),
+    }),
+  }),
+  dockImages: z
+    .array(z.string().url("URL تصویر معتبر نیست."))
+    .min(4, "حداقل ۴ تصویر برای AppleWatchDock لازم است."),
+});
+
 export const valueSchemas = {
   homePageHero: homePageHeroSchema,
   blogBackground: blogBackgroundSchema,
   whatWeDidStatistics: whatWeDidStatisticsSchema,
   completedProjectsPage: completedProjectsPageSchema,
+  focusPageHero: focusPageHeroSchema,
 };
 
 export const updateSettingSchema = z.object({

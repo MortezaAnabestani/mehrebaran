@@ -11,7 +11,11 @@ const colsCount = 4;
 // ساخت آرایه grid جدید
 const grid = new Array(rowsCount).fill(0).map((_, i) => new Array(colsCount).fill(0).map((_, j) => j));
 
-export function AppleWatchDock() {
+interface AppleWatchDockProps {
+  images?: string[];
+}
+
+export function AppleWatchDock({ images }: AppleWatchDockProps) {
   const x = useMotionValue(-225);
   const y = useMotionValue(-225);
 
@@ -30,7 +34,14 @@ export function AppleWatchDock() {
       >
         {grid.map((cols, rowIndex) =>
           cols.map((colIndex) => (
-            <Item key={`${rowIndex}-${colIndex}`} row={rowIndex} col={colIndex} planeX={x} planeY={y} />
+            <Item
+              key={`${rowIndex}-${colIndex}`}
+              row={rowIndex}
+              col={colIndex}
+              planeX={x}
+              planeY={y}
+              images={images}
+            />
           ))
         )}
       </motion.div>

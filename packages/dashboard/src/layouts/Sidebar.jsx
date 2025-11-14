@@ -589,6 +589,22 @@ const Sidebar = ({ sidebarOpen, me }) => {
                 </li>
               </Link>
 
+              {/* بخش حوزه‌های فعالیت */}
+              <Link
+                rel="preconnect"
+                to={"/dashboard/focus-areas"}
+                className={`${pathname === "/dashboard/focus-areas" ? "bg-gray-100" : ""} block`}
+              >
+                <li className="text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group ">
+                  <img
+                    src="/assets/images/dashboard/icons/category.svg"
+                    alt="focus areas"
+                    className="w-6 h-6 ml-2"
+                  />
+                  <span className="ml-3 flex-1 whitespace-nowrap"> حوزه‌های فعالیت</span>
+                </li>
+              </Link>
+
               {/* بخش ویژگی‌های اجتماعی */}
               <div>
                 <li className="relative text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group ">
@@ -752,6 +768,16 @@ const Sidebar = ({ sidebarOpen, me }) => {
                       <li className="text-base text-gray-900 text-[14px]  font-normal rounded-lg hover:bg-gray-100 flex items-start p-2 group cursor-pointer">
                         <span className="mr-5 text-red-300">*</span>
                         <span className="d-block mr-1 flex-1 whitespace-nowrap">پس‌زمینه بلاگ</span>
+                      </li>
+                    </Link>
+                    <Link
+                      rel="preconnect"
+                      to={"/dashboard/settings/focus-page-hero"}
+                      className={`${pathname === "/dashboard/settings/focus-page-hero" ? "bg-gray-100" : ""} w-full`}
+                    >
+                      <li className="text-base text-gray-900 text-[14px]  font-normal rounded-lg hover:bg-gray-100 flex items-start p-2 group cursor-pointer">
+                        <span className="mr-5 text-red-300">*</span>
+                        <span className="d-block mr-1 flex-1 whitespace-nowrap">Hero صفحه حوزه‌های فعالیت</span>
                       </li>
                     </Link>
                   </div>

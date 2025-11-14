@@ -50,6 +50,7 @@ const HomePageHeroSettings = lazy(() => import("../pages/settings/HomePageHeroSe
 const BlogBackgroundSettings = lazy(() => import("../pages/settings/BlogBackgroundSettings"));
 const WhatWeDidStatisticsSettings = lazy(() => import("../pages/settings/WhatWeDidStatisticsSettings"));
 const CompletedProjectsPageSettings = lazy(() => import("../pages/settings/CompletedProjectsPageSettings"));
+const FocusPageHeroSettings = lazy(() => import("../pages/settings/FocusPageHeroSettings"));
 const FeaturedCompletedProjects = lazy(() => import("../pages/projects/FeaturedCompletedProjects"));
 const FocusAreas = lazy(() => import("../pages/focus-areas/FocusAreas"));
 
@@ -156,6 +157,7 @@ const AppRouter = () => {
               <Route path="settings/blog-background" element={<BlogBackgroundSettings />} />
               <Route path="settings/what-we-did-statistics" element={<WhatWeDidStatisticsSettings />} />
               <Route path="settings/completed-projects-page" element={<CompletedProjectsPageSettings />} />
+              <Route path="settings/focus-page-hero" element={<FocusPageHeroSettings />} />
               <Route path="focus-areas" element={<FocusAreas />} />
               <Route path="sections" element={<Sections />} />
               <Route path="sections/edit/:id" element={<EditSection />} />

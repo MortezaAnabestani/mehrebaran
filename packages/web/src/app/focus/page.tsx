@@ -5,29 +5,54 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { getFocusAreas } from "@/services/focus-area.service";
-import { IFocusArea } from "common-types";
+import { getFocusPageHeroSettings } from "@/services/setting.service";
+import { IFocusArea, IFocusPageHeroSetting } from "common-types";
+
+// Default values fallback
+const DEFAULT_HERO_SETTINGS: IFocusPageHeroSetting = {
+  title: "حوزه‌های فعالیت",
+  subtitle: "کانون مهرباران",
+  description:
+    "فعالیت‌های داوطلبانه و عام‌المنفعه سازمان دانشجویان جهاد دانشگاهی خراسان رضوی جهت فرهنگ‌سازی، توسعه پایدار و ایجاد تحول مثبت در جامعه",
+  stats: {
+    projects: { label: "پروژه فعال", value: "۲۲۰+" },
+    volunteers: { label: "داوطلب", value: "۱۵۹۰+" },
+    beneficiaries: { label: "ذینفع", value: "۱۴۱۰۰+" },
+  },
+  dockImages: [
+    "/images/1.png",
+    "/images/2.png",
+    "/images/hero_img.jpg",
+    "/images/blog_img.jpg",
+  ],
+};
 
 const FocusPage: React.FC = () => {
   const [focusAreas, setFocusAreas] = useState<IFocusArea[]>([]);
+  const [heroSettings, setHeroSettings] = useState<IFocusPageHeroSetting>(DEFAULT_HERO_SETTINGS);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const loadFocusAreas = async () => {
+    const loadData = async () => {
       try {
-        const response = await getFocusAreas({
-          isActive: true,
-          sort: "order",
-        });
-        setFocusAreas(response.data);
+        const [areasResponse, settings] = await Promise.all([
+          getFocusAreas({ isActive: true, sort: "order" }),
+          getFocusPageHeroSettings(),
+        ]);
+        setFocusAreas(areasResponse.data);
+        if (settings) {
+          setHeroSettings(settings);
+        }
       } catch (error) {
-        console.error("Error loading focus areas:", error);
+        console.error("Error loading data:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    loadFocusAreas();
+    loadData();
   }, []);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50">
       {/* Hero Section with AppleWatchDock */}
@@ -49,7 +74,7 @@ const FocusPage: React.FC = () => {
             >
               <div className="relative border-l-8 border-white/30 rounded-2xl bg-gradient-to-r from-white/10 to-transparent backdrop-blur-sm p-8 shadow-2xl">
                 <div className="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-cyan-400 to-blue-600 rounded-full" />
-                <AppleWatchDock />
+                <AppleWatchDock images={heroSettings.dockImages} />
               </div>
             </motion.div>
 
@@ -66,8 +91,8 @@ const FocusPage: React.FC = () => {
                 transition={{ delay: 0.4 }}
               >
                 <h1 className="text-5xl md:text-6xl font-black mb-6 leading-tight">
-                  حوزه‌های فعالیت
-                  <span className="block text-cyan-300">کانون مهرباران</span>
+                  {heroSettings.title}
+                  <span className="block text-cyan-300">{heroSettings.subtitle}</span>
                 </h1>
               </motion.div>
 
@@ -77,8 +102,7 @@ const FocusPage: React.FC = () => {
                 transition={{ delay: 0.6 }}
                 className="text-xl text-blue-100 leading-relaxed mb-8"
               >
-                فعالیت‌های داوطلبانه و عام‌المنفعه سازمان دانشجویان جهاد دانشگاهی خراسان رضوی
-                جهت فرهنگ‌سازی، توسعه پایدار و ایجاد تحول مثبت در جامعه
+                {heroSettings.description}
               </motion.p>
 
               <motion.div
@@ -115,9 +139,9 @@ const FocusPage: React.FC = () => {
                 className="grid grid-cols-3 gap-6 mt-12"
               >
                 {[
-                  { label: "پروژه فعال", value: "۲۲۰+" },
-                  { label: "داوطلب", value: "۱۵۹۰+" },
-                  { label: "ذینفع", value: "۱۴۱۰۰+" },
+                  heroSettings.stats.projects,
+                  heroSettings.stats.volunteers,
+                  heroSettings.stats.beneficiaries,
                 ].map((stat, i) => (
                   <div key={i} className="text-center">
                     <div className="text-3xl font-black text-cyan-300">{stat.value}</div>
@@ -167,49 +191,40 @@ const FocusPage: React.FC = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {focusAreas.map((area, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              whileHover={{ y: -10, scale: 1.02 }}
-              className="group relative"
-            >
-              {/* Glow effect */}
-              <div className={`absolute -inset-1 bg-gradient-to-r ${area.gradient} rounded-2xl opacity-0 group-hover:opacity-100 blur-xl transition-all duration-500`} />
+            {focusAreas.map((area, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+                className="group relative bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden"
+              >
+                <div
+                  className={`absolute inset-0 bg-gradient-to-br ${area.gradient} opacity-0 group-hover:opacity-10 transition-opacity`}
+                />
 
-              {/* Card */}
-              <div className="relative bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 h-full">
-                <motion.div
-                  whileHover={{ rotate: 360, scale: 1.2 }}
-                  transition={{ duration: 0.6 }}
-                  className="text-6xl mb-6 inline-block"
-                >
-                  {area.icon}
-                </motion.div>
-
-                <h3 className={`text-2xl font-bold mb-4 bg-gradient-to-r ${area.gradient} bg-clip-text text-transparent`}>
-                  {area.title}
-                </h3>
-
-                <p className="text-gray-600 leading-relaxed mb-6">
-                  {area.description}
-                </p>
-
-                <Link href="/projects">
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className={`w-full py-3 px-6 bg-gradient-to-r ${area.gradient} text-white font-semibold rounded-xl shadow-md hover:shadow-xl transition-all`}
+                <div className="relative p-8">
+                  <div className="text-5xl mb-4">{area.icon}</div>
+                  <h3
+                    className={`text-2xl font-black mb-4 bg-gradient-to-r ${area.gradient} bg-clip-text text-transparent`}
                   >
-                    مشاهده پروژه‌ها
-                  </motion.button>
-                </Link>
-              </div>
-            </motion.div>
-          ))}
+                    {area.title}
+                  </h3>
+                  <p className="text-gray-600 leading-relaxed mb-6">{area.description}</p>
+
+                  <Link href="/projects">
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className={`w-full py-3 px-6 bg-gradient-to-r ${area.gradient} text-white font-semibold rounded-xl shadow-md hover:shadow-xl transition-all`}
+                    >
+                      مشاهده پروژه‌ها
+                    </motion.button>
+                  </Link>
+                </div>
+              </motion.div>
+            ))}
           </div>
         )}
       </div>
@@ -228,29 +243,17 @@ const FocusPage: React.FC = () => {
               آماده‌اید برای ایجاد تغییر؟
             </h2>
             <p className="text-xl text-blue-100 mb-10 max-w-2xl mx-auto">
-              با پیوستن به جمع داوطلبان ما، می‌توانید در ایجاد تحولات مثبت و پایدار در جامعه نقش فعال داشته باشید
+              با پیوستن به کانون مهرباران، شما نیز می‌توانید بخشی از این تحول مثبت باشید
             </p>
-
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/projects">
-                <motion.button
-                  whileHover={{ scale: 1.05, boxShadow: "0 20px 40px rgba(0,0,0,0.3)" }}
-                  whileTap={{ scale: 0.95 }}
-                  className="px-10 py-4 bg-white text-mblue font-bold rounded-full text-lg shadow-lg"
-                >
-                  مشاهده همه پروژه‌ها
-                </motion.button>
-              </Link>
-              <Link href="/signup">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="px-10 py-4 border-2 border-white text-white font-bold rounded-full text-lg hover:bg-white hover:text-mblue transition-all"
-                >
-                  ثبت‌نام به عنوان داوطلب
-                </motion.button>
-              </Link>
-            </div>
+            <Link href="/signup">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-12 py-4 bg-white text-mblue font-bold rounded-full shadow-2xl hover:shadow-3xl transition-all text-lg"
+              >
+                همین حالا عضو شوید
+              </motion.button>
+            </Link>
           </motion.div>
         </div>
       </div>

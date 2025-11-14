@@ -3,7 +3,6 @@
 import React, { useRef } from "react";
 import { motion, useInView, useScroll, useTransform } from "framer-motion";
 import Link from "next/link";
-import { Metadata } from "next";
 
 // حوزه‌های فعالیت
 const focusAreas = [

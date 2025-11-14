@@ -21,9 +21,6 @@ class NewsController {
 
   public getOne = asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
-    console.log("🔍 [Controller] Received id:", id);
-    console.log("🔍 [Controller] id type:", typeof id);
-    console.log("🔍 [Controller] id length:", id.length);
     const newsItem = await newsService.findOne(id);
     if (!newsItem) {
       throw new ApiError(404, "خبر مورد نظر یافت نشد.");

@@ -29,14 +29,10 @@ class NewsService {
   }
 
   public async findOne(identifier: string): Promise<INews | null> {
-    console.log("🔍 [Service] findOne called with identifier:", identifier);
     const isObjectId = Types.ObjectId.isValid(identifier);
-    console.log("🔍 [Service] isObjectId:", isObjectId);
     const query = isObjectId ? { _id: identifier } : { slug: identifier };
-    console.log("🔍 [Service] Query:", JSON.stringify(query));
 
     const news = await NewsModel.findOne(query);
-    console.log("🔍 [Service] Found news:", news ? `Yes (${news.title})` : "No");
     if (!news) return null;
 
     return this.populateNews(news);

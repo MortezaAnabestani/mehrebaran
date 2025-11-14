@@ -16,7 +16,7 @@ interface GetArticlesParams {
 
 export const getArticles = async (params: GetArticlesParams): Promise<GetArticlesResponse> => {
   try {
-    const response = await api.get("/articles", { params });
+    const response = await api.get("/blog/articles", { params });
     return response.data || { results: 0, data: [] };
   } catch (error) {
     console.error("Failed to fetch articles:", error);
@@ -26,7 +26,7 @@ export const getArticles = async (params: GetArticlesParams): Promise<GetArticle
 
 export const getArticleByIdOrSlug = async (identifier: string): Promise<IArticle | null> => {
   try {
-    const response = await api.get(`/articles/${identifier}`);
+    const response = await api.get(`/blog/articles/${identifier}`);
     return response.data.data;
   } catch (error) {
     console.error(`Failed to fetch article with identifier "${identifier}":`, error);

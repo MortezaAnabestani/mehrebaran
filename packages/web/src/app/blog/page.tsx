@@ -4,13 +4,17 @@ import { cardItems } from "@/fakeData/fakeData";
 import { CardType } from "@/types/types";
 import { getSetting } from "@/services/setting.service";
 import { getVideos } from "@/services/video.service";
+import { getArticles } from "@/services/article.service";
+import { getGalleries } from "@/services/gallery.service";
 import { IBlogBackgroundSetting } from "common-types";
 import React from "react";
 
 export default async function Blog() {
-  const [blogBgSettings, videosResponse] = await Promise.all([
+  const [blogBgSettings, videosResponse, articlesResponse, galleriesResponse] = await Promise.all([
     getSetting("blogBackground") as Promise<IBlogBackgroundSetting | null>,
     getVideos({ status: "published", limit: 6, sort: "-createdAt" }),
+    getArticles({ status: "published", limit: 6, sort: "-createdAt" }),
+    getGalleries({ status: "published", limit: 6, sort: "-createdAt" }),
   ]);
 
   const backgroundImage = blogBgSettings?.image || "/images/blog_img.jpg";
@@ -21,6 +25,22 @@ export default async function Blog() {
     title: video.title,
     description: video.description?.substring(0, 150) + "..." || "",
     href: `/blog/videos/${video.slug}`,
+  }));
+
+  // تبدیل داده‌های مقالات به فرمت CardType
+  const articleCards: CardType[] = articlesResponse.data.map((article) => ({
+    img: `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '')}/${article.coverImage?.desktop}` || "/images/default.jpg",
+    title: article.title,
+    description: article.description?.substring(0, 150) + "..." || "",
+    href: `/blog/articles/${article.slug}`,
+  }));
+
+  // تبدیل داده‌های گالری به فرمت CardType
+  const galleryCards: CardType[] = galleriesResponse.data.map((gallery) => ({
+    img: `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '')}/${gallery.coverImage?.desktop}` || "/images/default.jpg",
+    title: gallery.title,
+    description: gallery.description?.substring(0, 150) + "..." || "",
+    href: `/blog/gallery/${gallery.slug}`,
   }));
 
   return (
@@ -41,13 +61,12 @@ export default async function Blog() {
         </div>
       </div>
       <div className="w-9/10 md:w-8/10 mx-auto">
-        <HeroShared_views cardItems={cardItems} />
         <HeadTitle title="ویدئوها" />
         <HeroShared_views cardItems={videoCards.length > 0 ? videoCards : cardItems} horizontal={true} page="blog/videos" />
         <HeadTitle title="مجموعه عکس" />
-        <HeroShared_views cardItems={cardItems} horizontal={true} page="blog/gallery" />
+        <HeroShared_views cardItems={galleryCards.length > 0 ? galleryCards : cardItems} horizontal={true} page="blog/gallery" />
         <HeadTitle title="مقالات" />
-        <HeroShared_views cardItems={cardItems} horizontal={true} page="blog/articles" />
+        <HeroShared_views cardItems={articleCards.length > 0 ? articleCards : cardItems} horizontal={true} page="blog/articles" />
       </div>
     </div>
   );

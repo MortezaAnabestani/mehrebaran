@@ -16,7 +16,7 @@ interface GetVideosParams {
 
 export const getVideos = async (params: GetVideosParams): Promise<GetVideosResponse> => {
   try {
-    const response = await api.get("/videos", { params });
+    const response = await api.get("/blog/videos", { params });
     return response.data || { results: 0, data: [] };
   } catch (error) {
     console.error("Failed to fetch videos:", error);
@@ -26,7 +26,7 @@ export const getVideos = async (params: GetVideosParams): Promise<GetVideosRespo
 
 export const getVideoByIdOrSlug = async (identifier: string): Promise<IVideo | null> => {
   try {
-    const response = await api.get(`/videos/${identifier}`);
+    const response = await api.get(`/blog/videos/${identifier}`);
     return response.data.data;
   } catch (error) {
     console.error(`Failed to fetch video with identifier "${identifier}":`, error);

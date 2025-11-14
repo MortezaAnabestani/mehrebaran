@@ -16,7 +16,7 @@ interface GetGalleriesParams {
 
 export const getGalleries = async (params: GetGalleriesParams): Promise<GetGalleriesResponse> => {
   try {
-    const response = await api.get("/galleries", { params });
+    const response = await api.get("/blog/gallery", { params });
     return response.data || { results: 0, data: [] };
   } catch (error) {
     console.error("Failed to fetch galleries:", error);
@@ -26,7 +26,7 @@ export const getGalleries = async (params: GetGalleriesParams): Promise<GetGalle
 
 export const getGalleryByIdOrSlug = async (identifier: string): Promise<IGallery | null> => {
   try {
-    const response = await api.get(`/galleries/${identifier}`);
+    const response = await api.get(`/blog/gallery/${identifier}`);
     return response.data.data;
   } catch (error) {
     console.error(`Failed to fetch gallery with identifier "${identifier}":`, error);

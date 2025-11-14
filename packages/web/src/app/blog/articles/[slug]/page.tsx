@@ -8,11 +8,12 @@ import OptimizedImage from "@/components/ui/OptimizedImage";
 import Link from "next/link";
 
 type PageProps = {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 };
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const article = await getArticleByIdOrSlug(params.slug);
+  const { slug } = await params;
+  const article = await getArticleByIdOrSlug(slug);
 
   if (!article) {
     return { title: "مقاله یافت نشد" };
@@ -30,7 +31,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function ArticleDetailPage({ params }: PageProps) {
-  const article = await getArticleByIdOrSlug(params.slug);
+  const { slug } = await params;
+  const article = await getArticleByIdOrSlug(slug);
 
   if (!article) {
     notFound();

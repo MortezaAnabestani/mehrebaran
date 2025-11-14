@@ -8,11 +8,12 @@ import Link from "next/link";
 import VideoPlayer from "@/components/features/video/VideoPlayer";
 
 type PageProps = {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 };
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const video = await getVideoByIdOrSlug(params.slug);
+  const { slug } = await params;
+  const video = await getVideoByIdOrSlug(slug);
   if (!video) return { title: "ویدئو یافت نشد" };
 
   return {
@@ -27,7 +28,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function VideoDetailPage({ params }: PageProps) {
-  const video = await getVideoByIdOrSlug(params.slug);
+  const { slug } = await params;
+  const video = await getVideoByIdOrSlug(slug);
 
   if (!video) {
     notFound();

@@ -8,11 +8,12 @@ import GallerySwiper from "@/components/ui/swiper/GallerySwiper";
 import Link from "next/link";
 
 type PageProps = {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 };
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const gallery = await getGalleryByIdOrSlug(params.slug);
+  const { slug } = await params;
+  const gallery = await getGalleryByIdOrSlug(slug);
 
   if (!gallery) {
     return { title: "گالری یافت نشد" };
@@ -30,7 +31,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function GalleryDetailPage({ params }: PageProps) {
-  const gallery = await getGalleryByIdOrSlug(params.slug);
+  const { slug } = await params;
+  const gallery = await getGalleryByIdOrSlug(slug);
 
   if (!gallery) {
     notFound();

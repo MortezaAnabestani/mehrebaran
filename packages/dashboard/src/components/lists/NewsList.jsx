@@ -67,7 +67,7 @@ const NewsList = () => {
 
   // رفتن به صفحه بعد
   const goToNextPage = () => {
-    if (news?.totalPages && filters.page < news.totalPages) {
+    if (news?.pagination?.totalPages && filters.page < news.pagination.totalPages) {
       setFilters({
         ...filters,
         page: filters.page + 1,
@@ -86,9 +86,9 @@ const NewsList = () => {
   };
 
   // محاسبه اطلاعات پیجینیشن
-  const totalPages = news?.totalPages || 1;
+  const totalPages = news?.pagination?.totalPages || 1;
   const currentPage = filters.page;
-  const totalItems = news?.total || 0;
+  const totalItems = news?.pagination?.total || 0;
 
   return (
     <div className="bg-gray-50 p-6">

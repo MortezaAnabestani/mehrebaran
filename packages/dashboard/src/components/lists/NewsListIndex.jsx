@@ -31,7 +31,7 @@ const NewsListIndex = ({ news }) => {
   };
 
   // بررسی وجود داده‌های اخبار
-  const newsData = news?.data || [];
+  const newsData = news?.news || [];
 
   if (newsData.length === 0) {
     return (
@@ -61,7 +61,11 @@ const NewsListIndex = ({ news }) => {
                   <div>
                     <span key={newsItem?.author?._id}>
                       <img
-                        src={`${import.meta.env.VITE_SERVER_PUBLIC_API_URL_WITHOUT_API}${newsItem?.author?.avatar}`}
+                        src={
+                          newsItem?.author?.avatar?.desktop
+                            ? `${import.meta.env.VITE_SERVER_PUBLIC_API_URL_WITHOUT_API}${newsItem?.author?.avatar?.desktop}`
+                            : "/assets/images/dashboard/icons/male_user.svg"
+                        }
                         alt={newsItem?.author?.name}
                         className="mx-auto h-15 w-12 mt-2 object-cover rounded-t-full duration-300 cursor-pointer border-2 border-b-0 border-blue-200"
                       />

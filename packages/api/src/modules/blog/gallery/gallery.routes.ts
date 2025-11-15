@@ -14,7 +14,7 @@ router.post(
   "/",
   protect,
   restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
-  uploadService.uploadMultipleImages("images"),
+  uploadService.uploadMultipleImages("images", 20),
   uploadService.resizeAndProcessImages,
   galleryController.create
 );
@@ -22,7 +22,7 @@ router.patch(
   "/:id",
   protect,
   restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
-  uploadService.uploadMultipleImages("images"),
+  uploadService.uploadMultipleImages("images", 20),
   uploadService.resizeAndProcessImages,
   galleryController.update
 );

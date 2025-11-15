@@ -33,7 +33,7 @@ const RainEffect: React.FC = () => {
     // تنظیم اندازه canvas
     const resizeCanvas = () => {
       canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight * 0.2; // 20 درصد ارتفاع
+      canvas.height = window.innerHeight * 0.25; // 25 درصد ارتفاع برای فضای بیشتر ریپل‌ها
     };
     resizeCanvas();
     window.addEventListener("resize", resizeCanvas);
@@ -81,10 +81,11 @@ const RainEffect: React.FC = () => {
         // حرکت به پایین
         drop.y += drop.speed;
 
-        // برخورد به پایین
-        if (drop.y >= canvas.height) {
-          // ایجاد ریپل
-          createRipple(drop.x, canvas.height);
+        // برخورد به پایین - در 75% ارتفاع canvas برای فضای کافی ریپل
+        const waterLevel = canvas.height * 0.75;
+        if (drop.y >= waterLevel) {
+          // ایجاد ریپل در سطح آب
+          createRipple(drop.x, waterLevel);
 
           // ریست کردن قطره
           drop.y = -drop.length;
@@ -133,7 +134,7 @@ const RainEffect: React.FC = () => {
     <canvas
       ref={canvasRef}
       className="absolute top-0 left-0 w-full pointer-events-none"
-      style={{ height: "20%" }}
+      style={{ height: "25%" }}
     />
   );
 };

@@ -16,7 +16,28 @@ class ArticleService {
     return this.populateArticle(article);
   }
 
-  public async findAll(queryString: Record<string, any>): Promise<IArticle[]> {
+  public async findAll(queryString: Record<string, any>): Promise<{
+    articles: IArticle[];
+    pagination: { page: number; limit: number; total: number; totalPages: number };
+  }> {
+    // Get pagination params
+    const page = parseInt(queryString.page) || 1;
+    const limit = parseInt(queryString.limit) || 10;
+
+    // Build filter query
+    const queryObj = { ...queryString };
+    const excludedFields = ["page", "sort", "limit", "fields"];
+    excludedFields.forEach((el) => delete queryObj[el]);
+
+    let queryStr = JSON.stringify(queryObj);
+    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+    const filterQuery = JSON.parse(queryStr);
+
+    // Get total count for pagination
+    const total = await ArticleModel.countDocuments(filterQuery);
+    const totalPages = Math.ceil(total / limit);
+
+    // Build and execute query with pagination
     const features = new ApiFeatures(ArticleModel.find(), queryString)
       .filter()
       .sort()
@@ -28,7 +49,17 @@ class ArticleService {
       { path: "author", select: "name slug avatar" },
     ]);
 
-    return features.query;
+    const articles = await features.query;
+
+    return {
+      articles,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages,
+      },
+    };
   }
 
   public async findOne(identifier: string): Promise<IArticle | null> {

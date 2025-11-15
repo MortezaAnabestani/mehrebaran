@@ -12,8 +12,8 @@ class ArticleController {
   });
 
   public getAll = asyncHandler(async (req: Request, res: Response) => {
-    const articles = await articleService.findAll(req.query);
-    res.status(200).json({ results: articles.length, data: articles });
+    const result = await articleService.findAll(req.query);
+    res.status(200).json(result);
   });
 
   public getOne = asyncHandler(async (req: Request, res: Response) => {

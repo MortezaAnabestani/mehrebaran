@@ -2,8 +2,13 @@ import api from "@/lib/api";
 import { IGallery } from "common-types";
 
 interface GetGalleriesResponse {
-  results: number;
-  data: IGallery[];
+  galleries: IGallery[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
 }
 
 interface GetGalleriesParams {
@@ -17,10 +22,10 @@ interface GetGalleriesParams {
 export const getGalleries = async (params: GetGalleriesParams): Promise<GetGalleriesResponse> => {
   try {
     const response = await api.get("/blog/gallery", { params });
-    return response.data || { results: 0, data: [] };
+    return response.data || { galleries: [], pagination: { page: 1, limit: 10, total: 0, totalPages: 0 } };
   } catch (error) {
     console.error("Failed to fetch galleries:", error);
-    return { results: 0, data: [] };
+    return { galleries: [], pagination: { page: 1, limit: 10, total: 0, totalPages: 0 } };
   }
 };
 

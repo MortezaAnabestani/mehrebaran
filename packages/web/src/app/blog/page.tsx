@@ -19,7 +19,7 @@ export default async function Blog() {
   const backgroundImage = blogBgSettings?.image || "/images/blog_img.jpg";
 
   // تبدیل داده‌های ویدئو به فرمت CardType
-  const videoCards: CardType[] = videosResponse.data.map((video) => ({
+  const videoCards: CardType[] = videosResponse.videos.map((video) => ({
     img: video.coverImage.desktop || "/images/default.jpg",
     title: video.title,
     description: video.description?.substring(0, 150) + "..." || "",
@@ -27,7 +27,7 @@ export default async function Blog() {
   }));
 
   // تبدیل داده‌های مقالات به فرمت CardType
-  const articleCards: CardType[] = articlesResponse.data.map((article) => ({
+  const articleCards: CardType[] = articlesResponse.articles.map((article) => ({
     img: article.featuredImage?.desktop || "/images/default.jpg",
     title: article.title,
     description: article.content?.substring(0, 150) + "..." || "",
@@ -35,7 +35,7 @@ export default async function Blog() {
   }));
 
   // تبدیل داده‌های گالری به فرمت CardType
-  const galleryCards: CardType[] = galleriesResponse.data.map((gallery) => ({
+  const galleryCards: CardType[] = galleriesResponse.galleries.map((gallery) => ({
     img: gallery.images[0]?.desktop || "/images/default.jpg",
     title: gallery.title,
     description: gallery.description?.substring(0, 150) + "..." || "",

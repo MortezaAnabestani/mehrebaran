@@ -65,10 +65,14 @@ export const fetchGalleryBySlug = createAsyncThunk(
 const galleriesSlice = createSlice({
   name: "galleries",
   initialState: {
-    galleries: [],
+    galleries: { galleries: [], pagination: { page: 1, limit: 10, total: 0, totalPages: 0 } },
     selectedGallery: null,
     loading: false,
     error: null,
+    success: false,
+    totalPages: 0,
+    currentPage: 1,
+    total: 0,
   },
   reducers: {
     resetStatus: (state) => {
@@ -86,9 +90,10 @@ const galleriesSlice = createSlice({
       })
       .addCase(createGallery.fulfilled, (state, action) => {
         state.loading = false;
-        // اگر galleries یک آرایه باشد
-        if (Array.isArray(state.galleries)) {
-          state.galleries.push(action.payload.data);
+        state.success = true;
+        // اگر galleries.galleries یک آرایه باشد
+        if (Array.isArray(state.galleries.galleries)) {
+          state.galleries.galleries.unshift(action.payload.data);
         }
       })
       .addCase(createGallery.rejected, (state, action) => {
@@ -103,15 +108,16 @@ const galleriesSlice = createSlice({
       })
       .addCase(updateGallery.fulfilled, (state, action) => {
         state.loading = false;
+        state.success = true;
         state.selectedGallery = action.payload.data;
 
         // بروزرسانی گالری در لیست گالری‌ها
-        if (Array.isArray(state.galleries)) {
-          const index = state.galleries.findIndex(
+        if (Array.isArray(state.galleries.galleries)) {
+          const index = state.galleries.galleries.findIndex(
             (gallery) => gallery._id === action.payload.data._id
           );
           if (index !== -1) {
-            state.galleries[index] = action.payload.data;
+            state.galleries.galleries[index] = action.payload.data;
           }
         }
       })
@@ -127,10 +133,11 @@ const galleriesSlice = createSlice({
       })
       .addCase(deleteGallery.fulfilled, (state, action) => {
         state.loading = false;
+        state.success = true;
 
         // حذف گالری از لیست گالری‌ها
-        if (Array.isArray(state.galleries)) {
-          state.galleries = state.galleries.filter(
+        if (Array.isArray(state.galleries.galleries)) {
+          state.galleries.galleries = state.galleries.galleries.filter(
             (gallery) => gallery._id !== action.payload
           );
         }
@@ -147,7 +154,10 @@ const galleriesSlice = createSlice({
       })
       .addCase(fetchGalleries.fulfilled, (state, action) => {
         state.loading = false;
-        state.galleries = action.payload.data || action.payload;
+        state.galleries = action.payload;
+        state.totalPages = action.payload.pagination?.totalPages || 1;
+        state.currentPage = action.payload.pagination?.page || 1;
+        state.total = action.payload.pagination?.total || 0;
       })
       .addCase(fetchGalleries.rejected, (state, action) => {
         state.loading = false;

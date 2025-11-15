@@ -2,8 +2,13 @@ import api from "@/lib/api";
 import { IVideo } from "common-types";
 
 interface GetVideosResponse {
-  results: number;
-  data: IVideo[];
+  videos: IVideo[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
 }
 
 interface GetVideosParams {
@@ -17,10 +22,10 @@ interface GetVideosParams {
 export const getVideos = async (params: GetVideosParams): Promise<GetVideosResponse> => {
   try {
     const response = await api.get("/blog/videos", { params });
-    return response.data || { results: 0, data: [] };
+    return response.data || { videos: [], pagination: { page: 1, limit: 10, total: 0, totalPages: 0 } };
   } catch (error) {
     console.error("Failed to fetch videos:", error);
-    return { results: 0, data: [] };
+    return { videos: [], pagination: { page: 1, limit: 10, total: 0, totalPages: 0 } };
   }
 };
 

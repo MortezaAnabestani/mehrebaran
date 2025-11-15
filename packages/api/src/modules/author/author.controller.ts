@@ -7,7 +7,14 @@ import ApiError from "../../core/utils/apiError";
 class AuthorController {
   public create = asyncHandler(async (req: Request, res: Response) => {
     const validatedData = createAuthorSchema.parse({ body: req.body });
-    const author = await authorService.create(validatedData.body);
+    const authorData: any = { ...validatedData.body };
+
+    // Convert birthday string to Date if provided
+    if (authorData.birthday) {
+      authorData.birthday = new Date(authorData.birthday);
+    }
+
+    const author = await authorService.create(authorData);
     res.status(201).json({ message: "نویسنده با موفقیت ایجاد شد.", data: author });
   });
 
@@ -26,7 +33,14 @@ class AuthorController {
 
   public update = asyncHandler(async (req: Request, res: Response) => {
     const validatedData = updateAuthorSchema.parse({ body: req.body, params: req.params });
-    const author = await authorService.update(req.params.identifier, validatedData.body);
+    const updateData: any = { ...validatedData.body };
+
+    // Convert birthday string to Date if provided
+    if (updateData.birthday) {
+      updateData.birthday = new Date(updateData.birthday);
+    }
+
+    const author = await authorService.update(req.params.identifier, updateData);
     if (!author) {
       throw new ApiError(404, "نویسنده یافت نشد.");
     }

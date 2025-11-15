@@ -5,9 +5,9 @@ const TitleAndSubtitle = ({ register, watch }) => {
   const [subtitleShow, setSubtitleShow] = useState(false);
 
   useEffect(() => {
-    const subTitle = watch("subTitle");
-    subTitle && setSubtitleShow(true);
-  }, [watch("subTitle")]);
+    const subtitle = watch("subtitle");
+    subtitle && setSubtitleShow(true);
+  }, [watch("subtitle")]);
 
   return (
     <div>
@@ -34,18 +34,18 @@ const TitleAndSubtitle = ({ register, watch }) => {
         </div>
       ) : (
         <div className={`${styles.createContent_title} mb-10`}>
-          <label className="text-[12px] mb-0" htmlFor="subTitle">
+          <label className="text-[12px] mb-0" htmlFor="subtitle">
             زیرعنوان
           </label>
           <input
             type="text"
-            id="subTitle"
+            id="subtitle"
             className="w-full px-4 py-2 border rounded-md border-gray-300 focus:border-gray-500 outline-none transition h-10"
-            {...register("subTitle")}
+            {...register("subtitle")}
           />
           <div
             className={`${styles.createContent_delete}`}
-            htmlFor="subTitle"
+            htmlFor="subtitle"
             onClick={() => setSubtitleShow(!subtitleShow)}
           >
             حذف

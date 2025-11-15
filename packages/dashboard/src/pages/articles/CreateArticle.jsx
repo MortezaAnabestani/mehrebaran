@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { useEffect } from "react";
 
 import { lazy, Suspense } from "react";
-import TemplateType from "../../components/createContent/TemplateType";
+import ArticleMetadata from "../../components/createContent/ArticleMetadata";
 import TitleAndSubtitle from "../../components/createContent/TitleAndSubtitle";
 import TagPart from "../../components/createContent/TagPart";
 import styles from "../../styles/admin.module.css";
@@ -29,7 +29,6 @@ const CreateArticle = () => {
     selectedImages,
     handleImageSelection,
     removeImage,
-
     selectedRelatedArticles,
     handleRelatedArticleSelection,
     removeRelatedArticle,
@@ -44,12 +43,9 @@ const CreateArticle = () => {
     setValue,
     editorContent,
     setEditorContent,
-    sections,
+    categories,
     authors,
     watch,
-    templates,
-    getValues,
-    control,
   } = useArticleForm();
 
   useEffect(() => {
@@ -106,16 +102,11 @@ const CreateArticle = () => {
       )}
 
       <form onSubmit={handleSubmit(onSubmit)}>
-        <TemplateType
+        <ArticleMetadata
           register={register}
-          templates={templates}
-          sections={sections}
-          watch={watch}
+          categories={categories}
           authors={authors}
           errors={errors}
-          getValues={getValues}
-          control={control}
-          setValue={setValue}
         />
         <TitleAndSubtitle register={register} watch={watch} errors={errors} />
         <Quotation register={register} watch={watch} errors={errors} />

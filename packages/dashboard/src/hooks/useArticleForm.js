@@ -5,21 +5,19 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useNavigate, useParams } from "react-router-dom";
 import { createArticle, updateArticle, fetchArticleBySlug, fetchArticles } from "../features/articlesSlice";
-import { fetchSections } from "../features/sectionsSlice";
+import { fetchCategories } from "../features/categoriesSlice";
 import { fetchAuthors } from "../features/authorsSlice";
-import { fetchTemplates } from "../features/templatesSlice";
 import { fetchTags } from "../features/tagsSlice";
 
 const schema = yup.object().shape({
   title: yup.string().required("عنوان مقاله اجباری است"),
   metaTitle: yup.string(),
-  subTitle: yup.string(),
-  excerpt: yup.string(),
-  content: yup.string(),
+  subtitle: yup.string(),
+  excerpt: yup.string().required("خلاصه مقاله اجباری است"),
+  content: yup.string().required("محتوای مقاله اجباری است"),
   metaDescription: yup.string(),
-  status: yup.string().oneOf(["draft", "published", "rejected"]).default("draft"),
-  section: yup.string().required("انتخاب بخش اجباری است"),
-  template: yup.string().required("انتخاب قالب اجباری است"),
+  status: yup.string().oneOf(["draft", "published", "archived"]).default("draft"),
+  category: yup.string().required("انتخاب دسته‌بندی اجباری است"),
   author: yup.string().required("انتخاب نویسنده اجباری است"),
   tags: yup.array(),
   relatedArticles: yup.array(),
@@ -29,7 +27,7 @@ const schema = yup.object().shape({
   }),
   coverImage: yup.mixed().test("fileSize", "حجم تصویر نباید بیشتر از 20MB باشد", (file) => {
     if (!file || file.length === 0) return true;
-    return file.length > 0 ? file[0].size <= 20 * 1024 * 1024 : true; // اگر کاربر تصویری انتخاب نکرد، بررسی نشود
+    return file.length > 0 ? file[0].size <= 20 * 1024 * 1024 : true;
   }),
 });
 
@@ -49,9 +47,8 @@ const useArticleForm = (isEdit = false) => {
   const [removedServerImages, setRemovedServerImages] = useState([]);
 
   const { selectedArticle, loading, error } = useSelector((state) => state.articles);
-  const { sections } = useSelector((state) => state.sections);
+  const { categories } = useSelector((state) => state.categories);
   const { authors } = useSelector((state) => state.authors);
-  const { templates } = useSelector((state) => state.templates);
   const { tags } = useSelector((state) => state.tags);
   const { articles } = useSelector((state) => state.articles);
 
@@ -68,14 +65,13 @@ const useArticleForm = (isEdit = false) => {
     resolver: yupResolver(schema),
     defaultValues: {
       status: "draft",
-      template: "",
+      category: "",
       title: "",
       metaTitle: "",
-      subTitle: "",
+      subtitle: "",
       excerpt: "",
       content: "",
       metaDescription: "",
-      section: "",
       author: "",
       tags: [],
       relatedArticles: [],
@@ -101,8 +97,7 @@ const useArticleForm = (isEdit = false) => {
     const loadInitialData = async () => {
       try {
         await Promise.all([
-          dispatch(fetchTemplates()),
-          dispatch(fetchSections()),
+          dispatch(fetchCategories()),
           dispatch(fetchAuthors({limit: 1000})),
           dispatch(fetchTags()),
           dispatch(fetchArticles()),
@@ -119,22 +114,21 @@ const useArticleForm = (isEdit = false) => {
     if (
       isEdit &&
       selectedArticle &&
-      templates?.length > 0 // مطمئن شو که templates لود شده
+      categories?.length > 0 // مطمئن شو که categories لود شده
     ) {
-      // مرحله اول: فقط reset با template
+      // مرحله اول: فقط reset با category
       reset({
-        template: selectedArticle?.template?._id || "",
-        section: selectedArticle?.section?._id || "",
+        category: selectedArticle?.category?._id || "",
         author: selectedArticle?.author?._id || "",
       });
 
-      // مرحله دوم: پس از template لود شدن
+      // مرحله دوم: پس از category لود شدن
       setStep2Data({
         ready: true,
         article: selectedArticle,
       });
     }
-  }, [isEdit, selectedArticle, templates, reset, sections, authors]);
+  }, [isEdit, selectedArticle, categories, reset, authors]);
 
   // پر کردن فرم با داده‌های مقاله در حالت ویرایش
   useEffect(() => {
@@ -146,11 +140,11 @@ const useArticleForm = (isEdit = false) => {
     setValue("status", article.status || "draft");
     setValue("title", article.title || "");
     setValue("metaTitle", article.metaTitle || "");
-    setValue("subTitle", article.subTitle || "");
+    setValue("subtitle", article.subtitle || "");
     setValue("excerpt", article.excerpt || "");
     setValue("content", article.content || "");
     setValue("metaDescription", article.metaDescription || "");
-    setValue("section", article.section?._id || "");
+    setValue("category", article.category?._id || "");
     setValue("author", article.author?._id || "");
     setValue("tags", article.tags?.map((tag) => tag._id) || []);
     setValue("relatedArticles", article.relatedArticles || []);
@@ -175,7 +169,7 @@ const useArticleForm = (isEdit = false) => {
 
     // یکبار اجرا بشه
     setStep2Data({ ready: false, article: null });
-  }, [step2Data, setValue, templates]);
+  }, [step2Data, setValue, categories]);
 
   // مدیریت تغییر تصویر اصلی
   const handleCoverImageChange = (event) => {
@@ -266,15 +260,14 @@ const useArticleForm = (isEdit = false) => {
       // افزودن فیلدهای متنی
       formData.append("title", data.title.trim());
       formData.append("metaTitle", data.metaTitle?.trim() || data.title.trim());
-      formData.append("subTitle", data.subTitle?.trim() || "");
+      formData.append("subtitle", data.subtitle?.trim() || "");
       formData.append("excerpt", data.excerpt?.trim() || "");
       formData.append("content", editorContent || "");
       formData.append("metaDescription", data.metaDescription?.trim() || "");
       formData.append("status", data.status || "draft");
 
       // افزودن فیلدهای ارتباطی
-      if (data.section) formData.append("section", data.section);
-      if (data.template) formData.append("template", data.template);
+      if (data.category) formData.append("category", data.category);
       if (data.author) formData.append("author", data.author);
 
       if (removedServerImages.length > 0) {
@@ -383,9 +376,8 @@ const useArticleForm = (isEdit = false) => {
     selectedRelatedArticles,
     handleRelatedArticleSelection,
     removeRelatedArticle,
-    sections,
+    categories,
     authors,
-    templates,
     tags,
     loading,
     error,

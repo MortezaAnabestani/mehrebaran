@@ -85,7 +85,7 @@ const ArticlesListIndex = ({ articles }) => {
                         <div className="border-b border-gray-100 pb-1">
                           <h3 className="text-[10px] font-medium text-gray-400">
                             <span className="rotate-45">زیرعنوان:</span>
-                            <span className="text-gray-800 font-normal  text-xs"> {article?.subTitle}</span>
+                            <span className="text-gray-800 font-normal  text-xs"> {article?.subtitle}</span>
                           </h3>
                         </div>
                         <div className="border-b border-gray-100 pb-1">
@@ -237,7 +237,7 @@ const ArticlesListIndex = ({ articles }) => {
               </h1>
               <h3 className="text-xs font-medium text-gray-400">
                 عنوان فرعی:
-                <span className="text-gray-800 font-normal mr-1 text-sm">{article.subTitle}</span>
+                <span className="text-gray-800 font-normal mr-1 text-sm">{article.subtitle}</span>
               </h3>
               <p className="text-xs font-medium text-gray-400">
                 دسته‌بندی: <span className="text-blue-600 text-sm">{article?.category?.name || 'بدون دسته‌بندی'}</span>

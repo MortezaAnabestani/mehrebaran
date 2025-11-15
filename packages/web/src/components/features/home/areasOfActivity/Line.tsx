@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import { motion } from "framer-motion";
 
 interface Props {
@@ -9,8 +9,6 @@ interface Props {
 }
 
 const Line: React.FC<Props> = ({ isCurrentTop, isNextBottom }) => {
-  const pathRef = useRef<SVGPathElement>(null);
-
   // محاسبه path بر اساس position
   const path =
     isCurrentTop && isNextBottom
@@ -19,13 +17,9 @@ const Line: React.FC<Props> = ({ isCurrentTop, isNextBottom }) => {
       ? "M0,0 C100,0 90,0 250,0"
       : "M0,80 C40,80 90,0 250,0";
 
-  useEffect(() => {
-    if (!pathRef.current) return;
-
-    const pathLength = pathRef.current.getTotalLength();
-    pathRef.current.style.strokeDasharray = `${pathLength}`;
-    pathRef.current.style.strokeDashoffset = `${pathLength}`;
-  }, []);
+  // ID یکتا برای هر gradient
+  const gradientId = `flowingLight-${isCurrentTop}-${isNextBottom}`;
+  const glowId = `glow-${isCurrentTop}-${isNextBottom}`;
 
   return (
     <div
@@ -34,104 +28,69 @@ const Line: React.FC<Props> = ({ isCurrentTop, isNextBottom }) => {
       } w-200 h-20 overflow-visible`}
     >
       <svg width="100%" height="100%" className="overflow-visible">
-        {/* گلو زیر خط */}
         <defs>
-          {/* Gradient برای جریان */}
-          <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#ff9434" stopOpacity="0.3">
-              <animate attributeName="offset" values="0;1;0" dur="3s" repeatCount="indefinite" />
+          {/* Gradient برای جریان نور */}
+          <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="#3b82f6" stopOpacity="0">
+              <animate attributeName="offset" values="-0.5;1.5" dur="2.5s" repeatCount="indefinite" />
             </stop>
-            <stop offset="50%" stopColor="#ffb366" stopOpacity="1">
-              <animate attributeName="offset" values="0;1;0" dur="3s" repeatCount="indefinite" />
+            <stop offset="20%" stopColor="#60a5fa" stopOpacity="0.3">
+              <animate attributeName="offset" values="-0.3;1.7" dur="2.5s" repeatCount="indefinite" />
             </stop>
-            <stop offset="100%" stopColor="#ff9434" stopOpacity="0.3">
-              <animate attributeName="offset" values="0;1;0" dur="3s" repeatCount="indefinite" />
+            <stop offset="50%" stopColor="#93c5fd" stopOpacity="1">
+              <animate attributeName="offset" values="0;2" dur="2.5s" repeatCount="indefinite" />
+            </stop>
+            <stop offset="80%" stopColor="#60a5fa" stopOpacity="0.3">
+              <animate attributeName="offset" values="0.3;2.3" dur="2.5s" repeatCount="indefinite" />
+            </stop>
+            <stop offset="100%" stopColor="#3b82f6" stopOpacity="0">
+              <animate attributeName="offset" values="0.5;2.5" dur="2.5s" repeatCount="indefinite" />
             </stop>
           </linearGradient>
 
           {/* فیلتر برای گلو */}
-          <filter id="glow">
-            <feGaussianBlur stdDeviation="4" result="coloredBlur" />
+          <filter id={glowId}>
+            <feGaussianBlur stdDeviation="3" result="coloredBlur" />
             <feMerge>
               <feMergeNode in="coloredBlur" />
               <feMergeNode in="SourceGraphic" />
             </feMerge>
           </filter>
-
-          {/* فیلتر برای shadow */}
-          <filter id="shadow">
-            <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="#ff9434" floodOpacity="0.5" />
-          </filter>
         </defs>
 
-        {/* خط پس‌زمینه (گلو) */}
+        {/* خط پس‌زمینه (خاکستری) */}
         <path
           d={path}
-          stroke="#ff9434"
-          strokeWidth="10"
+          stroke="#e5e7eb"
+          strokeWidth="3"
           fill="transparent"
-          opacity="0.2"
-          filter="url(#glow)"
-        />
-
-        {/* خط اصلی با انیمیشن */}
-        <motion.path
-          ref={pathRef}
-          d={path}
-          stroke="url(#lineGradient)"
-          strokeWidth="5"
-          fill="transparent"
-          filter="url(#shadow)"
           strokeLinecap="round"
-          initial={{ strokeDashoffset: 500 }}
-          animate={{
-            strokeDashoffset: 0,
-          }}
-          transition={{
-            duration: 2,
-            ease: "easeInOut",
-            delay: 0.3,
-          }}
+          opacity="0.4"
         />
 
-        {/* پارتیکل‌های در حال حرکت روی خط */}
-        {[0, 0.3, 0.6].map((delay, index) => (
-          <motion.circle
-            key={index}
-            r="4"
-            fill="#ffb366"
-            filter="url(#glow)"
-            initial={{ offsetdistance: "0%", opacity: 0 }}
-            animate={{
-              offsetdistance: ["0%", "100%"],
-              opacity: [0, 1, 1, 0],
-            }}
-            transition={{
-              duration: 3,
-              repeat: Infinity,
-              delay: delay,
-              ease: "linear",
-            }}
-            style={{
-              offsetPath: `path('${path}')`,
-              offsetRotate: "0deg",
-            }}
-          />
-        ))}
+        {/* خط با جریان نور */}
+        <path
+          d={path}
+          stroke={`url(#${gradientId})`}
+          strokeWidth="4"
+          fill="transparent"
+          strokeLinecap="round"
+          filter={`url(#${glowId})`}
+        />
 
-        {/* دایره‌های پالس در نقاط شروع و پایان */}
+        {/* دایره‌های نورانی در نقاط شروع و پایان */}
         <motion.circle
           cx="0"
           cy={isCurrentTop ? "0" : "80"}
-          r="6"
-          fill="#ff9434"
-          opacity="0.6"
+          r="4"
+          fill="#3b82f6"
+          filter={`url(#${glowId})`}
           animate={{
-            r: [6, 12, 6],
-            opacity: [0.6, 0, 0.6],
+            r: [4, 6, 4],
+            opacity: [0.7, 1, 0.7],
           }}
           transition={{
-            duration: 2,
+            duration: 1.5,
             repeat: Infinity,
             ease: "easeInOut",
           }}
@@ -140,18 +99,18 @@ const Line: React.FC<Props> = ({ isCurrentTop, isNextBottom }) => {
         <motion.circle
           cx="250"
           cy={isNextBottom ? "80" : "0"}
-          r="6"
-          fill="#ff9434"
-          opacity="0.6"
+          r="4"
+          fill="#3b82f6"
+          filter={`url(#${glowId})`}
           animate={{
-            r: [6, 12, 6],
-            opacity: [0.6, 0, 0.6],
+            r: [4, 6, 4],
+            opacity: [0.7, 1, 0.7],
           }}
           transition={{
-            duration: 2,
+            duration: 1.5,
             repeat: Infinity,
             ease: "easeInOut",
-            delay: 1,
+            delay: 0.75,
           }}
         />
       </svg>

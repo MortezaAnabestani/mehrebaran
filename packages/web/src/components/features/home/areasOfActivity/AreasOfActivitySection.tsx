@@ -49,88 +49,44 @@ const AreasOfActivitySection: React.FC = () => {
   const sectionRef = useRef<HTMLElement>(null);
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
 
-  // Variants برای stagger animation
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.15,
+        staggerChildren: 0.1,
         delayChildren: 0.2,
       },
     },
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 60, scale: 0.9 },
+    hidden: { opacity: 0, y: 40 },
     visible: {
       opacity: 1,
       y: 0,
-      scale: 1,
       transition: {
         type: "spring",
         stiffness: 100,
         damping: 15,
-        duration: 0.8,
       },
     },
   };
 
   return (
-    <section ref={sectionRef} className="relative overflow-hidden">
-      {/* افکت پس‌زمینه متحرک */}
-      <motion.div
-        className="absolute inset-0 opacity-30 pointer-events-none"
-        initial={{ backgroundPosition: "0% 0%" }}
-        animate={{
-          backgroundPosition: ["0% 0%", "100% 100%", "0% 0%"],
-        }}
-        transition={{
-          duration: 20,
-          repeat: Infinity,
-          ease: "linear",
-        }}
-        style={{
-          background:
-            "radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(255, 148, 52, 0.1) 0%, transparent 50%)",
-        }}
-      />
+    <section ref={sectionRef} className="relative overflow-hidden py-16">
+      {/* افکت پس‌زمینه ساده */}
+      <div className="absolute inset-0 bg-gradient-to-b from-blue-50/50 via-white to-blue-50/30 pointer-events-none" />
 
-      {/* پارتیکل‌های شناور پس‌زمینه */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(10)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute w-2 h-2 bg-mblue/20 rounded-full"
-            style={{
-              left: `${(i * 10) % 100}%`,
-              top: `${(i * 17) % 100}%`,
-              willChange: "transform, opacity",
-            }}
-            animate={{
-              y: [0, -30, 0],
-              opacity: [0.2, 0.5, 0.2],
-              scale: [1, 1.5, 1],
-            }}
-            transition={{
-              duration: 5 + i * 0.3,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: i * 0.2,
-            }}
-          />
-        ))}
-      </div>
-
-      {/* عنوان با انیمیشن */}
+      {/* عنوان */}
       <motion.div
-        initial={{ opacity: 0, y: -30 }}
+        initial={{ opacity: 0, y: -20 }}
         animate={isInView ? { opacity: 1, y: 0 } : {}}
-        transition={{ duration: 0.8, ease: "easeOut" }}
+        transition={{ duration: 0.6 }}
       >
         <HeadTitle
           title="حوزه‌های فعالیت"
-          subTitle="فعالیت‌های داوطلبانه و عام‌المنفعه سازمان دانشجویان جهاد دانشگاهی خراسان رضوی جهت فرهنگ‌سازی جامعه"
+          subTitle="فعالیت‌های داوطلبانه و عام‌المنفعه سازمان دانشجویان جهاد دانشگاهی خراسان رضوی"
         />
       </motion.div>
 
@@ -156,26 +112,10 @@ const AreasOfActivitySection: React.FC = () => {
                 position={activity.position}
               />
 
-              {/* خط اتصال */}
+              {/* خط اتصال با جریان نور */}
               <div className="hidden md:block">
                 {next && <Line isCurrentTop={isCurrentTop} isNextBottom={isNextBottom} />}
               </div>
-
-              {/* نور درخشان در نقطه اتصال */}
-              {next && (
-                <motion.div
-                  className="hidden md:block absolute bottom-0 left-1/2 w-4 h-4 bg-gradient-to-r from-mblue to-orange-400 rounded-full blur-sm"
-                  animate={{
-                    scale: [1, 1.5, 1],
-                    opacity: [0.5, 1, 0.5],
-                  }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                  }}
-                />
-              )}
             </motion.div>
           );
         })}

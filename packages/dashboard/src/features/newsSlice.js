@@ -66,7 +66,7 @@ export const fetchNewsBySlug = createAsyncThunk(
 const newsSlice = createSlice({
   name: "news",
   initialState: {
-    news: [],
+    news: { news: [], pagination: { page: 1, limit: 10, total: 0, totalPages: 0 } },
     selectedNews: null,
     loading: false,
     error: null,
@@ -97,16 +97,9 @@ const newsSlice = createSlice({
       .addCase(createNews.fulfilled, (state, action) => {
         state.loading = false;
         state.success = true;
-        // اگر news یک آرایه باشد
-        if (Array.isArray(state.news.data)) {
-          state.news.data.unshift(action.payload.data);
-        }
-        // اگر news یک آبجکت با ویژگی data باشد
-        else if (state.news && typeof state.news === "object") {
-          if (!state.news.data) {
-            state.news.data = [];
-          }
-          state.news.data.unshift(action.payload.data);
+        // اگر news.news یک آرایه باشد
+        if (Array.isArray(state.news.news)) {
+          state.news.news.unshift(action.payload.data);
         }
       })
       .addCase(createNews.rejected, (state, action) => {
@@ -127,12 +120,12 @@ const newsSlice = createSlice({
         state.success = true;
 
         // بروزرسانی خبر در لیست اخبار
-        if (Array.isArray(state.news.data)) {
-          const index = state.news.data.findIndex(
+        if (Array.isArray(state.news.news)) {
+          const index = state.news.news.findIndex(
             (newsItem) => newsItem._id === action.payload.data._id
           );
           if (index !== -1) {
-            state.news.data[index] = action.payload.data;
+            state.news.news[index] = action.payload.data;
           }
         }
       })
@@ -152,8 +145,8 @@ const newsSlice = createSlice({
         state.success = true;
 
         // حذف خبر از لیست اخبار
-        if (Array.isArray(state.news.data)) {
-          state.news.data = state.news.data.filter(
+        if (Array.isArray(state.news.news)) {
+          state.news.news = state.news.news.filter(
             (newsItem) => newsItem._id !== action.payload
           );
         }

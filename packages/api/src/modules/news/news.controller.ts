@@ -7,16 +7,20 @@ import ApiError from "../../core/utils/apiError";
 class NewsController {
   public create = asyncHandler(async (req: Request, res: Response) => {
     const validatedData = createNewsSchema.parse({ body: req.body });
-    const news = await newsService.create(validatedData.body);
+    const newsData: any = { ...validatedData.body };
+
+    // Add processed featuredImage if uploaded
+    if (req.processedFiles) {
+      newsData.featuredImage = req.processedFiles;
+    }
+
+    const news = await newsService.create(newsData);
     res.status(201).json({ message: "خبر با موفقیت ایجاد شد.", data: news });
   });
 
   public getAll = asyncHandler(async (req: Request, res: Response) => {
-    const news = await newsService.findAll(req.query);
-    res.status(200).json({
-      results: news.length,
-      data: news,
-    });
+    const result = await newsService.findAll(req.query);
+    res.status(200).json(result);
   });
 
   public getOne = asyncHandler(async (req: Request, res: Response) => {
@@ -31,8 +35,14 @@ class NewsController {
   public update = asyncHandler(async (req: Request, res: Response) => {
     const validatedData = updateNewsSchema.parse({ body: req.body, params: req.params });
     const { id } = validatedData.params;
+    const updateData: any = { ...validatedData.body };
 
-    const newsItem = await newsService.update(id, validatedData.body);
+    // Add processed featuredImage if uploaded
+    if (req.processedFiles) {
+      updateData.featuredImage = req.processedFiles;
+    }
+
+    const newsItem = await newsService.update(id, updateData);
     if (!newsItem) {
       throw new ApiError(404, "خبر مورد نظر یافت نشد.");
     }

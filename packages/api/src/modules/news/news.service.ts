@@ -16,7 +16,28 @@ class NewsService {
     return this.populateNews(news);
   }
 
-  public async findAll(queryString: Record<string, any>): Promise<INews[]> {
+  public async findAll(queryString: Record<string, any>): Promise<{
+    news: INews[];
+    pagination: { page: number; limit: number; total: number; totalPages: number };
+  }> {
+    // Get pagination params
+    const page = parseInt(queryString.page) || 1;
+    const limit = parseInt(queryString.limit) || 10;
+
+    // Build filter query
+    const queryObj = { ...queryString };
+    const excludedFields = ["page", "sort", "limit", "fields"];
+    excludedFields.forEach((el) => delete queryObj[el]);
+
+    let queryStr = JSON.stringify(queryObj);
+    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+    const filterQuery = JSON.parse(queryStr);
+
+    // Get total count for pagination
+    const total = await NewsModel.countDocuments(filterQuery);
+    const totalPages = Math.ceil(total / limit);
+
+    // Build and execute query with pagination
     const features = new ApiFeatures(NewsModel.find(), queryString).filter().sort().limitFields().paginate();
 
     features.query = features.query.populate([
@@ -25,7 +46,17 @@ class NewsService {
       { path: "tags", select: "name slug" },
     ]);
 
-    return features.query;
+    const news = await features.query;
+
+    return {
+      news,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages,
+      },
+    };
   }
 
   public async findOne(identifier: string): Promise<INews | null> {

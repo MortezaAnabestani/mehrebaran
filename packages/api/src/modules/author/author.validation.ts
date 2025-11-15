@@ -11,7 +11,7 @@ export const createAuthorSchema = z.object({
     metaTitle: z.string().min(3, "متاتایتل باید حداقل ۳ حرف باشد."),
     bio: z.string().optional(),
     metaDescription: z.string().optional(),
-    avatar: responsiveImageSchema.optional(),
+    // avatar is handled by upload middleware and added to req.processedFiles
     email: z.string().email("ایمیل معتبر نیست").optional(),
     mobile: z.string().optional(),
     birthday: z.string().optional(),

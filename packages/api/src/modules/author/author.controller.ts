@@ -9,6 +9,11 @@ class AuthorController {
     const validatedData = createAuthorSchema.parse({ body: req.body });
     const authorData: any = { ...validatedData.body };
 
+    // Add processed avatar files if uploaded
+    if (req.processedFiles) {
+      authorData.avatar = req.processedFiles;
+    }
+
     // Convert birthday string to Date if provided
     if (authorData.birthday) {
       authorData.birthday = new Date(authorData.birthday);
@@ -34,6 +39,11 @@ class AuthorController {
   public update = asyncHandler(async (req: Request, res: Response) => {
     const validatedData = updateAuthorSchema.parse({ body: req.body, params: req.params });
     const updateData: any = { ...validatedData.body };
+
+    // Add processed avatar files if uploaded
+    if (req.processedFiles) {
+      updateData.avatar = req.processedFiles;
+    }
 
     // Convert birthday string to Date if provided
     if (updateData.birthday) {

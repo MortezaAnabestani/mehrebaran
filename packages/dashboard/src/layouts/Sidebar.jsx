@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import Search from "../components/lists/Search";
 
 const Sidebar = ({ sidebarOpen, me }) => {
@@ -7,17 +8,30 @@ const Sidebar = ({ sidebarOpen, me }) => {
   const { pathname } = useLocation();
   const navigate = useNavigate();
 
+  // Get unread counts from Redux
+  const unreadNotifications = useSelector((state) => state.notifications?.unreadCount || 0);
+  const unreadMentions = useSelector((state) => state.social?.unreadMentionCount || 0);
+
   const logoutHandler = () => {
-    // حذف token و user از localStorage
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-    // هدایت به صفحه ورود
     navigate("/");
   };
 
   const toggleHandler = (id) => {
     setMenuToggle((prev) => (prev === id ? null : id));
   };
+
+  // Badge component for unread counts
+  const Badge = ({ count }) => {
+    if (!count || count === 0) return null;
+    return (
+      <span className="absolute left-8 top-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-500 rounded-full">
+        {count > 99 ? "99+" : count}
+      </span>
+    );
+  };
+
   return (
     <aside
       id="sidebar"
@@ -30,11 +44,14 @@ const Sidebar = ({ sidebarOpen, me }) => {
         <div className="h-full flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
           <div className="flex-1 px-3 bg-white divide-y space-y-1">
             <ul className="space-y-2 pb-2">
+              {/* Search - Mobile Only */}
               <li>
                 <div className="md:hidden">
                   <Search />
                 </div>
               </li>
+
+              {/* میز کار */}
               <li className={`${pathname === "/dashboard" ? "bg-gray-100" : ""}`}>
                 <Link
                   rel="preconnect"
@@ -49,6 +66,8 @@ const Sidebar = ({ sidebarOpen, me }) => {
                   <span className="ml-3">میز کار</span>
                 </Link>
               </li>
+
+              {/* دسته‌بندی‌ها */}
               <Link
                 rel="preconnect"
                 to={"/dashboard/categories"}
@@ -63,6 +82,8 @@ const Sidebar = ({ sidebarOpen, me }) => {
                   <span className="ml-3 flex-1 whitespace-nowrap"> دسته‌بندی‌ها</span>
                 </li>
               </Link>
+
+              {/* مقاله */}
               <li className="relative text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group">
                 <img
                   src="/assets/images/dashboard/icons/paperIcon.svg "
@@ -102,6 +123,8 @@ const Sidebar = ({ sidebarOpen, me }) => {
                   </Link>
                 </div>
               )}
+
+              {/* اخبار */}
               <li className="relative text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group">
                 <img
                   src="/assets/images/dashboard/icons/news.svg"
@@ -141,6 +164,8 @@ const Sidebar = ({ sidebarOpen, me }) => {
                   </Link>
                 </div>
               )}
+
+              {/* ویدئوها */}
               <li className="relative text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group">
                 <img
                   src="/assets/images/dashboard/icons/video_playlist.svg"
@@ -151,12 +176,12 @@ const Sidebar = ({ sidebarOpen, me }) => {
                 <img
                   src="/assets/images/dashboard/icons/downArrow.svg"
                   className="h-6 w-6 absolute top-2 left-2 cursor-pointer"
-                  style={menuToggle === 10 ? { rotate: "90deg" } : { rotate: "0deg" }}
-                  onClick={() => toggleHandler(10)}
-                  alt="down arrow icon 10"
+                  style={menuToggle === 4 ? { rotate: "90deg" } : { rotate: "0deg" }}
+                  onClick={() => toggleHandler(4)}
+                  alt="down arrow icon 4"
                 />
               </li>
-              {menuToggle === 10 && (
+              {menuToggle === 4 && (
                 <div className="flex flex-col w-full justify-start items-start bg-gray-50">
                   <Link
                     rel="preconnect"
@@ -180,6 +205,8 @@ const Sidebar = ({ sidebarOpen, me }) => {
                   </Link>
                 </div>
               )}
+
+              {/* گالری */}
               <div>
                 <li className="relative text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group ">
                   <img
@@ -191,12 +218,12 @@ const Sidebar = ({ sidebarOpen, me }) => {
                   <img
                     src="/assets/images/dashboard/icons/downArrow.svg"
                     className="h-6 w-6 absolute top-2 left-2 cursor-pointer"
-                    style={menuToggle === 9 ? { rotate: "90deg" } : { rotate: "0deg" }}
-                    onClick={() => toggleHandler(9)}
+                    style={menuToggle === 5 ? { rotate: "90deg" } : { rotate: "0deg" }}
+                    onClick={() => toggleHandler(5)}
                     alt="down arrow icon"
                   />
                 </li>
-                {menuToggle === 9 && (
+                {menuToggle === 5 && (
                   <div className="flex flex-col w-full justify-start items-start bg-gray-50">
                     <Link
                       rel="preconnect"
@@ -221,6 +248,8 @@ const Sidebar = ({ sidebarOpen, me }) => {
                   </div>
                 )}
               </div>
+
+              {/* برچسب‌ها */}
               <Link
                 rel="preconnect"
                 to={"/dashboard/tags"}
@@ -236,6 +265,8 @@ const Sidebar = ({ sidebarOpen, me }) => {
                   <span className="ml-3 flex-1 whitespace-nowrap"> برچسب‌ها</span>
                 </li>
               </Link>
+
+              {/* نویسندگان */}
               <div>
                 <li className="relative text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group ">
                   <img
@@ -247,12 +278,12 @@ const Sidebar = ({ sidebarOpen, me }) => {
                   <img
                     src="/assets/images/dashboard/icons/downArrow.svg"
                     className="h-6 w-6 absolute top-2 left-2 cursor-pointer"
-                    style={menuToggle === 5 ? { rotate: "90deg" } : { rotate: "0deg" }}
-                    onClick={() => toggleHandler(5)}
+                    style={menuToggle === 6 ? { rotate: "90deg" } : { rotate: "0deg" }}
+                    onClick={() => toggleHandler(6)}
                     alt="down arrow icon"
                   />
                 </li>
-                {menuToggle === 5 && (
+                {menuToggle === 6 && (
                   <div className="flex flex-col w-full justify-start items-start bg-gray-50">
                     <Link
                       rel="preconnect"
@@ -277,6 +308,8 @@ const Sidebar = ({ sidebarOpen, me }) => {
                   </div>
                 )}
               </div>
+
+              {/* نظرات */}
               <Link
                 rel="preconnect"
                 to={"/dashboard/comments"}
@@ -294,6 +327,8 @@ const Sidebar = ({ sidebarOpen, me }) => {
                   <span className="ml-3 flex-1 whitespace-nowrap"> نظرات</span>
                 </li>
               </Link>
+
+              {/* مخاطبان */}
               <Link
                 rel="preconnect"
                 to={"/dashboard/users"}
@@ -312,6 +347,8 @@ const Sidebar = ({ sidebarOpen, me }) => {
                   <span className="ml-3 flex-1 whitespace-nowrap"> مخاطبان</span>
                 </li>
               </Link>
+
+              {/* سوالات پرتکرار */}
               <div>
                 <li className="relative text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group ">
                   <img
@@ -324,12 +361,12 @@ const Sidebar = ({ sidebarOpen, me }) => {
                   <img
                     src="/assets/images/dashboard/icons/downArrow.svg"
                     className="h-6 w-6 absolute top-2 left-2 cursor-pointer"
-                    style={menuToggle === 8 ? { rotate: "90deg" } : { rotate: "0deg" }}
-                    onClick={() => toggleHandler(8)}
+                    style={menuToggle === 7 ? { rotate: "90deg" } : { rotate: "0deg" }}
+                    onClick={() => toggleHandler(7)}
                     alt="down arrow icon"
                   />
                 </li>
-                {menuToggle === 8 && (
+                {menuToggle === 7 && (
                   <div className="flex flex-col w-full justify-start items-start bg-gray-50">
                     <Link
                       rel="preconnect"
@@ -355,156 +392,269 @@ const Sidebar = ({ sidebarOpen, me }) => {
                 )}
               </div>
 
-              {/* بخش شبکه نیازسنجی */}
+              {/* ⭐ شبکه نیازسنجی (یکپارچه) */}
               <div>
-                <li className="relative text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group ">
+                <li className="relative text-base text-gray-900 font-bold rounded-lg bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 flex items-center p-2 group">
                   <img
                     src="/assets/images/dashboard/icons/network.svg"
                     alt="needs network"
                     className="w-6 h-6 ml-2"
                   />
-                  <span className="ml-3 flex-1 whitespace-nowrap"> شبکه نیازسنجی</span>
+                  <span className="ml-3 flex-1 whitespace-nowrap text-blue-700">🌐 شبکه نیازسنجی</span>
                   <img
                     src="/assets/images/dashboard/icons/downArrow.svg"
                     className="h-6 w-6 absolute top-2 left-2 cursor-pointer"
-                    style={menuToggle === 11 ? { rotate: "90deg" } : { rotate: "0deg" }}
-                    onClick={() => toggleHandler(11)}
+                    style={menuToggle === 100 ? { rotate: "90deg" } : { rotate: "0deg" }}
+                    onClick={() => toggleHandler(100)}
                     alt="down arrow icon"
                   />
                 </li>
-                {menuToggle === 11 && (
-                  <div className="flex flex-col w-full justify-start items-start bg-gray-50">
+                {menuToggle === 100 && (
+                  <div className="flex flex-col w-full justify-start items-start bg-gradient-to-b from-blue-50 to-white border-l-2 border-blue-200">
+                    {/* نیازها */}
                     <Link
                       rel="preconnect"
                       to={"/dashboard/needs"}
-                      className={`${pathname === "/dashboard/needs" || pathname.startsWith("/dashboard/needs/") ? "bg-gray-100" : ""} w-full`}
+                      className={`${pathname === "/dashboard/needs" || pathname.startsWith("/dashboard/needs/") ? "bg-blue-100" : ""} w-full`}
                     >
-                      <li className="text-base text-gray-900 text-[14px]  font-normal rounded-lg hover:bg-gray-100 flex items-start p-2 group cursor-pointer">
-                        <span className="mr-5 text-red-300">*</span>
+                      <li className="text-base text-gray-900 text-[14px] font-normal rounded-lg hover:bg-blue-100 flex items-start p-2 group cursor-pointer">
+                        <span className="mr-5 text-blue-500">📝</span>
                         <span className="d-block mr-1 flex-1 whitespace-nowrap">نیازها</span>
                       </li>
                     </Link>
+
+                    {/* تیم‌ها */}
                     <Link
                       rel="preconnect"
                       to={"/dashboard/teams"}
-                      className={`${pathname === "/dashboard/teams" || pathname.startsWith("/dashboard/teams/") ? "bg-gray-100" : ""} w-full`}
+                      className={`${pathname === "/dashboard/teams" || pathname.startsWith("/dashboard/teams/") ? "bg-blue-100" : ""} w-full`}
                     >
-                      <li className="text-base text-gray-900 text-[14px]  font-normal rounded-lg hover:bg-gray-100 flex items-start p-2 group cursor-pointer">
-                        <span className="mr-5 text-red-300">*</span>
+                      <li className="text-base text-gray-900 text-[14px] font-normal rounded-lg hover:bg-blue-100 flex items-start p-2 group cursor-pointer">
+                        <span className="mr-5 text-green-500">👥</span>
                         <span className="d-block mr-1 flex-1 whitespace-nowrap">تیم‌ها</span>
                       </li>
                     </Link>
+
+                    {/* استوری‌ها */}
+                    <div className="w-full">
+                      <li
+                        className="relative text-base text-gray-900 text-[14px] font-normal rounded-lg hover:bg-blue-100 flex items-start p-2 group cursor-pointer"
+                        onClick={() => toggleHandler(101)}
+                      >
+                        <span className="mr-5 text-purple-500">📖</span>
+                        <span className="d-block mr-1 flex-1 whitespace-nowrap">استوری‌ها</span>
+                        <img
+                          src="/assets/images/dashboard/icons/downArrow.svg"
+                          className="h-4 w-4 absolute top-3 left-2"
+                          style={menuToggle === 101 ? { rotate: "90deg" } : { rotate: "0deg" }}
+                          alt="down arrow"
+                        />
+                      </li>
+                      {menuToggle === 101 && (
+                        <div className="flex flex-col w-full bg-blue-50 pr-4">
+                          <Link
+                            rel="preconnect"
+                            to={"/dashboard/stories"}
+                            className={`${pathname === "/dashboard/stories" || pathname.startsWith("/dashboard/stories/") ? "bg-blue-100" : ""} w-full`}
+                          >
+                            <li className="text-sm text-gray-800 font-normal rounded-lg hover:bg-blue-100 flex items-start p-2 cursor-pointer">
+                              <span className="mr-5 text-xs">•</span>
+                              <span className="d-block mr-1">لیست استوری‌ها</span>
+                            </li>
+                          </Link>
+                          <Link
+                            rel="preconnect"
+                            to={"/dashboard/stories/highlights"}
+                            className={`${pathname === "/dashboard/stories/highlights" ? "bg-blue-100" : ""} w-full`}
+                          >
+                            <li className="text-sm text-gray-800 font-normal rounded-lg hover:bg-blue-100 flex items-start p-2 cursor-pointer">
+                              <span className="mr-5 text-xs">•</span>
+                              <span className="d-block mr-1">هایلایت‌ها</span>
+                            </li>
+                          </Link>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* گیمیفیکیشن */}
+                    <div className="w-full">
+                      <li
+                        className="relative text-base text-gray-900 text-[14px] font-normal rounded-lg hover:bg-blue-100 flex items-start p-2 group cursor-pointer"
+                        onClick={() => toggleHandler(102)}
+                      >
+                        <span className="mr-5 text-yellow-500">🎮</span>
+                        <span className="d-block mr-1 flex-1 whitespace-nowrap">گیمیفیکیشن</span>
+                        <img
+                          src="/assets/images/dashboard/icons/downArrow.svg"
+                          className="h-4 w-4 absolute top-3 left-2"
+                          style={menuToggle === 102 ? { rotate: "90deg" } : { rotate: "0deg" }}
+                          alt="down arrow"
+                        />
+                      </li>
+                      {menuToggle === 102 && (
+                        <div className="flex flex-col w-full bg-blue-50 pr-4">
+                          <Link
+                            rel="preconnect"
+                            to={"/dashboard/gamification/badges"}
+                            className={`${pathname === "/dashboard/gamification/badges" || pathname.startsWith("/dashboard/gamification/badges/") ? "bg-blue-100" : ""} w-full`}
+                          >
+                            <li className="text-sm text-gray-800 font-normal rounded-lg hover:bg-blue-100 flex items-start p-2 cursor-pointer">
+                              <span className="mr-5 text-xs">🏆</span>
+                              <span className="d-block mr-1">نشان‌ها</span>
+                            </li>
+                          </Link>
+                          <Link
+                            rel="preconnect"
+                            to={"/dashboard/gamification/leaderboard"}
+                            className={`${pathname === "/dashboard/gamification/leaderboard" ? "bg-blue-100" : ""} w-full`}
+                          >
+                            <li className="text-sm text-gray-800 font-normal rounded-lg hover:bg-blue-100 flex items-start p-2 cursor-pointer">
+                              <span className="mr-5 text-xs">📊</span>
+                              <span className="d-block mr-1">جدول امتیازات</span>
+                            </li>
+                          </Link>
+                          <Link
+                            rel="preconnect"
+                            to={"/dashboard/gamification/user-stats"}
+                            className={`${pathname === "/dashboard/gamification/user-stats" || pathname.startsWith("/dashboard/gamification/user-stats/") ? "bg-blue-100" : ""} w-full`}
+                          >
+                            <li className="text-sm text-gray-800 font-normal rounded-lg hover:bg-blue-100 flex items-start p-2 cursor-pointer">
+                              <span className="mr-5 text-xs">📈</span>
+                              <span className="d-block mr-1">آمار کاربران</span>
+                            </li>
+                          </Link>
+                          <Link
+                            rel="preconnect"
+                            to={"/dashboard/gamification/point-transactions"}
+                            className={`${pathname === "/dashboard/gamification/point-transactions" ? "bg-blue-100" : ""} w-full`}
+                          >
+                            <li className="text-sm text-gray-800 font-normal rounded-lg hover:bg-blue-100 flex items-start p-2 cursor-pointer">
+                              <span className="mr-5 text-xs">💰</span>
+                              <span className="d-block mr-1">تراکنش‌های امتیاز</span>
+                            </li>
+                          </Link>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* تعاملات اجتماعی */}
+                    <div className="w-full">
+                      <li
+                        className="relative text-base text-gray-900 text-[14px] font-normal rounded-lg hover:bg-blue-100 flex items-start p-2 group cursor-pointer"
+                        onClick={() => toggleHandler(103)}
+                      >
+                        <span className="mr-5 text-pink-500">💬</span>
+                        <span className="d-block mr-1 flex-1 whitespace-nowrap">تعاملات اجتماعی</span>
+                        <img
+                          src="/assets/images/dashboard/icons/downArrow.svg"
+                          className="h-4 w-4 absolute top-3 left-2"
+                          style={menuToggle === 103 ? { rotate: "90deg" } : { rotate: "0deg" }}
+                          alt="down arrow"
+                        />
+                      </li>
+                      {menuToggle === 103 && (
+                        <div className="flex flex-col w-full bg-blue-50 pr-4">
+                          <Link
+                            rel="preconnect"
+                            to={"/dashboard/social/follows"}
+                            className={`${pathname === "/dashboard/social/follows" ? "bg-blue-100" : ""} w-full`}
+                          >
+                            <li className="text-sm text-gray-800 font-normal rounded-lg hover:bg-blue-100 flex items-start p-2 cursor-pointer">
+                              <span className="mr-5 text-xs">👤</span>
+                              <span className="d-block mr-1">دنبال‌کنندگان</span>
+                            </li>
+                          </Link>
+                          <Link
+                            rel="preconnect"
+                            to={"/dashboard/social/mentions"}
+                            className={`${pathname === "/dashboard/social/mentions" ? "bg-blue-100" : ""} w-full relative`}
+                          >
+                            <li className="text-sm text-gray-800 font-normal rounded-lg hover:bg-blue-100 flex items-start p-2 cursor-pointer">
+                              <span className="mr-5 text-xs">@</span>
+                              <span className="d-block mr-1">منشن‌ها</span>
+                              <Badge count={unreadMentions} />
+                            </li>
+                          </Link>
+                          <Link
+                            rel="preconnect"
+                            to={"/dashboard/social/tags"}
+                            className={`${pathname === "/dashboard/social/tags" ? "bg-blue-100" : ""} w-full`}
+                          >
+                            <li className="text-sm text-gray-800 font-normal rounded-lg hover:bg-blue-100 flex items-start p-2 cursor-pointer">
+                              <span className="mr-5 text-xs">#</span>
+                              <span className="d-block mr-1">تگ‌های اجتماعی</span>
+                            </li>
+                          </Link>
+                          <Link
+                            rel="preconnect"
+                            to={"/dashboard/social/shares"}
+                            className={`${pathname === "/dashboard/social/shares" ? "bg-blue-100" : ""} w-full`}
+                          >
+                            <li className="text-sm text-gray-800 font-normal rounded-lg hover:bg-blue-100 flex items-start p-2 cursor-pointer">
+                              <span className="mr-5 text-xs">🔗</span>
+                              <span className="d-block mr-1">اشتراک‌گذاری</span>
+                            </li>
+                          </Link>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* اعلانات */}
+                    <div className="w-full">
+                      <li
+                        className="relative text-base text-gray-900 text-[14px] font-normal rounded-lg hover:bg-blue-100 flex items-start p-2 group cursor-pointer"
+                        onClick={() => toggleHandler(104)}
+                      >
+                        <span className="mr-5 text-red-500">🔔</span>
+                        <span className="d-block mr-1 flex-1 whitespace-nowrap">اعلانات</span>
+                        <Badge count={unreadNotifications} />
+                        <img
+                          src="/assets/images/dashboard/icons/downArrow.svg"
+                          className="h-4 w-4 absolute top-3 left-2"
+                          style={menuToggle === 104 ? { rotate: "90deg" } : { rotate: "0deg" }}
+                          alt="down arrow"
+                        />
+                      </li>
+                      {menuToggle === 104 && (
+                        <div className="flex flex-col w-full bg-blue-50 pr-4">
+                          <Link
+                            rel="preconnect"
+                            to={"/dashboard/notifications"}
+                            className={`${pathname === "/dashboard/notifications" && !pathname.includes("/settings") && !pathname.includes("/push-tokens") ? "bg-blue-100" : ""} w-full relative`}
+                          >
+                            <li className="text-sm text-gray-800 font-normal rounded-lg hover:bg-blue-100 flex items-start p-2 cursor-pointer">
+                              <span className="mr-5 text-xs">📬</span>
+                              <span className="d-block mr-1">لیست اعلانات</span>
+                            </li>
+                          </Link>
+                          <Link
+                            rel="preconnect"
+                            to={"/dashboard/notifications/settings"}
+                            className={`${pathname === "/dashboard/notifications/settings" ? "bg-blue-100" : ""} w-full`}
+                          >
+                            <li className="text-sm text-gray-800 font-normal rounded-lg hover:bg-blue-100 flex items-start p-2 cursor-pointer">
+                              <span className="mr-5 text-xs">⚙️</span>
+                              <span className="d-block mr-1">تنظیمات اعلانات</span>
+                            </li>
+                          </Link>
+                          <Link
+                            rel="preconnect"
+                            to={"/dashboard/notifications/push-tokens"}
+                            className={`${pathname === "/dashboard/notifications/push-tokens" ? "bg-blue-100" : ""} w-full`}
+                          >
+                            <li className="text-sm text-gray-800 font-normal rounded-lg hover:bg-blue-100 flex items-start p-2 cursor-pointer">
+                              <span className="mr-5 text-xs">📱</span>
+                              <span className="d-block mr-1">مدیریت دستگاه‌ها</span>
+                            </li>
+                          </Link>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>
 
-              {/* بخش گیمیفیکیشن */}
-              <div>
-                <li className="relative text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group ">
-                  <img
-                    src="/assets/images/dashboard/icons/trophy.svg"
-                    alt="gamification"
-                    className="w-6 h-6 ml-2"
-                  />
-                  <span className="ml-3 flex-1 whitespace-nowrap"> گیمیفیکیشن</span>
-                  <img
-                    src="/assets/images/dashboard/icons/downArrow.svg"
-                    className="h-6 w-6 absolute top-2 left-2 cursor-pointer"
-                    style={menuToggle === 12 ? { rotate: "90deg" } : { rotate: "0deg" }}
-                    onClick={() => toggleHandler(12)}
-                    alt="down arrow icon"
-                  />
-                </li>
-                {menuToggle === 12 && (
-                  <div className="flex flex-col w-full justify-start items-start bg-gray-50">
-                    <Link
-                      rel="preconnect"
-                      to={"/dashboard/gamification/badges"}
-                      className={`${pathname === "/dashboard/gamification/badges" || pathname.startsWith("/dashboard/gamification/badges/") ? "bg-gray-100" : ""} w-full`}
-                    >
-                      <li className="text-base text-gray-900 text-[14px]  font-normal rounded-lg hover:bg-gray-100 flex items-start p-2 group cursor-pointer">
-                        <span className="mr-5 text-red-300">*</span>
-                        <span className="d-block mr-1 flex-1 whitespace-nowrap">نشان‌ها</span>
-                      </li>
-                    </Link>
-                    <Link
-                      rel="preconnect"
-                      to={"/dashboard/gamification/leaderboard"}
-                      className={`${pathname === "/dashboard/gamification/leaderboard" ? "bg-gray-100" : ""} w-full`}
-                    >
-                      <li className="text-base text-gray-900 text-[14px]  font-normal rounded-lg hover:bg-gray-100 flex items-start p-2 group cursor-pointer">
-                        <span className="mr-5 text-red-300">*</span>
-                        <span className="d-block mr-1 flex-1 whitespace-nowrap">جدول امتیازات</span>
-                      </li>
-                    </Link>
-                    <Link
-                      rel="preconnect"
-                      to={"/dashboard/gamification/user-stats"}
-                      className={`${pathname === "/dashboard/gamification/user-stats" || pathname.startsWith("/dashboard/gamification/user-stats/") ? "bg-gray-100" : ""} w-full`}
-                    >
-                      <li className="text-base text-gray-900 text-[14px]  font-normal rounded-lg hover:bg-gray-100 flex items-start p-2 group cursor-pointer">
-                        <span className="mr-5 text-red-300">*</span>
-                        <span className="d-block mr-1 flex-1 whitespace-nowrap">آمار کاربران</span>
-                      </li>
-                    </Link>
-                    <Link
-                      rel="preconnect"
-                      to={"/dashboard/gamification/point-transactions"}
-                      className={`${pathname === "/dashboard/gamification/point-transactions" ? "bg-gray-100" : ""} w-full`}
-                    >
-                      <li className="text-base text-gray-900 text-[14px]  font-normal rounded-lg hover:bg-gray-100 flex items-start p-2 group cursor-pointer">
-                        <span className="mr-5 text-red-300">*</span>
-                        <span className="d-block mr-1 flex-1 whitespace-nowrap">تراکنش‌های امتیاز</span>
-                      </li>
-                    </Link>
-                  </div>
-                )}
-              </div>
-
-              {/* بخش استوری‌ها */}
-              <div>
-                <li className="relative text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group ">
-                  <img
-                    src="/assets/images/dashboard/icons/story.svg"
-                    alt="stories"
-                    className="w-6 h-6 ml-2"
-                  />
-                  <span className="ml-3 flex-1 whitespace-nowrap"> استوری‌ها</span>
-                  <img
-                    src="/assets/images/dashboard/icons/downArrow.svg"
-                    className="h-6 w-6 absolute top-2 left-2 cursor-pointer"
-                    style={menuToggle === 13 ? { rotate: "90deg" } : { rotate: "0deg" }}
-                    onClick={() => toggleHandler(13)}
-                    alt="down arrow icon"
-                  />
-                </li>
-                {menuToggle === 13 && (
-                  <div className="flex flex-col w-full justify-start items-start bg-gray-50">
-                    <Link
-                      rel="preconnect"
-                      to={"/dashboard/stories"}
-                      className={`${pathname === "/dashboard/stories" || pathname.startsWith("/dashboard/stories/") ? "bg-gray-100" : ""} w-full`}
-                    >
-                      <li className="text-base text-gray-900 text-[14px]  font-normal rounded-lg hover:bg-gray-100 flex items-start p-2 group cursor-pointer">
-                        <span className="mr-5 text-red-300">*</span>
-                        <span className="d-block mr-1 flex-1 whitespace-nowrap">لیست استوری‌ها</span>
-                      </li>
-                    </Link>
-                    <Link
-                      rel="preconnect"
-                      to={"/dashboard/stories/highlights"}
-                      className={`${pathname === "/dashboard/stories/highlights" ? "bg-gray-100" : ""} w-full`}
-                    >
-                      <li className="text-base text-gray-900 text-[14px]  font-normal rounded-lg hover:bg-gray-100 flex items-start p-2 group cursor-pointer">
-                        <span className="mr-5 text-red-300">*</span>
-                        <span className="d-block mr-1 flex-1 whitespace-nowrap">هایلایت‌ها</span>
-                      </li>
-                    </Link>
-                  </div>
-                )}
-              </div>
-
-              {/* بخش پروژه‌ها */}
+              {/* پروژه‌ها */}
               <div>
                 <li className="relative text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group ">
                   <img
@@ -516,12 +666,12 @@ const Sidebar = ({ sidebarOpen, me }) => {
                   <img
                     src="/assets/images/dashboard/icons/downArrow.svg"
                     className="h-6 w-6 absolute top-2 left-2 cursor-pointer"
-                    style={menuToggle === 14 ? { rotate: "90deg" } : { rotate: "0deg" }}
-                    onClick={() => toggleHandler(14)}
+                    style={menuToggle === 8 ? { rotate: "90deg" } : { rotate: "0deg" }}
+                    onClick={() => toggleHandler(8)}
                     alt="down arrow icon"
                   />
                 </li>
-                {menuToggle === 14 && (
+                {menuToggle === 8 && (
                   <div className="flex flex-col w-full justify-start items-start bg-gray-50">
                     <Link
                       rel="preconnect"
@@ -557,7 +707,7 @@ const Sidebar = ({ sidebarOpen, me }) => {
                 )}
               </div>
 
-              {/* بخش کمک‌های مالی */}
+              {/* کمک‌های مالی */}
               <Link
                 rel="preconnect"
                 to={"/dashboard/donations"}
@@ -573,7 +723,7 @@ const Sidebar = ({ sidebarOpen, me }) => {
                 </li>
               </Link>
 
-              {/* بخش داوطلبان */}
+              {/* داوطلبان */}
               <Link
                 rel="preconnect"
                 to={"/dashboard/volunteers"}
@@ -589,7 +739,7 @@ const Sidebar = ({ sidebarOpen, me }) => {
                 </li>
               </Link>
 
-              {/* بخش حوزه‌های فعالیت */}
+              {/* حوزه‌های فعالیت */}
               <Link
                 rel="preconnect"
                 to={"/dashboard/focus-areas"}
@@ -605,123 +755,7 @@ const Sidebar = ({ sidebarOpen, me }) => {
                 </li>
               </Link>
 
-              {/* بخش ویژگی‌های اجتماعی */}
-              <div>
-                <li className="relative text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group ">
-                  <img
-                    src="/assets/images/dashboard/icons/social.svg"
-                    alt="social"
-                    className="w-6 h-6 ml-2"
-                  />
-                  <span className="ml-3 flex-1 whitespace-nowrap"> ویژگی‌های اجتماعی</span>
-                  <img
-                    src="/assets/images/dashboard/icons/downArrow.svg"
-                    className="h-6 w-6 absolute top-2 left-2 cursor-pointer"
-                    style={menuToggle === 15 ? { rotate: "90deg" } : { rotate: "0deg" }}
-                    onClick={() => toggleHandler(15)}
-                    alt="down arrow icon"
-                  />
-                </li>
-                {menuToggle === 15 && (
-                  <div className="flex flex-col w-full justify-start items-start bg-gray-50">
-                    <Link
-                      rel="preconnect"
-                      to={"/dashboard/social/follows"}
-                      className={`${pathname === "/dashboard/social/follows" ? "bg-gray-100" : ""} w-full`}
-                    >
-                      <li className="text-base text-gray-900 text-[14px]  font-normal rounded-lg hover:bg-gray-100 flex items-start p-2 group cursor-pointer">
-                        <span className="mr-5 text-red-300">*</span>
-                        <span className="d-block mr-1 flex-1 whitespace-nowrap">دنبال‌کنندگان</span>
-                      </li>
-                    </Link>
-                    <Link
-                      rel="preconnect"
-                      to={"/dashboard/social/mentions"}
-                      className={`${pathname === "/dashboard/social/mentions" ? "bg-gray-100" : ""} w-full`}
-                    >
-                      <li className="text-base text-gray-900 text-[14px]  font-normal rounded-lg hover:bg-gray-100 flex items-start p-2 group cursor-pointer">
-                        <span className="mr-5 text-red-300">*</span>
-                        <span className="d-block mr-1 flex-1 whitespace-nowrap">منشن‌ها</span>
-                      </li>
-                    </Link>
-                    <Link
-                      rel="preconnect"
-                      to={"/dashboard/social/tags"}
-                      className={`${pathname === "/dashboard/social/tags" ? "bg-gray-100" : ""} w-full`}
-                    >
-                      <li className="text-base text-gray-900 text-[14px]  font-normal rounded-lg hover:bg-gray-100 flex items-start p-2 group cursor-pointer">
-                        <span className="mr-5 text-red-300">*</span>
-                        <span className="d-block mr-1 flex-1 whitespace-nowrap">تگ‌های اجتماعی</span>
-                      </li>
-                    </Link>
-                    <Link
-                      rel="preconnect"
-                      to={"/dashboard/social/shares"}
-                      className={`${pathname === "/dashboard/social/shares" ? "bg-gray-100" : ""} w-full`}
-                    >
-                      <li className="text-base text-gray-900 text-[14px]  font-normal rounded-lg hover:bg-gray-100 flex items-start p-2 group cursor-pointer">
-                        <span className="mr-5 text-red-300">*</span>
-                        <span className="d-block mr-1 flex-1 whitespace-nowrap">اشتراک‌گذاری</span>
-                      </li>
-                    </Link>
-                  </div>
-                )}
-              </div>
-
-              {/* بخش اعلانات */}
-              <div>
-                <li className="relative text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group ">
-                  <img
-                    src="/assets/images/dashboard/icons/bell.svg"
-                    alt="notifications"
-                    className="w-6 h-6 ml-2"
-                  />
-                  <span className="ml-3 flex-1 whitespace-nowrap"> اعلانات</span>
-                  <img
-                    src="/assets/images/dashboard/icons/downArrow.svg"
-                    className="h-6 w-6 absolute top-2 left-2 cursor-pointer"
-                    style={menuToggle === 16 ? { rotate: "90deg" } : { rotate: "0deg" }}
-                    onClick={() => toggleHandler(16)}
-                    alt="down arrow icon"
-                  />
-                </li>
-                {menuToggle === 16 && (
-                  <div className="flex flex-col w-full justify-start items-start bg-gray-50">
-                    <Link
-                      rel="preconnect"
-                      to={"/dashboard/notifications"}
-                      className={`${pathname === "/dashboard/notifications" && !pathname.includes("/settings") && !pathname.includes("/push-tokens") ? "bg-gray-100" : ""} w-full`}
-                    >
-                      <li className="text-base text-gray-900 text-[14px]  font-normal rounded-lg hover:bg-gray-100 flex items-start p-2 group cursor-pointer">
-                        <span className="mr-5 text-red-300">*</span>
-                        <span className="d-block mr-1 flex-1 whitespace-nowrap">لیست اعلانات</span>
-                      </li>
-                    </Link>
-                    <Link
-                      rel="preconnect"
-                      to={"/dashboard/notifications/settings"}
-                      className={`${pathname === "/dashboard/notifications/settings" ? "bg-gray-100" : ""} w-full`}
-                    >
-                      <li className="text-base text-gray-900 text-[14px]  font-normal rounded-lg hover:bg-gray-100 flex items-start p-2 group cursor-pointer">
-                        <span className="mr-5 text-red-300">*</span>
-                        <span className="d-block mr-1 flex-1 whitespace-nowrap">تنظیمات اعلانات</span>
-                      </li>
-                    </Link>
-                    <Link
-                      rel="preconnect"
-                      to={"/dashboard/notifications/push-tokens"}
-                      className={`${pathname === "/dashboard/notifications/push-tokens" ? "bg-gray-100" : ""} w-full`}
-                    >
-                      <li className="text-base text-gray-900 text-[14px]  font-normal rounded-lg hover:bg-gray-100 flex items-start p-2 group cursor-pointer">
-                        <span className="mr-5 text-red-300">*</span>
-                        <span className="d-block mr-1 flex-1 whitespace-nowrap">مدیریت دستگاه‌ها</span>
-                      </li>
-                    </Link>
-                  </div>
-                )}
-              </div>
-
-              {/* بخش تنظیمات سایت */}
+              {/* تنظیمات سایت */}
               <div>
                 <li className="relative text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group ">
                   <img
@@ -733,12 +767,12 @@ const Sidebar = ({ sidebarOpen, me }) => {
                   <img
                     src="/assets/images/dashboard/icons/downArrow.svg"
                     className="h-6 w-6 absolute top-2 left-2 cursor-pointer"
-                    style={menuToggle === 17 ? { rotate: "90deg" } : { rotate: "0deg" }}
-                    onClick={() => toggleHandler(17)}
+                    style={menuToggle === 9 ? { rotate: "90deg" } : { rotate: "0deg" }}
+                    onClick={() => toggleHandler(9)}
                     alt="down arrow icon"
                   />
                 </li>
-                {menuToggle === 17 && (
+                {menuToggle === 9 && (
                   <div className="flex flex-col w-full justify-start items-start bg-gray-50">
                     <Link
                       rel="preconnect"
@@ -784,6 +818,7 @@ const Sidebar = ({ sidebarOpen, me }) => {
                 )}
               </div>
 
+              {/* مدیران سایت */}
               <div className={`${me?.role === "admin" && "disabled"}`}>
                 <li className="relative text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group">
                   <img
@@ -795,12 +830,12 @@ const Sidebar = ({ sidebarOpen, me }) => {
                   <img
                     src="/assets/images/dashboard/icons/downArrow.svg"
                     className="h-6 w-6 absolute top-2 left-2 cursor-pointer"
-                    style={menuToggle === 3 ? { rotate: "90deg" } : { rotate: "0deg" }}
-                    onClick={() => toggleHandler(3)}
+                    style={menuToggle === 10 ? { rotate: "90deg" } : { rotate: "0deg" }}
+                    onClick={() => toggleHandler(10)}
                     alt="down arrow icon"
                   />
                 </li>
-                {menuToggle === 3 && (
+                {menuToggle === 10 && (
                   <div className="flex flex-col w-full justify-start items-start bg-gray-50">
                     <Link
                       rel="preconnect"
@@ -826,6 +861,8 @@ const Sidebar = ({ sidebarOpen, me }) => {
                   </div>
                 )}
               </div>
+
+              {/* نمودارها */}
               <div className={`${me?.role === "admin" && "disabled"} hidden md:block`}>
                 <li className="relative text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group">
                   <img src="/assets/images/dashboard/icons/chart.svg" alt="admins" className="w-6 h-6 ml-2" />
@@ -833,12 +870,12 @@ const Sidebar = ({ sidebarOpen, me }) => {
                   <img
                     src="/assets/images/dashboard/icons/downArrow.svg"
                     className="h-6 w-6 absolute top-2 left-2 cursor-pointer"
-                    style={menuToggle === 10 ? { rotate: "90deg" } : { rotate: "0deg" }}
-                    onClick={() => toggleHandler(10)}
+                    style={menuToggle === 11 ? { rotate: "90deg" } : { rotate: "0deg" }}
+                    onClick={() => toggleHandler(11)}
                     alt="down arrow icon"
                   />
                 </li>
-                {menuToggle === 10 && (
+                {menuToggle === 11 && (
                   <div className="flex flex-col w-full justify-start items-start bg-gray-50">
                     <Link
                       rel="preconnect"
@@ -884,6 +921,8 @@ const Sidebar = ({ sidebarOpen, me }) => {
                   </div>
                 )}
               </div>
+
+              {/* تقویم */}
               <Link
                 rel="preconnect"
                 to={"/dashboard/calendar"}
@@ -900,6 +939,8 @@ const Sidebar = ({ sidebarOpen, me }) => {
                   <span className="ml-3 flex-1 whitespace-nowrap"> تقویم</span>
                 </li>
               </Link>
+
+              {/* مرکز فضای ابری */}
               <Link
                 rel="preconnect"
                 to={"/dashboard/upload-center"}
@@ -917,6 +958,8 @@ const Sidebar = ({ sidebarOpen, me }) => {
                 </li>
               </Link>
             </ul>
+
+            {/* Footer Section */}
             <div className="space-y-2 pt-2">
               <Link
                 rel="preconnect"
@@ -947,6 +990,7 @@ const Sidebar = ({ sidebarOpen, me }) => {
                 />
                 <span className="ml-3"> تنظیمات پروفایل</span>
               </Link>
+
               <button
                 onClick={() => logoutHandler()}
                 className="w-full cursor-pointer text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 group transition duration-75 flex items-center p-2"

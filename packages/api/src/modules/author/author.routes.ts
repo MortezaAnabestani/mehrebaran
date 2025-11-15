@@ -10,7 +10,7 @@ router.use(protect, restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN));
 router.route("/").post(authorController.create).get(authorController.getAll);
 
 router
-  .route("/:id")
+  .route("/:identifier")
   .get(authorController.getById)
   .patch(authorController.update)
   .delete(authorController.delete);

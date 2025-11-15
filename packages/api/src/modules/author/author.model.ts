@@ -11,6 +11,11 @@ const authorSchema = new Schema<IAuthor>(
     bio: { type: String },
     metaDescription: { type: String },
     avatar: { type: responsiveImageSchema },
+    email: { type: String },
+    mobile: { type: String },
+    birthday: { type: Date },
+    instagramId: { type: String },
+    favoriteTemplate: { type: String, enum: ["poetic", "scientific"] },
   },
   { timestamps: true }
 );

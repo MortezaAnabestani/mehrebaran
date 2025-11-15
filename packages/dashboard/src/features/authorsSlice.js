@@ -16,9 +16,9 @@ export const createAuthor = createAsyncThunk("authors/create", async (formData, 
 //   2. `PATCH` ویرایش نویسنده
 export const updateAuthor = createAsyncThunk(
   "authors/update",
-  async ({ id, formData }, { rejectWithValue }) => {
+  async ({ slug, formData }, { rejectWithValue }) => {
     try {
-      const response = await api.patch(`/authors/${id}`, formData, {
+      const response = await api.patch(`/authors/${slug}`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       return response.data;
@@ -29,11 +29,11 @@ export const updateAuthor = createAsyncThunk(
 );
 
 //   3. `DELETE` حذف نویسنده
-export const deleteAuthor = createAsyncThunk("authors/delete", async (id, { rejectWithValue }) => {
+export const deleteAuthor = createAsyncThunk("authors/delete", async (slug, { rejectWithValue }) => {
   try {
-    await api.delete(`/authors/${id}`);
+    await api.delete(`/authors/${slug}`);
     console.log("حذف شما با موفقیت انجام شد");
-    return id;
+    return slug;
   } catch (error) {
     return rejectWithValue(error.response?.data?.message || "خطایی در حذف نویسنده رخ داده است!");
   }
@@ -97,8 +97,8 @@ const authorsSlice = createSlice({
         state.loading = false;
         state.success = true;
         // اگر authors یک آرایه باشد
-        if (Array.isArray(state.authors)) {
-          state.authors.push(action.payload.data);
+        if (Array.isArray(state.authors.authors)) {
+          state.authors.authors.unshift(action.payload.data);
         }
       })
       .addCase(createAuthor.rejected, (state, action) => {
@@ -119,12 +119,12 @@ const authorsSlice = createSlice({
         state.success = true;
 
         // بروزرسانی نویسنده در لیست نویسندگان
-        if (Array.isArray(state.authors)) {
-          const index = state.authors.findIndex(
+        if (Array.isArray(state.authors.authors)) {
+          const index = state.authors.authors.findIndex(
             (author) => author._id === action.payload.data._id
           );
           if (index !== -1) {
-            state.authors[index] = action.payload.data;
+            state.authors.authors[index] = action.payload.data;
           }
         }
       })
@@ -144,9 +144,9 @@ const authorsSlice = createSlice({
         state.success = true;
 
         // حذف نویسنده از لیست نویسندگان
-        if (Array.isArray(state.authors)) {
-          state.authors = state.authors.filter(
-            (author) => author._id !== action.payload
+        if (Array.isArray(state.authors.authors)) {
+          state.authors.authors = state.authors.authors.filter(
+            (author) => author.slug !== action.payload
           );
         }
       })
@@ -163,7 +163,7 @@ const authorsSlice = createSlice({
       })
       .addCase(fetchAuthors.fulfilled, (state, action) => {
         state.loading = false;
-        state.authors = action.payload.data || action.payload;
+        state.authors = action.payload;
         state.totalPages = action.payload.pagination?.totalPages || 1;
         state.currentPage = action.payload.pagination?.page || 1;
         state.total = action.payload.pagination?.total || 0;

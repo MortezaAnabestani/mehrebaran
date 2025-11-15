@@ -79,8 +79,8 @@ const useAuthorForm = (isEdit = false) => {
       setValue("instagramId", selectedAuthor.instagramId);
       setApproved(true);
 
-      if (selectedAuthor.avatar) {
-        setPreviewImage(`${import.meta.env.VITE_SERVER_PUBLIC_API_URL_WITHOUT_API}/${selectedAuthor.avatar}`);
+      if (selectedAuthor.avatar?.desktop) {
+        setPreviewImage(`${import.meta.env.VITE_SERVER_PUBLIC_API_URL_WITHOUT_API}/${selectedAuthor.avatar.desktop}`);
       }
     }
   }, [selectedAuthor, isEdit, setValue]);

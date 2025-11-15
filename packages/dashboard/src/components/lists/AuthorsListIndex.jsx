@@ -115,9 +115,9 @@ const AuthorsListIndex = () => {
                                 <img
                                   className="object-cover h-30 w-30 rounded-full border-2 m-2 p-0.5 border-white hover:scale-105 hover:p-2.5 duration-400 hover:animate-pulse cursor-pointer"
                                   src={
-                                    author?.avatar
+                                    author?.avatar?.desktop
                                       ? `${import.meta.env.VITE_SERVER_PUBLIC_API_URL_WITHOUT_API}/${
-                                          author.avatar
+                                          author.avatar.desktop
                                         }`
                                       : "/assets/images/dashboard/icons/male_user.svg"
                                   }
@@ -221,8 +221,8 @@ const AuthorsListIndex = () => {
                     <img
                       className="w-full h-40 object-cover rounded-md"
                       src={
-                        author?.avatar
-                          ? `${import.meta.env.VITE_SERVER_PUBLIC_API_URL_WITHOUT_API}/${author?.avatar}`
+                        author?.avatar?.desktop
+                          ? `${import.meta.env.VITE_SERVER_PUBLIC_API_URL_WITHOUT_API}/${author.avatar.desktop}`
                           : "/assets/images/dashboard/icons/profileIcon.svg"
                       }
                       alt={author.name}

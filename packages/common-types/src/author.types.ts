@@ -8,4 +8,9 @@ export interface IAuthor {
   name: string;
   bio?: string;
   avatar?: IResponsiveImage;
+  email?: string;
+  mobile?: string;
+  birthday?: Date;
+  instagramId?: string;
+  favoriteTemplate?: "poetic" | "scientific";
 }

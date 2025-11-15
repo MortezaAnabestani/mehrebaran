@@ -12,12 +12,12 @@ class AuthorController {
   });
 
   public getAll = asyncHandler(async (req: Request, res: Response) => {
-    const authors = await authorService.findAll();
-    res.status(200).json({ data: authors });
+    const result = await authorService.findAll(req.query);
+    res.status(200).json(result);
   });
 
   public getById = asyncHandler(async (req: Request, res: Response) => {
-    const author = await authorService.findById(req.params.id);
+    const author = await authorService.findOne(req.params.identifier);
     if (!author) {
       throw new ApiError(404, "نویسنده یافت نشد.");
     }
@@ -26,7 +26,7 @@ class AuthorController {
 
   public update = asyncHandler(async (req: Request, res: Response) => {
     const validatedData = updateAuthorSchema.parse({ body: req.body, params: req.params });
-    const author = await authorService.update(validatedData.params.id, validatedData.body);
+    const author = await authorService.update(req.params.identifier, validatedData.body);
     if (!author) {
       throw new ApiError(404, "نویسنده یافت نشد.");
     }
@@ -34,7 +34,7 @@ class AuthorController {
   });
 
   public delete = asyncHandler(async (req: Request, res: Response) => {
-    const deletedAuthor = await authorService.delete(req.params.id);
+    const deletedAuthor = await authorService.delete(req.params.identifier);
     if (!deletedAuthor) {
       throw new ApiError(404, "نویسنده یافت نشد.");
     }

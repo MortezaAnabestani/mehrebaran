@@ -12,12 +12,17 @@ export const createAuthorSchema = z.object({
     bio: z.string().optional(),
     metaDescription: z.string().optional(),
     avatar: responsiveImageSchema.optional(),
+    email: z.string().email("ایمیل معتبر نیست").optional(),
+    mobile: z.string().optional(),
+    birthday: z.string().optional(),
+    instagramId: z.string().optional(),
+    favoriteTemplate: z.enum(["poetic", "scientific"]).optional(),
   }),
 });
 
 export const updateAuthorSchema = z.object({
   body: createAuthorSchema.shape.body.partial(),
   params: z.object({
-    id: z.string().regex(/^[0-9a-fA-F]{24}$/, "شناسه نویسنده معتبر نیست."),
+    identifier: z.string().min(1, "شناسه نویسنده الزامی است."),
   }),
 });

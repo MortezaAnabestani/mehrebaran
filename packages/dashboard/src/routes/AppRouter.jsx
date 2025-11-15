@@ -73,6 +73,9 @@ const EditNeed = lazy(() => import("../pages/needs/EditNeed"));
 const NeedDetails = lazy(() => import("../pages/needs/NeedDetails"));
 const Sections = lazy(() => import("../pages/sections/Sections"));
 const EditSection = lazy(() => import("../pages/sections/EditSection"));
+const Categories = lazy(() => import("../pages/categories/Categories"));
+const CreateCategory = lazy(() => import("../pages/categories/CreateCategory"));
+const EditCategory = lazy(() => import("../pages/categories/EditCategory"));
 const CalendarPage = lazy(() => import("../pages/calendar/CalendarPage"));
 const Admins = lazy(() => import("../pages/admins/Admins"));
 const CreateAdmin = lazy(() => import("../pages/admins/CreateAdmin"));
@@ -161,6 +164,9 @@ const AppRouter = () => {
               <Route path="focus-areas" element={<FocusAreas />} />
               <Route path="sections" element={<Sections />} />
               <Route path="sections/edit/:id" element={<EditSection />} />
+              <Route path="categories" element={<Categories />} />
+              <Route path="categories/create" element={<CreateCategory />} />
+              <Route path="categories/edit/:id" element={<EditCategory />} />
               <Route path="calendar" element={<CalendarPage />} />
               <Route path="upload-center" element={<UploadImage />} />
               <Route path="profile/:id" element={<ProfileSettings />} />

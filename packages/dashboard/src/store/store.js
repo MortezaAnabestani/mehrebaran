@@ -3,6 +3,7 @@ import authorsReducer from "../features/authorsSlice";
 import adminsReducer from "../features/adminsSlice";
 import galleriesReducer from "../features/galleriesSlice";
 import sectionsReducer from "../features/sectionsSlice";
+import categoriesReducer from "../features/categoriesSlice";
 import templatesReducer from "../features/templatesSlice";
 import faqsReducer from "../features/faqsSlice";
 import tagsReducer from "../features/tagsSlice";
@@ -30,6 +31,7 @@ export const store = configureStore({
     admins: adminsReducer,
     galleries: galleriesReducer,
     sections: sectionsReducer,
+    categories: categoriesReducer,
     templates: templatesReducer,
     faqs: faqsReducer,
     tags: tagsReducer,

@@ -51,8 +51,8 @@ const Sidebar = ({ sidebarOpen, me }) => {
               </li>
               <Link
                 rel="preconnect"
-                to={"/dashboard/sections"}
-                className={`${pathname === "/dashboard/sections" ? "bg-gray-100" : ""} block`}
+                to={"/dashboard/categories"}
+                className={`${pathname === "/dashboard/categories" || pathname.startsWith("/dashboard/categories/") ? "bg-gray-100" : ""} block`}
               >
                 <li className="text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group ">
                   <img
@@ -60,7 +60,7 @@ const Sidebar = ({ sidebarOpen, me }) => {
                     alt="category"
                     className="w-6 h-6 ml-2"
                   />
-                  <span className="ml-3 flex-1 whitespace-nowrap"> دسته‌بندی محتوایی</span>
+                  <span className="ml-3 flex-1 whitespace-nowrap"> دسته‌بندی‌ها</span>
                 </li>
               </Link>
               <li className="relative text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group">

@@ -20,15 +20,17 @@ const globalErrorHandler = (err: any, req: Request, res: Response, next: NextFun
   err.statusCode = err.statusCode || 500;
   err.message = err.message || "خطای داخلی سرور";
 
+  // Check for ZodError first before spreading
+  if (err.name === "ZodError") {
+    const message = "داده‌های ورودی نامعتبر است.";
+    const errors = err.flatten().fieldErrors;
+    return res.status(400).json({ message, errors });
+  }
+
   let error = { ...err, message: err.message };
 
   if (error.code === 11000) error = handleDuplicateFieldsDB(error);
   if (error.name === "ValidationError") error = handleValidationErrorDB(error);
-  if (error.name === "ZodError") {
-    const message = "داده‌های ورودی نامعتبر است.";
-    const errors = error.flatten().fieldErrors;
-    return res.status(400).json({ message, errors });
-  }
 
   res.status(error.statusCode).json({
     message: error.message,

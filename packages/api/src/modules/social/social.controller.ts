@@ -6,6 +6,7 @@ import { shareService } from "./share.service";
 import { logShareSchema } from "./social.validation";
 import asyncHandler from "../../core/utils/asyncHandler";
 import ApiError from "../../core/utils/apiError";
+import ResponseFormatter from "../../utils/ResponseFormatter";
 
 class SocialController {
   // ==================== FOLLOW SYSTEM ====================
@@ -17,10 +18,7 @@ class SocialController {
 
     const follow = await followService.followUser(followerId, userId);
 
-    res.status(201).json({
-      message: "کاربر با موفقیت دنبال شد.",
-      data: follow,
-    });
+    return ResponseFormatter.created(res, follow, "کاربر با موفقیت دنبال شد.");
   });
 
   // Unfollow a user
@@ -30,9 +28,7 @@ class SocialController {
 
     await followService.unfollowUser(followerId, userId);
 
-    res.status(200).json({
-      message: "دنبال کردن کاربر لغو شد.",
-    });
+    return ResponseFormatter.success(res, null, "دنبال کردن کاربر لغو شد.");
   });
 
   // Follow a need
@@ -42,10 +38,7 @@ class SocialController {
 
     const follow = await followService.followNeed(followerId, needId);
 
-    res.status(201).json({
-      message: "نیاز با موفقیت دنبال شد.",
-      data: follow,
-    });
+    return ResponseFormatter.created(res, follow, "نیاز با موفقیت دنبال شد.");
   });
 
   // Unfollow a need
@@ -55,65 +48,55 @@ class SocialController {
 
     await followService.unfollowNeed(followerId, needId);
 
-    res.status(200).json({
-      message: "دنبال کردن نیاز لغو شد.",
-    });
+    return ResponseFormatter.success(res, null, "دنبال کردن نیاز لغو شد.");
   });
 
   // Get user's followers
   public getUserFollowers = asyncHandler(async (req: Request, res: Response) => {
     const { userId } = req.params;
-    const limit = req.query.limit ? parseInt(req.query.limit as string) : 50;
-    const skip = req.query.skip ? parseInt(req.query.skip as string) : 0;
+    const { page, limit } = ResponseFormatter.extractPaginationParams(req.query);
 
-    const followers = await followService.getUserFollowers(userId, limit, skip);
+    const followers = await followService.getUserFollowers(userId, limit, (page - 1) * limit);
+    const total = followers.length; // TODO: Get actual count from service
 
-    res.status(200).json({
-      results: followers.length,
-      data: followers,
-    });
+    const pagination = ResponseFormatter.getPaginationInfo(page, limit, total);
+    return ResponseFormatter.successWithPagination(res, followers, pagination);
   });
 
   // Get user's following
   public getUserFollowing = asyncHandler(async (req: Request, res: Response) => {
     const { userId } = req.params;
-    const limit = req.query.limit ? parseInt(req.query.limit as string) : 50;
-    const skip = req.query.skip ? parseInt(req.query.skip as string) : 0;
+    const { page, limit } = ResponseFormatter.extractPaginationParams(req.query);
 
-    const following = await followService.getUserFollowing(userId, limit, skip);
+    const following = await followService.getUserFollowing(userId, limit, (page - 1) * limit);
+    const total = following.length; // TODO: Get actual count from service
 
-    res.status(200).json({
-      results: following.length,
-      data: following,
-    });
+    const pagination = ResponseFormatter.getPaginationInfo(page, limit, total);
+    return ResponseFormatter.successWithPagination(res, following, pagination);
   });
 
   // Get user's followed needs
   public getUserFollowedNeeds = asyncHandler(async (req: Request, res: Response) => {
     const userId = req.user!._id.toString();
-    const limit = req.query.limit ? parseInt(req.query.limit as string) : 50;
-    const skip = req.query.skip ? parseInt(req.query.skip as string) : 0;
+    const { page, limit } = ResponseFormatter.extractPaginationParams(req.query);
 
-    const needs = await followService.getUserFollowedNeeds(userId, limit, skip);
+    const needs = await followService.getUserFollowedNeeds(userId, limit, (page - 1) * limit);
+    const total = needs.length; // TODO: Get actual count from service
 
-    res.status(200).json({
-      results: needs.length,
-      data: needs,
-    });
+    const pagination = ResponseFormatter.getPaginationInfo(page, limit, total);
+    return ResponseFormatter.successWithPagination(res, needs, pagination);
   });
 
   // Get need's followers
   public getNeedFollowers = asyncHandler(async (req: Request, res: Response) => {
     const { needId } = req.params;
-    const limit = req.query.limit ? parseInt(req.query.limit as string) : 50;
-    const skip = req.query.skip ? parseInt(req.query.skip as string) : 0;
+    const { page, limit } = ResponseFormatter.extractPaginationParams(req.query);
 
-    const followers = await followService.getNeedFollowers(needId, limit, skip);
+    const followers = await followService.getNeedFollowers(needId, limit, (page - 1) * limit);
+    const total = followers.length; // TODO: Get actual count from service
 
-    res.status(200).json({
-      results: followers.length,
-      data: followers,
-    });
+    const pagination = ResponseFormatter.getPaginationInfo(page, limit, total);
+    return ResponseFormatter.successWithPagination(res, followers, pagination);
   });
 
   // Get follow stats
@@ -121,9 +104,7 @@ class SocialController {
     const { userId } = req.params;
     const stats = await followService.getUserFollowStats(userId);
 
-    res.status(200).json({
-      data: stats,
-    });
+    return ResponseFormatter.success(res, stats);
   });
 
   // Get suggested users to follow
@@ -133,10 +114,7 @@ class SocialController {
 
     const suggestions = await followService.getSuggestedUsers(userId, limit);
 
-    res.status(200).json({
-      results: suggestions.length,
-      data: suggestions,
-    });
+    return ResponseFormatter.success(res, suggestions);
   });
 
   // ==================== MENTIONS SYSTEM ====================
@@ -145,8 +123,7 @@ class SocialController {
   public getUserMentions = asyncHandler(async (req: Request, res: Response) => {
     const userId = req.user!._id.toString();
     const { isRead, context } = req.query;
-    const limit = req.query.limit ? parseInt(req.query.limit as string) : 50;
-    const skip = req.query.skip ? parseInt(req.query.skip as string) : 0;
+    const { page, limit } = ResponseFormatter.extractPaginationParams(req.query);
 
     const mentions = await mentionService.getUserMentions(
       userId,
@@ -155,13 +132,12 @@ class SocialController {
         context: context as any,
       },
       limit,
-      skip
+      (page - 1) * limit
     );
 
-    res.status(200).json({
-      results: mentions.length,
-      data: mentions,
-    });
+    const total = mentions.length; // TODO: Get actual count from service
+    const pagination = ResponseFormatter.getPaginationInfo(page, limit, total);
+    return ResponseFormatter.successWithPagination(res, mentions, pagination);
   });
 
   // Mark mention as read
@@ -172,13 +148,10 @@ class SocialController {
     const mention = await mentionService.markAsRead(mentionId, userId);
 
     if (!mention) {
-      throw new ApiError(404, "منشن یافت نشد.");
+      return ResponseFormatter.notFound(res, "منشن یافت نشد.");
     }
 
-    res.status(200).json({
-      message: "منشن به عنوان خوانده شده علامت‌گذاری شد.",
-      data: mention,
-    });
+    return ResponseFormatter.success(res, mention, "منشن به عنوان خوانده شده علامت‌گذاری شد.");
   });
 
   // Mark all mentions as read
@@ -186,10 +159,11 @@ class SocialController {
     const userId = req.user!._id.toString();
     const count = await mentionService.markAllAsRead(userId);
 
-    res.status(200).json({
-      message: `${count} منشن به عنوان خوانده شده علامت‌گذاری شد.`,
-      data: { count },
-    });
+    return ResponseFormatter.success(
+      res,
+      { count },
+      `${count} منشن به عنوان خوانده شده علامت‌گذاری شد.`
+    );
   });
 
   // Get unread mention count
@@ -197,9 +171,7 @@ class SocialController {
     const userId = req.user!._id.toString();
     const count = await mentionService.getUnreadCount(userId);
 
-    res.status(200).json({
-      data: { count },
-    });
+    return ResponseFormatter.success(res, { count });
   });
 
   // ==================== TAGS SYSTEM ====================
@@ -209,10 +181,7 @@ class SocialController {
     const limit = req.query.limit ? parseInt(req.query.limit as string) : 20;
     const tags = await tagService.getPopularTags(limit);
 
-    res.status(200).json({
-      results: tags.length,
-      data: tags,
-    });
+    return ResponseFormatter.success(res, tags);
   });
 
   // Get trending tags
@@ -221,10 +190,7 @@ class SocialController {
     const limit = req.query.limit ? parseInt(req.query.limit as string) : 20;
     const tags = await tagService.getTrendingTags(days, limit);
 
-    res.status(200).json({
-      results: tags.length,
-      data: tags,
-    });
+    return ResponseFormatter.success(res, tags);
   });
 
   // Search tags
@@ -232,16 +198,13 @@ class SocialController {
     const { q } = req.query;
 
     if (!q || typeof q !== "string") {
-      throw new ApiError(400, "پارامتر جستجو الزامی است.");
+      return ResponseFormatter.badRequest(res, "پارامتر جستجو الزامی است.");
     }
 
     const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
     const tags = await tagService.searchTags(q, limit);
 
-    res.status(200).json({
-      results: tags.length,
-      data: tags,
-    });
+    return ResponseFormatter.success(res, tags);
   });
 
   // Get needs by tag
@@ -251,10 +214,7 @@ class SocialController {
 
     const needs = await tagService.getNeedsByTag(tag, limit);
 
-    res.status(200).json({
-      results: needs.length,
-      data: needs,
-    });
+    return ResponseFormatter.success(res, needs);
   });
 
   // ==================== SHARE SYSTEM ====================
@@ -275,10 +235,7 @@ class SocialController {
       metadata: validatedData.body.metadata,
     });
 
-    res.status(201).json({
-      message: "اشتراک‌گذاری با موفقیت ثبت شد.",
-      data: shareLog,
-    });
+    return ResponseFormatter.created(res, shareLog, "اشتراک‌گذاری با موفقیت ثبت شد.");
   });
 
   // Get item share stats
@@ -286,9 +243,7 @@ class SocialController {
     const { itemId } = req.params;
     const stats = await shareService.getItemShareStats(itemId, "need");
 
-    res.status(200).json({
-      data: stats,
-    });
+    return ResponseFormatter.success(res, stats);
   });
 
   // Get top shared items
@@ -296,10 +251,7 @@ class SocialController {
     const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
     const topShared = await shareService.getTopSharedItems("need", limit);
 
-    res.status(200).json({
-      results: topShared.length,
-      data: topShared,
-    });
+    return ResponseFormatter.success(res, topShared);
   });
 
   // Get OG metadata for sharing
@@ -308,12 +260,10 @@ class SocialController {
     const metadata = await shareService.generateOGMetadata(needId);
 
     if (!metadata) {
-      throw new ApiError(404, "نیاز یافت نشد.");
+      return ResponseFormatter.notFound(res, "نیاز یافت نشد.");
     }
 
-    res.status(200).json({
-      data: metadata,
-    });
+    return ResponseFormatter.success(res, metadata);
   });
 
   // Get share URL
@@ -322,7 +272,7 @@ class SocialController {
     const { platform } = req.query;
 
     if (!platform || typeof platform !== "string") {
-      throw new ApiError(400, "پلتفرم الزامی است.");
+      return ResponseFormatter.badRequest(res, "پلتفرم الزامی است.");
     }
 
     const baseUrl = process.env.FRONTEND_URL || "https://mehrebaran.org";
@@ -330,9 +280,7 @@ class SocialController {
 
     const shareUrl = shareService.getShareUrl(platform as any, itemUrl);
 
-    res.status(200).json({
-      data: { shareUrl },
-    });
+    return ResponseFormatter.success(res, { shareUrl });
   });
 }
 

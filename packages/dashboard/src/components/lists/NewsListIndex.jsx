@@ -109,7 +109,7 @@ const NewsListIndex = ({ news }) => {
                           نویسنده: <span className="text-blue-600 text-xs"> {newsItem?.author?.name}</span>
                         </p>
                         <p className="text-[10px] font-medium text-gray-400">
-                          بازدید: <span className="text-blue-600 text-xs"> {toPersianDigits(newsItem?.views || 0)}</span>
+                          بازدید: <span className="text-blue-600 text-xs"> {toPersianDigits(String(newsItem?.views || 0))}</span>
                         </p>
                       </div>
                       <div className="w-[65%] my-3">
@@ -264,7 +264,7 @@ const NewsListIndex = ({ news }) => {
                   </span>
                 </p>
                 <p className="text-xs font-medium text-gray-400">
-                  بازدید: <span className="text-blue-600 text-sm">{toPersianDigits(newsItem?.views || 0)}</span>
+                  بازدید: <span className="text-blue-600 text-sm">{toPersianDigits(String(newsItem?.views || 0))}</span>
                 </p>
               </div>
             </div>

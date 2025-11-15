@@ -17,17 +17,14 @@ export default async function ArticlesPage({ searchParams }: ArticlesPageProps) 
   const page = typeof params.page === "string" ? Number(params.page) : 1;
   const limit = typeof params.limit === "string" ? Number(params.limit) : 12;
 
-  const allArticlesResponse = await getArticles({ status: "published" });
-  const totalResults = allArticlesResponse.results;
-
-  const { data: articles } = await getArticles({
+  const { articles, pagination } = await getArticles({
     status: "published",
     page,
     limit,
     sort: "-createdAt",
   });
 
-  const totalPages = Math.ceil(totalResults / limit);
+  const totalPages = pagination.totalPages;
 
   return (
     <div className="w-9/10 md:w-8/10 mx-auto py-12">

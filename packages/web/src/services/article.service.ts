@@ -2,8 +2,13 @@ import api from "@/lib/api";
 import { IArticle } from "common-types";
 
 interface GetArticlesResponse {
-  results: number;
-  data: IArticle[];
+  articles: IArticle[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
 }
 
 interface GetArticlesParams {
@@ -17,10 +22,10 @@ interface GetArticlesParams {
 export const getArticles = async (params: GetArticlesParams): Promise<GetArticlesResponse> => {
   try {
     const response = await api.get("/blog/articles", { params });
-    return response.data || { results: 0, data: [] };
+    return response.data || { articles: [], pagination: { page: 1, limit: 10, total: 0, totalPages: 0 } };
   } catch (error) {
     console.error("Failed to fetch articles:", error);
-    return { results: 0, data: [] };
+    return { articles: [], pagination: { page: 1, limit: 10, total: 0, totalPages: 0 } };
   }
 };
 

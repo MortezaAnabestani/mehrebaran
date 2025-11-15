@@ -17,17 +17,14 @@ export default async function GalleriesPage({ searchParams }: GalleriesPageProps
   const page = typeof params.page === "string" ? Number(params.page) : 1;
   const limit = typeof params.limit === "string" ? Number(params.limit) : 12;
 
-  const allGalleriesResponse = await getGalleries({ status: "published" });
-  const totalResults = allGalleriesResponse.results;
-
-  const { data: galleries } = await getGalleries({
+  const { galleries, pagination } = await getGalleries({
     status: "published",
     page,
     limit,
     sort: "-createdAt",
   });
 
-  const totalPages = Math.ceil(totalResults / limit);
+  const totalPages = pagination.totalPages;
 
   return (
     <div className="w-9/10 md:w-8/10 mx-auto py-12">

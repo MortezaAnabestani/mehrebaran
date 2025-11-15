@@ -17,17 +17,14 @@ export default async function VideosPage({ searchParams }: VideosPageProps) {
   const page = typeof params.page === "string" ? Number(params.page) : 1;
   const limit = typeof params.limit === "string" ? Number(params.limit) : 12;
 
-  const allVideosResponse = await getVideos({ status: "published" });
-  const totalResults = allVideosResponse.results;
-
-  const { data: videos } = await getVideos({
+  const { videos, pagination } = await getVideos({
     status: "published",
     page,
     limit,
     sort: "-createdAt",
   });
 
-  const totalPages = Math.ceil(totalResults / limit);
+  const totalPages = pagination.totalPages;
 
   return (
     <div className="w-9/10 md:w-8/10 mx-auto py-12">

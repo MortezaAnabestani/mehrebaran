@@ -100,7 +100,7 @@ const VideosListIndex = ({ videos, loading, currentPage, totalPages, totalItems,
                     {toPersianDigits(convertToPersianTime(video.createdAt, "YYYY/MM/DD"))}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {toPersianDigits(video.views || 0)}
+                    {toPersianDigits(String(video.views || 0))}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <div className="flex gap-2">
@@ -153,7 +153,7 @@ const VideosListIndex = ({ videos, loading, currentPage, totalPages, totalItems,
                   >
                     {video.status === "published" ? "منتشرشده" : "پیش‌نویس"}
                   </span>
-                  <span className="text-gray-500">بازدید: {toPersianDigits(video.views || 0)}</span>
+                  <span className="text-gray-500">بازدید: {toPersianDigits(String(video.views || 0))}</span>
                 </div>
               </div>
             </div>

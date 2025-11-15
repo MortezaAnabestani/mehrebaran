@@ -42,8 +42,7 @@ export default async function GalleryDetailPage({ params }: PageProps) {
 
   // استخراج تمام URL های تصاویر
   const imageUrls = gallery.images.map((img) => {
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5001';
-    return `${baseUrl}/${img.desktop}`;
+    return `${img.desktop}`;
   });
 
   return (

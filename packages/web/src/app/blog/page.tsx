@@ -21,7 +21,7 @@ export default async function Blog() {
 
   // تبدیل داده‌های ویدئو به فرمت CardType
   const videoCards: CardType[] = videosResponse.data.map((video) => ({
-    img: `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '')}/${video.coverImage?.desktop}` || "/images/default.jpg",
+    img: video.coverImage.desktop || "/images/default.jpg",
     title: video.title,
     description: video.description?.substring(0, 150) + "..." || "",
     href: `/blog/videos/${video.slug}`,
@@ -29,15 +29,15 @@ export default async function Blog() {
 
   // تبدیل داده‌های مقالات به فرمت CardType
   const articleCards: CardType[] = articlesResponse.data.map((article) => ({
-    img: `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '')}/${article.coverImage?.desktop}` || "/images/default.jpg",
+    img: article.featuredImage?.desktop || "/images/default.jpg",
     title: article.title,
-    description: article.description?.substring(0, 150) + "..." || "",
+    description: article.content?.substring(0, 150) + "..." || "",
     href: `/blog/articles/${article.slug}`,
   }));
 
   // تبدیل داده‌های گالری به فرمت CardType
   const galleryCards: CardType[] = galleriesResponse.data.map((gallery) => ({
-    img: `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '')}/${gallery.coverImage?.desktop}` || "/images/default.jpg",
+    img: gallery.images[0]?.desktop || "/images/default.jpg",
     title: gallery.title,
     description: gallery.description?.substring(0, 150) + "..." || "",
     href: `/blog/gallery/${gallery.slug}`,
@@ -60,13 +60,25 @@ export default async function Blog() {
           />
         </div>
       </div>
-      <div className="w-9/10 md:w-8/10 mx-auto">
-        <HeadTitle title="ویدئوها" />
-        <HeroShared_views cardItems={videoCards.length > 0 ? videoCards : cardItems} horizontal={true} page="blog/videos" />
-        <HeadTitle title="مجموعه عکس" />
-        <HeroShared_views cardItems={galleryCards.length > 0 ? galleryCards : cardItems} horizontal={true} page="blog/gallery" />
+      <div className="w-9/10 md:w-8/10 mx-auto my-10">
         <HeadTitle title="مقالات" />
-        <HeroShared_views cardItems={articleCards.length > 0 ? articleCards : cardItems} horizontal={true} page="blog/articles" />
+        <HeroShared_views
+          cardItems={articleCards.length > 0 ? articleCards : cardItems}
+          horizontal={true}
+          page="blog/articles"
+        />
+        <HeadTitle title="مجموعه عکس" />
+        <HeroShared_views
+          cardItems={galleryCards.length > 0 ? galleryCards : cardItems}
+          horizontal={true}
+          page="blog/gallery"
+        />
+        <HeadTitle title="ویدئوها" />
+        <HeroShared_views
+          cardItems={videoCards.length > 0 ? videoCards : cardItems}
+          horizontal={true}
+          page="blog/videos"
+        />
       </div>
     </div>
   );

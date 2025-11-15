@@ -59,7 +59,7 @@ const AreaItem: React.FC<AreasOfActivity> = ({ title, icon, description, color, 
     >
       {/* عنوان */}
       <motion.div
-        className="relative py-2 px-4 w-full h-12 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-center font-bold rounded-xl overflow-hidden cursor-pointer shadow-lg"
+        className="relative py-2 px-4 w-full h-12 bg-gradient-to-r from-sky-500 to-sky-600 text-white text-center font-bold rounded-xl overflow-hidden cursor-pointer shadow-lg"
         whileHover={{ scale: 1.05, y: -2 }}
         whileTap={{ scale: 0.95 }}
         style={{
@@ -214,7 +214,7 @@ const AreaItem: React.FC<AreasOfActivity> = ({ title, icon, description, color, 
           className={`relative mt-2 h-24 flex items-center justify-center rounded-xl p-3 ${
             color === "mgray"
               ? "bg-gradient-to-br from-gray-100 to-gray-200 text-gray-800"
-              : "bg-gradient-to-br from-blue-500 to-blue-600 text-white"
+              : "bg-gradient-to-br from-sky-500 to-sky-600 text-white"
           } shadow-lg cursor-pointer`}
           whileHover={{
             scale: 1.03,

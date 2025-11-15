@@ -134,9 +134,7 @@ const WhatWeDidSection: React.FC<{ statistics: IWhatWeDidStatistics | null }> = 
           >
             <div
               className={`relative overflow-hidden rounded-2xl ${
-                item.color === "mblue"
-                  ? "bg-gradient-to-br from-blue-500 to-blue-600"
-                  : "bg-gradient-to-br from-gray-100 to-gray-200"
+                item.color === "mblue" ? "bg-mblue" : "bg-mgray"
               } ${
                 item.textColor === "white" ? "text-white" : "text-gray-800"
               } p-6 md:p-8 aspect-square flex flex-col justify-center items-center shadow-lg hover:shadow-2xl transition-shadow duration-300 cursor-pointer`}
@@ -150,7 +148,7 @@ const WhatWeDidSection: React.FC<{ statistics: IWhatWeDidStatistics | null }> = 
               />
 
               {/* آیکون پس‌زمینه */}
-              <div className="absolute inset-0 flex items-center justify-center opacity-10 group-hover:opacity-20 transition-opacity duration-300">
+              <div className="absolute inset-0 flex items-center justify-center opacity-30 group-hover:opacity-20 transition-opacity duration-300">
                 <OptimizedImage src={item.icon} alt={item.title} width={150} height={150} />
               </div>
 
@@ -167,9 +165,7 @@ const WhatWeDidSection: React.FC<{ statistics: IWhatWeDidStatistics | null }> = 
                 </motion.h2>
 
                 {/* عنوان */}
-                <h3 className="text-sm md:text-base text-center font-bold leading-relaxed">
-                  {item.title}
-                </h3>
+                <h3 className="text-sm md:text-base text-center font-bold leading-relaxed">{item.title}</h3>
               </div>
 
               {/* افکت shimmer */}

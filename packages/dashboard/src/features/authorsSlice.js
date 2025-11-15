@@ -65,7 +65,7 @@ export const fetchAuthorBySlug = createAsyncThunk(
 const authorsSlice = createSlice({
   name: "authors",
   initialState: {
-    authors: [],
+    authors: { authors: [], pagination: { page: 1, limit: 10, total: 0, totalPages: 0 } },
     selectedAuthor: null,
     loading: false,
     error: null,

@@ -47,7 +47,7 @@ const useNewsForm = (isEdit = false) => {
   const [allNews, setAllNews] = useState([]);
 
   const { selectedNews, loading, error } = useSelector((state) => state.news);
-  const { authors } = useSelector((state) => state.authors);
+  const authors = useSelector((state) => state.authors.authors.authors || []);
   const { tags } = useSelector((state) => state.tags);
 
   const {
@@ -101,12 +101,12 @@ const useNewsForm = (isEdit = false) => {
         ]);
 
         // بارگذاری دسته‌بندی‌ها
-        const categoriesResponse = await api.get("/blog/categories");
+        const categoriesResponse = await api.get("/categories");
         setCategories(categoriesResponse.data?.data || []);
 
         // بارگذاری تمام اخبار برای related news
         const newsResponse = await api.get("/news", { params: { limit: 1000 } });
-        setAllNews(newsResponse.data?.data || []);
+        setAllNews(newsResponse.data?.news || []);
       } catch (err) {
         console.error("خطا در بارگذاری داده‌های اولیه:", err);
       }

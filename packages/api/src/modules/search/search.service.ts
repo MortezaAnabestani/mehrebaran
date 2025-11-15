@@ -1,9 +1,9 @@
-import ProjectModel from "../projects/project.model";
-import NewsModel from "../news/news.model";
-import ArticleModel from "../blog/articles/article.model";
-import VideoModel from "../blog/videos/video.model";
-import GalleryModel from "../blog/gallery/gallery.model";
-import FocusAreaModel from "../focus-areas/focus-area.model";
+import { ProjectModel } from "../projects/project.model";
+import { NewsModel } from "../news/news.model";
+import { ArticleModel } from "../blog/articles/article.model";
+import { VideoModel } from "../blog/videos/video.model";
+import { GalleryModel } from "../blog/gallery/gallery.model";
+import { FocusAreaModel } from "../focus-areas/focus-area.model";
 
 interface SearchResult {
   type: "project" | "news" | "article" | "video" | "gallery" | "focus-area";
@@ -22,11 +22,7 @@ class SearchService {
     // جستجو در پروژه‌ها
     const projects = await ProjectModel.find({
       status: "published",
-      $or: [
-        { title: searchRegex },
-        { description: searchRegex },
-        { fullDescription: searchRegex },
-      ],
+      $or: [{ title: searchRegex }, { description: searchRegex }, { fullDescription: searchRegex }],
     })
       .select("title description slug coverImage createdAt")
       .limit(10)

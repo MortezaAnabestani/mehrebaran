@@ -39,7 +39,7 @@ export default async function GalleriesPage({ searchParams }: GalleriesPageProps
       {galleries.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
           {galleries.map((gallery) => (
-            <Card key={gallery._id} cardItem={gallery} page="galleries" />
+            <Card key={gallery._id} cardItem={gallery} page="blog/gallery" />
           ))}
         </div>
       ) : (

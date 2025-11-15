@@ -15,7 +15,7 @@ type CardItem = (INews | IArticle | IProject | IVideo | IGallery) & {
 interface CardProps {
   cardItem?: CardItem | CardType;
   horizontal?: boolean;
-  page?: "news" | "articles" | "projects" | "videos" | "galleries";
+  page?: "news" | "blog/articles" | "projects" | "blog/videos" | "blog/gallery";
 }
 
 // Type guard to check if cardItem is CardType
@@ -29,7 +29,7 @@ const Card: React.FC<CardProps> = ({ cardItem, horizontal = false, page = "news"
   }
 
   // Handle both CardType and CardItem formats
-  const imageSrc = isCardType(cardItem) ? cardItem.img : cardItem.featuredImage.desktop;
+  const imageSrc = isCardType(cardItem) ? cardItem.img : cardItem.featuredImage?.desktop;
   const title = cardItem.title;
   const description = isCardType(cardItem) ? cardItem.description : cardItem.excerpt;
   const link = isCardType(cardItem) ? cardItem.href : `/${page}/${cardItem.slug}`;

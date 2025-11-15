@@ -7,7 +7,6 @@ import { getVideos } from "@/services/video.service";
 import { getArticles } from "@/services/article.service";
 import { getGalleries } from "@/services/gallery.service";
 import { IBlogBackgroundSetting } from "common-types";
-import React from "react";
 
 export default async function Blog() {
   const [blogBgSettings, videosResponse, articlesResponse, galleriesResponse] = await Promise.all([

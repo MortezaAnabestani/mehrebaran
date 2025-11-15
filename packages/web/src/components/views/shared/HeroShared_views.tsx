@@ -42,7 +42,13 @@ const HeroShared_views: React.FC<HeroViewsProps> = ({ cardItems, horizontal = fa
         })}
       </div>
       {horizontal && (
-        <SmartButton className="h-8 cursor-pointer mb-5" fullWidth={true} variant="mblue">
+        <SmartButton
+          className="h-8 cursor-pointer mb-5"
+          fullWidth={true}
+          variant="mblue"
+          href={page}
+          asLink={true}
+        >
           بیش‌تر...
         </SmartButton>
       )}

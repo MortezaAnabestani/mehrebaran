@@ -30,12 +30,7 @@ const Footer: React.FC<Props> = ({}) => {
             <div className="flex flex-col md:flex-row items-center gap-3 md:gap-4">
               {/* Logo */}
               <div className="flex-shrink-0">
-                <OptimizedImage
-                  src="/icons/logo.svg"
-                  alt="مهر باران"
-                  width={80}
-                  height={32}
-                />
+                <OptimizedImage src="/icons/logo.svg" alt="مهر باران" width={80} height={32} />
               </div>
               {/* License */}
               <div className="text-center md:text-right">
@@ -54,9 +49,17 @@ const Footer: React.FC<Props> = ({}) => {
   }
 
   return (
-    <footer className={`${footerBg} w-full h-fit ${showRain ? "pt-18" : isNetworkPage ? "pt-3" : "pt-7"} relative duration-700 overflow-hidden`}>
+    <footer
+      className={`${footerBg} w-full h-fit ${
+        showRain ? "pt-18" : isNetworkPage ? "pt-3" : "pt-7"
+      } relative duration-700 overflow-hidden`}
+    >
       {showRain && <RainEffect />}
-      <div className={`md:w-8/10 container mx-auto flex flex-col ${isNetworkPage ? "gap-2" : "gap-6"} justify-between items-center text-white ${isNetworkPage ? "py-2" : ""}`}>
+      <div
+        className={`md:w-8/10 container mx-auto flex flex-col ${
+          isNetworkPage ? "gap-2" : "gap-6"
+        } justify-between items-center text-white ${isNetworkPage ? "py-2" : ""}`}
+      >
         <SocialMedia setWave={setShowRain} />
         {!isNetworkPage && <Menu />}
         <License />

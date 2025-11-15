@@ -39,7 +39,7 @@ export default async function VideosPage({ searchParams }: VideosPageProps) {
       {videos.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
           {videos.map((video) => (
-            <Card key={video._id} cardItem={video} page="videos" />
+            <Card key={video._id} cardItem={video} page="blog/videos" />
           ))}
         </div>
       ) : (

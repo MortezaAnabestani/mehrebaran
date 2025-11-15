@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ThreeD from "./ThreeD";
 import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
@@ -10,23 +10,50 @@ const fadeIn = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.6 }
-  }
+    transition: { duration: 0.6 },
+  },
 };
 
 const AboutUs: React.FC = () => {
   const aboutRef = useRef(null);
   const activitiesRef = useRef(null);
   const contactRef = useRef(null);
+  const [audio, setAudio] = useState(null);
 
   const aboutInView = useInView(aboutRef, { once: true, margin: "-100px" });
   const activitiesInView = useInView(activitiesRef, { once: true, margin: "-100px" });
   const contactInView = useInView(contactRef, { once: true, margin: "-100px" });
 
+  useEffect(() => {
+    // ایجاد یک نمونه از شیء Audio در سمت کلاینت
+    const rainSound = new Audio("/sounds/rain.mp3");
+    rainSound.loop = true; // تکرار موسیقی
+    rainSound.volume = 0.5; // تنظیم بلندی صدا
+    setAudio(rainSound);
+
+    // تابع پاک‌سازی: این تابع هنگام خروج از صفحه اجرا می‌شود
+    return () => {
+      if (rainSound) {
+        rainSound.pause(); // توقف موسیقی
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (audio) {
+      // تلاش برای پخش موسیقی
+      audio.play().catch((error) => {
+        // در صورتی که مرورگر جلوی پخش خودکار را بگیرد، این خطا رخ می‌دهد
+        console.error("Autoplay was prevented: ", error);
+        // می‌توانید در اینجا یک دکمه برای پخش دستی به کاربر نمایش دهید
+      });
+    }
+  }, [audio]);
+
   return (
     <div className="bg-white">
       {/* Hero با باران */}
-      <section className="relative h-screen w-full bg-gradient-to-b from-blue-900 to-blue-800">
+      <section className="relative h-screen w-full bg-gradient-to-b from-mblue/90 to-mblue">
         <div className="absolute inset-0">
           <ThreeD />
         </div>
@@ -82,9 +109,7 @@ const AboutUs: React.FC = () => {
             variants={fadeIn}
             className="text-center mb-12"
           >
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
-              درباره کانون مهرباران
-            </h2>
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">درباره کانون مهرباران</h2>
             <div className="w-20 h-1 bg-blue-600 mx-auto rounded-full"></div>
           </motion.div>
 
@@ -96,10 +121,9 @@ const AboutUs: React.FC = () => {
             className="max-w-4xl mx-auto"
           >
             <p className="text-lg text-gray-700 leading-relaxed text-justify mb-6">
-              کانون مهرباران، بخشی از سازمان دانشجویان جهاد دانشگاهی خراسان رضوی است که با هدف
-              ایجاد تحول مثبت در جامعه و توسعه پایدار، فعالیت‌های داوطلبانه و عام‌المنفعه را سازماندهی
-              می‌کند. ما با تکیه بر توان جوانان و دانشجویان، در حوزه‌های مختلف اجتماعی، فرهنگی و
-              آموزشی فعالیت می‌کنیم.
+              کانون مهرباران، بخشی از سازمان دانشجویان جهاد دانشگاهی خراسان رضوی است که با هدف ایجاد تحول مثبت
+              در جامعه و توسعه پایدار، فعالیت‌های داوطلبانه و عام‌المنفعه را سازماندهی می‌کند. ما با تکیه بر
+              توان جوانان و دانشجویان، در حوزه‌های مختلف اجتماعی، فرهنگی و آموزشی فعالیت می‌کنیم.
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
@@ -129,9 +153,7 @@ const AboutUs: React.FC = () => {
             variants={fadeIn}
             className="text-center mb-12"
           >
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
-              حوزه‌های فعالیت
-            </h2>
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">حوزه‌های فعالیت</h2>
             <div className="w-20 h-1 bg-blue-600 mx-auto rounded-full"></div>
           </motion.div>
 
@@ -142,7 +164,7 @@ const AboutUs: React.FC = () => {
               { title: "محیط زیست", desc: "طرح‌های حفاظت از محیط زیست و کاشت درخت" },
               { title: "سلامت", desc: "ارائه خدمات بهداشتی و درمانی به نیازمندان" },
               { title: "کمک‌های معیشتی", desc: "جمع‌آوری و توزیع کمک‌های مردمی" },
-              { title: "توانمندسازی", desc: "آموزش مهارت‌های شغلی و کارآفرینی" }
+              { title: "توانمندسازی", desc: "آموزش مهارت‌های شغلی و کارآفرینی" },
             ].map((item, index) => (
               <motion.div
                 key={index}
@@ -169,9 +191,7 @@ const AboutUs: React.FC = () => {
             variants={fadeIn}
             className="text-center mb-12"
           >
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
-              ارتباط با ما
-            </h2>
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">ارتباط با ما</h2>
             <div className="w-20 h-1 bg-blue-600 mx-auto rounded-full"></div>
           </motion.div>
 
@@ -216,9 +236,15 @@ const AboutUs: React.FC = () => {
                 <div>
                   <h4 className="font-bold text-gray-800 mb-1">شبکه‌های اجتماعی</h4>
                   <div className="flex gap-4 mt-2">
-                    <a href="#" className="text-blue-600 hover:text-blue-700">اینستاگرام</a>
-                    <a href="#" className="text-blue-600 hover:text-blue-700">تلگرام</a>
-                    <a href="#" className="text-blue-600 hover:text-blue-700">آپارات</a>
+                    <a href="#" className="text-blue-600 hover:text-blue-700">
+                      اینستاگرام
+                    </a>
+                    <a href="#" className="text-blue-600 hover:text-blue-700">
+                      تلگرام
+                    </a>
+                    <a href="#" className="text-blue-600 hover:text-blue-700">
+                      آپارات
+                    </a>
                   </div>
                 </div>
               </div>
@@ -233,8 +259,8 @@ const AboutUs: React.FC = () => {
             >
               <h3 className="text-2xl font-bold text-gray-800 mb-6">عضویت در کانون</h3>
               <p className="text-gray-700 leading-relaxed mb-6">
-                اگر علاقه‌مند به فعالیت‌های داوطلبانه و کمک به جامعه هستید، می‌توانید با تکمیل فرم
-                ثبت‌نام به جمع داوطلبان مهرباران بپیوندید.
+                اگر علاقه‌مند به فعالیت‌های داوطلبانه و کمک به جامعه هستید، می‌توانید با تکمیل فرم ثبت‌نام به
+                جمع داوطلبان مهرباران بپیوندید.
               </p>
               <button className="w-full bg-blue-600 text-white px-8 py-4 rounded-xl font-bold hover:bg-blue-700 transition-colors shadow-lg">
                 ثبت‌نام داوطلب

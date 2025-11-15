@@ -32,7 +32,7 @@ function MehrebaranLogo() {
     });
   }, [scene]);
 
-  return <primitive ref={modelRef} object={scene} scale={1.5} />;
+  return <primitive ref={modelRef} object={scene} scale={2} />;
 }
 
 // باران با کیفیت بهتر
@@ -79,13 +79,7 @@ function Rain({ count = 1000 }: RainProps) {
   return (
     <instancedMesh ref={meshRef} args={[undefined, undefined, count]}>
       <cylinderGeometry args={[0.015, 0.015, 0.4, 8]} />
-      <meshStandardMaterial
-        color="#4a9eff"
-        transparent
-        opacity={0.6}
-        metalness={0.8}
-        roughness={0.2}
-      />
+      <meshStandardMaterial color="#4a9eff" transparent opacity={0.3} metalness={0.2} roughness={0.1} />
     </instancedMesh>
   );
 }
@@ -134,7 +128,7 @@ function Scene({ rainCount = 1000, mouseX, mouseY }: SceneProps) {
       <Rain count={rainCount} />
 
       {/* مه برای عمق */}
-      <fog attach="fog" args={["#1e3a8a", 8, 20]} />
+      <fog attach="fog" args={["##ffffff", 4, 15]} />
     </>
   );
 }
@@ -156,16 +150,13 @@ export default function ThreeD() {
   };
 
   return (
-    <div
-      className="w-full h-full cursor-grab active:cursor-grabbing"
-      onMouseMove={handleMouseMove}
-    >
+    <div className="w-full h-full cursor-grab active:cursor-grabbing" onMouseMove={handleMouseMove}>
       <Canvas
         camera={{ position: [0, 0, 8], fov: 50 }}
         gl={{
           antialias: true,
           alpha: true,
-          powerPreference: "high-performance"
+          powerPreference: "high-performance",
         }}
       >
         <Scene rainCount={1000} mouseX={smoothMouseX} mouseY={smoothMouseY} />

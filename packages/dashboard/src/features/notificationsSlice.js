@@ -298,7 +298,7 @@ const notificationsSlice = createSlice({
     // Get unread count
     builder
       .addCase(getUnreadCount.fulfilled, (state, action) => {
-        state.unreadCount = action.payload.count || 0;
+        state.unreadCount = action.payload.data?.count || action.payload.count || 0;
       });
 
     // Get stats

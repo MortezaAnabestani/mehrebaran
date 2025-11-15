@@ -444,7 +444,7 @@ const socialSlice = createSlice({
     // Get unread mention count
     builder
       .addCase(getUnreadMentionCount.fulfilled, (state, action) => {
-        state.unreadMentionCount = action.payload.count || 0;
+        state.unreadMentionCount = action.payload.data?.count || action.payload.count || 0;
       });
 
     // Mark mention as read

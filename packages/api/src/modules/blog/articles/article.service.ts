@@ -48,9 +48,6 @@ class ArticleService {
       { path: "category", select: "name slug" },
       { path: "author", select: "name slug avatar" },
       { path: "tags", select: "name slug" },
-      { path: "template", select: "name" },
-      { path: "section", select: "title" },
-      { path: "issue", select: "title" },
     ]);
 
     const articles = await features.query;

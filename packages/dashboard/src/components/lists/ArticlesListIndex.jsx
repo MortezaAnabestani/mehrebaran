@@ -90,12 +90,12 @@ const ArticlesListIndex = ({ articles }) => {
                         </div>
                         <div className="border-b border-gray-100 pb-1">
                           <h3 className="text-[10px] font-medium text-gray-400">
-                            شماره:
-                            <span className="text-gray-800 font-normal text-xs">{article?.issue?.title}</span>
+                            دسته‌بندی:
+                            <span className="text-gray-800 font-normal text-xs">{article?.category?.name || 'بدون دسته‌بندی'}</span>
                           </h3>
                         </div>
                         <p className="text-[10px] font-medium text-gray-400">
-                          قالب: <span className="text-red-600 text-xs"> {article?.template?.name}</span>
+                          وضعیت: <span className="text-red-600 text-xs"> {article?.status === 'published' ? 'منتشر شده' : article?.status === 'draft' ? 'پیش‌نویس' : 'بایگانی'}</span>
                         </p>
                         <p className="text-[10px] font-medium text-gray-400">
                           انتشار:
@@ -195,23 +195,9 @@ const ArticlesListIndex = ({ articles }) => {
                   </div>
                   <div className="absolute text-[10px] p-1 top-3 left-1 ltr w-full flex gap-2 items-center">
                     <div className="flex flex-col items-center gap-1">
-                      {article.template.name === "جستار" ? (
-                        <span className="px-2 py-1 text-white bg-red-500 rounded-full shadow-xs border border-red-200 shadow-gray-400 hover:scale-95 cursor-grab duration-200">
-                          {article?.section?.title}
-                        </span>
-                      ) : (
-                        <>
-                          <span className="px-2 py-1 text-white bg-red-500 rounded-full shadow-xs border border-yellow-400 shadow-yellow-300 hover:scale-95 cursor-grab duration-200">
-                            {article?.section?.title}
-                          </span>
-                          <img
-                            loading="lazy"
-                            src="/assets/images/dashboard/icons/star_filled.svg"
-                            className="h-3 w-3"
-                            alt="star filled icon"
-                          />
-                        </>
-                      )}
+                      <span className="px-2 py-1 text-white bg-blue-500 rounded-full shadow-xs border border-blue-200 shadow-gray-400 hover:scale-95 cursor-grab duration-200">
+                        {article?.category?.name || 'بدون دسته‌بندی'}
+                      </span>
                     </div>
                   </div>
                 </li>
@@ -233,25 +219,14 @@ const ArticlesListIndex = ({ articles }) => {
               />
               <div className="absolute text-[10px] p-1 bottom-1 left-1 w-full flex gap-2 items-center">
                 <div className="flex flex-col items-center w-[350px]">
-                  {article?.template?.name === "جستار" ? (
-                    <div className="flex justify-between w-full mr-2">
-                      <span className="px-2 py-1 text-white bg-red-500 rounded-full shadow-xs border border-yellow-400 shadow-yellow-300 hover:scale-95 cursor-grab duration-200">
-                        {article?.section?.title}
-                      </span>
-                      <span className="px-2 py-1 text-red bg-white rounded-full shadow-xs border border-red-400 hover:scale-95 cursor-grab duration-200">
-                        {article?.author?.name}
-                      </span>
-                    </div>
-                  ) : (
-                    <div className="flex justify-between w-full mr-2">
-                      <span className="px-2 py-1 text-white bg-red-500 rounded-full shadow-xs border border-yellow-400 shadow-yellow-300 hover:scale-95 cursor-grab duration-200">
-                        {article?.section?.title}
-                      </span>
-                      <span className="px-2 py-1 text-red bg-white rounded-full shadow-xs border border-red-400 hover:scale-95 cursor-grab duration-200">
-                        {article?.author?.name}
-                      </span>
-                    </div>
-                  )}
+                  <div className="flex justify-between w-full mr-2">
+                    <span className="px-2 py-1 text-white bg-blue-500 rounded-full shadow-xs border border-blue-400 shadow-blue-300 hover:scale-95 cursor-grab duration-200">
+                      {article?.category?.name || 'بدون دسته‌بندی'}
+                    </span>
+                    <span className="px-2 py-1 text-red bg-white rounded-full shadow-xs border border-red-400 hover:scale-95 cursor-grab duration-200">
+                      {article?.author?.name}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -265,7 +240,7 @@ const ArticlesListIndex = ({ articles }) => {
                 <span className="text-gray-800 font-normal mr-1 text-sm">{article.subTitle}</span>
               </h3>
               <p className="text-xs font-medium text-gray-400">
-                شمارۀ: <span className="text-red-600 text-sm">{article?.issue?.title}</span>
+                دسته‌بندی: <span className="text-blue-600 text-sm">{article?.category?.name || 'بدون دسته‌بندی'}</span>
               </p>
               <div className="flex justify-between items-center">
                 <p className="text-xs font-medium text-gray-400">
@@ -275,7 +250,7 @@ const ArticlesListIndex = ({ articles }) => {
                   </span>
                 </p>
                 <p className="text-xs font-medium text-gray-400">
-                  قالب: <span className="text-red-600 text-sm">{article?.template?.name}</span>
+                  وضعیت: <span className="text-red-600 text-sm">{article?.status === 'published' ? 'منتشر شده' : article?.status === 'draft' ? 'پیش‌نویس' : 'بایگانی'}</span>
                 </p>
               </div>
             </div>

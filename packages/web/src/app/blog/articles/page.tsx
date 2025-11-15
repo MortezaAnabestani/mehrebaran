@@ -1,14 +1,21 @@
 import { getArticles } from "@/services/article.service";
 import Card from "@/components/shared/Card";
 import Pagination from "@/components/ui/Pagination";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "مقالات مجله مهرباران",
+  description: "جدیدترین تحلیل‌ها، داستان‌ها و گزارش‌های کانون مهرباران",
+};
 
 type ArticlesPageProps = {
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 
 export default async function ArticlesPage({ searchParams }: ArticlesPageProps) {
-  const page = typeof searchParams.page === "string" ? Number(searchParams.page) : 1;
-  const limit = typeof searchParams.limit === "string" ? Number(searchParams.limit) : 12;
+  const params = await searchParams;
+  const page = typeof params.page === "string" ? Number(params.page) : 1;
+  const limit = typeof params.limit === "string" ? Number(params.limit) : 12;
 
   const allArticlesResponse = await getArticles({ status: "published" });
   const totalResults = allArticlesResponse.results;
@@ -23,10 +30,10 @@ export default async function ArticlesPage({ searchParams }: ArticlesPageProps) 
   const totalPages = Math.ceil(totalResults / limit);
 
   return (
-    <div className="container mx-auto py-12">
+    <div className="w-9/10 md:w-8/10 mx-auto py-12">
       <h1 className="text-4xl font-bold mb-8">مقالات مجله مهرباران</h1>
       <p className="mb-12 text-lg text-gray-600">
-        جدیدترین تحلیل‌ها، داستان‌ها و گزارش‌های ما را در اینجا بخوانید.
+        جدیدترین تحلیل‌ها، داستان‌ها و گزارش‌های کانون مهرباران را در اینجا بخوانید.
       </p>
 
       {articles.length > 0 ? (

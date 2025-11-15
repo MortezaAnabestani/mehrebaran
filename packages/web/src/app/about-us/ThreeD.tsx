@@ -1,17 +1,16 @@
 "use client";
 
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
-import { useLayoutEffect, useRef, useMemo } from "react";
-import { useTransform, useScroll, useTime } from "framer-motion";
-import { degreesToRadians, mix } from "popmotion";
-import { useGLTF, MeshDistortMaterial, Sphere } from "@react-three/drei";
+import { useLayoutEffect, useRef } from "react";
+import { useScroll, useMotionValue, useSpring } from "framer-motion";
+import { useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 
-function MyModel() {
+function MehrebaranLogo() {
   const { scene } = useGLTF("/models/myModel.glb");
   const modelRef = useRef<THREE.Group>(null!);
 
-  // تغییر رنگ همه متریال‌ها با افکت درخشان
+  // تغییر رنگ به سفید درخشان
   useLayoutEffect(() => {
     scene.traverse((child) => {
       if ((child as THREE.Mesh).isMesh) {
@@ -20,184 +19,156 @@ function MyModel() {
           mesh.material.forEach((mat) => {
             if (mat instanceof THREE.MeshStandardMaterial) {
               mat.color = new THREE.Color("#ffffff");
-              mat.emissive = new THREE.Color("#4a90e2");
-              mat.emissiveIntensity = 0.3;
-              mat.metalness = 0.8;
-              mat.roughness = 0.2;
+              mat.metalness = 0.3;
+              mat.roughness = 0.4;
             }
           });
         } else if (mesh.material instanceof THREE.MeshStandardMaterial) {
           mesh.material.color = new THREE.Color("#ffffff");
-          mesh.material.emissive = new THREE.Color("#4a90e2");
-          mesh.material.emissiveIntensity = 0.3;
-          mesh.material.metalness = 0.8;
-          mesh.material.roughness = 0.2;
+          mesh.material.metalness = 0.3;
+          mesh.material.roughness = 0.4;
         }
       }
     });
   }, [scene]);
 
-  // انیمیشن چرخش ملایم
-  useFrame((state) => {
-    if (modelRef.current) {
-      modelRef.current.rotation.y += 0.002;
-      modelRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.5) * 0.1;
-    }
-  });
-
   return <primitive ref={modelRef} object={scene} scale={1.5} />;
 }
 
-// Particle System حرفه‌ای
-interface ParticlesProps {
+// باران با کیفیت بهتر
+interface RainProps {
   count?: number;
 }
 
-function Particles({ count = 1000 }: ParticlesProps) {
-  const meshRef = useRef<THREE.Points>(null!);
+function Rain({ count = 1000 }: RainProps) {
+  const meshRef = useRef<THREE.InstancedMesh>(null!);
+  const positions = useRef<Float32Array>(new Float32Array(count * 3));
+  const speeds = useRef<Float32Array>(new Float32Array(count));
 
-  const [positions, colors] = useMemo(() => {
-    const positions = new Float32Array(count * 3);
-    const colors = new Float32Array(count * 3);
-
+  useLayoutEffect(() => {
     for (let i = 0; i < count; i++) {
-      // Position
-      positions[i * 3] = (Math.random() - 0.5) * 20;
-      positions[i * 3 + 1] = (Math.random() - 0.5) * 20;
-      positions[i * 3 + 2] = (Math.random() - 0.5) * 20;
-
-      // Colors - gradient از آبی به سفید
-      const colorChoice = Math.random();
-      if (colorChoice > 0.7) {
-        colors[i * 3] = 1; // R
-        colors[i * 3 + 1] = 1; // G
-        colors[i * 3 + 2] = 1; // B
-      } else {
-        colors[i * 3] = 0.29; // R
-        colors[i * 3 + 1] = 0.56; // G
-        colors[i * 3 + 2] = 0.89; // B
-      }
+      positions.current[i * 3] = (Math.random() - 0.5) * 20; // x
+      positions.current[i * 3 + 1] = Math.random() * 20 - 10; // y
+      positions.current[i * 3 + 2] = (Math.random() - 0.5) * 20; // z
+      speeds.current[i] = 0.08 + Math.random() * 0.12; // سرعت متنوع
     }
-
-    return [positions, colors];
   }, [count]);
 
-  useFrame((state) => {
-    if (meshRef.current) {
-      meshRef.current.rotation.y = state.clock.elapsedTime * 0.05;
-      meshRef.current.rotation.x = state.clock.elapsedTime * 0.03;
+  useFrame(() => {
+    const dummy = new THREE.Object3D();
+    for (let i = 0; i < count; i++) {
+      positions.current[i * 3 + 1] -= speeds.current[i];
+
+      if (positions.current[i * 3 + 1] < -10) {
+        positions.current[i * 3 + 1] = 10;
+        positions.current[i * 3] = (Math.random() - 0.5) * 20;
+        positions.current[i * 3 + 2] = (Math.random() - 0.5) * 20;
+      }
+
+      dummy.position.set(
+        positions.current[i * 3],
+        positions.current[i * 3 + 1],
+        positions.current[i * 3 + 2]
+      );
+      dummy.updateMatrix();
+      meshRef.current.setMatrixAt(i, dummy.matrix);
     }
+    meshRef.current.instanceMatrix.needsUpdate = true;
   });
 
   return (
-    <points ref={meshRef}>
-      <bufferGeometry>
-        <bufferAttribute
-          attach="attributes-position"
-          count={positions.length / 3}
-          array={positions}
-          itemSize={3}
-        />
-        <bufferAttribute
-          attach="attributes-color"
-          count={colors.length / 3}
-          array={colors}
-          itemSize={3}
-        />
-      </bufferGeometry>
-      <pointsMaterial
-        size={0.05}
-        vertexColors
+    <instancedMesh ref={meshRef} args={[undefined, undefined, count]}>
+      <cylinderGeometry args={[0.015, 0.015, 0.4, 8]} />
+      <meshStandardMaterial
+        color="#4a9eff"
         transparent
-        opacity={0.8}
-        sizeAttenuation
-        blending={THREE.AdditiveBlending}
-      />
-    </points>
-  );
-}
-
-// Glow Sphere در پس‌زمینه
-function GlowSphere() {
-  const sphereRef = useRef<THREE.Mesh>(null!);
-
-  useFrame((state) => {
-    if (sphereRef.current) {
-      sphereRef.current.rotation.x = state.clock.elapsedTime * 0.1;
-      sphereRef.current.rotation.z = state.clock.elapsedTime * 0.15;
-    }
-  });
-
-  return (
-    <Sphere ref={sphereRef} args={[2, 64, 64]} position={[0, 0, -5]}>
-      <MeshDistortMaterial
-        color="#4a90e2"
-        attach="material"
-        distort={0.4}
-        speed={2}
-        roughness={0}
+        opacity={0.6}
         metalness={0.8}
-        emissive="#2563eb"
-        emissiveIntensity={0.5}
+        roughness={0.2}
       />
-    </Sphere>
+    </instancedMesh>
   );
 }
 
 interface SceneProps {
-  particleCount?: number;
+  rainCount?: number;
+  mouseX: any;
+  mouseY: any;
 }
 
-function Scene({ particleCount = 1000 }: SceneProps) {
+function Scene({ rainCount = 1000, mouseX, mouseY }: SceneProps) {
   const gl = useThree((state) => state.gl);
   const { scrollYProgress } = useScroll();
-  const yAngle = useTransform(scrollYProgress, [0, 1], [0.001, degreesToRadians(180)]);
-  const distance = useTransform(scrollYProgress, [0, 1], [10, 3]);
-  const time = useTime();
 
   useFrame(({ camera }) => {
-    camera.position.setFromSphericalCoords(distance.get(), yAngle.get(), time.get() * 0.0003);
-    camera.updateProjectionMatrix();
+    // حرکت دوربین با موس - ملایم‌تر
+    const targetX = mouseX.get() * 2;
+    const targetY = mouseY.get() * 2;
+
+    camera.position.x += (targetX - camera.position.x) * 0.05;
+    camera.position.y += (targetY - camera.position.y) * 0.05;
+
+    // فاصله دوربین با scroll
+    const scrollDistance = 8 + scrollYProgress.get() * 2;
+    camera.position.z += (scrollDistance - camera.position.z) * 0.05;
+
     camera.lookAt(0, 0, 0);
+    camera.updateProjectionMatrix();
   });
 
-  useLayoutEffect(() => gl.setPixelRatio(Math.min(window.devicePixelRatio, 2)), [gl]);
+  useLayoutEffect(() => {
+    gl.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  }, [gl]);
 
   return (
     <>
-      {/* Lighting Setup */}
-      <ambientLight intensity={0.5} />
-      <directionalLight position={[10, 10, 5]} intensity={1.5} castShadow />
-      <pointLight position={[-10, -10, -5]} intensity={0.5} color="#4a90e2" />
-      <spotLight position={[0, 10, 0]} angle={0.3} penumbra={1} intensity={1} color="#60a5fa" />
+      {/* نورپردازی ساده و طبیعی */}
+      <ambientLight intensity={1.2} />
+      <directionalLight position={[5, 5, 5]} intensity={1} />
+      <directionalLight position={[-5, -5, -5]} intensity={0.5} />
 
-      {/* Glow Sphere Background */}
-      <GlowSphere />
+      {/* لوگو مهرباران */}
+      <MehrebaranLogo />
 
-      {/* Main 3D Model */}
-      <MyModel />
+      {/* باران */}
+      <Rain count={rainCount} />
 
-      {/* Particle System */}
-      <Particles count={particleCount} />
-
-      {/* Fog for depth */}
-      <fog attach="fog" args={["#1e3a8a", 5, 25]} />
+      {/* مه برای عمق */}
+      <fog attach="fog" args={["#1e3a8a", 8, 20]} />
     </>
   );
 }
 
 export default function ThreeD() {
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  const springConfig = { damping: 20, stiffness: 100 };
+  const smoothMouseX = useSpring(mouseX, springConfig);
+  const smoothMouseY = useSpring(mouseY, springConfig);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const { clientX, clientY, currentTarget } = e;
+    const { width, height } = currentTarget.getBoundingClientRect();
+
+    mouseX.set((clientX / width - 0.5) * 2);
+    mouseY.set(-(clientY / height - 0.5) * 2);
+  };
+
   return (
-    <div className="w-full h-full">
+    <div
+      className="w-full h-full cursor-grab active:cursor-grabbing"
+      onMouseMove={handleMouseMove}
+    >
       <Canvas
-        camera={{ position: [0, 0, 10], fov: 75 }}
+        camera={{ position: [0, 0, 8], fov: 50 }}
         gl={{
           antialias: true,
           alpha: true,
           powerPreference: "high-performance"
         }}
       >
-        <Scene particleCount={800} />
+        <Scene rainCount={1000} mouseX={smoothMouseX} mouseY={smoothMouseY} />
       </Canvas>
     </div>
   );

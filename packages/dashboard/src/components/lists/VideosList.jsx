@@ -67,7 +67,7 @@ const VideosList = () => {
 
   // رفتن به صفحه بعد
   const goToNextPage = () => {
-    if (videos?.totalPages && filters.page < videos.totalPages) {
+    if (videos?.pagination?.totalPages && filters.page < videos.pagination.totalPages) {
       setFilters({
         ...filters,
         page: filters.page + 1,
@@ -86,9 +86,9 @@ const VideosList = () => {
   };
 
   // محاسبه اطلاعات پیجینیشن
-  const totalPages = videos?.totalPages || 1;
+  const totalPages = videos?.pagination?.totalPages || 1;
   const currentPage = filters.page;
-  const totalItems = videos?.total || 0;
+  const totalItems = videos?.pagination?.total || 0;
 
   return (
     <div className="bg-gray-50 p-6">

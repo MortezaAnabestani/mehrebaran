@@ -80,7 +80,7 @@ const VideosListIndex = ({ videos, loading, currentPage, totalPages, totalItems,
                     )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="text-sm text-gray-600">{video.category?.title || "-"}</span>
+                    <span className="text-sm text-gray-600">{video.category?.name || "-"}</span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className="text-sm text-gray-600">{video.cameraman?.name || "-"}</span>

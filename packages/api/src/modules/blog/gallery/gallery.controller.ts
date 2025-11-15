@@ -7,13 +7,24 @@ import ApiError from "../../../core/utils/apiError";
 class GalleryController {
   public create = asyncHandler(async (req: Request, res: Response) => {
     const validatedData = createGallerySchema.parse({ body: req.body });
-    const gallery = await galleryService.create(validatedData.body);
+    const galleryData: any = { ...validatedData.body };
+
+    // Add processed images if uploaded
+    if (req.processedFiles) {
+      if (Array.isArray(req.processedFiles)) {
+        galleryData.images = req.processedFiles;
+      } else {
+        galleryData.images = [req.processedFiles];
+      }
+    }
+
+    const gallery = await galleryService.create(galleryData);
     res.status(201).json({ message: "گالری با موفقیت ایجاد شد.", data: gallery });
   });
 
   public getAll = asyncHandler(async (req: Request, res: Response) => {
-    const galleries = await galleryService.findAll(req.query);
-    res.status(200).json({ results: galleries.length, data: galleries });
+    const result = await galleryService.findAll(req.query);
+    res.status(200).json(result);
   });
 
   public getOne = asyncHandler(async (req: Request, res: Response) => {
@@ -24,7 +35,19 @@ class GalleryController {
 
   public update = asyncHandler(async (req: Request, res: Response) => {
     const validatedData = updateGallerySchema.parse({ body: req.body, params: req.params });
-    const gallery = await galleryService.update(validatedData.params.id, validatedData.body);
+    const { id } = validatedData.params;
+    const updateData: any = { ...validatedData.body };
+
+    // Add processed images if uploaded
+    if (req.processedFiles) {
+      if (Array.isArray(req.processedFiles)) {
+        updateData.images = req.processedFiles;
+      } else {
+        updateData.images = [req.processedFiles];
+      }
+    }
+
+    const gallery = await galleryService.update(id, updateData);
     if (!gallery) throw new ApiError(404, "گالری مورد نظر یافت نشد.");
     res.status(200).json({ message: "گالری با موفقیت به‌روزرسانی شد.", data: gallery });
   });

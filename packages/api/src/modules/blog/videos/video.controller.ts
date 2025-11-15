@@ -7,13 +7,20 @@ import ApiError from "../../../core/utils/apiError";
 class VideoController {
   public create = asyncHandler(async (req: Request, res: Response) => {
     const validatedData = createVideoSchema.parse({ body: req.body });
-    const video = await videoService.create(validatedData.body);
+    const videoData: any = { ...validatedData.body };
+
+    // Add processed coverImage if uploaded
+    if (req.processedFiles) {
+      videoData.coverImage = req.processedFiles;
+    }
+
+    const video = await videoService.create(videoData);
     res.status(201).json({ message: "ویدئو با موفقیت ایجاد شد.", data: video });
   });
 
   public getAll = asyncHandler(async (req: Request, res: Response) => {
-    const videos = await videoService.findAll(req.query);
-    res.status(200).json({ results: videos.length, data: videos });
+    const result = await videoService.findAll(req.query);
+    res.status(200).json(result);
   });
 
   public getOne = asyncHandler(async (req: Request, res: Response) => {
@@ -24,7 +31,15 @@ class VideoController {
 
   public update = asyncHandler(async (req: Request, res: Response) => {
     const validatedData = updateVideoSchema.parse({ body: req.body, params: req.params });
-    const video = await videoService.update(validatedData.params.id, validatedData.body);
+    const { id } = validatedData.params;
+    const updateData: any = { ...validatedData.body };
+
+    // Add processed coverImage if uploaded
+    if (req.processedFiles) {
+      updateData.coverImage = req.processedFiles;
+    }
+
+    const video = await videoService.update(id, updateData);
     if (!video) throw new ApiError(404, "ویدئو مورد نظر یافت نشد.");
     res.status(200).json({ message: "ویدئو با موفقیت به‌روزرسانی شد.", data: video });
   });

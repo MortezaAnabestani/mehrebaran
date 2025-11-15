@@ -66,7 +66,7 @@ export const fetchVideoBySlug = createAsyncThunk(
 const videosSlice = createSlice({
   name: "videos",
   initialState: {
-    videos: [],
+    videos: { videos: [], pagination: { page: 1, limit: 10, total: 0, totalPages: 0 } },
     selectedVideo: null,
     loading: false,
     error: null,

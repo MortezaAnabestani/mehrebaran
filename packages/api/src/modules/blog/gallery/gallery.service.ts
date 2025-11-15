@@ -16,7 +16,28 @@ class GalleryService {
     return this.populateGallery(gallery);
   }
 
-  public async findAll(queryString: Record<string, any>): Promise<IGallery[]> {
+  public async findAll(queryString: Record<string, any>): Promise<{
+    galleries: IGallery[];
+    pagination: { page: number; limit: number; total: number; totalPages: number };
+  }> {
+    // Get pagination params
+    const page = parseInt(queryString.page) || 1;
+    const limit = parseInt(queryString.limit) || 10;
+
+    // Build filter query
+    const queryObj = { ...queryString };
+    const excludedFields = ["page", "sort", "limit", "fields"];
+    excludedFields.forEach((el) => delete queryObj[el]);
+
+    let queryStr = JSON.stringify(queryObj);
+    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+    const filterQuery = JSON.parse(queryStr);
+
+    // Get total count for pagination
+    const total = await GalleryModel.countDocuments(filterQuery);
+    const totalPages = Math.ceil(total / limit);
+
+    // Build and execute query with pagination
     const features = new ApiFeatures(GalleryModel.find(), queryString)
       .filter()
       .sort()
@@ -25,8 +46,20 @@ class GalleryService {
     features.query = features.query.populate([
       { path: "category", select: "name slug" },
       { path: "photographer", select: "name slug avatar" },
+      { path: "tags", select: "name slug" },
     ]);
-    return features.query;
+
+    const galleries = await features.query;
+
+    return {
+      galleries,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages,
+      },
+    };
   }
 
   public async findOne(identifier: string): Promise<IGallery | null> {

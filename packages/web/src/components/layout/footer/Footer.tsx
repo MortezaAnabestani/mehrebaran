@@ -5,7 +5,7 @@ import SocialMedia from "./SocialMedia";
 import Menu from "./Menu";
 import Codabiat from "./Codabiat";
 import License from "./License";
-import Wave from "./Wave";
+import RainEffect from "./RainEffect";
 import OptimizedImage from "@/components/ui/OptimizedImage";
 import { usePathname } from "next/navigation";
 
@@ -16,7 +16,7 @@ interface Props {
 const Footer: React.FC<Props> = ({}) => {
   const pathname = usePathname();
   const isNetworkPage = pathname?.startsWith("/network");
-  const [wave, setWave] = useState<Boolean>(false);
+  const [showRain, setShowRain] = useState<Boolean>(false);
 
   const footerBg = isNetworkPage ? "bg-morange" : "bg-mblue";
 
@@ -54,10 +54,10 @@ const Footer: React.FC<Props> = ({}) => {
   }
 
   return (
-    <footer className={`${footerBg} w-full h-fit ${wave ? "pt-18" : isNetworkPage ? "pt-3" : "pt-7"} relative duration-700`}>
-      {wave && <Wave />}
+    <footer className={`${footerBg} w-full h-fit ${showRain ? "pt-18" : isNetworkPage ? "pt-3" : "pt-7"} relative duration-700 overflow-hidden`}>
+      {showRain && <RainEffect />}
       <div className={`md:w-8/10 container mx-auto flex flex-col ${isNetworkPage ? "gap-2" : "gap-6"} justify-between items-center text-white ${isNetworkPage ? "py-2" : ""}`}>
-        <SocialMedia setWave={setWave} />
+        <SocialMedia setWave={setShowRain} />
         {!isNetworkPage && <Menu />}
         <License />
       </div>

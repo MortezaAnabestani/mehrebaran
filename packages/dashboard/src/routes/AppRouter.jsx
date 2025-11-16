@@ -7,6 +7,9 @@ import NotFoundPage from "../pages/NotFoundPage";
 import ProtectedRoute from "./ProtectedRoute";
 import Loading from "../components/Loading";
 
+// Import Analytics Page
+const AnalyticsPage = lazy(() => import("../page/AnalyticsPage"));
+
 // صفحات اصلی (بارگذاری معمولی)
 const Articles = lazy(() => import("../pages/articles/Articles"));
 const News = lazy(() => import("../pages/news/News"));
@@ -100,6 +103,7 @@ const AppRouter = () => {
           <Route path="/dashboard" element={<ProtectedRoute allowedRoles={["admin", "manager"]} />}>
             <Route element={<DashboardLayout />}>
               <Route index element={<DashboardRoot />} />
+              <Route path="analytics" element={<AnalyticsPage />} />
 
               {/* مسیرهایی که هم admin و هم manager می‌تونن ببینن */}
               <Route path="articles" element={<Articles />} />

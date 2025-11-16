@@ -411,8 +411,8 @@ const Sidebar = ({ sidebarOpen, me }) => {
               {/* آنالیز و گزارش‌گیری */}
               <Link
                 rel="preconnect"
-                to={"/analytics"}
-                className={`${pathname === "/analytics" ? "bg-blue-50 border-r-4 border-blue-500" : "border-r-4 border-transparent"} block`}
+                to={"/dashboard/analytics"}
+                className={`${pathname === "/dashboard/analytics" ? "bg-blue-50 border-r-4 border-blue-500" : "border-r-4 border-transparent"} block`}
               >
                 <li className="text-base text-gray-900 font-normal rounded-lg hover:bg-blue-50 flex items-center p-2 group">
                   <span className="text-lg ml-2">📊</span>

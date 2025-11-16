@@ -728,7 +728,7 @@ class AdminService {
     const [comments, total] = await Promise.all([
       NeedComment.find(query)
         .populate("user", "username fullName email")
-        .populate("need", "title")
+        .populate("target", "title")
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)
@@ -793,7 +793,7 @@ class AdminService {
     const [donations, total] = await Promise.all([
       DonationModel.find(query)
         .populate("donor", "username fullName email")
-        .populate("need", "title")
+        .populate("project", "title")
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)
@@ -880,7 +880,7 @@ class AdminService {
     if (!activityType || activityType === "donation") {
       const donations = await DonationModel.find({ createdAt: { $gte: startDate } })
         .populate("donor", "username fullName profilePicture")
-        .populate("need", "title")
+        .populate("project", "title")
         .sort({ createdAt: -1 })
         .limit(limit * 2)
         .lean();
@@ -894,8 +894,8 @@ class AdminService {
             id: donation._id,
             amount: donation.amount,
             status: donation.status,
-            needTitle: donation.need?.title,
-            needId: donation.need?._id,
+            projectTitle: donation.project?.title,
+            projectId: donation.project?._id,
           },
           icon: "💰",
           description: `کمک مالی جدید دریافت شد`,
@@ -907,7 +907,7 @@ class AdminService {
     if (!activityType || activityType === "comment") {
       const comments = await NeedComment.find({ createdAt: { $gte: startDate } })
         .populate("user", "username fullName profilePicture")
-        .populate("need", "title")
+        .populate("target", "title")
         .sort({ createdAt: -1 })
         .limit(limit * 2)
         .lean();
@@ -921,8 +921,8 @@ class AdminService {
             id: comment._id,
             content: comment.content.substring(0, 100),
             isApproved: comment.isApproved,
-            needTitle: comment.need?.title,
-            needId: comment.need?._id,
+            needTitle: comment.target?.title,
+            needId: comment.target?._id,
           },
           icon: "💬",
           description: `نظر جدید ثبت شد`,

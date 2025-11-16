@@ -153,9 +153,9 @@ const ActivityCard = ({ activity }: { activity: any }) => {
             <Typography className="font-semibold text-gray-800">
               مبلغ: {details.amount?.toLocaleString("fa-IR")} تومان
             </Typography>
-            {details.needTitle && (
+            {details.projectTitle && (
               <Typography className="text-sm text-gray-600 mt-1">
-                برای: {details.needTitle}
+                برای پروژه: {details.projectTitle}
               </Typography>
             )}
             <Chip

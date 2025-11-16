@@ -636,6 +636,200 @@ class AdminService {
       },
     };
   }
+
+  // ==================== MODERATION METHODS ====================
+
+  /**
+   * Get needs for moderation with filtering
+   * دریافت نیازها برای مدیریت با فیلتر
+   */
+  async getModerationNeeds(filters: {
+    status?: string;
+    search?: string;
+    page?: number;
+    limit?: number;
+  }) {
+    const { status, search, page = 1, limit = 20 } = filters;
+    const skip = (page - 1) * limit;
+
+    const query: any = {};
+    if (status) query.status = status;
+    if (search) {
+      query.$or = [
+        { title: { $regex: search, $options: "i" } },
+        { description: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    const [needs, total] = await Promise.all([
+      NeedModel.find(query)
+        .populate("createdBy", "username fullName email")
+        .populate("category", "name")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean(),
+      NeedModel.countDocuments(query),
+    ]);
+
+    return {
+      needs,
+      pagination: {
+        total,
+        page,
+        limit,
+        pages: Math.ceil(total / limit),
+      },
+    };
+  }
+
+  /**
+   * Bulk update needs status
+   * به‌روزرسانی گروهی وضعیت نیازها
+   */
+  async bulkUpdateNeedsStatus(needIds: string[], status: string, reason?: string) {
+    const result = await NeedModel.updateMany(
+      { _id: { $in: needIds } },
+      {
+        $set: {
+          status,
+          ...(reason && { rejectionReason: reason }),
+          reviewedAt: new Date(),
+        },
+      }
+    );
+
+    return {
+      modifiedCount: result.modifiedCount,
+      matchedCount: result.matchedCount,
+    };
+  }
+
+  /**
+   * Get comments for moderation
+   * دریافت نظرات برای مدیریت
+   */
+  async getModerationComments(filters: {
+    isApproved?: boolean;
+    search?: string;
+    page?: number;
+    limit?: number;
+  }) {
+    const { isApproved, search, page = 1, limit = 20 } = filters;
+    const skip = (page - 1) * limit;
+
+    const query: any = {};
+    if (isApproved !== undefined) query.isApproved = isApproved;
+    if (search) {
+      query.content = { $regex: search, $options: "i" };
+    }
+
+    const [comments, total] = await Promise.all([
+      NeedComment.find(query)
+        .populate("user", "username fullName email")
+        .populate("need", "title")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean(),
+      NeedComment.countDocuments(query),
+    ]);
+
+    return {
+      comments,
+      pagination: {
+        total,
+        page,
+        limit,
+        pages: Math.ceil(total / limit),
+      },
+    };
+  }
+
+  /**
+   * Bulk update comments approval status
+   * به‌روزرسانی گروهی وضعیت تایید نظرات
+   */
+  async bulkUpdateCommentsApproval(commentIds: string[], isApproved: boolean) {
+    const result = await NeedComment.updateMany(
+      { _id: { $in: commentIds } },
+      {
+        $set: {
+          isApproved,
+          reviewedAt: new Date(),
+        },
+      }
+    );
+
+    return {
+      modifiedCount: result.modifiedCount,
+      matchedCount: result.matchedCount,
+    };
+  }
+
+  /**
+   * Get donations for moderation
+   * دریافت کمک‌ها برای مدیریت
+   */
+  async getModerationDonations(filters: {
+    status?: string;
+    search?: string;
+    page?: number;
+    limit?: number;
+  }) {
+    const { status, search, page = 1, limit = 20 } = filters;
+    const skip = (page - 1) * limit;
+
+    const query: any = {};
+    if (status) query.status = status;
+    if (search) {
+      query.$or = [
+        { transactionId: { $regex: search, $options: "i" } },
+        { description: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    const [donations, total] = await Promise.all([
+      DonationModel.find(query)
+        .populate("donor", "username fullName email")
+        .populate("need", "title")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean(),
+      DonationModel.countDocuments(query),
+    ]);
+
+    return {
+      donations,
+      pagination: {
+        total,
+        page,
+        limit,
+        pages: Math.ceil(total / limit),
+      },
+    };
+  }
+
+  /**
+   * Update donation status
+   * به‌روزرسانی وضعیت کمک
+   */
+  async updateDonationStatus(donationId: string, status: string, notes?: string) {
+    const donation = await DonationModel.findByIdAndUpdate(
+      donationId,
+      {
+        $set: {
+          status,
+          ...(notes && { adminNotes: notes }),
+          reviewedAt: new Date(),
+        },
+      },
+      { new: true }
+    );
+
+    return donation;
+  }
 }
 
 export const adminService = new AdminService();

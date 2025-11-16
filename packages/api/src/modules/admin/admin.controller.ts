@@ -104,6 +104,161 @@ class AdminController {
 
     return ResponseFormatter.success(res, analytics, "آنالیز تعامل با موفقیت دریافت شد");
   });
+
+  // ==================== MODERATION ENDPOINTS ====================
+
+  /**
+   * Get needs for moderation
+   * دریافت نیازها برای مدیریت
+   *
+   * @route GET /api/v1/admin/moderation/needs
+   * @access Private (Admin, Super Admin)
+   */
+  public getModerationNeeds = asyncHandler(async (req: Request, res: Response) => {
+    const filters = {
+      status: req.query.status as string,
+      search: req.query.search as string,
+      page: req.query.page ? parseInt(req.query.page as string) : 1,
+      limit: req.query.limit ? parseInt(req.query.limit as string) : 20,
+    };
+
+    const result = await adminService.getModerationNeeds(filters);
+
+    return ResponseFormatter.successWithPagination(
+      res,
+      result.needs,
+      result.pagination,
+      "لیست نیازها با موفقیت دریافت شد"
+    );
+  });
+
+  /**
+   * Bulk update needs status
+   * به‌روزرسانی گروهی وضعیت نیازها
+   *
+   * @route PUT /api/v1/admin/moderation/needs/bulk-status
+   * @access Private (Admin, Super Admin)
+   */
+  public bulkUpdateNeedsStatus = asyncHandler(async (req: Request, res: Response) => {
+    const { needIds, status, reason } = req.body;
+
+    if (!needIds || !Array.isArray(needIds) || needIds.length === 0) {
+      return ResponseFormatter.badRequest(res, "لیست نیازها الزامی است");
+    }
+
+    if (!status) {
+      return ResponseFormatter.badRequest(res, "وضعیت جدید الزامی است");
+    }
+
+    const result = await adminService.bulkUpdateNeedsStatus(needIds, status, reason);
+
+    return ResponseFormatter.success(
+      res,
+      result,
+      `${result.modifiedCount} نیاز با موفقیت به‌روزرسانی شد`
+    );
+  });
+
+  /**
+   * Get comments for moderation
+   * دریافت نظرات برای مدیریت
+   *
+   * @route GET /api/v1/admin/moderation/comments
+   * @access Private (Admin, Super Admin)
+   */
+  public getModerationComments = asyncHandler(async (req: Request, res: Response) => {
+    const filters = {
+      isApproved: req.query.isApproved === "true" ? true : req.query.isApproved === "false" ? false : undefined,
+      search: req.query.search as string,
+      page: req.query.page ? parseInt(req.query.page as string) : 1,
+      limit: req.query.limit ? parseInt(req.query.limit as string) : 20,
+    };
+
+    const result = await adminService.getModerationComments(filters);
+
+    return ResponseFormatter.successWithPagination(
+      res,
+      result.comments,
+      result.pagination,
+      "لیست نظرات با موفقیت دریافت شد"
+    );
+  });
+
+  /**
+   * Bulk update comments approval
+   * به‌روزرسانی گروهی تایید نظرات
+   *
+   * @route PUT /api/v1/admin/moderation/comments/bulk-approval
+   * @access Private (Admin, Super Admin)
+   */
+  public bulkUpdateCommentsApproval = asyncHandler(async (req: Request, res: Response) => {
+    const { commentIds, isApproved } = req.body;
+
+    if (!commentIds || !Array.isArray(commentIds) || commentIds.length === 0) {
+      return ResponseFormatter.badRequest(res, "لیست نظرات الزامی است");
+    }
+
+    if (typeof isApproved !== "boolean") {
+      return ResponseFormatter.badRequest(res, "وضعیت تایید الزامی است");
+    }
+
+    const result = await adminService.bulkUpdateCommentsApproval(commentIds, isApproved);
+
+    return ResponseFormatter.success(
+      res,
+      result,
+      `${result.modifiedCount} نظر با موفقیت ${isApproved ? "تایید" : "رد"} شد`
+    );
+  });
+
+  /**
+   * Get donations for moderation
+   * دریافت کمک‌ها برای مدیریت
+   *
+   * @route GET /api/v1/admin/moderation/donations
+   * @access Private (Admin, Super Admin)
+   */
+  public getModerationDonations = asyncHandler(async (req: Request, res: Response) => {
+    const filters = {
+      status: req.query.status as string,
+      search: req.query.search as string,
+      page: req.query.page ? parseInt(req.query.page as string) : 1,
+      limit: req.query.limit ? parseInt(req.query.limit as string) : 20,
+    };
+
+    const result = await adminService.getModerationDonations(filters);
+
+    return ResponseFormatter.successWithPagination(
+      res,
+      result.donations,
+      result.pagination,
+      "لیست کمک‌ها با موفقیت دریافت شد"
+    );
+  });
+
+  /**
+   * Update donation status
+   * به‌روزرسانی وضعیت کمک
+   *
+   * @route PUT /api/v1/admin/moderation/donations/:donationId/status
+   * @access Private (Admin, Super Admin)
+   */
+  public updateDonationStatus = asyncHandler(async (req: Request, res: Response) => {
+    const { donationId } = req.params;
+    const { status, notes } = req.body;
+
+    if (!status) {
+      return ResponseFormatter.badRequest(res, "وضعیت جدید الزامی است");
+    }
+
+    const donation = await adminService.updateDonationStatus(donationId, status, notes);
+
+    if (!donation) {
+      return ResponseFormatter.notFound(res, "کمک یافت نشد");
+    }
+
+    return ResponseFormatter.success(res, donation, "وضعیت کمک با موفقیت به‌روزرسانی شد");
+  });
 }
 
 export const adminController = new AdminController();

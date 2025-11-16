@@ -420,6 +420,19 @@ const Sidebar = ({ sidebarOpen, me }) => {
                 </li>
               </Link>
 
+              {/* مدیریت محتوا */}
+              <Link
+                rel="preconnect"
+                to={"/dashboard/moderation"}
+                className={`${pathname === "/dashboard/moderation" ? "bg-blue-50 border-r-4 border-blue-500" : "border-r-4 border-transparent"} block`}
+              >
+                <li className="text-base text-gray-900 font-normal rounded-lg hover:bg-blue-50 flex items-center p-2 group relative">
+                  <span className="text-lg ml-2">🛡️</span>
+                  <span className="ml-3 flex-1 whitespace-nowrap">مدیریت محتوا</span>
+                  <Badge count={unreadNotifications} />
+                </li>
+              </Link>
+
               {/* نیازها */}
               <Link
                 rel="preconnect"

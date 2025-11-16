@@ -35,4 +35,18 @@ router.get("/analytics/users", adminController.getUserAnalytics);
 // Get engagement analytics (views, reactions, follows, shares)
 router.get("/analytics/engagement", adminController.getEngagementAnalytics);
 
+// ==================== MODERATION ROUTES ====================
+
+// Needs moderation
+router.get("/moderation/needs", adminController.getModerationNeeds);
+router.put("/moderation/needs/bulk-status", adminController.bulkUpdateNeedsStatus);
+
+// Comments moderation
+router.get("/moderation/comments", adminController.getModerationComments);
+router.put("/moderation/comments/bulk-approval", adminController.bulkUpdateCommentsApproval);
+
+// Donations moderation
+router.get("/moderation/donations", adminController.getModerationDonations);
+router.put("/moderation/donations/:donationId/status", adminController.updateDonationStatus);
+
 export default router;

@@ -178,12 +178,6 @@ const ActivityCard = ({ activity }: { activity: any }) => {
                 در نیاز: {details.needTitle}
               </Typography>
             )}
-            <Chip
-              value={details.isApproved ? "تایید شده" : "در انتظار تایید"}
-              size="sm"
-              color={details.isApproved ? "green" : "orange"}
-              className="mt-1"
-            />
           </div>
         );
 

@@ -338,9 +338,7 @@ function NeedsModerationTab() {
 function CommentsModerationTab() {
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [selectedComments, setSelectedComments] = useState<string[]>([]);
   const [filters, setFilters] = useState({
-    isApproved: "",
     search: "",
     page: 1,
     limit: 20,
@@ -349,13 +347,12 @@ function CommentsModerationTab() {
 
   useEffect(() => {
     fetchComments();
-  }, [filters.isApproved, filters.page]);
+  }, [filters.page]);
 
   const fetchComments = async () => {
     setLoading(true);
     try {
       const params = new URLSearchParams();
-      if (filters.isApproved !== "") params.append("isApproved", filters.isApproved);
       if (filters.search) params.append("search", filters.search);
       params.append("page", filters.page.toString());
       params.append("limit", filters.limit.toString());
@@ -375,59 +372,14 @@ function CommentsModerationTab() {
     }
   };
 
-  const handleBulkAction = async (isApproved: boolean) => {
-    if (selectedComments.length === 0) {
-      alert("لطفاً حداقل یک نظر را انتخاب کنید");
-      return;
-    }
-
-    try {
-      await api.put(
-        `/admin/moderation/comments/bulk-approval`,
-        {
-          commentIds: selectedComments,
-          isApproved,
-        }
-      );
-
-      setSelectedComments([]);
-      fetchComments();
-    } catch (error) {
-      console.error("Error updating comments:", error);
-      alert("خطا در به‌روزرسانی نظرات");
-    }
-  };
-
-  const toggleComment = (commentId: string) => {
-    setSelectedComments((prev) =>
-      prev.includes(commentId) ? prev.filter((id) => id !== commentId) : [...prev, commentId]
-    );
-  };
-
-  const toggleAll = () => {
-    if (selectedComments.length === comments.length) {
-      setSelectedComments([]);
-    } else {
-      setSelectedComments(comments.map((comment: any) => comment._id));
-    }
-  };
+  // NOTE: Bulk approval disabled - NeedComment model does not have isApproved field
 
   return (
     <div className="space-y-4">
       {/* Filters */}
       <Card>
         <CardBody className="p-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Select
-              label="فیلتر بر اساس وضعیت"
-              value={filters.isApproved}
-              onChange={(val) => setFilters({ ...filters, isApproved: val || "", page: 1 })}
-            >
-              <Option value="">همه</Option>
-              <Option value="false">در انتظار تایید</Option>
-              <Option value="true">تایید شده</Option>
-            </Select>
-
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="relative">
               <Input
                 label="جستجو"
@@ -449,55 +401,15 @@ function CommentsModerationTab() {
         </CardBody>
       </Card>
 
-      {/* Bulk Actions */}
-      {selectedComments.length > 0 && (
-        <Card className="bg-blue-50">
-          <CardBody className="p-4">
-            <div className="flex items-center gap-4">
-              <Typography variant="small" className="font-semibold">
-                {selectedComments.length.toLocaleString("fa-IR")} نظر انتخاب شده
-              </Typography>
-              <div className="flex gap-2">
-                <Button
-                  size="sm"
-                  color="green"
-                  onClick={() => handleBulkAction(true)}
-                  className="flex items-center gap-1"
-                >
-                  <CheckIcon className="h-4 w-4" />
-                  تایید
-                </Button>
-                <Button
-                  size="sm"
-                  color="red"
-                  onClick={() => handleBulkAction(false)}
-                  className="flex items-center gap-1"
-                >
-                  <XMarkIcon className="h-4 w-4" />
-                  رد
-                </Button>
-              </div>
-            </div>
-          </CardBody>
-        </Card>
-      )}
-
       {/* Comments List */}
       <Card>
         <CardBody className="p-0">
           <table className="w-full">
             <thead className="bg-gray-50 border-b">
               <tr>
-                <th className="p-4 text-right">
-                  <Checkbox
-                    checked={selectedComments.length === comments.length}
-                    onChange={toggleAll}
-                  />
-                </th>
                 <th className="p-4 text-right text-sm font-semibold">محتوا</th>
                 <th className="p-4 text-right text-sm font-semibold">کاربر</th>
-                <th className="p-4 text-right text-sm font-semibold">نیاز</th>
-                <th className="p-4 text-right text-sm font-semibold">وضعیت</th>
+                <th className="p-4 text-right text-sm font-semibold">هدف</th>
                 <th className="p-4 text-right text-sm font-semibold">تاریخ</th>
               </tr>
             </thead>
@@ -505,12 +417,6 @@ function CommentsModerationTab() {
               {comments.length > 0 ? (
                 comments.map((comment: any) => (
                   <tr key={comment._id} className="border-b hover:bg-gray-50">
-                    <td className="p-4">
-                      <Checkbox
-                        checked={selectedComments.includes(comment._id)}
-                        onChange={() => toggleComment(comment._id)}
-                      />
-                    </td>
                     <td className="p-4 max-w-md">
                       <Typography variant="small" className="line-clamp-2">
                         {comment.content}
@@ -523,15 +429,8 @@ function CommentsModerationTab() {
                     </td>
                     <td className="p-4">
                       <Typography variant="small" className="text-gray-600">
-                        {comment.need?.title || "-"}
+                        {comment.target?.title || "-"}
                       </Typography>
-                    </td>
-                    <td className="p-4">
-                      <Chip
-                        value={comment.isApproved ? "تایید شده" : "در انتظار"}
-                        color={comment.isApproved ? "green" : "amber"}
-                        size="sm"
-                      />
                     </td>
                     <td className="p-4">
                       <Typography variant="small" className="text-gray-600">
@@ -542,7 +441,7 @@ function CommentsModerationTab() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={6} className="p-8 text-center">
+                  <td colSpan={4} className="p-8 text-center">
                     <Typography variant="small" className="text-gray-500">
                       {loading ? "در حال بارگذاری..." : "نظری یافت نشد"}
                     </Typography>

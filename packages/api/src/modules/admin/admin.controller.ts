@@ -168,7 +168,6 @@ class AdminController {
    */
   public getModerationComments = asyncHandler(async (req: Request, res: Response) => {
     const filters = {
-      isApproved: req.query.isApproved === "true" ? true : req.query.isApproved === "false" ? false : undefined,
       search: req.query.search as string,
       page: req.query.page ? parseInt(req.query.page as string) : 1,
       limit: req.query.limit ? parseInt(req.query.limit as string) : 20,
@@ -188,28 +187,30 @@ class AdminController {
    * Bulk update comments approval
    * به‌روزرسانی گروهی تایید نظرات
    *
+   * NOTE: Disabled - NeedComment model does not have isApproved field
+   *
    * @route PUT /api/v1/admin/moderation/comments/bulk-approval
    * @access Private (Admin, Super Admin)
    */
-  public bulkUpdateCommentsApproval = asyncHandler(async (req: Request, res: Response) => {
-    const { commentIds, isApproved } = req.body;
+  // public bulkUpdateCommentsApproval = asyncHandler(async (req: Request, res: Response) => {
+  //   const { commentIds, isApproved } = req.body;
 
-    if (!commentIds || !Array.isArray(commentIds) || commentIds.length === 0) {
-      return ResponseFormatter.badRequest(res, "لیست نظرات الزامی است");
-    }
+  //   if (!commentIds || !Array.isArray(commentIds) || commentIds.length === 0) {
+  //     return ResponseFormatter.badRequest(res, "لیست نظرات الزامی است");
+  //   }
 
-    if (typeof isApproved !== "boolean") {
-      return ResponseFormatter.badRequest(res, "وضعیت تایید الزامی است");
-    }
+  //   if (typeof isApproved !== "boolean") {
+  //     return ResponseFormatter.badRequest(res, "وضعیت تایید الزامی است");
+  //   }
 
-    const result = await adminService.bulkUpdateCommentsApproval(commentIds, isApproved);
+  //   const result = await adminService.bulkUpdateCommentsApproval(commentIds, isApproved);
 
-    return ResponseFormatter.success(
-      res,
-      result,
-      `${result.modifiedCount} نظر با موفقیت ${isApproved ? "تایید" : "رد"} شد`
-    );
-  });
+  //   return ResponseFormatter.success(
+  //     res,
+  //     result,
+  //     `${result.modifiedCount} نظر با موفقیت ${isApproved ? "تایید" : "رد"} شد`
+  //   );
+  // });
 
   /**
    * Get donations for moderation

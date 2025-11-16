@@ -43,7 +43,8 @@ router.put("/moderation/needs/bulk-status", adminController.bulkUpdateNeedsStatu
 
 // Comments moderation
 router.get("/moderation/comments", adminController.getModerationComments);
-router.put("/moderation/comments/bulk-approval", adminController.bulkUpdateCommentsApproval);
+// NOTE: Disabled - NeedComment model does not have isApproved field
+// router.put("/moderation/comments/bulk-approval", adminController.bulkUpdateCommentsApproval);
 
 // Donations moderation
 router.get("/moderation/donations", adminController.getModerationDonations);

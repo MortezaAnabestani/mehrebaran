@@ -71,8 +71,8 @@ class AdminService {
         { $group: { _id: null, total: { $sum: "$amount" } } },
       ]),
 
-      // Pending Comments
-      NeedComment.countDocuments({ isApproved: false }),
+      // Total Comments (no approval system in model)
+      Promise.resolve(0),
 
       // Pending Verifications (TODO: implement when verification system is ready)
       Promise.resolve(0),
@@ -329,13 +329,11 @@ class AdminService {
           { $project: { date: "$_id", count: 1, _id: 0 } },
         ]),
 
-        // Comments Stats
+        // Comments Stats (no approval system in model)
         NeedComment.aggregate([
           {
             $facet: {
               total: [{ $count: "count" }],
-              approved: [{ $match: { isApproved: true } }, { $count: "count" }],
-              pending: [{ $match: { isApproved: false } }, { $count: "count" }],
               timeline: [
                 { $match: { createdAt: { $gte: startDate } } },
                 {
@@ -366,8 +364,6 @@ class AdminService {
       },
       comments: {
         total: commentsStats[0].total[0]?.count || 0,
-        approved: commentsStats[0].approved[0]?.count || 0,
-        pending: commentsStats[0].pending[0]?.count || 0,
         timeline: commentsStats[0].timeline,
       },
     };
@@ -577,34 +573,18 @@ class AdminService {
         },
       ]),
 
-      // Comments Engagement
+      // Comments Engagement (no approval system in model)
       NeedComment.aggregate([
         { $match: { createdAt: { $gte: startDate } } },
         {
           $group: {
             _id: null,
             totalComments: { $sum: 1 },
-            approvedComments: {
-              $sum: { $cond: [{ $eq: ["$isApproved", true] }, 1, 0] },
-            },
           },
         },
         {
           $project: {
             totalComments: 1,
-            approvedComments: 1,
-            approvalRate: {
-              $round: [
-                {
-                  $cond: {
-                    if: { $gt: ["$totalComments", 0] },
-                    then: { $multiply: [{ $divide: ["$approvedComments", "$totalComments"] }, 100] },
-                    else: 0,
-                  },
-                },
-                2,
-              ],
-            },
             _id: 0,
           },
         },
@@ -632,8 +612,6 @@ class AdminService {
       },
       comments: commentsEngagement[0] || {
         totalComments: 0,
-        approvedComments: 0,
-        approvalRate: 0,
       },
     };
   }
@@ -711,16 +689,14 @@ class AdminService {
    * دریافت نظرات برای مدیریت
    */
   async getModerationComments(filters: {
-    isApproved?: boolean;
     search?: string;
     page?: number;
     limit?: number;
   }) {
-    const { isApproved, search, page = 1, limit = 20 } = filters;
+    const { search, page = 1, limit = 20 } = filters;
     const skip = (page - 1) * limit;
 
     const query: any = {};
-    if (isApproved !== undefined) query.isApproved = isApproved;
     if (search) {
       query.content = { $regex: search, $options: "i" };
     }
@@ -750,23 +726,25 @@ class AdminService {
   /**
    * Bulk update comments approval status
    * به‌روزرسانی گروهی وضعیت تایید نظرات
+   *
+   * NOTE: Disabled - NeedComment model does not have isApproved field
    */
-  async bulkUpdateCommentsApproval(commentIds: string[], isApproved: boolean) {
-    const result = await NeedComment.updateMany(
-      { _id: { $in: commentIds } },
-      {
-        $set: {
-          isApproved,
-          reviewedAt: new Date(),
-        },
-      }
-    );
+  // async bulkUpdateCommentsApproval(commentIds: string[], isApproved: boolean) {
+  //   const result = await NeedComment.updateMany(
+  //     { _id: { $in: commentIds } },
+  //     {
+  //       $set: {
+  //         isApproved,
+  //         reviewedAt: new Date(),
+  //       },
+  //     }
+  //   );
 
-    return {
-      modifiedCount: result.modifiedCount,
-      matchedCount: result.matchedCount,
-    };
-  }
+  //   return {
+  //     modifiedCount: result.modifiedCount,
+  //     matchedCount: result.matchedCount,
+  //   };
+  // }
 
   /**
    * Get donations for moderation
@@ -920,7 +898,6 @@ class AdminService {
           details: {
             id: comment._id,
             content: comment.content.substring(0, 100),
-            isApproved: comment.isApproved,
             needTitle: comment.target?.title,
             needId: comment.target?._id,
           },

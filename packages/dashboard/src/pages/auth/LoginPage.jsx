@@ -52,21 +52,20 @@ const Login = () => {
   };
 
   return (
-    <div className="w-full relative flex flex-col items-center justify-center h-screen bg-red-500">
+    <div className="w-full relative flex flex-col items-center justify-center h-screen">
       <img
         src="/assets/images/dashboard/icons/brandShortTitle_white.svg"
-        className="w-[100px] mx-auto"
-        alt="لوگوی مهر‌بران"
+        className="w-[200px] mx-auto"
+        alt="لوگوی  مهرباران"
       />
-      {status && <p className="text-lg text-center mt-4 font-bold text-white">{status}</p>}
-      <div className="bg-white p-6 md:rounded-lg shadow-md shadow-black/45 w-96 z-10 mt-4">
-        <h2 className="text-2xl font-bold mb-4 text-center">مهر‌بران</h2>
-        <h4 className="text-md font-bold mb-4 text-center text-red-500">ورود به پنل مدیریت</h4>
+      {status && <p className="text-lg text-center mt-4 font-bold text-green-600">{status}</p>}
+      <div className="p-6 md:rounded-lg shadow-md shadow-black/45 w-96 z-10 mt-4 bg-[#3b80c3]">
+        <h3 className="text-lg font-bold mb-4 text-center text-white">ورود به میز مدیریت</h3>
         <form onSubmit={handleLoginSubmit}>
           <input
             type="text"
             placeholder="09123456789"
-            className="w-full p-2 border border-gray-400 rounded mb-3 outline-0 focus:border-gray-600 text-left"
+            className="w-full p-2 border border-gray-400 rounded mb-3 outline-0 focus:border-gray-600 text-left bg-white"
             value={mobile}
             onChange={(e) => setMobile(e.target.value)}
             required
@@ -76,7 +75,7 @@ const Login = () => {
             <input
               type={eyeOn ? "text" : "password"}
               placeholder="password"
-              className="w-full p-2 border border-gray-400 rounded mb-3 outline-0 focus:border-gray-600 text-left"
+              className="w-full p-2 border border-gray-400 rounded mb-3 outline-0 focus:border-gray-600 text-left bg-white"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
@@ -91,7 +90,7 @@ const Login = () => {
           </div>
           <button
             type="submit"
-            className="w-full bg-red-600 hover:bg-red-500 duration-200 text-white p-2 rounded cursor-pointer"
+            className="w-full duration-200 bg-white hover:bg-sky-50 text-[#3b80c3] p-2 rounded cursor-pointer"
             disabled={loading}
           >
             {loading ? "در حال ورود..." : "ورود"}

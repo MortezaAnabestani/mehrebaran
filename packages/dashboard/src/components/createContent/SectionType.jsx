@@ -19,7 +19,7 @@ const SectionType = ({ selectedTemplate, sections, templates, register, authors,
 
   if (!selectedTemplate) {
     return (
-      <p className="text-[#FF2E31] mr-2 mb-4 text-[10px] animate-pulse font-semibold">
+      <p className="text-[#3b80c3] mr-2 mb-4 text-[10px] animate-pulse font-semibold">
         ابتدا قالب را انتخاب کنید
       </p>
     );

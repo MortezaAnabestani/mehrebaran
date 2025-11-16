@@ -897,7 +897,7 @@ class AdminService {
           user: comment.user,
           details: {
             id: comment._id,
-            content: comment.content.substring(0, 100),
+            content: comment.content ? comment.content.substring(0, 100) : "",
             needTitle: comment.target?.title,
             needId: comment.target?._id,
           },
@@ -934,24 +934,27 @@ class AdminService {
 
     // Fetch follows if no specific type or type is 'follow'
     if (!activityType || activityType === "follow") {
-      const follows = await FollowModel.find({ followedAt: { $gte: startDate } })
+      const follows = await FollowModel.find({
+        createdAt: { $gte: startDate },
+        followType: "user" // Only user follows, not need follows
+      })
         .populate("follower", "username fullName profilePicture")
-        .populate("followedUser", "username fullName")
-        .sort({ followedAt: -1 })
+        .populate("following", "username fullName")
+        .sort({ createdAt: -1 })
         .limit(limit * 2)
         .lean();
 
       follows.forEach((follow: any) => {
         activities.push({
           activityType: "follow",
-          timestamp: follow.followedAt,
+          timestamp: follow.createdAt,
           user: follow.follower,
           details: {
             id: follow._id,
             followedUser: {
-              id: follow.followedUser._id,
-              username: follow.followedUser.username,
-              fullName: follow.followedUser.fullName,
+              id: follow.following?._id,
+              username: follow.following?.username,
+              fullName: follow.following?.fullName,
             },
           },
           icon: "👥",

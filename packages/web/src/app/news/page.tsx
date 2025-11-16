@@ -18,7 +18,7 @@ const News: React.FC = async () => {
   });
 
   // Convert INews to CardType format
-  const newsCards: CardType[] = newsResponse.data.map((news) => ({
+  const newsCards: CardType[] = (newsResponse?.data || []).map((news) => ({
     img: news.featuredImage.desktop,
     title: news.title,
     description: news.excerpt,

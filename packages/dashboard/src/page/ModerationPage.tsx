@@ -69,7 +69,7 @@ function NeedsModerationTab() {
     page: 1,
     limit: 20,
   });
-  const [pagination, setPagination] = useState({ total: 0, page: 1, pages: 1, limit: 20 });
+  const [pagination, setPagination] = useState({ total: 0, page: 1, totalPages: 1, limit: 20 });
   const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
   const [rejectionReason, setRejectionReason] = useState("");
 
@@ -306,11 +306,11 @@ function NeedsModerationTab() {
             </tbody>
           </table>
 
-          {pagination.pages > 1 && (
+          {pagination.totalPages > 1 && (
             <div className="p-4">
               <Pagination
                 currentPage={pagination.page}
-                totalPages={pagination.pages}
+                totalPages={pagination.totalPages}
                 onPageChange={(page) => setFilters({ ...filters, page })}
               />
             </div>
@@ -353,7 +353,7 @@ function CommentsModerationTab() {
     page: 1,
     limit: 20,
   });
-  const [pagination, setPagination] = useState({ total: 0, page: 1, pages: 1, limit: 20 });
+  const [pagination, setPagination] = useState({ total: 0, page: 1, totalPages: 1, limit: 20 });
 
   useEffect(() => {
     fetchComments();
@@ -568,11 +568,11 @@ function CommentsModerationTab() {
             </tbody>
           </table>
 
-          {pagination.pages > 1 && (
+          {pagination.totalPages > 1 && (
             <div className="p-4">
               <Pagination
                 currentPage={pagination.page}
-                totalPages={pagination.pages}
+                totalPages={pagination.totalPages}
                 onPageChange={(page) => setFilters({ ...filters, page })}
               />
             </div>
@@ -593,7 +593,7 @@ function DonationsModerationTab() {
     page: 1,
     limit: 20,
   });
-  const [pagination, setPagination] = useState({ total: 0, page: 1, pages: 1, limit: 20 });
+  const [pagination, setPagination] = useState({ total: 0, page: 1, totalPages: 1, limit: 20 });
 
   useEffect(() => {
     fetchDonations();
@@ -774,11 +774,11 @@ function DonationsModerationTab() {
             </tbody>
           </table>
 
-          {pagination.pages > 1 && (
+          {pagination.totalPages > 1 && (
             <div className="p-4">
               <Pagination
                 currentPage={pagination.page}
-                totalPages={pagination.pages}
+                totalPages={pagination.totalPages}
                 onPageChange={(page) => setFilters({ ...filters, page })}
               />
             </div>

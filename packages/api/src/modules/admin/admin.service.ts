@@ -4,13 +4,6 @@ import { StoryModel } from "../stories/story.model";
 import { DonationModel } from "../donations/donation.model";
 import { NeedComment } from "../needs/needComment.model";
 
-// در بالای تابع یا در یک فایل types.ts تعریف کنید
-interface DonationStat {
-  _id: "pending" | "completed" | "failed"; // نوع _id را به مقادیر ممکن محدود می‌کنیم
-  count: number;
-  total: number;
-}
-
 /**
  * Admin Service - Provides admin dashboard statistics and analytics
  * سرویس مدیریت - آمار و تحلیل‌های داشبورد مدیریت
@@ -70,7 +63,7 @@ class AdminService {
       // Pending Donations
       DonationModel.countDocuments({ status: "pending" }),
 
-      // Total DonationModel Amount
+      // Total Donation Amount
       DonationModel.aggregate([
         { $match: { status: "completed" } },
         { $group: { _id: null, total: { $sum: "$amount" } } },
@@ -227,8 +220,7 @@ class AdminService {
   // یک اینترفیس برای شکل خروجی aggregation تعریف می‌کنیم
 
   async getDonationProgress() {
-    // به متد aggregate نوع خروجی را می‌دهیم
-    const stats = await DonationModel.aggregate<DonationStat>([
+    const stats = await DonationModel.aggregate([
       {
         $group: {
           _id: "$status",
@@ -238,18 +230,19 @@ class AdminService {
       },
     ]);
 
-    const result = {
+    const result: {
+      pending: { count: number; total: number };
+      completed: { count: number; total: number };
+      failed: { count: number; total: number };
+    } = {
       pending: { count: 0, total: 0 },
       completed: { count: 0, total: 0 },
       failed: { count: 0, total: 0 },
     };
 
-    // حالا TypeScript نوع 'stat' را به درستی می‌شناسد
-    stats.forEach((stat) => {
-      // این شرط دیگر ضروری نیست چون نوع _id مشخص است، اما برای اطمینان بیشتر می‌توان آن را نگه داشت
+    stats.forEach((stat: { _id: string; count: number; total: number }) => {
       if (stat._id in result) {
-        // دیگر خطایی وجود ندارد!
-        result[stat._id] = {
+        result[stat._id as keyof typeof result] = {
           count: stat.count,
           total: stat.total,
         };

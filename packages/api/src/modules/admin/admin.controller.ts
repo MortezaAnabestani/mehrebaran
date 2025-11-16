@@ -60,6 +60,50 @@ class AdminController {
 
     return ResponseFormatter.success(res, progress);
   });
+
+  // ==================== ANALYTICS ENDPOINTS ====================
+
+  /**
+   * Get content analytics
+   * آنالیز محتوا
+   *
+   * @route GET /api/v1/admin/analytics/content
+   * @access Private (Admin, Super Admin)
+   */
+  public getContentAnalytics = asyncHandler(async (req: Request, res: Response) => {
+    const days = req.query.days ? parseInt(req.query.days as string) : 30;
+    const analytics = await adminService.getContentAnalytics(days);
+
+    return ResponseFormatter.success(res, analytics, "آنالیز محتوا با موفقیت دریافت شد");
+  });
+
+  /**
+   * Get user analytics
+   * آنالیز کاربران
+   *
+   * @route GET /api/v1/admin/analytics/users
+   * @access Private (Admin, Super Admin)
+   */
+  public getUserAnalytics = asyncHandler(async (req: Request, res: Response) => {
+    const days = req.query.days ? parseInt(req.query.days as string) : 30;
+    const analytics = await adminService.getUserAnalytics(days);
+
+    return ResponseFormatter.success(res, analytics, "آنالیز کاربران با موفقیت دریافت شد");
+  });
+
+  /**
+   * Get engagement analytics
+   * آنالیز تعامل
+   *
+   * @route GET /api/v1/admin/analytics/engagement
+   * @access Private (Admin, Super Admin)
+   */
+  public getEngagementAnalytics = asyncHandler(async (req: Request, res: Response) => {
+    const days = req.query.days ? parseInt(req.query.days as string) : 30;
+    const analytics = await adminService.getEngagementAnalytics(days);
+
+    return ResponseFormatter.success(res, analytics, "آنالیز تعامل با موفقیت دریافت شد");
+  });
 }
 
 export const adminController = new AdminController();

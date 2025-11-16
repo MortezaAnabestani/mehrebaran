@@ -24,4 +24,15 @@ router.get("/dashboard/active-users", adminController.getActiveUsersStats);
 // Get donation progress
 router.get("/dashboard/donation-progress", adminController.getDonationProgress);
 
+// ==================== ANALYTICS ROUTES ====================
+
+// Get content analytics (needs, stories, comments)
+router.get("/analytics/content", adminController.getContentAnalytics);
+
+// Get user analytics (growth, activity, engagement)
+router.get("/analytics/users", adminController.getUserAnalytics);
+
+// Get engagement analytics (views, reactions, follows, shares)
+router.get("/analytics/engagement", adminController.getEngagementAnalytics);
+
 export default router;

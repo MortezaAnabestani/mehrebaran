@@ -446,9 +446,9 @@ export default function AnalyticsPage() {
 
     try {
       const [contentRes, usersRes, engagementRes] = await Promise.all([
-        api.get(`/api/v1/admin/analytics/content?days=${timeRange}`),
-        api.get(`/api/v1/admin/analytics/users?days=${timeRange}`),
-        api.get(`/api/v1/admin/analytics/engagement?days=${timeRange}`),
+        api.get(`/admin/analytics/content?days=${timeRange}`),
+        api.get(`/admin/analytics/users?days=${timeRange}`),
+        api.get(`/admin/analytics/engagement?days=${timeRange}`),
       ]);
 
       setAnalytics({

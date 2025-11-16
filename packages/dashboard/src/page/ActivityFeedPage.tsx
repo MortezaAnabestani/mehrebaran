@@ -329,7 +329,7 @@ const ActivityFeedPage = () => {
       }
 
       const response = await api.get(
-        `/api/v1/admin/activity-feed`,
+        `/admin/activity-feed`,
         { params }
       );
 

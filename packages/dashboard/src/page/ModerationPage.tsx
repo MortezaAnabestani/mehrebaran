@@ -87,7 +87,7 @@ function NeedsModerationTab() {
       params.append("limit", filters.limit.toString());
 
       const response = await api.get(
-        `/api/v1/admin/moderation/needs?${params}`
+        `/admin/moderation/needs?${params}`
       );
 
       if (response.data.success) {
@@ -114,7 +114,7 @@ function NeedsModerationTab() {
 
     try {
       await api.put(
-        `/api/v1/admin/moderation/needs/bulk-status`,
+        `/admin/moderation/needs/bulk-status`,
         {
           needIds: selectedNeeds,
           status,
@@ -361,7 +361,7 @@ function CommentsModerationTab() {
       params.append("limit", filters.limit.toString());
 
       const response = await api.get(
-        `/api/v1/admin/moderation/comments?${params}`
+        `/admin/moderation/comments?${params}`
       );
 
       if (response.data.success) {
@@ -383,7 +383,7 @@ function CommentsModerationTab() {
 
     try {
       await api.put(
-        `/api/v1/admin/moderation/comments/bulk-approval`,
+        `/admin/moderation/comments/bulk-approval`,
         {
           commentIds: selectedComments,
           isApproved,
@@ -593,7 +593,7 @@ function DonationsModerationTab() {
       params.append("limit", filters.limit.toString());
 
       const response = await api.get(
-        `/api/v1/admin/moderation/donations?${params}`
+        `/admin/moderation/donations?${params}`
       );
 
       if (response.data.success) {
@@ -610,7 +610,7 @@ function DonationsModerationTab() {
   const handleUpdateStatus = async (donationId: string, status: string) => {
     try {
       await api.put(
-        `/api/v1/admin/moderation/donations/${donationId}/status`,
+        `/admin/moderation/donations/${donationId}/status`,
         { status }
       );
 

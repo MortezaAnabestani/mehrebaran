@@ -33,6 +33,7 @@ import donationRoutes from "./modules/donations/donation.routes";
 import volunteerRoutes from "./modules/volunteers/volunteer.routes";
 import focusAreaRoutes from "./modules/focus-areas/focus-area.routes";
 import searchRoutes from "./modules/search/search.routes";
+import adminRoutes from "./modules/admin/admin.routes";
 
 const app = express();
 
@@ -71,6 +72,7 @@ app.use("/api/v1/donations", donationRoutes);
 app.use("/api/v1/volunteers", volunteerRoutes);
 app.use("/api/v1/focus-areas", focusAreaRoutes);
 app.use("/api/v1/search", searchRoutes);
+app.use("/api/v1/admin", adminRoutes);
 
 app.use(globalErrorHandler);
 

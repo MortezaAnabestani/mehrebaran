@@ -426,7 +426,7 @@ class AdminService {
         {
           $lookup: {
             from: "users",
-            localField: "createdBy",
+            localField: "submittedBy.user",
             foreignField: "_id",
             as: "user",
           },
@@ -434,7 +434,7 @@ class AdminService {
         { $unwind: { path: "$user", preserveNullAndEmptyArrays: true } },
         {
           $group: {
-            _id: "$createdBy",
+            _id: "$submittedBy.user",
             username: { $first: "$user.username" },
             fullName: { $first: "$user.fullName" },
             needsCount: { $sum: 1 },
@@ -664,7 +664,7 @@ class AdminService {
 
     const [needs, total] = await Promise.all([
       NeedModel.find(query)
-        .populate("createdBy", "username fullName email")
+        .populate("submittedBy.user", "username fullName email")
         .populate("category", "name")
         .sort({ createdAt: -1 })
         .skip(skip)
@@ -854,7 +854,7 @@ class AdminService {
     // Fetch needs if no specific type or type is 'need'
     if (!activityType || activityType === "need") {
       const needs = await NeedModel.find({ createdAt: { $gte: startDate } })
-        .populate("createdBy", "username fullName profilePicture")
+        .populate("submittedBy.user", "username fullName profilePicture")
         .sort({ createdAt: -1 })
         .limit(limit * 2)
         .lean();
@@ -863,7 +863,7 @@ class AdminService {
         activities.push({
           activityType: "need",
           timestamp: need.createdAt,
-          user: need.createdBy,
+          user: need.submittedBy?.user || null,
           details: {
             id: need._id,
             title: need.title,

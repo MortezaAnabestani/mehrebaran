@@ -316,9 +316,15 @@ const ActivityFeedPage = () => {
     limit: 20,
   });
 
-  const token = useSelector((state: any) => state.auth.token);
+  const token = useSelector((state: any) => state.auth?.token);
 
   const fetchActivities = async () => {
+    if (!token) {
+      console.error("No authentication token found");
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
       const params: any = {
@@ -352,7 +358,7 @@ const ActivityFeedPage = () => {
 
   useEffect(() => {
     fetchActivities();
-  }, [filters]);
+  }, [filters, token]);
 
   return (
     <div className="p-6">

@@ -1,8 +1,15 @@
-import Need from "../needs/need.model";
-import User from "../users/user.model";
-import Story from "../stories/story.model";
-import Donation from "../donations/donation.model";
-import NeedComment from "../needs/needComment.model";
+import { NeedModel } from "../needs/need.model";
+import { UserModel } from "../users/user.model";
+import { StoryModel } from "../stories/story.model";
+import { DonationModel } from "../donations/donation.model";
+import { NeedComment } from "../needs/needComment.model";
+
+// در بالای تابع یا در یک فایل types.ts تعریف کنید
+interface DonationStat {
+  _id: "pending" | "completed" | "failed"; // نوع _id را به مقادیر ممکن محدود می‌کنیم
+  count: number;
+  total: number;
+}
 
 /**
  * Admin Service - Provides admin dashboard statistics and analytics
@@ -35,36 +42,36 @@ class AdminService {
       recentActivities,
     ] = await Promise.all([
       // Total Needs
-      Need.countDocuments(),
+      NeedModel.countDocuments(),
 
       // Pending Needs (awaiting review)
-      Need.countDocuments({ status: "pending" }),
+      NeedModel.countDocuments({ status: "pending" }),
 
       // Active Needs
-      Need.countDocuments({ status: "active" }),
+      NeedModel.countDocuments({ status: "active" }),
 
       // Total Users
-      User.countDocuments(),
+      UserModel.countDocuments(),
 
       // Active Users (logged in last 30 days)
-      User.countDocuments({
+      UserModel.countDocuments({
         lastLogin: { $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) },
       }),
 
       // Total Stories
-      Story.countDocuments(),
+      StoryModel.countDocuments(),
 
       // Today's Stories
-      Story.countDocuments({ createdAt: { $gte: today } }),
+      StoryModel.countDocuments({ createdAt: { $gte: today } }),
 
       // Total Donations
-      Donation.countDocuments(),
+      DonationModel.countDocuments(),
 
       // Pending Donations
-      Donation.countDocuments({ status: "pending" }),
+      DonationModel.countDocuments({ status: "pending" }),
 
-      // Total Donation Amount
-      Donation.aggregate([
+      // Total DonationModel Amount
+      DonationModel.aggregate([
         { $match: { status: "completed" } },
         { $group: { _id: null, total: { $sum: "$amount" } } },
       ]),
@@ -79,11 +86,7 @@ class AdminService {
       this.getTopTags(10),
 
       // Recent Activities (last 10 needs)
-      Need.find()
-        .sort({ createdAt: -1 })
-        .limit(10)
-        .select("title status createdAt")
-        .lean(),
+      NeedModel.find().sort({ createdAt: -1 }).limit(10).select("title status createdAt").lean(),
     ]);
 
     // Calculate total donation amount
@@ -126,7 +129,7 @@ class AdminService {
    * دریافت تگ‌های پرکاربرد
    */
   private async getTopTags(limit: number = 10) {
-    const tags = await Need.aggregate([
+    const tags = await NeedModel.aggregate([
       { $unwind: "$tags" },
       { $group: { _id: "$tags", count: { $sum: 1 } } },
       { $sort: { count: -1 } },
@@ -150,7 +153,7 @@ class AdminService {
   async getTrendingNeeds(limit: number = 10) {
     const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
-    const trending = await Need.aggregate([
+    const trending = await NeedModel.aggregate([
       {
         $match: {
           createdAt: { $gte: sevenDaysAgo },
@@ -205,9 +208,9 @@ class AdminService {
     const oneMonthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
 
     const [daily, weekly, monthly] = await Promise.all([
-      User.countDocuments({ lastLogin: { $gte: oneDayAgo } }),
-      User.countDocuments({ lastLogin: { $gte: oneWeekAgo } }),
-      User.countDocuments({ lastLogin: { $gte: oneMonthAgo } }),
+      UserModel.countDocuments({ lastLogin: { $gte: oneDayAgo } }),
+      UserModel.countDocuments({ lastLogin: { $gte: oneWeekAgo } }),
+      UserModel.countDocuments({ lastLogin: { $gte: oneMonthAgo } }),
     ]);
 
     return {
@@ -221,8 +224,11 @@ class AdminService {
    * Get donation progress statistics
    * دریافت آمار پیشرفت کمک‌ها
    */
+  // یک اینترفیس برای شکل خروجی aggregation تعریف می‌کنیم
+
   async getDonationProgress() {
-    const stats = await Donation.aggregate([
+    // به متد aggregate نوع خروجی را می‌دهیم
+    const stats = await DonationModel.aggregate<DonationStat>([
       {
         $group: {
           _id: "$status",
@@ -238,8 +244,11 @@ class AdminService {
       failed: { count: 0, total: 0 },
     };
 
+    // حالا TypeScript نوع 'stat' را به درستی می‌شناسد
     stats.forEach((stat) => {
+      // این شرط دیگر ضروری نیست چون نوع _id مشخص است، اما برای اطمینان بیشتر می‌توان آن را نگه داشت
       if (stat._id in result) {
+        // دیگر خطایی وجود ندارد!
         result[stat._id] = {
           count: stat.count,
           total: stat.total,

@@ -1,7 +1,7 @@
 import { Schema, model, Model, Document } from "mongoose";
 import bcrypt from "bcryptjs";
 import { IUser, UserRole } from "common-types";
-
+export { UserRole };
 interface IUserMethods {
   comparePassword(password: string): Promise<boolean>;
 }

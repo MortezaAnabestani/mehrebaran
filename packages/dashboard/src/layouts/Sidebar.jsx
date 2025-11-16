@@ -587,7 +587,7 @@ const Sidebar = ({ sidebarOpen, me }) => {
                 } block`}
               >
                 <li className="text-base text-gray-900 font-normal rounded-lg hover:bg-blue-50 flex items-center p-2 group">
-                  <img loading="lazy" src="/assets/icons/needs.svg" alt="users" className="w-6 h-6 ml-2" />
+                  <img loading="lazy" src="/assets/icons/team.svg" alt="users" className="w-6 h-6 ml-2" />
                   <span className="ml-3 flex-1 whitespace-nowrap">تیم‌ها</span>
                 </li>
               </Link>
@@ -1055,14 +1055,7 @@ const Sidebar = ({ sidebarOpen, me }) => {
                   </div>
                 )}
               </div>
-              <div className="mt-4 px-2 bg-[#3b80c3]">
-                <div className="flex items-center gap-2 border-b-2 border-blue-300">
-                  <img src="/assets/icons/line_chart.svg" alt="needs network" className="w-10 h-10" />
-                  <span className="text-md translate-y-0.5 font-bold text-white uppercase tracking-wide">
-                    آمارهای کلی سایت
-                  </span>
-                </div>
-              </div>
+
               {/* نمودارها */}
               <div className={`${me?.role === "admin" && "disabled"} hidden md:block`}>
                 <li className="relative text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group">

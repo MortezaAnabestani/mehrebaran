@@ -259,6 +259,33 @@ class AdminController {
 
     return ResponseFormatter.success(res, donation, "وضعیت کمک با موفقیت به‌روزرسانی شد");
   });
+
+  // ==================== ACTIVITY FEED ENDPOINTS ====================
+
+  /**
+   * Get activity feed with all recent activities
+   * دریافت فید فعالیت‌های اخیر
+   *
+   * @route GET /api/v1/admin/activity-feed
+   * @access Private (Admin, Super Admin)
+   */
+  public getActivityFeed = asyncHandler(async (req: Request, res: Response) => {
+    const filters = {
+      activityType: req.query.activityType as string,
+      page: req.query.page ? parseInt(req.query.page as string) : 1,
+      limit: req.query.limit ? parseInt(req.query.limit as string) : 20,
+      days: req.query.days ? parseInt(req.query.days as string) : 7,
+    };
+
+    const result = await adminService.getActivityFeed(filters);
+
+    return ResponseFormatter.successWithPagination(
+      res,
+      result.activities,
+      result.pagination,
+      "فید فعالیت‌ها با موفقیت دریافت شد"
+    );
+  });
 }
 
 export const adminController = new AdminController();

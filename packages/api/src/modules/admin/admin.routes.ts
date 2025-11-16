@@ -49,4 +49,9 @@ router.put("/moderation/comments/bulk-approval", adminController.bulkUpdateComme
 router.get("/moderation/donations", adminController.getModerationDonations);
 router.put("/moderation/donations/:donationId/status", adminController.updateDonationStatus);
 
+// ==================== ACTIVITY FEED ROUTES ====================
+
+// Get activity feed with all recent activities
+router.get("/activity-feed", adminController.getActivityFeed);
+
 export default router;

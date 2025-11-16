@@ -4,6 +4,7 @@ import { StoryModel } from "../stories/story.model";
 import { DonationModel } from "../donations/donation.model";
 import { NeedComment } from "../needs/needComment.model";
 import { FollowModel } from "../social/follow.model";
+import { UserBadgeModel } from "../gamification/userBadge.model";
 
 /**
  * Admin Service - Provides admin dashboard statistics and analytics
@@ -829,6 +830,202 @@ class AdminService {
     );
 
     return donation;
+  }
+
+  // ==================== ACTIVITY FEED METHODS ====================
+
+  /**
+   * Get activity feed with all recent activities
+   * دریافت فید فعالیت‌ها با تمام فعالیت‌های اخیر
+   */
+  async getActivityFeed(filters: {
+    activityType?: string;
+    page?: number;
+    limit?: number;
+    days?: number;
+  }) {
+    const { activityType, page = 1, limit = 20, days = 7 } = filters;
+    const skip = (page - 1) * limit;
+    const startDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+
+    // Aggregate activities from different sources
+    const activities: any[] = [];
+
+    // Fetch needs if no specific type or type is 'need'
+    if (!activityType || activityType === "need") {
+      const needs = await NeedModel.find({ createdAt: { $gte: startDate } })
+        .populate("createdBy", "username fullName profilePicture")
+        .sort({ createdAt: -1 })
+        .limit(limit * 2)
+        .lean();
+
+      needs.forEach((need: any) => {
+        activities.push({
+          activityType: "need",
+          timestamp: need.createdAt,
+          user: need.createdBy,
+          details: {
+            id: need._id,
+            title: need.title,
+            status: need.status,
+            urgencyLevel: need.urgencyLevel,
+          },
+          icon: "📝",
+          description: `نیاز جدید ثبت شد`,
+        });
+      });
+    }
+
+    // Fetch donations if no specific type or type is 'donation'
+    if (!activityType || activityType === "donation") {
+      const donations = await DonationModel.find({ createdAt: { $gte: startDate } })
+        .populate("donor", "username fullName profilePicture")
+        .populate("need", "title")
+        .sort({ createdAt: -1 })
+        .limit(limit * 2)
+        .lean();
+
+      donations.forEach((donation: any) => {
+        activities.push({
+          activityType: "donation",
+          timestamp: donation.createdAt,
+          user: donation.donor,
+          details: {
+            id: donation._id,
+            amount: donation.amount,
+            status: donation.status,
+            needTitle: donation.need?.title,
+            needId: donation.need?._id,
+          },
+          icon: "💰",
+          description: `کمک مالی جدید دریافت شد`,
+        });
+      });
+    }
+
+    // Fetch comments if no specific type or type is 'comment'
+    if (!activityType || activityType === "comment") {
+      const comments = await NeedComment.find({ createdAt: { $gte: startDate } })
+        .populate("user", "username fullName profilePicture")
+        .populate("need", "title")
+        .sort({ createdAt: -1 })
+        .limit(limit * 2)
+        .lean();
+
+      comments.forEach((comment: any) => {
+        activities.push({
+          activityType: "comment",
+          timestamp: comment.createdAt,
+          user: comment.user,
+          details: {
+            id: comment._id,
+            content: comment.content.substring(0, 100),
+            isApproved: comment.isApproved,
+            needTitle: comment.need?.title,
+            needId: comment.need?._id,
+          },
+          icon: "💬",
+          description: `نظر جدید ثبت شد`,
+        });
+      });
+    }
+
+    // Fetch stories if no specific type or type is 'story'
+    if (!activityType || activityType === "story") {
+      const stories = await StoryModel.find({ createdAt: { $gte: startDate } })
+        .populate("user", "username fullName profilePicture")
+        .sort({ createdAt: -1 })
+        .limit(limit * 2)
+        .lean();
+
+      stories.forEach((story: any) => {
+        activities.push({
+          activityType: "story",
+          timestamp: story.createdAt,
+          user: story.user,
+          details: {
+            id: story._id,
+            mediaType: story.mediaType,
+            viewersCount: story.viewers?.length || 0,
+            reactionsCount: story.reactions?.length || 0,
+          },
+          icon: "📸",
+          description: `استوری جدید منتشر شد`,
+        });
+      });
+    }
+
+    // Fetch follows if no specific type or type is 'follow'
+    if (!activityType || activityType === "follow") {
+      const follows = await FollowModel.find({ followedAt: { $gte: startDate } })
+        .populate("follower", "username fullName profilePicture")
+        .populate("followedUser", "username fullName")
+        .sort({ followedAt: -1 })
+        .limit(limit * 2)
+        .lean();
+
+      follows.forEach((follow: any) => {
+        activities.push({
+          activityType: "follow",
+          timestamp: follow.followedAt,
+          user: follow.follower,
+          details: {
+            id: follow._id,
+            followedUser: {
+              id: follow.followedUser._id,
+              username: follow.followedUser.username,
+              fullName: follow.followedUser.fullName,
+            },
+          },
+          icon: "👥",
+          description: `کاربر جدید دنبال شد`,
+        });
+      });
+    }
+
+    // Fetch badge awards if no specific type or type is 'badge'
+    if (!activityType || activityType === "badge") {
+      const badgeAwards = await UserBadgeModel.find({ earnedAt: { $gte: startDate } })
+        .populate("user", "username fullName profilePicture")
+        .populate("badge", "name icon description")
+        .sort({ earnedAt: -1 })
+        .limit(limit * 2)
+        .lean();
+
+      badgeAwards.forEach((badgeAward: any) => {
+        activities.push({
+          activityType: "badge",
+          timestamp: badgeAward.earnedAt,
+          user: badgeAward.user,
+          details: {
+            id: badgeAward._id,
+            badgeName: badgeAward.badge?.name,
+            badgeIcon: badgeAward.badge?.icon,
+            badgeDescription: badgeAward.badge?.description,
+            progress: badgeAward.progress,
+          },
+          icon: "🏆",
+          description: `نشان جدید دریافت شد`,
+        });
+      });
+    }
+
+    // Sort all activities by timestamp (most recent first)
+    activities.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+
+    // Paginate
+    const total = activities.length;
+    const paginatedActivities = activities.slice(skip, skip + limit);
+
+    return {
+      activities: paginatedActivities,
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
   }
 }
 

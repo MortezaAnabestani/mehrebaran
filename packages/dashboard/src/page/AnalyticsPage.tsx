@@ -48,20 +48,20 @@ function SimpleBarChart({ data, dataKey, xKey, title, color = "blue" }) {
           return (
             <div key={index} className="flex items-center gap-2">
               <Typography variant="small" className="w-24 text-gray-600 text-xs">
-                {item[xKey]}
+                {item[xKey] || "-"}
               </Typography>
               <div className="flex-1 bg-gray-100 rounded-full h-6 relative overflow-hidden">
                 <div
                   className={`h-full bg-${color}-500 rounded-full transition-all duration-500 flex items-center justify-end px-2`}
                   style={{ width: `${percentage}%` }}
                 >
-                  {percentage > 20 && (
+                  {percentage > 20 && value > 0 && (
                     <Typography variant="small" className="text-white text-xs font-semibold">
                       {value.toLocaleString("fa-IR")}
                     </Typography>
                   )}
                 </div>
-                {percentage <= 20 && (
+                {percentage <= 20 && value > 0 && (
                   <Typography
                     variant="small"
                     className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-700 text-xs font-semibold"
@@ -130,7 +130,7 @@ function SimpleLineChart({ data, dataKey, xKey, title }) {
       <div className="flex gap-1 text-xs text-gray-500 mr-12">
         {data.map((item, index) => (
           <div key={index} className="flex-1 text-center">
-            {index % Math.ceil(data.length / 5) === 0 && item[xKey]}
+            {index % Math.ceil(data.length / 5) === 0 && (item[xKey] || "-")}
           </div>
         ))}
       </div>
@@ -143,10 +143,10 @@ function StatCard({ label, value, color = "blue" }) {
   return (
     <div className="p-4 bg-gray-50 rounded-lg">
       <Typography variant="small" className="text-gray-600 mb-1">
-        {label}
+        {label || "-"}
       </Typography>
       <Typography variant="h5" className={`font-bold text-${color}-700`}>
-        {typeof value === "number" ? value.toLocaleString("fa-IR") : value}
+        {typeof value === "number" ? value.toLocaleString("fa-IR") : (value || "0")}
       </Typography>
     </div>
   );

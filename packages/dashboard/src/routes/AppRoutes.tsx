@@ -12,6 +12,7 @@ export default function AppRoutes() {
       {/* مسیرهای داخل داشبورد */}
       <Route element={<DashboardLayout />}>
         <Route path="/" element={<DashboardPage />} />
+        <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/analytics" element={<AnalyticsPage />} />
         {/* <Route path="/tags" element={<TagsListPage />} /> */}
       </Route>

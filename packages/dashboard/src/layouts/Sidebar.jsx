@@ -392,267 +392,256 @@ const Sidebar = ({ sidebarOpen, me }) => {
                 )}
               </div>
 
-              {/* ⭐ شبکه نیازسنجی (یکپارچه) */}
-              <div>
-                <li className="relative text-base text-gray-900 font-bold rounded-lg bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 flex items-center p-2 group">
+              {/* ========== بخش شبکه نیازسنجی ========== */}
+
+              {/* Header بخش شبکه نیازسنجی */}
+              <div className="mt-4 mb-2 px-2">
+                <div className="flex items-center gap-2 py-2 border-b-2 border-blue-300">
                   <img
                     src="/assets/images/dashboard/icons/network.svg"
                     alt="needs network"
-                    className="w-6 h-6 ml-2"
+                    className="w-5 h-5"
                   />
-                  <span className="ml-3 flex-1 whitespace-nowrap text-blue-700">🌐 شبکه نیازسنجی</span>
+                  <span className="text-sm font-bold text-blue-700 uppercase tracking-wide">
+                    شبکه نیازسنجی
+                  </span>
+                </div>
+              </div>
+
+              {/* نیازها */}
+              <Link
+                rel="preconnect"
+                to={"/dashboard/needs"}
+                className={`${pathname === "/dashboard/needs" || pathname.startsWith("/dashboard/needs/") ? "bg-blue-50 border-r-4 border-blue-500" : "border-r-4 border-transparent"} block`}
+              >
+                <li className="text-base text-gray-900 font-normal rounded-lg hover:bg-blue-50 flex items-center p-2 group">
+                  <span className="text-lg ml-2">📝</span>
+                  <span className="ml-3 flex-1 whitespace-nowrap">نیازها</span>
+                </li>
+              </Link>
+
+              {/* تیم‌ها */}
+              <Link
+                rel="preconnect"
+                to={"/dashboard/teams"}
+                className={`${pathname === "/dashboard/teams" || pathname.startsWith("/dashboard/teams/") ? "bg-blue-50 border-r-4 border-blue-500" : "border-r-4 border-transparent"} block`}
+              >
+                <li className="text-base text-gray-900 font-normal rounded-lg hover:bg-blue-50 flex items-center p-2 group">
+                  <span className="text-lg ml-2">👥</span>
+                  <span className="ml-3 flex-1 whitespace-nowrap">تیم‌ها</span>
+                </li>
+              </Link>
+
+              {/* استوری‌ها */}
+              <div className={`${pathname.startsWith("/dashboard/stories") ? "bg-blue-50 border-r-4 border-blue-500" : "border-r-4 border-transparent"}`}>
+                <li className="relative text-base text-gray-900 font-normal rounded-lg hover:bg-blue-50 flex items-center p-2 group">
+                  <span className="text-lg ml-2">📖</span>
+                  <span className="ml-3 flex-1 whitespace-nowrap">استوری‌ها</span>
                   <img
                     src="/assets/images/dashboard/icons/downArrow.svg"
                     className="h-6 w-6 absolute top-2 left-2 cursor-pointer"
-                    style={menuToggle === 100 ? { rotate: "90deg" } : { rotate: "0deg" }}
-                    onClick={() => toggleHandler(100)}
+                    style={menuToggle === 11 ? { rotate: "90deg" } : { rotate: "0deg" }}
+                    onClick={() => toggleHandler(11)}
                     alt="down arrow icon"
                   />
                 </li>
-                {menuToggle === 100 && (
-                  <div className="flex flex-col w-full justify-start items-start bg-gradient-to-b from-blue-50 to-white border-l-2 border-blue-200">
-                    {/* نیازها */}
+                {menuToggle === 11 && (
+                  <div className="flex flex-col w-full justify-start items-start bg-blue-50">
                     <Link
                       rel="preconnect"
-                      to={"/dashboard/needs"}
-                      className={`${pathname === "/dashboard/needs" || pathname.startsWith("/dashboard/needs/") ? "bg-blue-100" : ""} w-full`}
+                      to={"/dashboard/stories"}
+                      className={`${pathname === "/dashboard/stories" || (pathname.startsWith("/dashboard/stories/") && !pathname.includes("highlights")) ? "bg-blue-100" : ""} w-full`}
                     >
                       <li className="text-base text-gray-900 text-[14px] font-normal rounded-lg hover:bg-blue-100 flex items-start p-2 group cursor-pointer">
-                        <span className="mr-5 text-blue-500">📝</span>
-                        <span className="d-block mr-1 flex-1 whitespace-nowrap">نیازها</span>
+                        <span className="mr-5 text-blue-400">*</span>
+                        <span className="d-block mr-1 flex-1 whitespace-nowrap">لیست استوری‌ها</span>
                       </li>
                     </Link>
-
-                    {/* تیم‌ها */}
                     <Link
                       rel="preconnect"
-                      to={"/dashboard/teams"}
-                      className={`${pathname === "/dashboard/teams" || pathname.startsWith("/dashboard/teams/") ? "bg-blue-100" : ""} w-full`}
+                      to={"/dashboard/stories/highlights"}
+                      className={`${pathname === "/dashboard/stories/highlights" ? "bg-blue-100" : ""} w-full`}
                     >
                       <li className="text-base text-gray-900 text-[14px] font-normal rounded-lg hover:bg-blue-100 flex items-start p-2 group cursor-pointer">
-                        <span className="mr-5 text-green-500">👥</span>
-                        <span className="d-block mr-1 flex-1 whitespace-nowrap">تیم‌ها</span>
+                        <span className="mr-5 text-blue-400">*</span>
+                        <span className="d-block mr-1 flex-1 whitespace-nowrap">هایلایت‌ها</span>
                       </li>
                     </Link>
-
-                    {/* استوری‌ها */}
-                    <div className="w-full">
-                      <li
-                        className="relative text-base text-gray-900 text-[14px] font-normal rounded-lg hover:bg-blue-100 flex items-start p-2 group cursor-pointer"
-                        onClick={() => toggleHandler(101)}
-                      >
-                        <span className="mr-5 text-purple-500">📖</span>
-                        <span className="d-block mr-1 flex-1 whitespace-nowrap">استوری‌ها</span>
-                        <img
-                          src="/assets/images/dashboard/icons/downArrow.svg"
-                          className="h-4 w-4 absolute top-3 left-2"
-                          style={menuToggle === 101 ? { rotate: "90deg" } : { rotate: "0deg" }}
-                          alt="down arrow"
-                        />
-                      </li>
-                      {menuToggle === 101 && (
-                        <div className="flex flex-col w-full bg-blue-50 pr-4">
-                          <Link
-                            rel="preconnect"
-                            to={"/dashboard/stories"}
-                            className={`${pathname === "/dashboard/stories" || pathname.startsWith("/dashboard/stories/") ? "bg-blue-100" : ""} w-full`}
-                          >
-                            <li className="text-sm text-gray-800 font-normal rounded-lg hover:bg-blue-100 flex items-start p-2 cursor-pointer">
-                              <span className="mr-5 text-xs">•</span>
-                              <span className="d-block mr-1">لیست استوری‌ها</span>
-                            </li>
-                          </Link>
-                          <Link
-                            rel="preconnect"
-                            to={"/dashboard/stories/highlights"}
-                            className={`${pathname === "/dashboard/stories/highlights" ? "bg-blue-100" : ""} w-full`}
-                          >
-                            <li className="text-sm text-gray-800 font-normal rounded-lg hover:bg-blue-100 flex items-start p-2 cursor-pointer">
-                              <span className="mr-5 text-xs">•</span>
-                              <span className="d-block mr-1">هایلایت‌ها</span>
-                            </li>
-                          </Link>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* گیمیفیکیشن */}
-                    <div className="w-full">
-                      <li
-                        className="relative text-base text-gray-900 text-[14px] font-normal rounded-lg hover:bg-blue-100 flex items-start p-2 group cursor-pointer"
-                        onClick={() => toggleHandler(102)}
-                      >
-                        <span className="mr-5 text-yellow-500">🎮</span>
-                        <span className="d-block mr-1 flex-1 whitespace-nowrap">گیمیفیکیشن</span>
-                        <img
-                          src="/assets/images/dashboard/icons/downArrow.svg"
-                          className="h-4 w-4 absolute top-3 left-2"
-                          style={menuToggle === 102 ? { rotate: "90deg" } : { rotate: "0deg" }}
-                          alt="down arrow"
-                        />
-                      </li>
-                      {menuToggle === 102 && (
-                        <div className="flex flex-col w-full bg-blue-50 pr-4">
-                          <Link
-                            rel="preconnect"
-                            to={"/dashboard/gamification/badges"}
-                            className={`${pathname === "/dashboard/gamification/badges" || pathname.startsWith("/dashboard/gamification/badges/") ? "bg-blue-100" : ""} w-full`}
-                          >
-                            <li className="text-sm text-gray-800 font-normal rounded-lg hover:bg-blue-100 flex items-start p-2 cursor-pointer">
-                              <span className="mr-5 text-xs">🏆</span>
-                              <span className="d-block mr-1">نشان‌ها</span>
-                            </li>
-                          </Link>
-                          <Link
-                            rel="preconnect"
-                            to={"/dashboard/gamification/leaderboard"}
-                            className={`${pathname === "/dashboard/gamification/leaderboard" ? "bg-blue-100" : ""} w-full`}
-                          >
-                            <li className="text-sm text-gray-800 font-normal rounded-lg hover:bg-blue-100 flex items-start p-2 cursor-pointer">
-                              <span className="mr-5 text-xs">📊</span>
-                              <span className="d-block mr-1">جدول امتیازات</span>
-                            </li>
-                          </Link>
-                          <Link
-                            rel="preconnect"
-                            to={"/dashboard/gamification/user-stats"}
-                            className={`${pathname === "/dashboard/gamification/user-stats" || pathname.startsWith("/dashboard/gamification/user-stats/") ? "bg-blue-100" : ""} w-full`}
-                          >
-                            <li className="text-sm text-gray-800 font-normal rounded-lg hover:bg-blue-100 flex items-start p-2 cursor-pointer">
-                              <span className="mr-5 text-xs">📈</span>
-                              <span className="d-block mr-1">آمار کاربران</span>
-                            </li>
-                          </Link>
-                          <Link
-                            rel="preconnect"
-                            to={"/dashboard/gamification/point-transactions"}
-                            className={`${pathname === "/dashboard/gamification/point-transactions" ? "bg-blue-100" : ""} w-full`}
-                          >
-                            <li className="text-sm text-gray-800 font-normal rounded-lg hover:bg-blue-100 flex items-start p-2 cursor-pointer">
-                              <span className="mr-5 text-xs">💰</span>
-                              <span className="d-block mr-1">تراکنش‌های امتیاز</span>
-                            </li>
-                          </Link>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* تعاملات اجتماعی */}
-                    <div className="w-full">
-                      <li
-                        className="relative text-base text-gray-900 text-[14px] font-normal rounded-lg hover:bg-blue-100 flex items-start p-2 group cursor-pointer"
-                        onClick={() => toggleHandler(103)}
-                      >
-                        <span className="mr-5 text-pink-500">💬</span>
-                        <span className="d-block mr-1 flex-1 whitespace-nowrap">تعاملات اجتماعی</span>
-                        <img
-                          src="/assets/images/dashboard/icons/downArrow.svg"
-                          className="h-4 w-4 absolute top-3 left-2"
-                          style={menuToggle === 103 ? { rotate: "90deg" } : { rotate: "0deg" }}
-                          alt="down arrow"
-                        />
-                      </li>
-                      {menuToggle === 103 && (
-                        <div className="flex flex-col w-full bg-blue-50 pr-4">
-                          <Link
-                            rel="preconnect"
-                            to={"/dashboard/social/follows"}
-                            className={`${pathname === "/dashboard/social/follows" ? "bg-blue-100" : ""} w-full`}
-                          >
-                            <li className="text-sm text-gray-800 font-normal rounded-lg hover:bg-blue-100 flex items-start p-2 cursor-pointer">
-                              <span className="mr-5 text-xs">👤</span>
-                              <span className="d-block mr-1">دنبال‌کنندگان</span>
-                            </li>
-                          </Link>
-                          <Link
-                            rel="preconnect"
-                            to={"/dashboard/social/mentions"}
-                            className={`${pathname === "/dashboard/social/mentions" ? "bg-blue-100" : ""} w-full relative`}
-                          >
-                            <li className="text-sm text-gray-800 font-normal rounded-lg hover:bg-blue-100 flex items-start p-2 cursor-pointer">
-                              <span className="mr-5 text-xs">@</span>
-                              <span className="d-block mr-1">منشن‌ها</span>
-                              <Badge count={unreadMentions} />
-                            </li>
-                          </Link>
-                          <Link
-                            rel="preconnect"
-                            to={"/dashboard/social/tags"}
-                            className={`${pathname === "/dashboard/social/tags" ? "bg-blue-100" : ""} w-full`}
-                          >
-                            <li className="text-sm text-gray-800 font-normal rounded-lg hover:bg-blue-100 flex items-start p-2 cursor-pointer">
-                              <span className="mr-5 text-xs">#</span>
-                              <span className="d-block mr-1">تگ‌های اجتماعی</span>
-                            </li>
-                          </Link>
-                          <Link
-                            rel="preconnect"
-                            to={"/dashboard/social/shares"}
-                            className={`${pathname === "/dashboard/social/shares" ? "bg-blue-100" : ""} w-full`}
-                          >
-                            <li className="text-sm text-gray-800 font-normal rounded-lg hover:bg-blue-100 flex items-start p-2 cursor-pointer">
-                              <span className="mr-5 text-xs">🔗</span>
-                              <span className="d-block mr-1">اشتراک‌گذاری</span>
-                            </li>
-                          </Link>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* اعلانات */}
-                    <div className="w-full">
-                      <li
-                        className="relative text-base text-gray-900 text-[14px] font-normal rounded-lg hover:bg-blue-100 flex items-start p-2 group cursor-pointer"
-                        onClick={() => toggleHandler(104)}
-                      >
-                        <span className="mr-5 text-red-500">🔔</span>
-                        <span className="d-block mr-1 flex-1 whitespace-nowrap">اعلانات</span>
-                        <Badge count={unreadNotifications} />
-                        <img
-                          src="/assets/images/dashboard/icons/downArrow.svg"
-                          className="h-4 w-4 absolute top-3 left-2"
-                          style={menuToggle === 104 ? { rotate: "90deg" } : { rotate: "0deg" }}
-                          alt="down arrow"
-                        />
-                      </li>
-                      {menuToggle === 104 && (
-                        <div className="flex flex-col w-full bg-blue-50 pr-4">
-                          <Link
-                            rel="preconnect"
-                            to={"/dashboard/notifications"}
-                            className={`${pathname === "/dashboard/notifications" && !pathname.includes("/settings") && !pathname.includes("/push-tokens") ? "bg-blue-100" : ""} w-full relative`}
-                          >
-                            <li className="text-sm text-gray-800 font-normal rounded-lg hover:bg-blue-100 flex items-start p-2 cursor-pointer">
-                              <span className="mr-5 text-xs">📬</span>
-                              <span className="d-block mr-1">لیست اعلانات</span>
-                            </li>
-                          </Link>
-                          <Link
-                            rel="preconnect"
-                            to={"/dashboard/notifications/settings"}
-                            className={`${pathname === "/dashboard/notifications/settings" ? "bg-blue-100" : ""} w-full`}
-                          >
-                            <li className="text-sm text-gray-800 font-normal rounded-lg hover:bg-blue-100 flex items-start p-2 cursor-pointer">
-                              <span className="mr-5 text-xs">⚙️</span>
-                              <span className="d-block mr-1">تنظیمات اعلانات</span>
-                            </li>
-                          </Link>
-                          <Link
-                            rel="preconnect"
-                            to={"/dashboard/notifications/push-tokens"}
-                            className={`${pathname === "/dashboard/notifications/push-tokens" ? "bg-blue-100" : ""} w-full`}
-                          >
-                            <li className="text-sm text-gray-800 font-normal rounded-lg hover:bg-blue-100 flex items-start p-2 cursor-pointer">
-                              <span className="mr-5 text-xs">📱</span>
-                              <span className="d-block mr-1">مدیریت دستگاه‌ها</span>
-                            </li>
-                          </Link>
-                        </div>
-                      )}
-                    </div>
                   </div>
                 )}
               </div>
+
+              {/* گیمیفیکیشن */}
+              <div className={`${pathname.startsWith("/dashboard/gamification") ? "bg-blue-50 border-r-4 border-blue-500" : "border-r-4 border-transparent"}`}>
+                <li className="relative text-base text-gray-900 font-normal rounded-lg hover:bg-blue-50 flex items-center p-2 group">
+                  <span className="text-lg ml-2">🎮</span>
+                  <span className="ml-3 flex-1 whitespace-nowrap">گیمیفیکیشن</span>
+                  <img
+                    src="/assets/images/dashboard/icons/downArrow.svg"
+                    className="h-6 w-6 absolute top-2 left-2 cursor-pointer"
+                    style={menuToggle === 12 ? { rotate: "90deg" } : { rotate: "0deg" }}
+                    onClick={() => toggleHandler(12)}
+                    alt="down arrow icon"
+                  />
+                </li>
+                {menuToggle === 12 && (
+                  <div className="flex flex-col w-full justify-start items-start bg-blue-50">
+                    <Link
+                      rel="preconnect"
+                      to={"/dashboard/gamification/badges"}
+                      className={`${pathname === "/dashboard/gamification/badges" || pathname.startsWith("/dashboard/gamification/badges/") ? "bg-blue-100" : ""} w-full`}
+                    >
+                      <li className="text-base text-gray-900 text-[14px] font-normal rounded-lg hover:bg-blue-100 flex items-start p-2 group cursor-pointer">
+                        <span className="mr-5 text-yellow-400">*</span>
+                        <span className="d-block mr-1 flex-1 whitespace-nowrap">نشان‌ها</span>
+                      </li>
+                    </Link>
+                    <Link
+                      rel="preconnect"
+                      to={"/dashboard/gamification/leaderboard"}
+                      className={`${pathname === "/dashboard/gamification/leaderboard" ? "bg-blue-100" : ""} w-full`}
+                    >
+                      <li className="text-base text-gray-900 text-[14px] font-normal rounded-lg hover:bg-blue-100 flex items-start p-2 group cursor-pointer">
+                        <span className="mr-5 text-yellow-400">*</span>
+                        <span className="d-block mr-1 flex-1 whitespace-nowrap">جدول امتیازات</span>
+                      </li>
+                    </Link>
+                    <Link
+                      rel="preconnect"
+                      to={"/dashboard/gamification/user-stats"}
+                      className={`${pathname === "/dashboard/gamification/user-stats" || pathname.startsWith("/dashboard/gamification/user-stats/") ? "bg-blue-100" : ""} w-full`}
+                    >
+                      <li className="text-base text-gray-900 text-[14px] font-normal rounded-lg hover:bg-blue-100 flex items-start p-2 group cursor-pointer">
+                        <span className="mr-5 text-yellow-400">*</span>
+                        <span className="d-block mr-1 flex-1 whitespace-nowrap">آمار کاربران</span>
+                      </li>
+                    </Link>
+                    <Link
+                      rel="preconnect"
+                      to={"/dashboard/gamification/point-transactions"}
+                      className={`${pathname === "/dashboard/gamification/point-transactions" ? "bg-blue-100" : ""} w-full`}
+                    >
+                      <li className="text-base text-gray-900 text-[14px] font-normal rounded-lg hover:bg-blue-100 flex items-start p-2 group cursor-pointer">
+                        <span className="mr-5 text-yellow-400">*</span>
+                        <span className="d-block mr-1 flex-1 whitespace-nowrap">تراکنش‌های امتیاز</span>
+                      </li>
+                    </Link>
+                  </div>
+                )}
+              </div>
+
+              {/* تعاملات اجتماعی */}
+              <div className={`${pathname.startsWith("/dashboard/social") ? "bg-blue-50 border-r-4 border-blue-500" : "border-r-4 border-transparent"}`}>
+                <li className="relative text-base text-gray-900 font-normal rounded-lg hover:bg-blue-50 flex items-center p-2 group">
+                  <span className="text-lg ml-2">💬</span>
+                  <span className="ml-3 flex-1 whitespace-nowrap">تعاملات اجتماعی</span>
+                  <img
+                    src="/assets/images/dashboard/icons/downArrow.svg"
+                    className="h-6 w-6 absolute top-2 left-2 cursor-pointer"
+                    style={menuToggle === 15 ? { rotate: "90deg" } : { rotate: "0deg" }}
+                    onClick={() => toggleHandler(15)}
+                    alt="down arrow icon"
+                  />
+                </li>
+                {menuToggle === 15 && (
+                  <div className="flex flex-col w-full justify-start items-start bg-blue-50">
+                    <Link
+                      rel="preconnect"
+                      to={"/dashboard/social/follows"}
+                      className={`${pathname === "/dashboard/social/follows" ? "bg-blue-100" : ""} w-full`}
+                    >
+                      <li className="text-base text-gray-900 text-[14px] font-normal rounded-lg hover:bg-blue-100 flex items-start p-2 group cursor-pointer">
+                        <span className="mr-5 text-pink-400">*</span>
+                        <span className="d-block mr-1 flex-1 whitespace-nowrap">دنبال‌کنندگان</span>
+                      </li>
+                    </Link>
+                    <Link
+                      rel="preconnect"
+                      to={"/dashboard/social/mentions"}
+                      className={`${pathname === "/dashboard/social/mentions" ? "bg-blue-100" : ""} w-full relative`}
+                    >
+                      <li className="text-base text-gray-900 text-[14px] font-normal rounded-lg hover:bg-blue-100 flex items-start p-2 group cursor-pointer">
+                        <span className="mr-5 text-pink-400">*</span>
+                        <span className="d-block mr-1 flex-1 whitespace-nowrap">منشن‌ها</span>
+                        <Badge count={unreadMentions} />
+                      </li>
+                    </Link>
+                    <Link
+                      rel="preconnect"
+                      to={"/dashboard/social/tags"}
+                      className={`${pathname === "/dashboard/social/tags" ? "bg-blue-100" : ""} w-full`}
+                    >
+                      <li className="text-base text-gray-900 text-[14px] font-normal rounded-lg hover:bg-blue-100 flex items-start p-2 group cursor-pointer">
+                        <span className="mr-5 text-pink-400">*</span>
+                        <span className="d-block mr-1 flex-1 whitespace-nowrap">تگ‌های اجتماعی</span>
+                      </li>
+                    </Link>
+                    <Link
+                      rel="preconnect"
+                      to={"/dashboard/social/shares"}
+                      className={`${pathname === "/dashboard/social/shares" ? "bg-blue-100" : ""} w-full`}
+                    >
+                      <li className="text-base text-gray-900 text-[14px] font-normal rounded-lg hover:bg-blue-100 flex items-start p-2 group cursor-pointer">
+                        <span className="mr-5 text-pink-400">*</span>
+                        <span className="d-block mr-1 flex-1 whitespace-nowrap">اشتراک‌گذاری</span>
+                      </li>
+                    </Link>
+                  </div>
+                )}
+              </div>
+
+              {/* اعلانات */}
+              <div className={`${pathname.startsWith("/dashboard/notifications") ? "bg-blue-50 border-r-4 border-blue-500" : "border-r-4 border-transparent"}`}>
+                <li className="relative text-base text-gray-900 font-normal rounded-lg hover:bg-blue-50 flex items-center p-2 group">
+                  <span className="text-lg ml-2">🔔</span>
+                  <span className="ml-3 flex-1 whitespace-nowrap">اعلانات</span>
+                  <Badge count={unreadNotifications} />
+                  <img
+                    src="/assets/images/dashboard/icons/downArrow.svg"
+                    className="h-6 w-6 absolute top-2 left-2 cursor-pointer"
+                    style={menuToggle === 16 ? { rotate: "90deg" } : { rotate: "0deg" }}
+                    onClick={() => toggleHandler(16)}
+                    alt="down arrow icon"
+                  />
+                </li>
+                {menuToggle === 16 && (
+                  <div className="flex flex-col w-full justify-start items-start bg-blue-50">
+                    <Link
+                      rel="preconnect"
+                      to={"/dashboard/notifications"}
+                      className={`${pathname === "/dashboard/notifications" && !pathname.includes("/settings") && !pathname.includes("/push-tokens") ? "bg-blue-100" : ""} w-full`}
+                    >
+                      <li className="text-base text-gray-900 text-[14px] font-normal rounded-lg hover:bg-blue-100 flex items-start p-2 group cursor-pointer">
+                        <span className="mr-5 text-red-400">*</span>
+                        <span className="d-block mr-1 flex-1 whitespace-nowrap">لیست اعلانات</span>
+                      </li>
+                    </Link>
+                    <Link
+                      rel="preconnect"
+                      to={"/dashboard/notifications/settings"}
+                      className={`${pathname === "/dashboard/notifications/settings" ? "bg-blue-100" : ""} w-full`}
+                    >
+                      <li className="text-base text-gray-900 text-[14px] font-normal rounded-lg hover:bg-blue-100 flex items-start p-2 group cursor-pointer">
+                        <span className="mr-5 text-red-400">*</span>
+                        <span className="d-block mr-1 flex-1 whitespace-nowrap">تنظیمات اعلانات</span>
+                      </li>
+                    </Link>
+                    <Link
+                      rel="preconnect"
+                      to={"/dashboard/notifications/push-tokens"}
+                      className={`${pathname === "/dashboard/notifications/push-tokens" ? "bg-blue-100" : ""} w-full`}
+                    >
+                      <li className="text-base text-gray-900 text-[14px] font-normal rounded-lg hover:bg-blue-100 flex items-start p-2 group cursor-pointer">
+                        <span className="mr-5 text-red-400">*</span>
+                        <span className="d-block mr-1 flex-1 whitespace-nowrap">مدیریت دستگاه‌ها</span>
+                      </li>
+                    </Link>
+                  </div>
+                )}
+              </div>
+
+              {/* پایان بخش شبکه نیازسنجی */}
+              <div className="my-3 border-t border-gray-200"></div>
 
               {/* پروژه‌ها */}
               <div>

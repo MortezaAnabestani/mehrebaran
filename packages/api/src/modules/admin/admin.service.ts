@@ -1,8 +1,8 @@
-import Need from "../needs/need.model";
-import User from "../users/user.model";
-import Story from "../stories/story.model";
-import Donation from "../donations/donation.model";
-import NeedComment from "../needs/needComment.model";
+import { NeedModel } from "../needs/need.model";
+import { UserModel } from "../users/user.model";
+import { StoryModel } from "../stories/story.model";
+import { DonationModel } from "../donations/donation.model";
+import { NeedComment } from "../needs/needComment.model";
 
 /**
  * Admin Service - Provides admin dashboard statistics and analytics
@@ -35,36 +35,36 @@ class AdminService {
       recentActivities,
     ] = await Promise.all([
       // Total Needs
-      Need.countDocuments(),
+      NeedModel.countDocuments(),
 
       // Pending Needs (awaiting review)
-      Need.countDocuments({ status: "pending" }),
+      NeedModel.countDocuments({ status: "pending" }),
 
       // Active Needs
-      Need.countDocuments({ status: "active" }),
+      NeedModel.countDocuments({ status: "active" }),
 
       // Total Users
-      User.countDocuments(),
+      UserModel.countDocuments(),
 
       // Active Users (logged in last 30 days)
-      User.countDocuments({
+      UserModel.countDocuments({
         lastLogin: { $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) },
       }),
 
       // Total Stories
-      Story.countDocuments(),
+      StoryModel.countDocuments(),
 
       // Today's Stories
-      Story.countDocuments({ createdAt: { $gte: today } }),
+      StoryModel.countDocuments({ createdAt: { $gte: today } }),
 
       // Total Donations
-      Donation.countDocuments(),
+      DonationModel.countDocuments(),
 
       // Pending Donations
-      Donation.countDocuments({ status: "pending" }),
+      DonationModel.countDocuments({ status: "pending" }),
 
       // Total Donation Amount
-      Donation.aggregate([
+      DonationModel.aggregate([
         { $match: { status: "completed" } },
         { $group: { _id: null, total: { $sum: "$amount" } } },
       ]),
@@ -79,7 +79,7 @@ class AdminService {
       this.getTopTags(10),
 
       // Recent Activities (last 10 needs)
-      Need.find()
+      NeedModel.find()
         .sort({ createdAt: -1 })
         .limit(10)
         .select("title status createdAt")
@@ -126,7 +126,7 @@ class AdminService {
    * دریافت تگ‌های پرکاربرد
    */
   private async getTopTags(limit: number = 10) {
-    const tags = await Need.aggregate([
+    const tags = await NeedModel.aggregate([
       { $unwind: "$tags" },
       { $group: { _id: "$tags", count: { $sum: 1 } } },
       { $sort: { count: -1 } },
@@ -150,7 +150,7 @@ class AdminService {
   async getTrendingNeeds(limit: number = 10) {
     const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
-    const trending = await Need.aggregate([
+    const trending = await NeedModel.aggregate([
       {
         $match: {
           createdAt: { $gte: sevenDaysAgo },
@@ -205,9 +205,9 @@ class AdminService {
     const oneMonthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
 
     const [daily, weekly, monthly] = await Promise.all([
-      User.countDocuments({ lastLogin: { $gte: oneDayAgo } }),
-      User.countDocuments({ lastLogin: { $gte: oneWeekAgo } }),
-      User.countDocuments({ lastLogin: { $gte: oneMonthAgo } }),
+      UserModel.countDocuments({ lastLogin: { $gte: oneDayAgo } }),
+      UserModel.countDocuments({ lastLogin: { $gte: oneWeekAgo } }),
+      UserModel.countDocuments({ lastLogin: { $gte: oneMonthAgo } }),
     ]);
 
     return {
@@ -222,7 +222,7 @@ class AdminService {
    * دریافت آمار پیشرفت کمک‌ها
    */
   async getDonationProgress() {
-    const stats = await Donation.aggregate([
+    const stats = await DonationModel.aggregate([
       {
         $group: {
           _id: "$status",
@@ -232,15 +232,19 @@ class AdminService {
       },
     ]);
 
-    const result = {
+    const result: {
+      pending: { count: number; total: number };
+      completed: { count: number; total: number };
+      failed: { count: number; total: number };
+    } = {
       pending: { count: 0, total: 0 },
       completed: { count: 0, total: 0 },
       failed: { count: 0, total: 0 },
     };
 
-    stats.forEach((stat) => {
+    stats.forEach((stat: { _id: string; count: number; total: number }) => {
       if (stat._id in result) {
-        result[stat._id] = {
+        result[stat._id as keyof typeof result] = {
           count: stat.count,
           total: stat.total,
         };

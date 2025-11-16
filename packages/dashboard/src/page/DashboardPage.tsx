@@ -10,7 +10,7 @@ import {
   ExclamationCircleIcon,
   ChatBubbleLeftIcon,
 } from "@heroicons/react/24/outline";
-import axios from "axios";
+import api from "../services/api";
 
 // Stats Card Component
 function StatsCard({ title, value, icon: Icon, color, trend }) {
@@ -134,15 +134,7 @@ export default function DashboardPage() {
   const fetchDashboardOverview = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem("token");
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/v1/admin/dashboard/overview`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await api.get("/api/v1/admin/dashboard/overview");
 
       if (response.data.success) {
         setOverview(response.data.data);

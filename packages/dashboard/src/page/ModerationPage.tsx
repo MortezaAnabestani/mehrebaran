@@ -29,7 +29,7 @@ import {
   CheckIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
-import axios from "axios";
+import api from "../services/api";
 
 // Pagination Component
 function Pagination({ currentPage, totalPages, onPageChange }) {
@@ -80,18 +80,14 @@ function NeedsModerationTab() {
   const fetchNeeds = async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem("token");
       const params = new URLSearchParams();
       if (filters.status) params.append("status", filters.status);
       if (filters.search) params.append("search", filters.search);
       params.append("page", filters.page.toString());
       params.append("limit", filters.limit.toString());
 
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/v1/admin/moderation/needs?${params}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+      const response = await api.get(
+        `/api/v1/admin/moderation/needs?${params}`
       );
 
       if (response.data.success) {
@@ -117,16 +113,12 @@ function NeedsModerationTab() {
     }
 
     try {
-      const token = localStorage.getItem("token");
-      await axios.put(
-        `${import.meta.env.VITE_API_URL}/api/v1/admin/moderation/needs/bulk-status`,
+      await api.put(
+        `/api/v1/admin/moderation/needs/bulk-status`,
         {
           needIds: selectedNeeds,
           status,
           reason: status === "rejected" ? rejectionReason : undefined,
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` },
         }
       );
 
@@ -362,18 +354,14 @@ function CommentsModerationTab() {
   const fetchComments = async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem("token");
       const params = new URLSearchParams();
       if (filters.isApproved !== "") params.append("isApproved", filters.isApproved);
       if (filters.search) params.append("search", filters.search);
       params.append("page", filters.page.toString());
       params.append("limit", filters.limit.toString());
 
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/v1/admin/moderation/comments?${params}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+      const response = await api.get(
+        `/api/v1/admin/moderation/comments?${params}`
       );
 
       if (response.data.success) {
@@ -394,15 +382,11 @@ function CommentsModerationTab() {
     }
 
     try {
-      const token = localStorage.getItem("token");
-      await axios.put(
-        `${import.meta.env.VITE_API_URL}/api/v1/admin/moderation/comments/bulk-approval`,
+      await api.put(
+        `/api/v1/admin/moderation/comments/bulk-approval`,
         {
           commentIds: selectedComments,
           isApproved,
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` },
         }
       );
 
@@ -602,18 +586,14 @@ function DonationsModerationTab() {
   const fetchDonations = async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem("token");
       const params = new URLSearchParams();
       if (filters.status) params.append("status", filters.status);
       if (filters.search) params.append("search", filters.search);
       params.append("page", filters.page.toString());
       params.append("limit", filters.limit.toString());
 
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/v1/admin/moderation/donations?${params}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+      const response = await api.get(
+        `/api/v1/admin/moderation/donations?${params}`
       );
 
       if (response.data.success) {
@@ -629,13 +609,9 @@ function DonationsModerationTab() {
 
   const handleUpdateStatus = async (donationId: string, status: string) => {
     try {
-      const token = localStorage.getItem("token");
-      await axios.put(
-        `${import.meta.env.VITE_API_URL}/api/v1/admin/moderation/donations/${donationId}/status`,
-        { status },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+      await api.put(
+        `/api/v1/admin/moderation/donations/${donationId}/status`,
+        { status }
       );
 
       fetchDonations();

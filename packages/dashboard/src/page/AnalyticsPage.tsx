@@ -19,7 +19,7 @@ import {
   HeartIcon,
   ArrowTrendingUpIcon,
 } from "@heroicons/react/24/outline";
-import axios from "axios";
+import api from "../services/api";
 
 // Simple Bar Chart Component
 function SimpleBarChart({ data, dataKey, xKey, title, color = "blue" }) {
@@ -443,20 +443,12 @@ export default function AnalyticsPage() {
 
   const fetchAllAnalytics = async () => {
     setLoading(true);
-    const token = localStorage.getItem("token");
-    const baseUrl = `${import.meta.env.VITE_API_URL}/api/v1/admin/analytics`;
 
     try {
       const [contentRes, usersRes, engagementRes] = await Promise.all([
-        axios.get(`${baseUrl}/content?days=${timeRange}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
-        axios.get(`${baseUrl}/users?days=${timeRange}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
-        axios.get(`${baseUrl}/engagement?days=${timeRange}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
+        api.get(`/api/v1/admin/analytics/content?days=${timeRange}`),
+        api.get(`/api/v1/admin/analytics/users?days=${timeRange}`),
+        api.get(`/api/v1/admin/analytics/engagement?days=${timeRange}`),
       ]);
 
       setAnalytics({

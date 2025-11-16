@@ -9,8 +9,7 @@ import {
   Avatar,
   Spinner,
 } from "@material-tailwind/react";
-import axios from "axios";
-import { useSelector } from "react-redux";
+import api from "../services/api";
 
 // Pagination Component
 const Pagination = ({ currentPage, totalPages, onPageChange }: any) => {
@@ -316,15 +315,7 @@ const ActivityFeedPage = () => {
     limit: 20,
   });
 
-  const token = useSelector((state: any) => state.auth?.token);
-
   const fetchActivities = async () => {
-    if (!token) {
-      console.error("No authentication token found");
-      setLoading(false);
-      return;
-    }
-
     try {
       setLoading(true);
       const params: any = {
@@ -337,12 +328,9 @@ const ActivityFeedPage = () => {
         params.activityType = filters.activityType;
       }
 
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/v1/admin/activity-feed`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-          params,
-        }
+      const response = await api.get(
+        `/api/v1/admin/activity-feed`,
+        { params }
       );
 
       if (response.data.success) {
@@ -358,7 +346,7 @@ const ActivityFeedPage = () => {
 
   useEffect(() => {
     fetchActivities();
-  }, [filters, token]);
+  }, [filters]);
 
   return (
     <div className="p-6">

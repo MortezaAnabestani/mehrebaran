@@ -31,12 +31,28 @@ class ProjectController {
       projectData.featuredImage = req.processedFiles;
     }
 
-    // Convert category slug to ObjectId
+    // Convert category slug to ObjectId (create if not exists)
     if (projectData.category && typeof projectData.category === "string") {
-      const category = await CategoryModel.findOne({ slug: projectData.category });
+      let category = await CategoryModel.findOne({ slug: projectData.category });
+
+      // Auto-create category if it doesn't exist
       if (!category) {
-        throw new ApiError(400, `دسته‌بندی "${projectData.category}" یافت نشد.`);
+        const categoryNames: Record<string, string> = {
+          health: "بهداشت و سلامت",
+          education: "آموزش",
+          housing: "مسکن",
+          food: "غذا",
+          clothing: "پوشاک",
+          other: "سایر"
+        };
+
+        category = await CategoryModel.create({
+          name: categoryNames[projectData.category] || projectData.category,
+          slug: projectData.category,
+          description: `دسته‌بندی ${categoryNames[projectData.category] || projectData.category}`,
+        });
       }
+
       projectData.category = category._id;
     }
 

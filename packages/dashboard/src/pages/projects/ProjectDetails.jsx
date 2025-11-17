@@ -58,7 +58,8 @@ const ProjectDetails = () => {
 
   // محاسبه درصد پیشرفت داوطلب
   const getVolunteerProgress = () => {
-    if (!selectedProject || !selectedProject.targetVolunteer || selectedProject.targetVolunteer === 0) return 0;
+    if (!selectedProject || !selectedProject.targetVolunteer || selectedProject.targetVolunteer === 0)
+      return 0;
     return Math.min((selectedProject.collectedVolunteer / selectedProject.targetVolunteer) * 100, 100);
   };
 
@@ -161,11 +162,7 @@ const ProjectDetails = () => {
                   ویرایش
                 </Button>
               </Link>
-              <Button
-                color="red"
-                className="flex items-center gap-2"
-                onClick={() => setDeleteModal(true)}
-              >
+              <Button color="red" className="flex items-center gap-2" onClick={() => setDeleteModal(true)}>
                 <TrashIcon className="w-5 h-5" />
                 حذف
               </Button>
@@ -178,7 +175,10 @@ const ProjectDetails = () => {
           {/* Featured Image */}
           <Card className="lg:col-span-2 overflow-hidden">
             <img
-              src={selectedProject.featuredImage?.url || "/placeholder-project.jpg"}
+              src={
+                `${import.meta.env.VITE_SERVER_PUBLIC_UPLOADS}${selectedProject.featuredImage.desktop}` ||
+                "/placeholder-project.jpg"
+              }
               alt={selectedProject.featuredImage?.alt || selectedProject.title}
               className="w-full h-96 object-cover"
             />

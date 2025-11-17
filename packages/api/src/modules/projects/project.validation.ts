@@ -15,21 +15,20 @@ const projectBodySchema = z.object({
   title: z.string().min(3, "عنوان پروژه باید حداقل ۳ حرف باشد."),
   subtitle: z.string().optional(),
   slug: z.string().optional(),
-  seo: seoSchema,
+  metaTitle: z.string().optional(),
+  metaDescription: z.string().optional(),
   description: z.string().min(20, "توضیحات پروژه باید حداقل ۲۰ حرف باشد."),
-  excerpt: z.string().min(10, "خلاصه پروژه باید حداقل ۱۰ حرف باشد."),
-  featuredImage: responsiveImageSchema,
-  gallery: z.array(responsiveImageSchema).optional().default([]),
-  category: z.string().regex(/^[0-9a-fA-F]{24}$/, "شناسه دسته‌بندی معتبر نیست."),
+  excerpt: z.string().optional(),
+  // featuredImage will be handled by multer middleware, not in validation
+  category: z.string().min(1, "دسته‌بندی الزامی است."),
   status: z.enum(["draft", "active", "completed"]).default("draft"),
-  targetAmount: z.number().min(0, "مبلغ هدف نمی‌تواند منفی باشد."),
-  amountRaised: z.number().min(0, "مبلغ جمع‌آوری شده نمی‌تواند منفی باشد.").optional(),
-  targetVolunteer: z.number().min(0, "تعداد داوطلب هدف نمی‌تواند منفی باشد."),
-  collectedVolunteer: z.number().min(0, "تعداد داوطلب جذب شده نمی‌تواند منفی باشد.").optional(),
+  targetAmount: z.coerce.number().min(0, "مبلغ هدف نمی‌تواند منفی باشد."),
+  amountRaised: z.coerce.number().min(0, "مبلغ جمع‌آوری شده نمی‌تواند منفی باشد.").optional(),
+  targetVolunteer: z.coerce.number().min(0, "تعداد داوطلب هدف نمی‌تواند منفی باشد."),
+  collectedVolunteer: z.coerce.number().min(0, "تعداد داوطلب جذب شده نمی‌تواند منفی باشد.").optional(),
   deadline: z
     .string()
-    .pipe(z.iso.datetime({ message: "فرمت تاریخ مهلت پروژه نامعتبر است." }))
-    .transform((val) => new Date(val)),
+    .pipe(z.coerce.date()),
 });
 
 export const createProjectSchema = z.object({

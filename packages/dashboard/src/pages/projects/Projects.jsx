@@ -2,14 +2,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { fetchProjects, deleteProject } from "../../features/projectsSlice";
-import {
-  Card,
-  Button,
-  Typography,
-  Chip,
-  IconButton,
-  Progress,
-} from "@material-tailwind/react";
+import { Card, Button, Typography, Chip, IconButton, Progress } from "@material-tailwind/react";
 import {
   PlusIcon,
   PencilIcon,
@@ -115,7 +108,7 @@ const Projects = () => {
             مدیریت پروژه‌ها
           </Typography>
           <Link to="/dashboard/projects/create">
-            <Button color="blue" className="flex items-center gap-2">
+            <Button color="blue" className="flex items-center gap-2 cursor-pointer">
               <PlusIcon className="w-5 h-5" />
               ایجاد پروژه جدید
             </Button>
@@ -133,25 +126,42 @@ const Projects = () => {
             {projects && projects.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {projects.map((project) => (
-                  <Card key={project._id} className="overflow-hidden">
+                  <Card
+                    key={project._id}
+                    className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow h-full flex flex-col"
+                  >
                     {/* Featured Image */}
-                    <div className="relative h-48">
-                      <img
-                        src={project.featuredImage?.url || "/placeholder-project.jpg"}
-                        alt={project.featuredImage?.alt || project.title}
-                        className="w-full h-full object-cover"
-                      />
+                    <div className="relative h-48 bg-gray-100">
+                      {project.featuredImage?.desktop ? (
+                        <img
+                          src={`${import.meta.env.VITE_SERVER_PUBLIC_UPLOADS}${
+                            project.featuredImage.desktop
+                          }`}
+                          alt={project.title}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.target.src = "/placeholder-project.jpg";
+                          }}
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100">
+                          <Typography variant="h6" color="gray">
+                            بدون تصویر
+                          </Typography>
+                        </div>
+                      )}
                       <div className="absolute top-2 right-2">
                         <Chip
                           value={getStatusLabel(project.status)}
                           color={getStatusColor(project.status)}
                           size="sm"
+                          className="shadow-md"
                         />
                       </div>
                     </div>
 
                     {/* Content */}
-                    <div className="p-4 space-y-4">
+                    <div className="p-4 space-y-4 flex-1 flex flex-col">
                       {/* Title */}
                       <div>
                         <Typography variant="h6" color="blue-gray" className="mb-1">
@@ -184,11 +194,7 @@ const Projects = () => {
                             {Math.round(getFinancialProgress(project))}%
                           </Typography>
                         </div>
-                        <Progress
-                          value={getFinancialProgress(project)}
-                          color="green"
-                          size="sm"
-                        />
+                        <Progress value={getFinancialProgress(project)} color="green" size="sm" />
                         <div className="flex justify-between mt-1">
                           <Typography variant="small" color="gray">
                             {formatAmount(project.amountRaised)}
@@ -212,11 +218,7 @@ const Projects = () => {
                             {Math.round(getVolunteerProgress(project))}%
                           </Typography>
                         </div>
-                        <Progress
-                          value={getVolunteerProgress(project)}
-                          color="blue"
-                          size="sm"
-                        />
+                        <Progress value={getVolunteerProgress(project)} color="blue" size="sm" />
                         <div className="flex justify-between mt-1">
                           <Typography variant="small" color="gray">
                             {project.collectedVolunteer} نفر
@@ -244,23 +246,36 @@ const Projects = () => {
                       </div>
 
                       {/* Actions */}
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 mt-auto pt-4 border-t">
                         <Link to={`/dashboard/projects/${project._id}`} className="flex-1">
-                          <Button size="sm" variant="outlined" color="blue" className="w-full">
+                          <Button
+                            size="sm"
+                            variant="gradient"
+                            color="blue"
+                            className="w-full flex items-center justify-center gap-2 text-black bg-blue-200 cursor-pointer"
+                          >
+                            <EyeIcon className="w-4 h-4 text-black" />
                             مشاهده
                           </Button>
                         </Link>
                         <Link to={`/dashboard/projects/edit/${project._id}`}>
-                          <IconButton size="sm" color="amber">
-                            <PencilIcon className="w-4 h-4" />
+                          <IconButton
+                            size="sm"
+                            variant="gradient"
+                            color="amber"
+                            className="shadow-md hover:shadow-lg bg-amber-500 flex items-center justify-center cursor-pointer"
+                          >
+                            <PencilIcon className="w-5 h-5 translate-x-2.5 text-white" />
                           </IconButton>
                         </Link>
                         <IconButton
                           size="sm"
+                          variant="gradient"
                           color="red"
+                          className="shadow-md hover:shadow-lg bg-red-500 flex items-center justify-center cursor-pointer"
                           onClick={() => handleDelete(project)}
                         >
-                          <TrashIcon className="w-4 h-4" />
+                          <TrashIcon className="w-5 h-5 translate-x-2.5" />
                         </IconButton>
                       </div>
                     </div>

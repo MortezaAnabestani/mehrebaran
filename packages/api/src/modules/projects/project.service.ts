@@ -8,7 +8,11 @@ import fs from "fs";
 import path from "path";
 
 type CreateProjectData = z.infer<typeof createProjectSchema>["body"];
-type UpdateProjectData = Partial<CreateProjectData>;
+type UpdateProjectData = Partial<CreateProjectData> & {
+  gallery?: IResponsiveImage[];
+  featuredImage?: IResponsiveImage;
+  seo?: { metaTitle: string; metaDescription?: string };
+};
 
 class ProjectService {
   public async create(data: CreateProjectData): Promise<IProject> {

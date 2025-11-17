@@ -14,7 +14,7 @@ router.post(
   "/",
   protect,
   restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
-  uploadService.uploadSingleImage("featuredImage"),
+  uploadService.uploadSingleImage("featuredImage", "news"),
   uploadService.resizeAndProcessImages,
   newsController.create
 );
@@ -22,7 +22,7 @@ router.patch(
   "/:id",
   protect,
   restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
-  uploadService.uploadSingleImage("featuredImage"),
+  uploadService.uploadSingleImage("featuredImage", "news"),
   uploadService.resizeAndProcessImages,
   newsController.update
 );

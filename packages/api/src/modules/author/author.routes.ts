@@ -10,13 +10,13 @@ router.use(protect, restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN));
 
 router
   .route("/")
-  .post(uploadService.uploadSingleImage("avatar"), uploadService.resizeAndProcessImages, authorController.create)
+  .post(uploadService.uploadSingleImage("avatar", "users"), uploadService.resizeAndProcessImages, authorController.create)
   .get(authorController.getAll);
 
 router
   .route("/:identifier")
   .get(authorController.getById)
-  .patch(uploadService.uploadSingleImage("avatar"), uploadService.resizeAndProcessImages, authorController.update)
+  .patch(uploadService.uploadSingleImage("avatar", "users"), uploadService.resizeAndProcessImages, authorController.update)
   .delete(authorController.delete);
 
 export default router;

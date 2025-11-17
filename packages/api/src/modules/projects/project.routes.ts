@@ -14,13 +14,13 @@ router.use(protect, restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN));
 router.patch("/:id/increment-view", projectController.incrementView);
 router.post(
   "/",
-  uploadService.uploadSingleImage("featuredImage"),
+  uploadService.uploadSingleImage("featuredImage", "projects"),
   uploadService.resizeAndProcessImages,
   projectController.create
 );
 router.patch(
   "/:id",
-  uploadService.uploadSingleImage("featuredImage"),
+  uploadService.uploadSingleImage("featuredImage", "projects"),
   uploadService.resizeAndProcessImages,
   projectController.update
 );

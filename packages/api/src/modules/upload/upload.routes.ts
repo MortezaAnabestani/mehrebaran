@@ -10,14 +10,14 @@ router.use(protect, restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN));
 
 router.post(
   "/single",
-  uploadService.uploadSingleImage("image"),
+  uploadService.uploadSingleImage("image", "general"),
   uploadService.resizeAndProcessImages,
   uploadController.uploadSingle
 );
 
 router.post(
   "/multiple",
-  uploadService.uploadMultipleImages("gallery", 10),
+  uploadService.uploadMultipleImages("gallery", 10, "general"),
   uploadService.resizeAndProcessMultipleImages,
   uploadController.uploadMultiple
 );

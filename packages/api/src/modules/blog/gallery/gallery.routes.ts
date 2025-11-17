@@ -14,16 +14,16 @@ router.post(
   "/",
   protect,
   restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
-  uploadService.uploadMultipleImages("images", 20),
-  uploadService.resizeAndProcessImages,
+  uploadService.uploadMultipleImages("images", 20, "articles"),
+  uploadService.resizeAndProcessMultipleImages,
   galleryController.create
 );
 router.patch(
   "/:id",
   protect,
   restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
-  uploadService.uploadMultipleImages("images", 20),
-  uploadService.resizeAndProcessImages,
+  uploadService.uploadMultipleImages("images", 20, "articles"),
+  uploadService.resizeAndProcessMultipleImages,
   galleryController.update
 );
 router.delete("/:id", protect, restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN), galleryController.delete);

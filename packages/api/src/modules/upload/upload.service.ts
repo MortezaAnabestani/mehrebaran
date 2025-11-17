@@ -158,27 +158,19 @@ class UploadService {
    * Converts to WebP format with specified quality
    */
   public resizeAndProcessImages = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    console.log("🔍 resizeAndProcessImages called");
-    console.log("📁 req.file exists:", !!req.file);
-    console.log("📁 req.file:", req.file);
-
     if (!req.file || !req.file.buffer) {
-      console.log("⚠️ No file or buffer, skipping image processing");
       return next();
     }
 
     const section = (req.uploadSection as SupportedSection) || "general";
-    console.log("📂 Section:", section);
 
     try {
       // Create folder structure based on Persian date
       const datePath = this.getPersianDatePath(section);
       const fullUploadPath = path.join(this.baseUploadPath, datePath);
-      console.log("📂 Upload path:", fullUploadPath);
 
       if (!fs.existsSync(fullUploadPath)) {
         fs.mkdirSync(fullUploadPath, { recursive: true });
-        console.log("✅ Created directory:", fullUploadPath);
       }
 
       req.processedFiles = { desktop: "", mobile: "" };
@@ -194,7 +186,6 @@ class UploadService {
         .toFile(path.join(fullUploadPath, desktopFilename));
 
       req.processedFiles.desktop = `/uploads/${datePath.replace(/\\/g, "/")}/${desktopFilename}`;
-      console.log("✅ Desktop image saved:", req.processedFiles.desktop);
 
       // Process mobile version (768px max width)
       const mobileFilename = this.generateUniqueFilename(section, "mobile");
@@ -207,8 +198,6 @@ class UploadService {
         .toFile(path.join(fullUploadPath, mobileFilename));
 
       req.processedFiles.mobile = `/uploads/${datePath.replace(/\\/g, "/")}/${mobileFilename}`;
-      console.log("✅ Mobile image saved:", req.processedFiles.mobile);
-      console.log("✅ Processing complete, processedFiles:", req.processedFiles);
 
       next();
     } catch (error) {

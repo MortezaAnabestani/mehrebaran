@@ -138,7 +138,7 @@ const Projects = () => {
                     <div className="relative h-48 bg-gray-100">
                       {project.featuredImage?.desktop ? (
                         <img
-                          src={project.featuredImage.desktop}
+                          src={`${import.meta.env.VITE_SERVER_PUBLIC_API_URL_WITHOUT_API}${project.featuredImage.desktop}`}
                           alt={project.title}
                           className="w-full h-full object-cover"
                           onError={(e) => {

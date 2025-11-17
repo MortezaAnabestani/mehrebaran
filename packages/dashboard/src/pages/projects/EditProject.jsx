@@ -40,7 +40,13 @@ const EditProject = () => {
 
   const { selectedProject, loading: fetchLoading } = useSelector((state) => state.projects);
 
-  const { register, handleSubmit, formState: { errors }, setValue, reset } = useForm({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+    reset,
+  } = useForm({
     resolver: yupResolver(projectSchema),
   });
 
@@ -164,7 +170,11 @@ const EditProject = () => {
       <div className="bg-white rounded-md mb-6">
         <div className="flex items-center justify-between p-4">
           <h2 className="flex gap-3 text-xl font-medium">ویرایش پروژه</h2>
-          <Link rel="preconnect" to="/dashboard/projects" className="px-3 py-[6px] bg-gray-600 rounded-md hover:bg-gray-700 text-white">
+          <Link
+            rel="preconnect"
+            to="/dashboard/projects"
+            className="px-3 py-[6px] bg-gray-600 rounded-md hover:bg-gray-700 text-white"
+          >
             <span className="text-slate-50 w-1 animate-pulse">فهرست پروژه‌ها</span>
           </Link>
         </div>
@@ -186,20 +196,37 @@ const EditProject = () => {
 
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className={`${styles.createContent_title} mb-10`}>
-          <label className="text-[12px] mb-2 block" htmlFor="title">عنوان پروژه *</label>
-          <input type="text" id="title" className="px-3 py-2 text-xs rounded-md outline-0 border border-gray-300 focus:border-gray-400 h-10 w-full" {...register("title")} />
+          <label className="text-[12px] mb-2 block" htmlFor="title">
+            عنوان پروژه *
+          </label>
+          <input
+            type="text"
+            id="title"
+            className="px-3 py-2 text-xs rounded-md outline-0 border border-gray-300 focus:border-gray-400 h-10 w-full"
+            {...register("title")}
+          />
           {errors.title && <p className="text-red-500 text-xs mt-1">{errors.title.message}</p>}
         </div>
 
         <div className={`${styles.createContent_title} mb-10`}>
-          <label className="text-[12px] mb-2 block" htmlFor="subtitle">زیرعنوان</label>
-          <input type="text" id="subtitle" className="px-3 py-2 text-xs rounded-md outline-0 border border-gray-300 focus:border-gray-400 h-10 w-full" {...register("subtitle")} />
+          <label className="text-[12px] mb-2 block" htmlFor="subtitle">
+            زیرعنوان
+          </label>
+          <input
+            type="text"
+            id="subtitle"
+            className="px-3 py-2 text-xs rounded-md outline-0 border border-gray-300 focus:border-gray-400 h-10 w-full"
+            {...register("subtitle")}
+          />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
           <div className={styles.createContent_title}>
             <label className="text-[12px] mb-2 block">دسته‌بندی *</label>
-            <select className="px-3 py-2 text-xs rounded-md outline-0 border border-gray-300 focus:border-gray-400 h-10 w-full" {...register("category")}>
+            <select
+              className="px-3 py-2 text-xs rounded-md outline-0 border border-gray-300 focus:border-gray-400 h-10 w-full"
+              {...register("category")}
+            >
               <option value="">انتخاب دسته‌بندی</option>
               <option value="health">بهداشت و سلامت</option>
               <option value="education">آموزش</option>
@@ -213,7 +240,10 @@ const EditProject = () => {
 
           <div className={styles.createContent_title}>
             <label className="text-[12px] mb-2 block">وضعیت *</label>
-            <select className="px-3 py-2 text-xs rounded-md outline-0 border border-gray-300 focus:border-gray-400 h-10 w-full" {...register("status")}>
+            <select
+              className="px-3 py-2 text-xs rounded-md outline-0 border border-gray-300 focus:border-gray-400 h-10 w-full"
+              {...register("status")}
+            >
               <option value="draft">پیش‌نویس</option>
               <option value="active">فعال</option>
               <option value="completed">تکمیل شده</option>
@@ -231,7 +261,11 @@ const EditProject = () => {
 
         <div className={`${styles.createContent_title} mb-10`}>
           <label className="text-[12px] mb-2 block">خلاصه (Excerpt)</label>
-          <textarea rows="4" className="px-3 py-2 text-xs rounded-md outline-0 border border-gray-300 focus:border-gray-400 w-full" {...register("excerpt")} />
+          <textarea
+            rows="4"
+            className="px-3 py-2 text-xs rounded-md outline-0 border border-gray-300 focus:border-gray-400 w-full"
+            {...register("excerpt")}
+          />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
@@ -239,12 +273,22 @@ const EditProject = () => {
             <h3 className="text-sm font-bold text-gray-700">اهداف مالی</h3>
             <div className={styles.createContent_title}>
               <label className="text-[12px] mb-2 block">مبلغ هدف (تومان) *</label>
-              <input type="number" className="px-3 py-2 text-xs rounded-md outline-0 border border-gray-300 focus:border-gray-400 h-10 w-full" {...register("targetAmount")} />
-              {errors.targetAmount && <p className="text-red-500 text-xs mt-1">{errors.targetAmount.message}</p>}
+              <input
+                type="number"
+                className="px-3 py-2 text-xs rounded-md outline-0 border border-gray-300 focus:border-gray-400 h-10 w-full"
+                {...register("targetAmount")}
+              />
+              {errors.targetAmount && (
+                <p className="text-red-500 text-xs mt-1">{errors.targetAmount.message}</p>
+              )}
             </div>
             <div className={styles.createContent_title}>
               <label className="text-[12px] mb-2 block">مبلغ جمع‌آوری شده (تومان)</label>
-              <input type="number" className="px-3 py-2 text-xs rounded-md outline-0 border border-gray-300 focus:border-gray-400 h-10 w-full" {...register("amountRaised")} />
+              <input
+                type="number"
+                className="px-3 py-2 text-xs rounded-md outline-0 border border-gray-300 focus:border-gray-400 h-10 w-full"
+                {...register("amountRaised")}
+              />
             </div>
           </div>
 
@@ -252,12 +296,22 @@ const EditProject = () => {
             <h3 className="text-sm font-bold text-gray-700">اهداف داوطلب</h3>
             <div className={styles.createContent_title}>
               <label className="text-[12px] mb-2 block">تعداد داوطلب هدف *</label>
-              <input type="number" className="px-3 py-2 text-xs rounded-md outline-0 border border-gray-300 focus:border-gray-400 h-10 w-full" {...register("targetVolunteer")} />
-              {errors.targetVolunteer && <p className="text-red-500 text-xs mt-1">{errors.targetVolunteer.message}</p>}
+              <input
+                type="number"
+                className="px-3 py-2 text-xs rounded-md outline-0 border border-gray-300 focus:border-gray-400 h-10 w-full"
+                {...register("targetVolunteer")}
+              />
+              {errors.targetVolunteer && (
+                <p className="text-red-500 text-xs mt-1">{errors.targetVolunteer.message}</p>
+              )}
             </div>
             <div className={styles.createContent_title}>
               <label className="text-[12px] mb-2 block">تعداد داوطلب جمع‌آوری شده</label>
-              <input type="number" className="px-3 py-2 text-xs rounded-md outline-0 border border-gray-300 focus:border-gray-400 h-10 w-full" {...register("collectedVolunteer")} />
+              <input
+                type="number"
+                className="px-3 py-2 text-xs rounded-md outline-0 border border-gray-300 focus:border-gray-400 h-10 w-full"
+                {...register("collectedVolunteer")}
+              />
             </div>
           </div>
         </div>
@@ -265,27 +319,65 @@ const EditProject = () => {
         <div className={`${styles.createContent_title} mb-10`}>
           <label className="text-[12px] mb-2 block">تاریخ پایان پروژه *</label>
           <div className="border border-gray-300 rounded-md p-4 inline-block">
-            <Calendar className="red" calendar={persian} locale={persian_fa} value={selectedDate} onChange={setSelectedDate} calendarPosition="bottom-right" />
+            <Calendar
+              className="red"
+              calendar={persian}
+              locale={persian_fa}
+              value={selectedDate}
+              onChange={setSelectedDate}
+              calendarPosition="bottom-right"
+            />
           </div>
-          {selectedDate && <p className="text-xs text-gray-600 mt-2">تاریخ انتخاب شده: {selectedDate.format("YYYY/MM/DD")}</p>}
+          {selectedDate && (
+            <p className="text-xs text-gray-600 mt-2">
+              تاریخ انتخاب شده: {selectedDate.format("YYYY/MM/DD")}
+            </p>
+          )}
         </div>
 
         <div className="w-full lg:w-[300px] mb-10">
-          <label className="block text-xs font-medium text-gray-400 mb-2">تصویر شاخص {!previewImage && "*"}</label>
+          <label className="block text-xs font-medium text-gray-400 mb-2">
+            تصویر شاخص {!previewImage && "*"}
+          </label>
           <div className="bg-slate-100 rounded-md p-2 border border-gray-400 border-dotted">
-            <label htmlFor="coverImage" className="flex flex-row items-center justify-between text-xs font-medium cursor-pointer">
+            <label
+              htmlFor="coverImage"
+              className="flex flex-row items-center justify-between text-xs font-medium cursor-pointer"
+            >
               <span>برای تغییر عکس کلیک کنید</span>
-              <img className="w-8 h-8 animate-pulse" src="/assets/images/dashboard/icons/portrait.svg" alt="image" />
+              <img
+                className="w-8 h-8 animate-pulse"
+                src="/assets/images/dashboard/icons/portrait.svg"
+                alt="image"
+              />
             </label>
-            <input type="file" accept="image/*" className="hidden" id="coverImage" onChange={handleCoverImageChange} />
-            {previewImage && <img src={previewImage} alt="پیش‌نمایش" className="h-70 w-80 object-cover rounded-md mt-3 border border-red-300" />}
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              id="coverImage"
+              onChange={handleCoverImageChange}
+            />
+            {previewImage && (
+              <img
+                src={import.meta.env.VITE_SERVER_PUBLIC_UPLOADS + previewImage}
+                alt="پیش‌نمایش"
+                className="h-70 w-80 object-cover rounded-md mt-3 border border-red-300"
+              />
+            )}
           </div>
         </div>
 
         <SeoPart register={register} errors={errors} />
 
         <div className="mt-6 text-left">
-          <button type="submit" disabled={isSubmitting} className={`px-3 w-full lg:w-[120px] py-[6px] ${isSubmitting ? "bg-gray-400" : "bg-gray-600 hover:bg-gray-700"} rounded-md text-white cursor-pointer`}>
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className={`px-3 w-full lg:w-[120px] py-[6px] ${
+              isSubmitting ? "bg-gray-400" : "bg-gray-600 hover:bg-gray-700"
+            } rounded-md text-white cursor-pointer`}
+          >
             {isSubmitting ? (
               <div className="flex items-center justify-center">
                 <div className="animate-spin h-4 w-4 border-2 border-white rounded-full border-t-transparent mr-2"></div>

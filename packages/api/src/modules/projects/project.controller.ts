@@ -3,11 +3,38 @@ import { projectService } from "./project.service";
 import { createProjectSchema, updateProjectSchema } from "./project.validation";
 import asyncHandler from "../../core/utils/asyncHandler";
 import ApiError from "../../core/utils/apiError";
+import { CategoryModel } from "../categories/category.model";
 
 class ProjectController {
   public create = asyncHandler(async (req: Request, res: Response) => {
     const validatedData = createProjectSchema.parse({ body: req.body });
-    const project = await projectService.create(validatedData.body);
+
+    // Transform data to match model requirements
+    const projectData: any = { ...validatedData.body };
+
+    // Build seo object from metaTitle and metaDescription
+    projectData.seo = {
+      metaTitle: projectData.metaTitle || projectData.title,
+      metaDescription: projectData.metaDescription || projectData.excerpt || "",
+    };
+    delete projectData.metaTitle;
+    delete projectData.metaDescription;
+
+    // Add featuredImage from processed file upload (handled by middleware)
+    if (req.processedFiles) {
+      projectData.featuredImage = req.processedFiles;
+    }
+
+    // Convert category slug to ObjectId
+    if (projectData.category && typeof projectData.category === "string") {
+      const category = await CategoryModel.findOne({ slug: projectData.category });
+      if (!category) {
+        throw new ApiError(400, `دسته‌بندی "${projectData.category}" یافت نشد.`);
+      }
+      projectData.category = category._id;
+    }
+
+    const project = await projectService.create(projectData);
     res.status(201).json({ message: "پروژه با موفقیت ایجاد شد.", data: project });
   });
 

@@ -108,7 +108,7 @@ const Projects = () => {
             مدیریت پروژه‌ها
           </Typography>
           <Link to="/dashboard/projects/create">
-            <Button color="blue" className="flex items-center gap-2">
+            <Button color="blue" className="flex items-center gap-2 cursor-pointer">
               <PlusIcon className="w-5 h-5" />
               ایجاد پروژه جدید
             </Button>

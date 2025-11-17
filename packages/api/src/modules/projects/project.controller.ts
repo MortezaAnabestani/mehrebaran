@@ -76,10 +76,63 @@ class ProjectController {
 
   public update = asyncHandler(async (req: Request, res: Response) => {
     const validatedData = updateProjectSchema.parse({ body: req.body, params: req.params });
-    const project = await projectService.update(validatedData.params.id, validatedData.body);
-    if (!project) {
+
+    // Get existing project first
+    const existingProject = await projectService.findOne(validatedData.params.id);
+    if (!existingProject) {
       throw new ApiError(404, "پروژه مورد نظر یافت نشد.");
     }
+
+    // Transform data to match model requirements
+    const projectData: any = { ...validatedData.body };
+
+    // Build seo object from metaTitle and metaDescription if provided
+    if (projectData.metaTitle || projectData.metaDescription) {
+      projectData.seo = {
+        metaTitle: projectData.metaTitle || existingProject.seo?.metaTitle || projectData.title,
+        metaDescription: projectData.metaDescription || existingProject.seo?.metaDescription || "",
+      };
+      delete projectData.metaTitle;
+      delete projectData.metaDescription;
+    }
+
+    // Handle featuredImage update
+    if (req.processedFiles) {
+      // Delete old image if exists
+      if (existingProject.featuredImage) {
+        const { uploadService } = await import("../upload/upload.service");
+        await uploadService.deleteImage(existingProject.featuredImage);
+      }
+      // Add new image
+      projectData.featuredImage = req.processedFiles;
+    }
+
+    // Convert category slug to ObjectId if provided
+    if (projectData.category && typeof projectData.category === "string") {
+      let category = await CategoryModel.findOne({ slug: projectData.category });
+
+      // Auto-create category if it doesn't exist
+      if (!category) {
+        const categoryNames: Record<string, string> = {
+          health: "بهداشت و سلامت",
+          education: "آموزش",
+          housing: "مسکن",
+          food: "غذا",
+          clothing: "پوشاک",
+          other: "سایر"
+        };
+
+        category = await CategoryModel.create({
+          name: categoryNames[projectData.category] || projectData.category,
+          slug: projectData.category,
+          description: `دسته‌بندی ${categoryNames[projectData.category] || projectData.category}`,
+        });
+      }
+
+      projectData.category = category._id;
+    }
+
+    const project = await projectService.update(validatedData.params.id, projectData);
     res.status(200).json({ message: "پروژه با موفقیت به‌روزرسانی شد.", data: project });
   });
 
@@ -89,6 +142,13 @@ class ProjectController {
     if (!project) {
       throw new ApiError(404, "پروژه مورد نظر یافت نشد.");
     }
+
+    // Delete associated image files if they exist
+    if (project.featuredImage) {
+      const { uploadService } = await import("../upload/upload.service");
+      await uploadService.deleteImage(project.featuredImage);
+    }
+
     await projectService.delete(id);
     res.status(200).json({ message: "پروژه با موفقیت حذف شد." });
   });

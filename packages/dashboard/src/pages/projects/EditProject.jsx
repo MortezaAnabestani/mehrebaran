@@ -69,7 +69,11 @@ const EditProject = () => {
   useEffect(() => {
     if (selectedProject) {
       setEditorContent(selectedProject.description || "");
-      setPreviewImage(selectedProject.featuredImage?.desktop || "");
+      setPreviewImage(
+        selectedProject.featuredImage?.desktop
+          ? `${import.meta.env.VITE_SERVER_PUBLIC_API_URL_WITHOUT_API}${selectedProject.featuredImage.desktop}`
+          : ""
+      );
 
       // تبدیل deadline به تاریخ شمسی
       if (selectedProject.deadline) {

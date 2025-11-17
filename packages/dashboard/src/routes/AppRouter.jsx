@@ -22,6 +22,7 @@ const Users = lazy(() => import("../pages/users/Users"));
 const Comments = lazy(() => import("../pages/comments/Comments"));
 const FAQs = lazy(() => import("../pages/faqs/FAQs"));
 const Needs = lazy(() => import("../pages/needs/Needs"));
+const HelpRequests = lazy(() => import("../pages/help-requests/HelpRequests"));
 const Teams = lazy(() => import("../pages/teams/Teams"));
 const CreateTeam = lazy(() => import("../pages/teams/CreateTeam"));
 const EditTeam = lazy(() => import("../pages/teams/EditTeam"));
@@ -133,6 +134,7 @@ const AppRouter = () => {
               <Route path="needs/create" element={<CreateNeed />} />
               <Route path="needs/edit/:id" element={<EditNeed />} />
               <Route path="needs/:id" element={<NeedDetails />} />
+              <Route path="help-requests" element={<HelpRequests />} />
               <Route path="teams" element={<Teams />} />
               <Route path="teams/create/:needId" element={<CreateTeam />} />
               <Route path="teams/edit/:teamId" element={<EditTeam />} />

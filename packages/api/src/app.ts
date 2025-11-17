@@ -34,6 +34,7 @@ import volunteerRoutes from "./modules/volunteers/volunteer.routes";
 import focusAreaRoutes from "./modules/focus-areas/focus-area.routes";
 import searchRoutes from "./modules/search/search.routes";
 import adminRoutes from "./modules/admin/admin.routes";
+import helpRequestRoutes from "./modules/help-requests/help-request.routes";
 
 const app = express();
 
@@ -73,6 +74,7 @@ app.use("/api/v1/volunteers", volunteerRoutes);
 app.use("/api/v1/focus-areas", focusAreaRoutes);
 app.use("/api/v1/search", searchRoutes);
 app.use("/api/v1/admin", adminRoutes);
+app.use("/api/v1/help-requests", helpRequestRoutes);
 
 app.use(globalErrorHandler);
 

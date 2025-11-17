@@ -27,8 +27,12 @@ class ProjectController {
     delete projectData.metaDescription;
 
     // Add featuredImage from processed file upload (handled by middleware)
+    console.log("🖼️ req.processedFiles:", req.processedFiles);
     if (req.processedFiles) {
       projectData.featuredImage = req.processedFiles;
+      console.log("✅ Added featuredImage to projectData:", projectData.featuredImage);
+    } else {
+      console.log("⚠️ No processedFiles found");
     }
 
     // Convert category slug to ObjectId (create if not exists)

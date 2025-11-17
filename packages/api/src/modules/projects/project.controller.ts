@@ -7,8 +7,9 @@ import { CategoryModel } from "../categories/category.model";
 
 class ProjectController {
   public create = asyncHandler(async (req: Request, res: Response) => {
+    let validatedData;
     try {
-      const validatedData = createProjectSchema.parse({ body: req.body });
+      validatedData = createProjectSchema.parse({ body: req.body });
     } catch (error: any) {
       console.error("❌ Validation error:", error.errors || error);
       throw new ApiError(400, "داده‌های ورودی نامعتبر است.", error.errors);

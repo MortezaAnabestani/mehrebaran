@@ -20,7 +20,6 @@ type Category = "needs" | "users";
  * Displayed within the InstagramLayout from layout.tsx
  */
 const TrendingPage: React.FC = () => {
-
   // State
   const [activeCategory, setActiveCategory] = useState<Category>("needs");
   const [activePeriod, setActivePeriod] = useState<Period>("week");
@@ -114,7 +113,6 @@ const TrendingPage: React.FC = () => {
       if (trendingNeeds.length === 0) {
         return (
           <div className="text-center py-20">
-            <p className="text-gray-400 text-6xl mb-4">🔥</p>
             <p className="text-gray-500 text-lg">در حال حاضر نیازی در این بازه زمانی ترند نیست.</p>
           </div>
         );
@@ -141,7 +139,6 @@ const TrendingPage: React.FC = () => {
       if (trendingUsers.length === 0) {
         return (
           <div className="text-center py-20">
-            <p className="text-gray-400 text-6xl mb-4">⭐</p>
             <p className="text-gray-500 text-lg">در حال حاضر کاربری در این بازه زمانی ترند نیست.</p>
           </div>
         );
@@ -179,12 +176,9 @@ const TrendingPage: React.FC = () => {
   return (
     <>
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2 flex items-center gap-3">
-          <span className="text-4xl">📈</span>
-          محتوای ترند
-        </h1>
-        <p className="text-gray-600">محبوب‌ترین نیازها و کاربران</p>
+      <div className="my-8 bg-mblue p-2 flex items-center justify-between">
+        <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-3">اولویت‌های فوری</h1>
+        <p className="text-gray-100">نیازهای فوری و کاربران محبوب</p>
       </div>
 
       {/* Category Tabs */}

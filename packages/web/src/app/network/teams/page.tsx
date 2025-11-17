@@ -81,7 +81,7 @@ const TeamsPage: React.FC = () => {
               backgroundPosition: "left",
             }}
           ></div>
-          <div className="relative z-10 flex items-center justify-between w-9/10 md:w-8/10 mx-auto gap-10">
+          <div className="relative z-10 flex items-center justify-between w-9/10 mx-auto gap-10">
             <div>
               <h1 className="text-lg md:text-2xl font-extrabold mb-5">تیم‌های نیازسنجی</h1>
               <p className="font-bold text-xs md:text-base/loose">
@@ -101,7 +101,7 @@ const TeamsPage: React.FC = () => {
         </header>
 
         {/* Main Content */}
-        <div className="w-9/10 md:w-8/10 mx-auto my-10">
+        <div className="w-full mx-auto my-10">
           {/* Breadcrumb */}
           <div className="mb-6 text-sm">
             <Link href="/network" className="text-mblue hover:underline">

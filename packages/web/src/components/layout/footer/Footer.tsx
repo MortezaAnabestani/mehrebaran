@@ -23,25 +23,16 @@ const Footer: React.FC<Props> = ({}) => {
   // Minimal footer for network pages - Logo, License, and Codabiat only
   if (isNetworkPage) {
     return (
-      <footer className="bg-white border-t border-gray-200 py-4">
-        <div className="max-w-[1440px] mx-auto px-4">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            {/* Left: Logo + License */}
-            <div className="flex flex-col md:flex-row items-center gap-3 md:gap-4">
-              {/* Logo */}
-              <div className="flex-shrink-0">
-                <OptimizedImage src="/icons/logo.svg" alt="مهر باران" width={80} height={32} />
-              </div>
-              {/* License */}
-              <div className="text-center md:text-right">
-                <License />
-              </div>
+      <footer className="bg-[#3b80c3] border-t border-gray-200 py-4">
+        <div className="w-full mx-auto px-4">
+          <div className="w-full flex flex-col md:flex-row items-center justify-center">
+            <div className="flex flex-col gap-2">
+              <OptimizedImage src="/icons/logo.svg" alt="مهر باران" width={200} height={32} />
+              <SocialMedia setWave={() => null} sdjdm={false} />
             </div>
-
-            {/* Right: Codabiat */}
-            <div className="flex-shrink-0">
-              <Codabiat />
-            </div>
+          </div>
+          <div className="flex-shrink-0">
+            <Codabiat />
           </div>
         </div>
       </footer>
@@ -60,7 +51,7 @@ const Footer: React.FC<Props> = ({}) => {
           isNetworkPage ? "gap-2" : "gap-6"
         } justify-between items-center text-white ${isNetworkPage ? "py-2" : ""}`}
       >
-        <SocialMedia setWave={setShowRain} />
+        <SocialMedia setWave={setShowRain} sdjdm={true} />
         {!isNetworkPage && <Menu />}
         <License />
       </div>

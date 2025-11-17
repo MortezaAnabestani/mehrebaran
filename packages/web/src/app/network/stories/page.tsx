@@ -127,10 +127,7 @@ const StoriesPage: React.FC = () => {
       alert("✓ استوری شما با موفقیت منتشر شد!");
     } catch (error: any) {
       console.error("Error creating story:", error);
-      alert(
-        error.response?.data?.message ||
-          "خطا در ایجاد استوری. لطفاً دوباره تلاش کنید."
-      );
+      alert(error.response?.data?.message || "خطا در ایجاد استوری. لطفاً دوباره تلاش کنید.");
     } finally {
       setIsCreating(false);
     }
@@ -173,24 +170,15 @@ const StoriesPage: React.FC = () => {
       <div className="min-h-screen bg-gray-50 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
-          <div className="mb-8">
+          <div className="mt-8 bg-mblue p-2 text-white">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900 mb-2 flex items-center gap-3">
-                  <span className="text-4xl">📖</span>
-                  استوری‌ها
-                </h1>
-                <p className="text-gray-600">
-                  استوری‌های 24 ساعته از دوستان و همکاران
-                </p>
+                <h1 className="text-3xl font-bold mb-2 flex items-center gap-3">روایت مهر</h1>
+                <p className="text-gray-100">استوری‌های 24 ساعته از دوستان و همکاران</p>
               </div>
 
-              <SmartButton
-                onClick={() => setShowCreateModal(true)}
-                variant="primary"
-                size="lg"
-              >
-                + ایجاد استوری
+              <SmartButton onClick={() => setShowCreateModal(true)} variant="morange" size="md">
+                ایجاد استوری
               </SmartButton>
             </div>
           </div>
@@ -208,17 +196,11 @@ const StoriesPage: React.FC = () => {
               {/* My Stories */}
               {myStories.length > 0 && (
                 <div>
-                  <h2 className="text-lg font-bold text-gray-900 mb-4">
-                    استوری‌های من
-                  </h2>
+                  <h2 className="text-lg font-bold text-gray-900 mb-4">استوری‌های من</h2>
                   <div className="flex gap-4 overflow-x-auto pb-4">
                     {myStories.map((story, index) => (
                       <div key={story._id} className="relative">
-                        <StoryCard
-                          story={story}
-                          hasUnviewed={false}
-                          onClick={handleMyStoryClick}
-                        />
+                        <StoryCard story={story} hasUnviewed={false} onClick={handleMyStoryClick} />
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
@@ -238,9 +220,7 @@ const StoriesPage: React.FC = () => {
               {/* Friends Stories */}
               {storyFeed.length > 0 ? (
                 <div>
-                  <h2 className="text-lg font-bold text-gray-900 mb-4">
-                    استوری‌های دوستان
-                  </h2>
+                  <h2 className="text-lg font-bold text-gray-900 mb-4">استوری‌های دوستان</h2>
                   <div className="flex gap-4 overflow-x-auto pb-4">
                     {storyFeed.map((feedItem) => (
                       <StoryCard
@@ -254,10 +234,7 @@ const StoriesPage: React.FC = () => {
                 </div>
               ) : (
                 <div className="text-center py-20 bg-white rounded-lg border border-gray-200">
-                  <p className="text-gray-400 text-6xl mb-4">📖</p>
-                  <p className="text-gray-500 text-lg mb-2">
-                    استوری جدیدی وجود ندارد
-                  </p>
+                  <p className="text-gray-500 text-lg mb-2">استوری جدیدی وجود ندارد</p>
                   <p className="text-gray-400 text-sm">
                     دوستان خود را دنبال کنید تا استوری‌های آن‌ها را ببینید
                   </p>
@@ -275,19 +252,12 @@ const StoriesPage: React.FC = () => {
             <div className="p-6">
               {/* Header */}
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold text-gray-900">
-                  ایجاد استوری جدید
-                </h2>
+                <h2 className="text-2xl font-bold text-gray-900">ایجاد استوری جدید</h2>
                 <button
                   onClick={() => setShowCreateModal(false)}
                   className="text-gray-400 hover:text-gray-600"
                 >
-                  <svg
-                    className="w-6 h-6"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -300,22 +270,16 @@ const StoriesPage: React.FC = () => {
 
               {/* Story Type Selector */}
               <div className="mb-6">
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  نوع استوری:
-                </label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">نوع استوری:</label>
                 <div className="flex gap-2">
                   {(["image", "video", "text"] as const).map((type) => (
                     <SmartButton
                       key={type}
                       onClick={() => setStoryType(type)}
-                      variant={storyType === type ? "primary" : "outline"}
+                      variant={storyType === type ? "morange" : "mgray"}
                       size="sm"
                     >
-                      {type === "image"
-                        ? "🖼️ تصویر"
-                        : type === "video"
-                        ? "🎥 ویدئو"
-                        : "📝 متن"}
+                      {type === "image" ? "🖼️ تصویر" : type === "video" ? "🎥 ویدئو" : "📝 متن"}
                     </SmartButton>
                   ))}
                 </div>
@@ -325,9 +289,7 @@ const StoriesPage: React.FC = () => {
               {storyType === "text" ? (
                 <div className="space-y-4 mb-6">
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      متن استوری:
-                    </label>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">متن استوری:</label>
                     <textarea
                       value={storyText}
                       onChange={(e) => setStoryText(e.target.value)}
@@ -336,24 +298,18 @@ const StoriesPage: React.FC = () => {
                       rows={4}
                       maxLength={200}
                     />
-                    <p className="text-xs text-gray-500 mt-1">
-                      {storyText.length}/200 کاراکتر
-                    </p>
+                    <p className="text-xs text-gray-500 mt-1">{storyText.length}/200 کاراکتر</p>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      رنگ پس‌زمینه:
-                    </label>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">رنگ پس‌زمینه:</label>
                     <div className="flex gap-2 flex-wrap">
                       {backgroundColors.map((color) => (
                         <button
                           key={color}
                           onClick={() => setStoryBackgroundColor(color)}
                           className={`w-10 h-10 rounded-full border-2 transition-transform ${
-                            storyBackgroundColor === color
-                              ? "border-gray-900 scale-110"
-                              : "border-gray-300"
+                            storyBackgroundColor === color ? "border-gray-900 scale-110" : "border-gray-300"
                           }`}
                           style={{ backgroundColor: color }}
                         />
@@ -363,9 +319,7 @@ const StoriesPage: React.FC = () => {
 
                   {/* Preview */}
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      پیش‌نمایش:
-                    </label>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">پیش‌نمایش:</label>
                     <div
                       className="w-full h-64 rounded-lg flex items-center justify-center p-6"
                       style={{
@@ -373,9 +327,7 @@ const StoriesPage: React.FC = () => {
                         color: "#ffffff",
                       }}
                     >
-                      <p className="text-2xl text-center font-bold">
-                        {storyText || "متن استوری شما..."}
-                      </p>
+                      <p className="text-2xl text-center font-bold">{storyText || "متن استوری شما..."}</p>
                     </div>
                   </div>
                 </div>
@@ -398,9 +350,7 @@ const StoriesPage: React.FC = () => {
 
               {/* Caption */}
               <div className="mb-6">
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  توضیحات (اختیاری):
-                </label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">توضیحات (اختیاری):</label>
                 <input
                   type="text"
                   value={storyCaption}
@@ -415,21 +365,16 @@ const StoriesPage: React.FC = () => {
               <div className="flex gap-3">
                 <SmartButton
                   onClick={handleCreateStory}
-                  variant="primary"
+                  variant="morange"
                   size="lg"
                   className="flex-1"
-                  disabled={
-                    isCreating ||
-                    (storyType === "text"
-                      ? !storyText.trim()
-                      : !uploadedMediaUrl)
-                  }
+                  disabled={isCreating || (storyType === "text" ? !storyText.trim() : !uploadedMediaUrl)}
                 >
                   {isCreating ? "در حال انتشار..." : "انتشار استوری"}
                 </SmartButton>
                 <SmartButton
                   onClick={() => setShowCreateModal(false)}
-                  variant="outline"
+                  variant="mgray"
                   size="lg"
                   disabled={isCreating}
                 >

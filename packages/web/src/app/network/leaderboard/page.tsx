@@ -18,9 +18,9 @@ const LeaderboardPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   // Filters
-  const [category, setCategory] = useState<"points" | "needs_created" | "needs_supported" | "tasks_completed">(
-    "points"
-  );
+  const [category, setCategory] = useState<
+    "points" | "needs_created" | "needs_supported" | "tasks_completed"
+  >("points");
   const [period, setPeriod] = useState<"all_time" | "monthly" | "weekly" | "daily">("all_time");
 
   // دریافت لیدربورد
@@ -79,10 +79,9 @@ const LeaderboardPage: React.FC = () => {
               backgroundPosition: "left",
             }}
           ></div>
-          <div className="relative z-10 flex items-center justify-between w-9/10 md:w-8/10 mx-auto gap-10">
+          <div className="relative z-10 flex items-center justify-between w-9/10 mx-auto">
             <div>
               <h1 className="text-lg md:text-3xl font-extrabold mb-5 flex items-center gap-3">
-                <span className="text-4xl">🏆</span>
                 جدول امتیازات
               </h1>
               <p className="font-bold text-xs md:text-base/loose opacity-90">
@@ -90,12 +89,11 @@ const LeaderboardPage: React.FC = () => {
                 ملحق شوید. هر کاری که انجام می‌دهید، شما را به اهداف خیرخواهانه نزدیک‌تر می‌کند!
               </p>
             </div>
-            <div className="hidden md:block text-6xl">🥇🥈🥉</div>
           </div>
         </header>
 
         {/* Main Content */}
-        <div className="w-9/10 md:w-8/10 mx-auto my-10">
+        <div className="w-full mx-auto my-10">
           {/* Breadcrumb */}
           <div className="mb-6 text-sm">
             <Link href="/network" className="text-mblue hover:underline">
@@ -217,9 +215,7 @@ const LeaderboardPage: React.FC = () => {
               <h3 className="font-bold text-lg mb-3">موقعیت شما:</h3>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="text-3xl font-extrabold text-morange">
-                    #{leaderboard.userEntry.rank}
-                  </div>
+                  <div className="text-3xl font-extrabold text-morange">#{leaderboard.userEntry.rank}</div>
                   <div>
                     <p className="font-bold text-lg">{user?.name}</p>
                     <p className="text-sm text-gray-600">سطح {leaderboard.userEntry.level}</p>
@@ -268,7 +264,9 @@ const LeaderboardPage: React.FC = () => {
               <div className="mt-6 text-center text-sm text-gray-600">
                 <p>
                   تعداد کل شرکت‌کنندگان:{" "}
-                  <span className="font-bold">{(leaderboard.totalParticipants || 0).toLocaleString("fa-IR")}</span>
+                  <span className="font-bold">
+                    {(leaderboard.totalParticipants || 0).toLocaleString("fa-IR")}
+                  </span>
                 </p>
               </div>
             </>
@@ -288,10 +286,18 @@ const LeaderboardPage: React.FC = () => {
               <div>
                 <p className="font-bold text-gray-700 mb-2">فعالیت‌های امتیازی:</p>
                 <ul className="space-y-1 text-gray-600">
-                  <li>• ایجاد نیاز: <span className="font-bold">100 امتیاز</span></li>
-                  <li>• تکمیل تسک: <span className="font-bold">30 امتیاز</span></li>
-                  <li>• پیوستن به تیم: <span className="font-bold">25 امتیاز</span></li>
-                  <li>• حمایت از نیاز: <span className="font-bold">50 امتیاز</span></li>
+                  <li>
+                    • ایجاد نیاز: <span className="font-bold">100 امتیاز</span>
+                  </li>
+                  <li>
+                    • تکمیل تسک: <span className="font-bold">30 امتیاز</span>
+                  </li>
+                  <li>
+                    • پیوستن به تیم: <span className="font-bold">25 امتیاز</span>
+                  </li>
+                  <li>
+                    • حمایت از نیاز: <span className="font-bold">50 امتیاز</span>
+                  </li>
                 </ul>
               </div>
               <div>

@@ -64,9 +64,9 @@ const ExplorePage: React.FC = () => {
   return (
     <>
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">🔍 اکتشاف و پیشنهادات</h1>
-        <p className="text-gray-600">محتوای پیشنهادی برای شما</p>
+      <div className="mt-8 bg-mblue p-2 text-white flex items-center justify-between">
+        <h1 className="text-3xl font-bold mb-2">جستجوی مهر</h1>
+        <p className="text-gray-100">محتوای پیشنهادی برای شما</p>
       </div>
 
       {/* Content */}

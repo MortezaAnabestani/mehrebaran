@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Logo from "@/components/ui/Logo";
+import OptimizedImage from "../ui/OptimizedImage";
 
 interface NavItem {
   label: string;
@@ -25,48 +26,55 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({ onCreateNeed }) => {
   const navItems: NavItem[] = [
     {
       label: "نیازها",
-      icon: "🏠",
+      icon: "/icons/needs.svg",
       href: "/network",
     },
     {
-      label: "کاوش",
-      icon: "🔍",
+      label: "جستجوی مهر",
+      icon: "/icons/analysis.svg",
       href: "/network/explore",
     },
     {
-      label: "استوری‌ها",
-      icon: "📖",
+      label: "روایت مهر",
+      icon: "/icons/storytelling.svg",
       href: "/network/stories",
     },
     {
       label: "تیم‌ها",
-      icon: "👥",
+      icon: "/icons/team.svg",
       href: "/network/teams",
     },
     {
-      label: "ترندینگ",
-      icon: "🔥",
+      label: "اولویت‌های فوری",
+      icon: "/icons/increase.svg",
       href: "/network/trending",
     },
     {
-      label: "لیدربورد",
-      icon: "🏆",
+      label: "پیشگامان مهر",
+      icon: "/icons/leaderboard.svg",
       href: "/network/leaderboard",
     },
     {
-      label: "پروفایل",
-      icon: "👤",
+      label: "کارنامۀ مهر",
+      icon: "/icons/profile.svg",
       href: "/network/profile",
     },
   ];
 
   return (
     <div className="pr-3">
-      {/* Logo */}
-      <div className="mb-8 px-3">
+      <div className="mb-8 px-3 flex items-center gap-2 animate-pulse">
         <Link href="/network">
-          <Logo variant="full" size="md" />
+          <OptimizedImage
+            src={"/icons/short_logo_mehrebaran.svg"}
+            alt={"لوگوی مهرباران"}
+            width={50}
+            height={50}
+          />
         </Link>
+        <h1 className="text-xs font-bold translate-y-1 p-2 text-white bg-[#3b80c3]">
+          شبکۀ نیازسنجی مهرباران
+        </h1>
       </div>
 
       {/* Navigation Items */}
@@ -80,14 +88,16 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({ onCreateNeed }) => {
               href={item.href}
               className={`
                 flex items-center gap-4 px-3 py-3 rounded-lg transition-all duration-200
-                ${
-                  isActive
-                    ? "bg-gray-100 font-bold"
-                    : "hover:bg-gray-50 font-normal"
-                }
+                ${isActive ? "bg-gray-100 font-bold" : "hover:bg-gray-50 font-normal"}
               `}
             >
-              <span className="text-2xl">{item.icon}</span>
+              <OptimizedImage
+                src={item.icon}
+                alt={"آیکون" + item.label}
+                width={30}
+                height={30}
+                className="hover:animate-bounce"
+              />
               <span className="text-base">{item.label}</span>
             </Link>
           );
@@ -98,10 +108,10 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({ onCreateNeed }) => {
       <div className="mt-6 px-3">
         <button
           onClick={onCreateNeed}
-          className="w-full bg-mblue hover:bg-blue-600 text-white font-bold py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
+          className="w-full bg-mblue hover:bg-mblue/90 cursor-pointer text-white font-bold py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
         >
-          <span className="text-xl">+</span>
           <span>ایجاد نیاز</span>
+          <span className="text-xl">+</span>
         </button>
       </div>
 
@@ -111,7 +121,13 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({ onCreateNeed }) => {
           href="/settings"
           className="flex items-center gap-4 px-3 py-3 rounded-lg hover:bg-gray-50 transition-all duration-200"
         >
-          <span className="text-2xl">⚙️</span>
+          <OptimizedImage
+            src={"/icons/settings.svg"}
+            alt={"آیکون تنظیمات"}
+            width={30}
+            height={30}
+            className="hover:animate-bounce"
+          />{" "}
           <span className="text-base">تنظیمات</span>
         </Link>
       </div>

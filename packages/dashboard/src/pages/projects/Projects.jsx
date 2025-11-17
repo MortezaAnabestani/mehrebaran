@@ -133,25 +133,37 @@ const Projects = () => {
             {projects && projects.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {projects.map((project) => (
-                  <Card key={project._id} className="overflow-hidden">
+                  <Card key={project._id} className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow h-full flex flex-col">
                     {/* Featured Image */}
-                    <div className="relative h-48">
-                      <img
-                        src={project.featuredImage?.url || "/placeholder-project.jpg"}
-                        alt={project.featuredImage?.alt || project.title}
-                        className="w-full h-full object-cover"
-                      />
+                    <div className="relative h-48 bg-gray-100">
+                      {project.featuredImage?.desktop ? (
+                        <img
+                          src={project.featuredImage.desktop}
+                          alt={project.title}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.target.src = "/placeholder-project.jpg";
+                          }}
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100">
+                          <Typography variant="h6" color="gray">
+                            بدون تصویر
+                          </Typography>
+                        </div>
+                      )}
                       <div className="absolute top-2 right-2">
                         <Chip
                           value={getStatusLabel(project.status)}
                           color={getStatusColor(project.status)}
                           size="sm"
+                          className="shadow-md"
                         />
                       </div>
                     </div>
 
                     {/* Content */}
-                    <div className="p-4 space-y-4">
+                    <div className="p-4 space-y-4 flex-1 flex flex-col">
                       {/* Title */}
                       <div>
                         <Typography variant="h6" color="blue-gray" className="mb-1">
@@ -244,20 +256,33 @@ const Projects = () => {
                       </div>
 
                       {/* Actions */}
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 mt-auto pt-4 border-t">
                         <Link to={`/dashboard/projects/${project._id}`} className="flex-1">
-                          <Button size="sm" variant="outlined" color="blue" className="w-full">
+                          <Button
+                            size="sm"
+                            variant="gradient"
+                            color="blue"
+                            className="w-full flex items-center justify-center gap-2"
+                          >
+                            <EyeIcon className="w-4 h-4" />
                             مشاهده
                           </Button>
                         </Link>
                         <Link to={`/dashboard/projects/edit/${project._id}`}>
-                          <IconButton size="sm" color="amber">
+                          <IconButton
+                            size="sm"
+                            variant="gradient"
+                            color="amber"
+                            className="shadow-md hover:shadow-lg"
+                          >
                             <PencilIcon className="w-4 h-4" />
                           </IconButton>
                         </Link>
                         <IconButton
                           size="sm"
+                          variant="gradient"
                           color="red"
+                          className="shadow-md hover:shadow-lg"
                           onClick={() => handleDelete(project)}
                         >
                           <TrashIcon className="w-4 h-4" />

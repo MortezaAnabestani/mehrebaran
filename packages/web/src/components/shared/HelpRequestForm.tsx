@@ -40,6 +40,7 @@ export default function HelpRequestForm() {
       formDataToSend.append("description", formData.description);
       formDataToSend.append("guestName", formData.guestName);
       formDataToSend.append("guestEmail", formData.guestEmail);
+      formDataToSend.append("guestPhone", formData.guestPhone);
 
       if (formData.guestPhone) {
         formDataToSend.append("contactInfo", JSON.stringify({ phone: formData.guestPhone }));
@@ -50,13 +51,17 @@ export default function HelpRequestForm() {
         formDataToSend.append("media", file);
       });
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/needs`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/help-requests`, {
         method: "POST",
         body: formDataToSend,
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error("خطا در ارسال درخواست");
+        // نمایش خطای دقیق از سرور
+        const errorMessage = data.message || data.error || "خطا در ارسال درخواست";
+        throw new Error(errorMessage);
       }
 
       setMessage({
@@ -73,10 +78,11 @@ export default function HelpRequestForm() {
         guestPhone: "",
       });
       setFiles([]);
-    } catch (error) {
+    } catch (error: any) {
+      console.error("خطا در ارسال درخواست:", error);
       setMessage({
         type: "error",
-        text: "خطا در ارسال درخواست. لطفاً دوباره تلاش کنید.",
+        text: error.message || "خطا در ارسال درخواست. لطفاً دوباره تلاش کنید.",
       });
     } finally {
       setIsSubmitting(false);
@@ -84,14 +90,10 @@ export default function HelpRequestForm() {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-6 md:p-8">
+    <div className="rounded-lg shadow-lg p-6 md:p-8 md:w-8/10 mx-auto bg-gray-50">
       <div className="text-center mb-6">
-        <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
-          درخواست کمک
-        </h2>
-        <p className="text-gray-600">
-          آیا به کمک نیاز دارید؟ درخواست خود را برای ما ارسال کنید
-        </p>
+        <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">درخواست کمک</h2>
+        <p className="text-gray-600">آیا به کمک نیاز دارید؟ درخواست خود را برای ما ارسال کنید</p>
       </div>
 
       {message && (
@@ -139,9 +141,7 @@ export default function HelpRequestForm() {
             placeholder="لطفاً وضعیت خود را به طور کامل توضیح دهید..."
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
           />
-          <p className="text-xs text-gray-500 mt-1">
-            {formData.description.length}/1000 کاراکتر
-          </p>
+          <p className="text-xs text-gray-500 mt-1">{formData.description.length}/1000 کاراکتر</p>
         </div>
 
         {/* Contact Info */}
@@ -179,16 +179,19 @@ export default function HelpRequestForm() {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            شماره تماس
+            شماره تماس <span className="text-red-500">*</span>
           </label>
           <input
             type="tel"
             name="guestPhone"
             value={formData.guestPhone}
             onChange={handleChange}
+            required
+            pattern="09[0-9]{9}"
             placeholder="09123456789"
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
+          <p className="text-xs text-gray-500 mt-1">فرمت: 09xxxxxxxxx (11 رقم)</p>
         </div>
 
         {/* File Upload */}
@@ -206,10 +209,7 @@ export default function HelpRequestForm() {
               id="file-upload"
               disabled={files.length >= 5}
             />
-            <label
-              htmlFor="file-upload"
-              className="cursor-pointer flex flex-col items-center"
-            >
+            <label htmlFor="file-upload" className="cursor-pointer flex flex-col items-center">
               <svg
                 className="w-12 h-12 text-gray-400 mb-2"
                 fill="none"
@@ -224,9 +224,7 @@ export default function HelpRequestForm() {
                 />
               </svg>
               <span className="text-sm text-gray-600">
-                {files.length >= 5
-                  ? "حداکثر تعداد فایل انتخاب شده"
-                  : "برای انتخاب فایل کلیک کنید"}
+                {files.length >= 5 ? "حداکثر تعداد فایل انتخاب شده" : "برای انتخاب فایل کلیک کنید"}
               </span>
             </label>
           </div>
@@ -235,13 +233,8 @@ export default function HelpRequestForm() {
           {files.length > 0 && (
             <div className="mt-3 space-y-2">
               {files.map((file, index) => (
-                <div
-                  key={index}
-                  className="flex items-center justify-between bg-gray-50 p-2 rounded"
-                >
-                  <span className="text-sm text-gray-700 truncate flex-1">
-                    {file.name}
-                  </span>
+                <div key={index} className="flex items-center justify-between bg-gray-50 p-2 rounded">
+                  <span className="text-sm text-gray-700 truncate flex-1">{file.name}</span>
                   <button
                     type="button"
                     onClick={() => removeFile(index)}
@@ -266,7 +259,7 @@ export default function HelpRequestForm() {
 
         <p className="text-xs text-gray-500 text-center">
           با ارسال درخواست، شما با{" "}
-          <a href="/privacy" className="text-blue-600 hover:underline">
+          <a href="/privacy" className="text-red-600 hover:underline">
             قوانین و مقررات
           </a>{" "}
           ما موافقت می‌کنید

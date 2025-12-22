@@ -134,6 +134,20 @@ const Sidebar = ({ sidebarOpen, me }) => {
                   </div>
                 )}
               </div>
+              <Link
+                rel="preconnect"
+                to={"/dashboard/help-requests"}
+                className={`${
+                  pathname === "/dashboard/help-requests" || pathname.startsWith("/dashboard/help-requests/")
+                    ? "bg-gray-100"
+                    : ""
+                } block`}
+              >
+                <li className="text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group ">
+                  <img src="/assets/icons/helping.svg" alt="help-requests" className="w-6 h-6 ml-2" />
+                  <span className="ml-3 flex-1 whitespace-nowrap"> درخواست‌های کمک</span>
+                </li>
+              </Link>
 
               {/* کمک‌های مالی */}
               <Link

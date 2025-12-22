@@ -53,7 +53,6 @@ const NetworkLayout: React.FC<NetworkLayoutProps> = ({ children }) => {
           rightSidebar={showRightSidebar ? <RightSidebar /> : undefined}
           leftSidebar={<LeftSidebar onCreateNeed={() => setShowCreateNeed(true)} />}
         >
-          {/* Dynamic content from each route */}
           {children}
         </InstagramLayout>
       </PageTransition>

@@ -10,6 +10,7 @@ import SmartSwiper from "@/components/ui/swiper/SmartSwiper";
 import DonationForm from "@/components/shared/DonationForm";
 import VolunteerForm from "@/components/shared/VolunteerForm";
 import Modal from "@/components/ui/Modal";
+import Comment from "@/components/shared/Comment";
 
 interface Props {
   project: IProject;
@@ -46,7 +47,13 @@ export default function ProjectDetailClient({ project, isAuthenticated = false }
                 key={index}
                 className="h-45 md:h-90 w-full rounded-xl border border-mblue/30 shadow-2xs shadow-mgray"
               >
-                <OptimizedImage src={image.desktop} alt={project.title} fill={true} priority="up" rounded />
+                <OptimizedImage
+                  src={process.env.NEXT_PUBLIC_UPLOADS + image.desktop}
+                  alt={project.title}
+                  fill={true}
+                  priority="up"
+                  rounded
+                />
               </div>
             ))}
             showPagination
@@ -110,6 +117,11 @@ export default function ProjectDetailClient({ project, isAuthenticated = false }
         className="text-sm/loose text-justify my-5 prose max-w-none"
         dangerouslySetInnerHTML={{ __html: project.description }}
       />
+
+      {/* Comments Section */}
+      <div className="mt-16">
+        <Comment postId={project._id} postType="Project" />
+      </div>
 
       {/* Modals */}
       <Modal

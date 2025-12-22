@@ -45,7 +45,7 @@ const InstagramLayout: React.FC<InstagramLayoutProps> = ({
 
           {/* Main Feed (Always visible, wider when no left sidebar) */}
           <main
-            className={`flex-1 min-w-0 py-4 w-full ${
+            className={`flex-1 min-w-0 mt-15 py-4 w-full ${
               hasLeftSidebar ? "md:max-w-[630px] lg:max-w-none md:mx-auto lg:mx-0" : "max-w-[900px] mx-auto"
             }`}
           >

@@ -463,7 +463,7 @@ const NeedDetailPage: React.FC = () => {
                     {/* Estimated Duration */}
                     {need.estimatedDuration && (
                       <div className="bg-mgray/5 rounded-md p-4">
-                        <h4 className="font-bold text-sm mb-2 flex items-center gap-2">⏱️ مدت زمان تخمینی</h4>
+                        <h4 className="font-bold text-sm mb-2 flex items-center gap-2"> مدت زمان تخمینی</h4>
                         <p className="text-sm text-gray-700">{need.estimatedDuration}</p>
                       </div>
                     )}
@@ -472,9 +472,7 @@ const NeedDetailPage: React.FC = () => {
                   {/* Required Skills */}
                   {need.requiredSkills && need.requiredSkills.length > 0 && (
                     <div className="bg-mblue/5 rounded-md p-4 mb-6">
-                      <h4 className="font-bold text-sm mb-3 flex items-center gap-2">
-                        🎯 مهارت‌های مورد نیاز
-                      </h4>
+                      <h4 className="font-bold text-sm mb-3 flex items-center gap-2">مهارت‌های مورد نیاز</h4>
                       <div className="flex flex-wrap gap-2">
                         {need.requiredSkills.map((skill, index) => (
                           <span
@@ -598,7 +596,7 @@ const NeedDetailPage: React.FC = () => {
                   {/* Budget Section */}
                   {need.budgetItems && need.budgetItems.length > 0 && (
                     <div className="bg-mgray/10 rounded-md p-6 mb-6">
-                      <h3 className="font-bold text-lg mb-4">💰 بودجه پروژه</h3>
+                      <h3 className="font-bold text-lg mb-4"> بودجه پروژه</h3>
                       <div className="mb-3">
                         <div className="flex justify-between items-center mb-2">
                           <span className="text-sm font-bold text-gray-700">میزان پیشرفت:</span>
@@ -683,7 +681,7 @@ const NeedDetailPage: React.FC = () => {
                   {/* Milestones Section */}
                   {need.milestones && need.milestones.length > 0 && (
                     <div className="bg-mblue/5 rounded-md p-6 mb-6">
-                      <h3 className="font-bold text-lg mb-4">🎯 نقاط عطف پروژه</h3>
+                      <h3 className="font-bold text-lg mb-4"> نقاط عطف پروژه</h3>
                       <div className="space-y-4">
                         {need.milestones
                           .sort((a: any, b: any) => a.order - b.order)
@@ -733,7 +731,7 @@ const NeedDetailPage: React.FC = () => {
                   {/* Updates/Timeline Section */}
                   {need.updates && need.updates.length > 0 && (
                     <div className="bg-morange/5 rounded-md p-6 mb-6">
-                      <h3 className="font-bold text-lg mb-4">📰 به‌روزرسانی‌های پروژه</h3>
+                      <h3 className="font-bold text-lg mb-4"> به‌روزرسانی‌های پروژه</h3>
                       <div className="space-y-4">
                         {need.updates
                           .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime())

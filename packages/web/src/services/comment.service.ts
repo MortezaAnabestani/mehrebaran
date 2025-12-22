@@ -14,7 +14,7 @@ export const getCommentsByPost = async (postId: string): Promise<IComment[]> => 
 interface CreateCommentData {
   content: string;
   post: string;
-  postType: "News" | "Article";
+  postType: "News" | "Article" | "Video" | "Gallery" | "Project";
   guestName?: string;
   guestEmail?: string;
   parent?: string;

@@ -4,6 +4,7 @@ import { Metadata } from "next";
 import HeadTitle from "@/components/features/home/HeadTitle";
 import OptimizedImage from "@/components/ui/OptimizedImage";
 import SmartSwiper from "@/components/ui/swiper/SmartSwiper";
+import Comment from "@/components/shared/Comment";
 
 type PageProps = {
   params: Promise<{ id: string }>;
@@ -127,6 +128,11 @@ export default async function NewsDetailPage({ params }: PageProps) {
             </div>
           </div>
         )}
+
+        {/* Comments Section */}
+        <div className="mt-16">
+          <Comment postId={news._id} postType="News" />
+        </div>
       </div>
     </div>
   );

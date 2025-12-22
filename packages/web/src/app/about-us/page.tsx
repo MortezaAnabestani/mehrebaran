@@ -110,7 +110,7 @@ const AboutUs: React.FC = () => {
             className="text-center mb-12"
           >
             <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">درباره کانون مهرباران</h2>
-            <div className="w-20 h-1 bg-blue-600 mx-auto rounded-full"></div>
+            <div className="w-20 h-1 bg-mblue mx-auto rounded-full"></div>
           </motion.div>
 
           <motion.div
@@ -128,15 +128,15 @@ const AboutUs: React.FC = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
               <div className="text-center p-6 bg-blue-50 rounded-xl">
-                <div className="text-4xl font-bold text-blue-600 mb-2">۱۵۹۰+</div>
+                <div className="text-4xl font-bold text-mblue mb-2">۱۵۹۰+</div>
                 <div className="text-gray-700">داوطلب فعال</div>
               </div>
               <div className="text-center p-6 bg-blue-50 rounded-xl">
-                <div className="text-4xl font-bold text-blue-600 mb-2">۲۲۰+</div>
+                <div className="text-4xl font-bold text-mblue mb-2">۲۲۰+</div>
                 <div className="text-gray-700">پروژه انجام شده</div>
               </div>
               <div className="text-center p-6 bg-blue-50 rounded-xl">
-                <div className="text-4xl font-bold text-blue-600 mb-2">۱۴۱۰۰+</div>
+                <div className="text-4xl font-bold text-mblue mb-2">۱۴۱۰۰+</div>
                 <div className="text-gray-700">ذینفع</div>
               </div>
             </div>
@@ -154,7 +154,7 @@ const AboutUs: React.FC = () => {
             className="text-center mb-12"
           >
             <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">حوزه‌های فعالیت</h2>
-            <div className="w-20 h-1 bg-blue-600 mx-auto rounded-full"></div>
+            <div className="w-20 h-1 bg-mblue mx-auto rounded-full"></div>
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
@@ -174,7 +174,7 @@ const AboutUs: React.FC = () => {
                 transition={{ delay: index * 0.1 }}
                 className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow"
               >
-                <h3 className="text-xl font-bold text-blue-600 mb-3">{item.title}</h3>
+                <h3 className="text-xl font-bold text-mblue mb-3">{item.title}</h3>
                 <p className="text-gray-600 leading-relaxed">{item.desc}</p>
               </motion.div>
             ))}
@@ -192,7 +192,7 @@ const AboutUs: React.FC = () => {
             className="text-center mb-12"
           >
             <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">ارتباط با ما</h2>
-            <div className="w-20 h-1 bg-blue-600 mx-auto rounded-full"></div>
+            <div className="w-20 h-1 bg-mblue mx-auto rounded-full"></div>
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-4xl mx-auto">
@@ -206,7 +206,7 @@ const AboutUs: React.FC = () => {
               <h3 className="text-2xl font-bold text-gray-800 mb-6">اطلاعات تماس</h3>
 
               <div className="flex items-start gap-4">
-                <div className="text-blue-600 text-2xl">📍</div>
+                <div className="text-mblue text-2xl">📍</div>
                 <div>
                   <h4 className="font-bold text-gray-800 mb-1">آدرس</h4>
                   <p className="text-gray-600 leading-relaxed">
@@ -216,7 +216,7 @@ const AboutUs: React.FC = () => {
               </div>
 
               <div className="flex items-start gap-4">
-                <div className="text-blue-600 text-2xl">📞</div>
+                <div className="text-mblue text-2xl">📞</div>
                 <div>
                   <h4 className="font-bold text-gray-800 mb-1">تلفن</h4>
                   <p className="text-gray-600 direction-ltr text-right">۰۵۱-۳۸۸۱۲۳۴۵</p>
@@ -224,7 +224,7 @@ const AboutUs: React.FC = () => {
               </div>
 
               <div className="flex items-start gap-4">
-                <div className="text-blue-600 text-2xl">✉️</div>
+                <div className="text-mblue text-2xl">✉️</div>
                 <div>
                   <h4 className="font-bold text-gray-800 mb-1">ایمیل</h4>
                   <p className="text-gray-600 direction-ltr text-right">info@mehrebaran.ir</p>
@@ -232,17 +232,17 @@ const AboutUs: React.FC = () => {
               </div>
 
               <div className="flex items-start gap-4">
-                <div className="text-blue-600 text-2xl">🌐</div>
+                <div className="text-mblue text-2xl">🌐</div>
                 <div>
                   <h4 className="font-bold text-gray-800 mb-1">شبکه‌های اجتماعی</h4>
                   <div className="flex gap-4 mt-2">
-                    <a href="#" className="text-blue-600 hover:text-blue-700">
+                    <a href="#" className="text-mblue hover:text-blue-700">
                       اینستاگرام
                     </a>
-                    <a href="#" className="text-blue-600 hover:text-blue-700">
+                    <a href="#" className="text-mblue hover:text-blue-700">
                       تلگرام
                     </a>
-                    <a href="#" className="text-blue-600 hover:text-blue-700">
+                    <a href="#" className="text-mblue hover:text-blue-700">
                       آپارات
                     </a>
                   </div>
@@ -262,7 +262,7 @@ const AboutUs: React.FC = () => {
                 اگر علاقه‌مند به فعالیت‌های داوطلبانه و کمک به جامعه هستید، می‌توانید با تکمیل فرم ثبت‌نام به
                 جمع داوطلبان مهرباران بپیوندید.
               </p>
-              <button className="w-full bg-blue-600 text-white px-8 py-4 rounded-xl font-bold hover:bg-blue-700 transition-colors shadow-lg">
+              <button className="w-full bg-mblue text-white px-8 py-4 rounded-xl font-bold hover:bg-blue-700 transition-colors shadow-lg">
                 ثبت‌نام داوطلب
               </button>
             </motion.div>

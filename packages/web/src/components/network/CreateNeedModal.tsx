@@ -7,6 +7,7 @@ import SmartButton from "@/components/ui/SmartButton";
 import FileUploader from "@/components/ui/FileUploader";
 import { getProvinceNames, getCitiesByProvince } from "@/data/iranLocations";
 import { modalSlideUp, backdropFade } from "@/utils/animations";
+import OptimizedImage from "../ui/OptimizedImage";
 
 // Import components with SSR disabled to avoid window/document errors
 const PersianDatePicker = dynamic(() => import("@/components/ui/PersianDatePicker"), {
@@ -78,12 +79,12 @@ const CreateNeedModal: React.FC<CreateNeedModalProps> = ({ isOpen, onClose, onSu
   });
 
   const steps = [
-    { id: 1, title: "اطلاعات اولیه", icon: "📝" },
-    { id: 2, title: "جزئیات", icon: "⚙️" },
-    { id: 3, title: "موقعیت", icon: "📍" },
-    { id: 4, title: "زمان‌بندی", icon: "📅" },
-    { id: 5, title: "بودجه", icon: "💰" },
-    { id: 6, title: "فایل‌ها", icon: "📎" },
+    { id: 1, title: "اطلاعات اولیه", icon: "/icons/primitive_info.svg" },
+    { id: 2, title: "جزئیات", icon: "/icons/details.svg" },
+    { id: 3, title: "موقعیت", icon: "/icons/location_new.svg" },
+    { id: 4, title: "زمان‌بندی", icon: "/icons/timing.svg" },
+    { id: 5, title: "بودجه", icon: "/icons/money.svg" },
+    { id: 6, title: "فایل‌ها", icon: "/icons/files.svg" },
   ];
 
   const updateFormData = (field: string, value: any) => {
@@ -188,10 +189,7 @@ const CreateNeedModal: React.FC<CreateNeedModalProps> = ({ isOpen, onClose, onSu
         <div className="bg-gradient-to-r from-mblue to-mblue/80 text-white p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-2xl font-bold">ثبت نیاز جدید</h2>
-            <button
-              onClick={onClose}
-              className="text-white/80 hover:text-white text-2xl leading-none"
-            >
+            <button onClick={onClose} className="text-white/80 hover:text-white text-2xl leading-none">
               ×
             </button>
           </div>
@@ -228,7 +226,11 @@ const CreateNeedModal: React.FC<CreateNeedModalProps> = ({ isOpen, onClose, onSu
                       : "bg-white/10 text-white/50"
                   }`}
                 >
-                  {index < currentStep ? "✓" : step.icon}
+                  {index < currentStep ? (
+                    "✓"
+                  ) : (
+                    <OptimizedImage src={step.icon} alt={step.title} width={25} height={25} />
+                  )}
                 </div>
                 <span className="text-xs font-medium text-center hidden md:block">{step.title}</span>
               </div>
@@ -270,24 +272,12 @@ const CreateNeedModal: React.FC<CreateNeedModalProps> = ({ isOpen, onClose, onSu
               transition={{ duration: 0.2 }}
             >
               {/* Step Content */}
-              {currentStep === 0 && (
-                <Step1BasicInfo formData={formData} updateFormData={updateFormData} />
-              )}
-              {currentStep === 1 && (
-                <Step2Details formData={formData} updateFormData={updateFormData} />
-              )}
-              {currentStep === 2 && (
-                <Step3Location formData={formData} updateFormData={updateFormData} />
-              )}
-              {currentStep === 3 && (
-                <Step4Timeline formData={formData} updateFormData={updateFormData} />
-              )}
-              {currentStep === 4 && (
-                <Step5Budget formData={formData} updateFormData={updateFormData} />
-              )}
-              {currentStep === 5 && (
-                <Step6Files formData={formData} updateFormData={updateFormData} />
-              )}
+              {currentStep === 0 && <Step1BasicInfo formData={formData} updateFormData={updateFormData} />}
+              {currentStep === 1 && <Step2Details formData={formData} updateFormData={updateFormData} />}
+              {currentStep === 2 && <Step3Location formData={formData} updateFormData={updateFormData} />}
+              {currentStep === 3 && <Step4Timeline formData={formData} updateFormData={updateFormData} />}
+              {currentStep === 4 && <Step5Budget formData={formData} updateFormData={updateFormData} />}
+              {currentStep === 5 && <Step6Files formData={formData} updateFormData={updateFormData} />}
             </motion.div>
           </AnimatePresence>
         </div>
@@ -313,12 +303,7 @@ const CreateNeedModal: React.FC<CreateNeedModalProps> = ({ isOpen, onClose, onSu
               مرحله بعد ←
             </SmartButton>
           ) : (
-            <SmartButton
-              variant="morange"
-              size="md"
-              onClick={handleSubmit}
-              disabled={isSubmitting}
-            >
+            <SmartButton variant="morange" size="md" onClick={handleSubmit} disabled={isSubmitting}>
               {isSubmitting ? "در حال ارسال..." : "ثبت نیاز ✓"}
             </SmartButton>
           )}
@@ -376,14 +361,14 @@ const Step1BasicInfo: React.FC<any> = ({ formData, updateFormData }) => {
           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mblue"
         >
           <option value="">انتخاب دسته‌بندی</option>
-          <option value="آموزش">📚 آموزش</option>
-          <option value="سلامت و درمان">🏥 سلامت و درمان</option>
-          <option value="مسکن">🏠 مسکن</option>
-          <option value="غذا و تغذیه">🍽️ غذا و تغذیه</option>
-          <option value="اشتغال و کسب‌وکار">💼 اشتغال و کسب‌وکار</option>
-          <option value="محیط زیست">🌱 محیط زیست</option>
-          <option value="اضطراری">🚨 اضطراری</option>
-          <option value="فرهنگ و هنر">🎨 فرهنگ و هنر</option>
+          <option value="آموزش">آموزش</option>
+          <option value="سلامت و درمان">سلامت و درمان</option>
+          <option value="مسکن">مسکن</option>
+          <option value="غذا و تغذیه">غذا و تغذیه</option>
+          <option value="اشتغال و کسب‌وکار">اشتغال و کسب‌وکار</option>
+          <option value="محیط زیست"> محیط زیست</option>
+          <option value="اضطراری"> اضطراری</option>
+          <option value="فرهنگ و هنر"> فرهنگ و هنر</option>
         </select>
       </div>
     </div>
@@ -497,7 +482,11 @@ const Step2Details: React.FC<any> = ({ formData, updateFormData }) => {
               className="px-3 py-1 bg-mblue/10 text-mblue rounded-full text-sm flex items-center gap-2"
             >
               {skill}
-              <button type="button" onClick={() => removeSkill(skill)} className="text-red-500 hover:text-red-700">
+              <button
+                type="button"
+                onClick={() => removeSkill(skill)}
+                className="text-red-500 hover:text-red-700"
+              >
                 ×
               </button>
             </span>
@@ -527,7 +516,11 @@ const Step2Details: React.FC<any> = ({ formData, updateFormData }) => {
               className="px-3 py-1 bg-morange/10 text-morange rounded-full text-sm flex items-center gap-2"
             >
               #{tag}
-              <button type="button" onClick={() => removeTag(tag)} className="text-red-500 hover:text-red-700">
+              <button
+                type="button"
+                onClick={() => removeTag(tag)}
+                className="text-red-500 hover:text-red-700"
+              >
                 ×
               </button>
             </span>
@@ -579,9 +572,7 @@ const Step3Location: React.FC<any> = ({ formData, updateFormData }) => {
           <label className="block text-sm font-bold mb-2">شهر</label>
           <select
             value={formData.location.city}
-            onChange={(e) =>
-              updateFormData("location", { ...formData.location, city: e.target.value })
-            }
+            onChange={(e) => updateFormData("location", { ...formData.location, city: e.target.value })}
             disabled={!formData.location.province}
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mblue disabled:bg-gray-100 disabled:cursor-not-allowed"
           >
@@ -600,9 +591,7 @@ const Step3Location: React.FC<any> = ({ formData, updateFormData }) => {
       {/* نقشه انتخاب موقعیت */}
       <LocationPicker
         value={formData.location.coordinates}
-        onChange={(coords) =>
-          updateFormData("location", { ...formData.location, coordinates: coords })
-        }
+        onChange={(coords) => updateFormData("location", { ...formData.location, coordinates: coords })}
         label="انتخاب موقعیت روی نقشه"
       />
 
@@ -610,9 +599,7 @@ const Step3Location: React.FC<any> = ({ formData, updateFormData }) => {
         <label className="block text-sm font-bold mb-2">آدرس کامل</label>
         <textarea
           value={formData.location.address}
-          onChange={(e) =>
-            updateFormData("location", { ...formData.location, address: e.target.value })
-          }
+          onChange={(e) => updateFormData("location", { ...formData.location, address: e.target.value })}
           placeholder="آدرس دقیق محل اجرای نیاز..."
           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mblue min-h-[100px]"
         />
@@ -636,15 +623,13 @@ const Step4Timeline: React.FC<any> = ({ formData, updateFormData }) => {
           label="مهلت اتمام (Deadline)"
           placeholder="انتخاب تاریخ"
         />
-        <p className="text-xs text-gray-500 mt-2">
-          💡 انتخاب مهلت اتمام به مدیریت بهتر پروژه کمک می‌کند
-        </p>
+        <p className="text-xs text-gray-500 mt-2">💡 انتخاب مهلت اتمام به مدیریت بهتر پروژه کمک می‌کند</p>
       </div>
 
       <div className="bg-blue-50 p-4 rounded-lg">
         <p className="text-sm text-gray-700">
-          <strong>نکته:</strong> تعیین یک مهلت واقع‌گرایانه به جذب حامیان کمک می‌کند و
-          نشان می‌دهد که برنامه‌ریزی دقیقی برای اجرای نیاز دارید.
+          <strong>نکته:</strong> تعیین یک مهلت واقع‌گرایانه به جذب حامیان کمک می‌کند و نشان می‌دهد که
+          برنامه‌ریزی دقیقی برای اجرای نیاز دارید.
         </p>
       </div>
     </div>
@@ -673,10 +658,7 @@ const Step5Budget: React.FC<any> = ({ formData, updateFormData }) => {
     );
   };
 
-  const totalBudget = formData.budgetItems.reduce(
-    (sum: number, item: any) => sum + item.estimatedCost,
-    0
-  );
+  const totalBudget = formData.budgetItems.reduce((sum: number, item: any) => sum + item.estimatedCost, 0);
 
   return (
     <div className="space-y-6 animate-fadeIn">
@@ -687,9 +669,7 @@ const Step5Budget: React.FC<any> = ({ formData, updateFormData }) => {
 
       <div className="bg-morange/10 p-4 rounded-lg">
         <div className="text-sm text-gray-600 mb-1">جمع کل بودجه:</div>
-        <div className="text-2xl font-bold text-morange">
-          {totalBudget.toLocaleString()} تومان
-        </div>
+        <div className="text-2xl font-bold text-morange">{totalBudget.toLocaleString()} تومان</div>
       </div>
 
       <div className="border border-gray-300 rounded-lg p-4 space-y-3">
@@ -762,9 +742,7 @@ const Step6Files: React.FC<any> = ({ formData, updateFormData }) => {
     <div className="space-y-6 animate-fadeIn">
       <div>
         <h3 className="text-xl font-bold mb-2 text-mblue">فایل‌های پیوست</h3>
-        <p className="text-sm text-gray-600">
-          تصاویر، ویدیو یا اسناد مرتبط با نیاز را اضافه کنید
-        </p>
+        <p className="text-sm text-gray-600">تصاویر، ویدیو یا اسناد مرتبط با نیاز را اضافه کنید</p>
       </div>
 
       <FileUploader

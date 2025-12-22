@@ -32,7 +32,7 @@ const News: React.FC = async () => {
 
       {/* Blog/Magazine Promotion Section */}
       <div className="mt-16 mb-10">
-        <div className="bg-gradient-to-tr from-sky-50 via-sky-300 to-sky-50 rounded-2xl p-10 text-center shadow-xl">
+        <div className="bg-gradient-to-tr from-mblue/30 via-mblue/15 to-mblue/30 rounded-2xl p-10 text-center shadow-xl">
           <h2 className="text-3xl font-bold mb-4">مجله مهرباران</h2>
           <p className="text-lg mb-6 opacity-90">
             مقالات، گزارش تصویری و ویدیوهای الهام‌بخش از فعالیت‌های خیریه

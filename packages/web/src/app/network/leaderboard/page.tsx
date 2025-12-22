@@ -118,7 +118,7 @@ const LeaderboardPage: React.FC = () => {
                         : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                     }`}
                   >
-                    ⭐ امتیازات
+                    امتیازات
                   </button>
                   <button
                     onClick={() => setCategory("needs_created")}
@@ -128,7 +128,7 @@ const LeaderboardPage: React.FC = () => {
                         : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                     }`}
                   >
-                    📝 نیازهای ایجاد شده
+                    نیازهای ایجاد شده
                   </button>
                   <button
                     onClick={() => setCategory("needs_supported")}
@@ -138,7 +138,7 @@ const LeaderboardPage: React.FC = () => {
                         : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                     }`}
                   >
-                    🤝 نیازهای پشتیبانی شده
+                    نیازهای پشتیبانی شده
                   </button>
                   <button
                     onClick={() => setCategory("tasks_completed")}
@@ -148,7 +148,7 @@ const LeaderboardPage: React.FC = () => {
                         : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                     }`}
                   >
-                    ✅ تسک‌های تکمیل شده
+                    تسک‌های تکمیل شده
                   </button>
                 </div>
               </div>

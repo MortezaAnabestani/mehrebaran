@@ -14,7 +14,7 @@ export interface IComment {
   guestName?: string;
   guestEmail?: string;
   post: Types.ObjectId | string;
-  postType: "News" | "Article" | "Project";
+  postType: "News" | "Article" | "Video" | "Gallery" | "Project";
   parent?: IComment | Types.ObjectId | string;
   status: CommentStatus;
   createdAt: Date;

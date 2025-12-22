@@ -52,7 +52,7 @@ const Header: React.FC<Props> = ({}) => {
           }  `}
         >
           <div className="hidden md:block">
-            <Search onSearch={(term) => console.log("جستجو شد:", term)} />
+            <Search />
             <Navbar deviceSize="desktop" />
           </div>
           <div className="block md:hidden duration-200 transition-all">
@@ -62,7 +62,6 @@ const Header: React.FC<Props> = ({}) => {
             {open && (
               <div className={`absolute top-16.5 w-full ${mobileBg} pt-2`}>
                 <Search
-                  onSearch={(term) => console.log("جستجو شد:", term)}
                   className="w-9/10 min-w-9/10 mx-auto"
                 />
                 <Navbar deviceSize="mobile" />

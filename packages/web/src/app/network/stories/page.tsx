@@ -279,7 +279,7 @@ const StoriesPage: React.FC = () => {
                       variant={storyType === type ? "morange" : "mgray"}
                       size="sm"
                     >
-                      {type === "image" ? "🖼️ تصویر" : type === "video" ? "🎥 ویدئو" : "📝 متن"}
+                      {type === "image" ? "تصویر" : type === "video" ? " ویدئو" : " متن"}
                     </SmartButton>
                   ))}
                 </div>

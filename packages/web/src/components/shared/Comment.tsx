@@ -7,7 +7,7 @@ import { getCommentsByPost, createComment } from "@/services/comment.service";
 
 interface CommentProps {
   postId: string;
-  postType: "News" | "Article" | "Video" | "Gallery";
+  postType: "News" | "Article" | "Video" | "Gallery" | "Project";
 }
 
 const Comment: React.FC<CommentProps> = ({ postId, postType }) => {
@@ -60,44 +60,90 @@ const Comment: React.FC<CommentProps> = ({ postId, postType }) => {
     <div className="my-10 w-full">
       {/* بخش نمایش کامنت‌ها */}
       <div className="flex items-center justify-center md:justify-between gap-2">
-        <SmartButton>نظرات ({comments.length})</SmartButton>
+        <SmartButton size="md" className="text-xs min-w-fit">
+          نظرات ({comments.length})
+        </SmartButton>
         <span className="w-full h-[2.5px] bg-mblue/60"></span>
       </div>
-      <div className="my-5 space-y-6">
+      <div className="my-5 space-y-4">
         {isLoading ? (
-          <p>در حال بارگذاری نظرات...</p>
+          <div className="text-center py-8">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-mblue"></div>
+            <p className="mt-3 text-gray-600">در حال بارگذاری نظرات...</p>
+          </div>
         ) : comments.length > 0 ? (
           comments.map((comment) => (
-            <div key={comment._id} className="p-4 border-r-4 border-mblue bg-gray-50 rounded">
-              <p className="font-bold">
-                {typeof comment.author !== "string" ? comment.author?.name : comment.guestName}
-              </p>
-              <p className="mt-2 text-gray-700">{comment.content}</p>
-              <p className="mt-2 text-xs text-gray-400">
-                {new Date(comment.createdAt).toLocaleDateString("fa-IR")}
-              </p>
+            <div
+              key={comment._id}
+              className="p-5 border-r-4 border-mblue bg-gradient-to-l from-gray-50 to-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300"
+            >
+              <div className="flex items-center justify-between mb-3">
+                <p className="font-bold text-gray-800 text-base">
+                  {typeof comment.author !== "string" && comment.author && "name" in comment.author
+                    ? comment.author.name
+                    : comment.guestName}
+                </p>
+                <p className="text-xs text-gray-400">
+                  {new Date(comment.createdAt).toLocaleDateString("fa-IR", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </p>
+              </div>
+              <p className="text-gray-700 leading-relaxed text-justify">{comment.content}</p>
             </div>
           ))
         ) : (
-          <p>هنوز نظری برای این مطلب ثبت نشده است. شما اولین نفر باشید!</p>
+          <div className="text-center py-12 bg-gray-50 rounded-lg border border-gray-200">
+            <svg
+              className="w-16 h-16 mx-auto text-gray-300 mb-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+              />
+            </svg>
+            <p className="text-gray-600 font-medium">
+              هنوز نظری برای این مطلب ثبت نشده است. شما اولین نفر باشید!
+            </p>
+          </div>
         )}
       </div>
 
       {/* بخش فرم ارسال کامنت */}
       <div className="flex items-center justify-center md:justify-between gap-2 mt-12">
-        <SmartButton>نظر خود را بنویسید</SmartButton>
+        <SmartButton size="md" className="text-xs min-w-fit">
+          نظر خود را بنویسید
+        </SmartButton>
         <span className="w-full h-[2.5px] bg-mblue/60"></span>
+        {formMessage && (
+          <div
+            className={`min-w-fit p-2 rounded-lg text-xs font-bold text-center ${
+              formMessage.includes("موفقیت")
+                ? "bg-green-50 text-green-700 border border-green-200"
+                : "bg-red-50 text-red-700 border border-red-200"
+            }`}
+          >
+            {formMessage}
+          </div>
+        )}
       </div>
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col md:flex-row gap-3 justify-between items-center w-full my-5"
+        className="flex flex-col md:flex-row gap-4 justify-between items-start w-full my-6 h-[150px]"
       >
         <textarea
           placeholder="نظرات شما..."
           value={content}
           onChange={(e) => setContent(e.target.value)}
           required
-          className="w-full h-40 md:h-full md:w-7/10 border-[2.5px] border-mblue/60 p-2"
+          className="w-full min-h-full md:h-full md:w-7/10 border-2 border-mblue/40 focus:border-mblue focus:outline-none focus:ring-2 focus:ring-mblue/20 p-3 rounded-lg transition-all duration-200 resize-none"
         />
         <div className="h-full w-full md:w-3/10 flex flex-col gap-3 items-center justify-between">
           <input
@@ -106,7 +152,7 @@ const Comment: React.FC<CommentProps> = ({ postId, postType }) => {
             value={guestName}
             onChange={(e) => setGuestName(e.target.value)}
             required
-            className="h-12 w-full border-[2.5px] border-mblue/60 p-2"
+            className="h-12 w-full border-2 border-mblue/40 focus:border-mblue focus:outline-none focus:ring-2 focus:ring-mblue/20 px-3 rounded-lg transition-all duration-200"
           />
           <input
             type="email"
@@ -114,12 +160,11 @@ const Comment: React.FC<CommentProps> = ({ postId, postType }) => {
             value={guestEmail}
             onChange={(e) => setGuestEmail(e.target.value)}
             required
-            className="h-12 w-full border-[2.5px] border-mblue/60 p-2"
+            className="h-12 w-full border-2 border-mblue/40 focus:border-mblue focus:outline-none focus:ring-2 focus:ring-mblue/20 px-3 rounded-lg transition-all duration-200"
           />
           <SmartButton type="submit" fullWidth={true} disabled={isSubmitting}>
             {isSubmitting ? "در حال ارسال..." : "ارسال نظر"}
           </SmartButton>
-          {formMessage && <p className="mt-2 text-sm">{formMessage}</p>}
         </div>
       </form>
     </div>

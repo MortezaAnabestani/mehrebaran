@@ -4,6 +4,12 @@ import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  server: {
+    host: "127.0.0.1",
+    port: 5173,
+    strictPort: false,
+    open: false,
+  },
   build: {
     target: "es2015", // کد مدرن‌تر تولید می‌کند
     minify: "terser", // بهتر از esbuild برای حذف dead code

@@ -62,7 +62,7 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
 function NeedsModerationTab() {
   const [needs, setNeeds] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [selectedNeeds, setSelectedNeeds] = useState<string[]>([]);
+  const [selectedNeeds, setSelectedNeeds] = useState([]);
   const [filters, setFilters] = useState({
     status: "",
     search: "",
@@ -101,7 +101,7 @@ function NeedsModerationTab() {
     }
   };
 
-  const handleBulkAction = async (status: string) => {
+  const handleBulkAction = async (status) => {
     if (selectedNeeds.length === 0) {
       alert("لطفاً حداقل یک نیاز را انتخاب کنید");
       return;
@@ -132,7 +132,7 @@ function NeedsModerationTab() {
     }
   };
 
-  const toggleNeed = (needId: string) => {
+  const toggleNeed = (needId) => {
     setSelectedNeeds((prev) =>
       prev.includes(needId) ? prev.filter((id) => id !== needId) : [...prev, needId]
     );
@@ -142,7 +142,7 @@ function NeedsModerationTab() {
     if (selectedNeeds.length === needs.length) {
       setSelectedNeeds([]);
     } else {
-      setSelectedNeeds(needs.map((need: any) => need._id));
+      setSelectedNeeds(needs.map((need) => need._id));
     }
   };
 
@@ -249,7 +249,7 @@ function NeedsModerationTab() {
             </thead>
             <tbody>
               {needs.length > 0 ? (
-                needs.map((need: any) => (
+                needs.map((need) => (
                   <tr key={need._id} className="border-b hover:bg-gray-50">
                     <td className="p-4">
                       <Checkbox
@@ -415,7 +415,7 @@ function CommentsModerationTab() {
             </thead>
             <tbody>
               {comments.length > 0 ? (
-                comments.map((comment: any) => (
+                comments.map((comment) => (
                   <tr key={comment._id} className="border-b hover:bg-gray-50">
                     <td className="p-4 max-w-md">
                       <Typography variant="small" className="line-clamp-2">
@@ -506,7 +506,7 @@ function DonationsModerationTab() {
     }
   };
 
-  const handleUpdateStatus = async (donationId: string, status: string) => {
+  const handleUpdateStatus = async (donationId, status) => {
     try {
       await api.put(
         `/admin/moderation/donations/${donationId}/status`,
@@ -586,7 +586,7 @@ function DonationsModerationTab() {
             </thead>
             <tbody>
               {donations.length > 0 ? (
-                donations.map((donation: any) => (
+                donations.map((donation) => (
                   <tr key={donation._id} className="border-b hover:bg-gray-50">
                     <td className="p-4">
                       <Typography variant="small" className="font-semibold">

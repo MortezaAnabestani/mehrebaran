@@ -8,9 +8,9 @@ import ProtectedRoute from "./ProtectedRoute";
 import Loading from "../components/Loading";
 
 // Import Analytics, Moderation, and Activity Feed Pages
-const AnalyticsPage = lazy(() => import("../page/AnalyticsPage"));
-const ModerationPage = lazy(() => import("../page/ModerationPage"));
-const ActivityFeedPage = lazy(() => import("../page/ActivityFeedPage"));
+const AnalyticsPage = lazy(() => import("../pages/AnalyticsPage"));
+const ModerationPage = lazy(() => import("../pages/ModerationPage"));
+const ActivityFeedPage = lazy(() => import("../pages/ActivityFeedPage"));
 
 // صفحات اصلی (بارگذاری معمولی)
 const Articles = lazy(() => import("../pages/articles/Articles"));

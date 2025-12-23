@@ -12,7 +12,7 @@ import {
 import api from "../services/api";
 
 // Pagination Component
-const Pagination = ({ currentPage, totalPages, onPageChange }: any) => {
+const Pagination = ({ currentPage, totalPages, onPageChange }) => {
   const pages = [];
   const maxVisiblePages = 5;
 
@@ -87,8 +87,8 @@ const Pagination = ({ currentPage, totalPages, onPageChange }: any) => {
 };
 
 // Activity Type Badge
-const ActivityTypeBadge = ({ type }: { type: string }) => {
-  const typeConfig: Record<string, { color: string; label: string }> = {
+const ActivityTypeBadge = ({ type }) => {
+  const typeConfig = {
     need: { color: "blue", label: "نیاز" },
     donation: { color: "green", label: "کمک مالی" },
     comment: { color: "purple", label: "نظر" },
@@ -102,7 +102,7 @@ const ActivityTypeBadge = ({ type }: { type: string }) => {
   return (
     <Chip
       value={config.label}
-      color={config.color as any}
+      color={config.color}
       size="sm"
       className="rounded-full"
     />
@@ -110,8 +110,8 @@ const ActivityTypeBadge = ({ type }: { type: string }) => {
 };
 
 // Activity Card Component
-const ActivityCard = ({ activity }: { activity: any }) => {
-  const formatDate = (date: string) => {
+const ActivityCard = ({ activity }) => {
+  const formatDate = (date) => {
     const d = new Date(date);
     const now = new Date();
     const diff = now.getTime() - d.getTime();
@@ -294,7 +294,7 @@ const ActivityCard = ({ activity }: { activity: any }) => {
 
 // Main Activity Feed Page
 const ActivityFeedPage = () => {
-  const [activities, setActivities] = useState<any[]>([]);
+  const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({
     activityType: "",
@@ -312,7 +312,7 @@ const ActivityFeedPage = () => {
   const fetchActivities = async () => {
     try {
       setLoading(true);
-      const params: any = {
+      const params = {
         page: filters.page,
         limit: filters.limit,
         days: filters.days,
@@ -438,7 +438,7 @@ const ActivityFeedPage = () => {
             <Pagination
               currentPage={pagination.page}
               totalPages={pagination.totalPages}
-              onPageChange={(page: number) => setFilters({ ...filters, page })}
+              onPageChange={(page) => setFilters({ ...filters, page })}
             />
           )}
         </>

@@ -27,6 +27,21 @@ class DonationController {
     });
   });
 
+  // Get all donations with filters and pagination
+  public getAll = asyncHandler(async (req: Request, res: Response) => {
+    const filters = req.query;
+    const result = await donationService.findAll(filters);
+
+    res.status(200).json({
+      data: result.donations,
+      pagination: {
+        total: result.total,
+        page: result.page,
+        totalPages: result.totalPages,
+      },
+    });
+  });
+
   // Get donation by ID or tracking code
   public getOne = asyncHandler(async (req: Request, res: Response) => {
     const { identifier } = req.params;

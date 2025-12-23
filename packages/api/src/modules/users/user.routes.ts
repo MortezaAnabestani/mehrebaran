@@ -13,4 +13,6 @@ router.get("/", restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN), userController
 
 router.get("/:id", userController.getUserById);
 
+router.delete("/:id", restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN), userController.deleteUser);
+
 export default router;

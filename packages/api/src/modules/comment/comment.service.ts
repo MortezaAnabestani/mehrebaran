@@ -19,6 +19,31 @@ class CommentService {
       .sort({ createdAt: -1 });
   }
 
+  public async findPending(page: number = 1, limit: number = 10): Promise<{ comments: IComment[]; totalPages: number }> {
+    const skip = (page - 1) * limit;
+    const [comments, total] = await Promise.all([
+      CommentModel.find({ status: "pending" })
+        .populate("author", "name")
+        .populate("post", "title slug")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit),
+      CommentModel.countDocuments({ status: "pending" }),
+    ]);
+    return {
+      comments,
+      totalPages: Math.ceil(total / limit),
+    };
+  }
+
+  public async approve(id: string): Promise<IComment | null> {
+    return CommentModel.findByIdAndUpdate(id, { status: "approved" }, { new: true });
+  }
+
+  public async reject(id: string): Promise<IComment | null> {
+    return CommentModel.findByIdAndUpdate(id, { status: "rejected" }, { new: true });
+  }
+
   public async update(id: string, data: { content?: string; status?: string }): Promise<IComment | null> {
     return CommentModel.findByIdAndUpdate(id, data, { new: true });
   }

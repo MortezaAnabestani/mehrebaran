@@ -39,6 +39,29 @@ class CommentController {
     res.status(200).json({ data: comments });
   });
 
+  public getPending = asyncHandler(async (req: Request, res: Response) => {
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const result = await commentService.findPending(page, limit);
+    res.status(200).json({ comments: result.comments, totalPages: result.totalPages });
+  });
+
+  public approve = asyncHandler(async (req: Request, res: Response) => {
+    const comment = await commentService.approve(req.params.id);
+    if (!comment) {
+      throw new ApiError(404, "نظر یافت نشد.");
+    }
+    res.status(200).json({ message: "نظر با موفقیت تایید شد.", data: comment });
+  });
+
+  public reject = asyncHandler(async (req: Request, res: Response) => {
+    const comment = await commentService.reject(req.params.id);
+    if (!comment) {
+      throw new ApiError(404, "نظر یافت نشد.");
+    }
+    res.status(200).json({ message: "نظر رد شد.", data: comment });
+  });
+
   public update = asyncHandler(async (req: Request, res: Response) => {
     const validatedData = updateCommentSchema.parse({ body: req.body, params: req.params });
     const comment = await commentService.update(validatedData.params.id, validatedData.body);

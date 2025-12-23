@@ -29,6 +29,16 @@ class UserController {
       data: user,
     });
   });
+
+  public deleteUser = asyncHandler(async (req: Request, res: Response) => {
+    const user = await userService.deleteUser(req.params.id);
+    if (!user) {
+      throw new ApiError(404, "کاربری با این شناسه یافت نشد.");
+    }
+    res.status(200).json({
+      message: "کاربر با موفقیت حذف شد.",
+    });
+  });
 }
 
 export const userController = new UserController();

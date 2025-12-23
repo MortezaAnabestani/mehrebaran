@@ -123,7 +123,6 @@ const notificationSchema = new Schema<INotification>(
     // Expiry
     expiresAt: {
       type: Date,
-      index: true,
     },
   },
   {

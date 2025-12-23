@@ -68,7 +68,13 @@ const DonationDetails = () => {
       rejected: { label: "رد شده", class: "bg-gray-100 text-gray-800" },
     };
     const statusInfo = statusMap[status] || { label: status, class: "bg-gray-100 text-gray-800" };
-    return <span className={`px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full ${statusInfo.class}`}>{statusInfo.label}</span>;
+    return (
+      <span
+        className={`px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full ${statusInfo.class}`}
+      >
+        {statusInfo.label}
+      </span>
+    );
   };
 
   const getPaymentMethodLabel = (method) => {
@@ -92,7 +98,10 @@ const DonationDetails = () => {
     return (
       <div className="bg-white rounded-md p-6">
         <p className="text-center text-red-600">خطا در بارگذاری اطلاعات: {error}</p>
-        <button onClick={() => navigate("/dashboard/donations")} className="mt-4 px-4 py-2 bg-blue-500 text-white rounded mx-auto block">
+        <button
+          onClick={() => navigate("/dashboard/donations")}
+          className="mt-4 px-4 py-2 bg-blue-500 text-white rounded mx-auto block"
+        >
           بازگشت به لیست
         </button>
       </div>
@@ -100,7 +109,8 @@ const DonationDetails = () => {
   }
 
   const donation = selectedDonation;
-  const needsVerification = donation.paymentMethod === "bank_transfer" && donation.status === "pending" && donation.receipt;
+  const needsVerification =
+    donation.paymentMethod === "bank_transfer" && donation.status === "pending" && donation.receipt;
 
   return (
     <div className="bg-gray-50 min-h-screen p-6">
@@ -112,9 +122,7 @@ const DonationDetails = () => {
               <h1 className="text-2xl font-bold text-gray-900">جزئیات کمک مالی</h1>
               <p className="text-sm text-gray-600 mt-1">کد پیگیری: {donation.trackingCode || "-"}</p>
             </div>
-            <div className="text-left">
-              {getStatusBadge(donation.status)}
-            </div>
+            <div className="text-left">{getStatusBadge(donation.status)}</div>
           </div>
         </div>
 
@@ -137,7 +145,9 @@ const DonationDetails = () => {
             <div className="space-y-3">
               <div>
                 <span className="text-gray-600 text-sm">مبلغ:</span>
-                <p className="font-bold text-green-600 text-xl">{toPersianDigits(donation.amount.toLocaleString("fa-IR"))} تومان</p>
+                <p className="font-bold text-green-600 text-xl">
+                  {toPersianDigits(donation.amount.toLocaleString("fa-IR"))} تومان
+                </p>
               </div>
               <div>
                 <span className="text-gray-600 text-sm">روش پرداخت:</span>
@@ -210,18 +220,24 @@ const DonationDetails = () => {
               </div>
               <div>
                 <span className="text-gray-600 text-sm">تاریخ آپلود:</span>
-                <p className="font-medium">{toPersianDigits(convertToPersianTime(donation.receipt.uploadedAt, "YYYY/MM/DD - HH:mm"))}</p>
+                <p className="font-medium">
+                  {toPersianDigits(convertToPersianTime(donation.receipt.uploadedAt, "YYYY/MM/DD - HH:mm"))}
+                </p>
               </div>
               {donation.receipt.verified && donation.receipt.verifiedAt && (
                 <div>
                   <span className="text-gray-600 text-sm">تاریخ تایید:</span>
-                  <p className="font-medium">{toPersianDigits(convertToPersianTime(donation.receipt.verifiedAt, "YYYY/MM/DD - HH:mm"))}</p>
+                  <p className="font-medium">
+                    {toPersianDigits(convertToPersianTime(donation.receipt.verifiedAt, "YYYY/MM/DD - HH:mm"))}
+                  </p>
                 </div>
               )}
               {donation.receipt.rejectionReason && (
                 <div>
                   <span className="text-gray-600 text-sm">دلیل رد:</span>
-                  <p className="mt-1 p-3 bg-red-50 text-red-800 rounded">{donation.receipt.rejectionReason}</p>
+                  <p className="mt-1 p-3 bg-red-50 text-red-800 rounded">
+                    {donation.receipt.rejectionReason}
+                  </p>
                 </div>
               )}
             </div>
@@ -267,12 +283,21 @@ const DonationDetails = () => {
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
           <h2 className="text-lg font-semibold mb-4">تاریخچه</h2>
           <div className="space-y-2 text-sm">
-            <p><span className="font-medium">تاریخ ثبت:</span> {toPersianDigits(convertToPersianTime(donation.createdAt, "YYYY/MM/DD - HH:mm"))}</p>
+            <p>
+              <span className="font-medium">تاریخ ثبت:</span>{" "}
+              {toPersianDigits(convertToPersianTime(donation.createdAt, "YYYY/MM/DD - HH:mm"))}
+            </p>
             {donation.completedAt && (
-              <p><span className="font-medium">تاریخ تکمیل:</span> {toPersianDigits(convertToPersianTime(donation.completedAt, "YYYY/MM/DD - HH:mm"))}</p>
+              <p>
+                <span className="font-medium">تاریخ تکمیل:</span>{" "}
+                {toPersianDigits(convertToPersianTime(donation.completedAt, "YYYY/MM/DD - HH:mm"))}
+              </p>
             )}
             {donation.verifiedAt && (
-              <p><span className="font-medium">تاریخ تایید:</span> {toPersianDigits(convertToPersianTime(donation.verifiedAt, "YYYY/MM/DD - HH:mm"))}</p>
+              <p>
+                <span className="font-medium">تاریخ تایید:</span>{" "}
+                {toPersianDigits(convertToPersianTime(donation.verifiedAt, "YYYY/MM/DD - HH:mm"))}
+              </p>
             )}
           </div>
         </div>

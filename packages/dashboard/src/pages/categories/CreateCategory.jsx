@@ -3,43 +3,33 @@ import { useDispatch, useSelector } from "react-redux";
 import { createCategory } from "../../features/categoriesSlice";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { ArrowRight, Save, Info } from "lucide-react";
 
 const CreateCategory = () => {
-  const [formData, setFormData] = useState({
-    name: "",
-    slug: "",
-    description: "",
-  });
+  const [formData, setFormData] = useState({ name: "", slug: "", description: "" });
   const { loading } = useSelector((state) => state.categories);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-
-    // Auto-generate slug from name
-    if (name === "name" && !formData.slug) {
-      const slug = value
-        .toLowerCase()
-        .replace(/\s+/g, "-")
-        .replace(/[^a-z0-9\u0600-\u06FF-]/g, "");
-      setFormData((prev) => ({
-        ...prev,
-        slug,
-      }));
-    }
+    setFormData((prev) => {
+      const newData = { ...prev, [name]: value };
+      // Smart Slug Generation (Supports Persian/English)
+      if (name === "name") {
+        newData.slug = value
+          .trim()
+          .toLowerCase()
+          .replace(/\s+/g, "-")
+          .replace(/[^\w\u0600-\u06FF-]+/g, "");
+      }
+      return newData;
+    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.name || !formData.slug) {
-      toast.error("نام و slug اجباری هستند.");
-      return;
-    }
+    if (!formData.name || !formData.slug) return toast.error("تکمیل فیلدهای ستاره‌دار الزامی است.");
 
     const result = await dispatch(createCategory(formData));
     if (!result.error) {
@@ -49,82 +39,89 @@ const CreateCategory = () => {
   };
 
   return (
-    <div className="ml-3">
-      <div className="bg-white rounded-md p-6">
-        <h2 className="text-xl font-medium mb-6">ایجاد دسته‌بندی جدید</h2>
+    <div className="p-6 min-h-screen bg-[#cccccc]">
+      <div className="max-w-3xl mx-auto bg-white rounded-[8px] shadow-soft overflow-hidden">
+        <div className="bg-[#007acc] p-6 text-white flex items-center justify-between">
+          <h2 className="text-xl font-bold flex items-center gap-2">
+            <Save size={20} />
+            ایجاد دسته‌بندی جدید
+          </h2>
+          <button
+            onClick={() => navigate("/dashboard/categories")}
+            className="text-white/80 hover:text-white flex items-center gap-1 text-sm transition-colors"
+          >
+            بازگشت
+            <ArrowRight size={18} />
+          </button>
+        </div>
 
-        <form onSubmit={handleSubmit} className="max-w-2xl">
-          <div className="space-y-4">
+        <form onSubmit={handleSubmit} className="p-8 space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Name */}
-            <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                نام دسته‌بندی <span className="text-red-500">*</span>
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-[#1e1e1e]">
+                نام دسته‌بندی <span className="text-[#f7891b]">*</span>
               </label>
               <input
                 type="text"
-                id="name"
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="مثال: تکنولوژی"
+                className="w-full px-4 py-3 rounded-[8px] border border-gray-200 focus:border-[#007acc] focus:ring-4 focus:ring-[#007acc]/10 outline-none transition-all"
+                placeholder="مثلاً: لوازم دیجیتال"
               />
             </div>
 
             {/* Slug */}
-            <div>
-              <label htmlFor="slug" className="block text-sm font-medium text-gray-700 mb-1">
-                Slug <span className="text-red-500">*</span>
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-[#1e1e1e]">
+                اسلاگ (Slug) <span className="text-[#f7891b]">*</span>
               </label>
               <input
                 type="text"
-                id="slug"
                 name="slug"
                 value={formData.slug}
                 onChange={handleChange}
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="technology"
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                Slug به صورت خودکار از نام ایجاد می‌شود. فقط از حروف کوچک، اعداد و خط تیره استفاده کنید.
-              </p>
-            </div>
-
-            {/* Description */}
-            <div>
-              <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
-                توضیحات
-              </label>
-              <textarea
-                id="description"
-                name="description"
-                value={formData.description}
-                onChange={handleChange}
-                rows={4}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="توضیحات اختیاری درباره این دسته‌بندی..."
+                dir="ltr"
+                className="w-full px-4 py-3 rounded-[8px] border border-gray-200 focus:border-[#007acc] focus:ring-4 focus:ring-[#007acc]/10 outline-none transition-all font-mono text-sm"
+                placeholder="digital-devices"
               />
             </div>
+          </div>
 
-            {/* Buttons */}
-            <div className="flex gap-3 pt-4">
-              <button
-                type="submit"
-                disabled={loading}
-                className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
-              >
-                {loading ? "در حال ایجاد..." : "ایجاد دسته‌بندی"}
-              </button>
-              <button
-                type="button"
-                onClick={() => navigate("/dashboard/categories")}
-                className="px-6 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
-              >
-                انصراف
-              </button>
-            </div>
+          {/* Description */}
+          <div className="space-y-2">
+            <label className="text-sm font-bold text-[#1e1e1e]">توضیحات</label>
+            <textarea
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              rows={4}
+              className="w-full px-4 py-3 rounded-[8px] border border-gray-200 focus:border-[#007acc] focus:ring-4 focus:ring-[#007acc]/10 outline-none transition-all resize-none"
+              placeholder="توضیحات مختصری درباره این دسته بنویسید..."
+            />
+          </div>
+
+          <div className="flex items-center gap-2 p-4 bg-blue-50 rounded-[8px] text-[#007acc] text-sm">
+            <Info size={18} />
+            <span>اسلاگ به صورت خودکار از نام تولید می‌شود اما می‌توانید آن را ویرایش کنید.</span>
+          </div>
+
+          <div className="flex gap-4 pt-4">
+            <button
+              type="submit"
+              disabled={loading}
+              className="flex-1 py-3 bg-[#007acc] hover:bg-[#005f99] text-white rounded-[8px] font-bold transition-all shadow-md disabled:opacity-50"
+            >
+              {loading ? "در حال ثبت..." : "ذخیره دسته‌بندی"}
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate("/dashboard/categories")}
+              className="px-8 py-3 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-[8px] font-medium transition-all"
+            >
+              انصراف
+            </button>
           </div>
         </form>
       </div>

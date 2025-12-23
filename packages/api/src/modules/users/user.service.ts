@@ -9,6 +9,10 @@ class UserService {
   public async findAllUsers(): Promise<IUser[]> {
     return UserModel.find().select("-password");
   }
+
+  public async deleteUser(id: string): Promise<IUser | null> {
+    return UserModel.findByIdAndDelete(id);
+  }
 }
 
 export const userService = new UserService();

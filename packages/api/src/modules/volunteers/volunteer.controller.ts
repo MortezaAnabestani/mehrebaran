@@ -11,6 +11,21 @@ import asyncHandler from "../../core/utils/asyncHandler";
 import ApiError from "../../core/utils/apiError";
 
 class VolunteerController {
+  // Get all volunteer registrations with filters and pagination (Admin only)
+  public getAll = asyncHandler(async (req: Request, res: Response) => {
+    const filters = req.query;
+    const result = await volunteerService.findAll(filters);
+
+    res.status(200).json({
+      data: result.volunteers,
+      pagination: {
+        total: result.total,
+        page: result.page,
+        totalPages: result.totalPages,
+      },
+    });
+  });
+
   // Register as volunteer (requires authentication)
   public register = asyncHandler(async (req: Request, res: Response) => {
     const validatedData = registerVolunteerSchema.parse({ body: req.body });

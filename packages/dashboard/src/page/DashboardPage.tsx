@@ -43,10 +43,7 @@ function StatsCard({ title, value, icon: Icon, color, trend }) {
 // Quick Action Card Component
 function QuickActionCard({ title, count, icon: Icon, color, onClick }) {
   return (
-    <Card
-      className="shadow-sm hover:shadow-md transition-shadow cursor-pointer"
-      onClick={onClick}
-    >
+    <Card className="shadow-sm hover:shadow-md transition-shadow cursor-pointer" onClick={onClick}>
       <CardBody className="p-4">
         <div className="flex items-center gap-3">
           <div className={`p-2 rounded-lg bg-${color}-50`}>
@@ -192,7 +189,7 @@ export default function DashboardPage() {
       <div className="flex items-center justify-between">
         <div>
           <Typography variant="h3" className="font-bold text-gray-800">
-            داشبورد مدیریت
+            داشبورد مدیریت است
           </Typography>
           <Typography variant="small" className="text-gray-600 mt-1">
             نمای کلی از فعالیت‌های شبکه نیازسنجی
@@ -204,12 +201,7 @@ export default function DashboardPage() {
           variant="outlined"
           className="flex items-center gap-2"
         >
-          <svg
-            className="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -247,9 +239,7 @@ export default function DashboardPage() {
         <StatsCard
           title="مجموع کمک‌ها"
           value={
-            stats.donations?.totalAmount
-              ? `${(stats.donations.totalAmount / 1000000).toFixed(1)}M`
-              : "0"
+            stats.donations?.totalAmount ? `${(stats.donations.totalAmount / 1000000).toFixed(1)}M` : "0"
           }
           icon={CurrencyDollarIcon}
           color="amber"
@@ -298,11 +288,7 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Top Tags */}
         <Card className="shadow-sm">
-          <CardHeader
-            floated={false}
-            shadow={false}
-            className="rounded-none bg-gray-50 p-4"
-          >
+          <CardHeader floated={false} shadow={false} className="rounded-none bg-gray-50 p-4">
             <Typography variant="h6" className="font-bold text-gray-800">
               تگ‌های پرکاربرد
             </Typography>
@@ -311,12 +297,7 @@ export default function DashboardPage() {
             {topTags.length > 0 ? (
               <div className="space-y-1">
                 {topTags.map((item, index) => (
-                  <TopTagItem
-                    key={item.tag}
-                    tag={item.tag}
-                    count={item.count}
-                    index={index}
-                  />
+                  <TopTagItem key={item.tag} tag={item.tag} count={item.count} index={index} />
                 ))}
               </div>
             ) : (
@@ -329,11 +310,7 @@ export default function DashboardPage() {
 
         {/* Recent Activities */}
         <Card className="shadow-sm">
-          <CardHeader
-            floated={false}
-            shadow={false}
-            className="rounded-none bg-gray-50 p-4"
-          >
+          <CardHeader floated={false} shadow={false} className="rounded-none bg-gray-50 p-4">
             <Typography variant="h6" className="font-bold text-gray-800">
               آخرین نیازها
             </Typography>

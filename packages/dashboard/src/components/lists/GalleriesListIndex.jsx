@@ -6,7 +6,15 @@ import ConfirmDelete from "../createContent/ConfirmDelete";
 import { toPersianDigits } from "../../utils/useConvertNumbersToPersian";
 import { convertToPersianTime } from "../../utils/convertTime";
 
-const GalleriesListIndex = ({ galleries, loading, currentPage, totalPages, totalItems, onNextPage, onPrevPage }) => {
+const GalleriesListIndex = ({
+  galleries,
+  loading,
+  currentPage,
+  totalPages,
+  totalItems,
+  onNextPage,
+  onPrevPage,
+}) => {
   const dispatch = useDispatch();
   const [selectedGallery, setSelectedGallery] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -48,16 +56,22 @@ const GalleriesListIndex = ({ galleries, loading, currentPage, totalPages, total
   return (
     <div>
       {/* Desktop View */}
-      <div className="hidden lg:block overflow-hidden">
+      <div className="hidden lg:block">
         <div className="bg-white rounded-md shadow">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">تصویر اول</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                  تصویر اول
+                </th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">عنوان</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">دسته‌بندی</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                  دسته‌بندی
+                </th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">عکاس</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">تعداد عکس</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                  تعداد عکس
+                </th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">وضعیت</th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">تاریخ</th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">بازدید</th>
@@ -71,7 +85,9 @@ const GalleriesListIndex = ({ galleries, loading, currentPage, totalPages, total
                     <img
                       src={
                         gallery.images && gallery.images[0]?.desktop
-                          ? `${import.meta.env.VITE_SERVER_PUBLIC_API_URL_WITHOUT_API}${gallery.images[0].desktop}`
+                          ? `${import.meta.env.VITE_SERVER_PUBLIC_API_URL_WITHOUT_API}${
+                              gallery.images[0].desktop
+                            }`
                           : "/assets/images/dashboard/icons/image-placeholder.svg"
                       }
                       alt={gallery.title}
@@ -125,7 +141,10 @@ const GalleriesListIndex = ({ galleries, loading, currentPage, totalPages, total
                           title="ویرایش"
                         />
                       </Link>
-                      <button onClick={() => openDeleteModal(gallery)} className="text-red-600 hover:text-red-900">
+                      <button
+                        onClick={() => openDeleteModal(gallery)}
+                        className="text-red-600 hover:text-red-900"
+                      >
                         <img
                           className="w-5 h-5"
                           src="/assets/images/dashboard/icons/trash.svg"
@@ -162,7 +181,9 @@ const GalleriesListIndex = ({ galleries, loading, currentPage, totalPages, total
                 <div className="mt-2 flex gap-2 text-xs">
                   <span
                     className={`px-2 py-1 rounded-full ${
-                      gallery.status === "published" ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"
+                      gallery.status === "published"
+                        ? "bg-green-100 text-green-800"
+                        : "bg-yellow-100 text-yellow-800"
                     }`}
                   >
                     {gallery.status === "published" ? "منتشرشده" : "پیش‌نویس"}
@@ -214,16 +235,16 @@ const GalleriesListIndex = ({ galleries, loading, currentPage, totalPages, total
           <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
             <div>
               <p className="text-sm text-gray-700">
-                نمایش{" "}
-                <span className="font-medium">{toPersianDigits((currentPage - 1) * 10 + 1)}</span> تا{" "}
-                <span className="font-medium">
-                  {toPersianDigits(Math.min(currentPage * 10, totalItems))}
-                </span>{" "}
+                نمایش <span className="font-medium">{toPersianDigits((currentPage - 1) * 10 + 1)}</span> تا{" "}
+                <span className="font-medium">{toPersianDigits(Math.min(currentPage * 10, totalItems))}</span>{" "}
                 از <span className="font-medium">{toPersianDigits(totalItems)}</span> گالری
               </p>
             </div>
             <div>
-              <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+              <nav
+                className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
+                aria-label="Pagination"
+              >
                 <button
                   onClick={onPrevPage}
                   disabled={currentPage === 1}

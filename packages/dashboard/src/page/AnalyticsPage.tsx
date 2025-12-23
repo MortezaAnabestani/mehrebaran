@@ -13,12 +13,7 @@ import {
   Select,
   Option,
 } from "@material-tailwind/react";
-import {
-  ChartBarIcon,
-  UsersIcon,
-  HeartIcon,
-  ArrowTrendingUpIcon,
-} from "@heroicons/react/24/outline";
+import { ChartBarIcon, UsersIcon, HeartIcon, ArrowTrendingUpIcon } from "@heroicons/react/24/outline";
 import api from "../services/api";
 
 // Simple Bar Chart Component
@@ -146,7 +141,7 @@ function StatCard({ label, value, color = "blue" }) {
         {label || "-"}
       </Typography>
       <Typography variant="h5" className={`font-bold text-${color}-700`}>
-        {typeof value === "number" ? value.toLocaleString("fa-IR") : (value || "0")}
+        {typeof value === "number" ? value.toLocaleString("fa-IR") : value || "0"}
       </Typography>
     </div>
   );
@@ -199,12 +194,7 @@ function ContentAnalyticsTab({ data }) {
           </Typography>
         </CardHeader>
         <CardBody>
-          <SimpleBarChart
-            data={data.needs.byCategory}
-            dataKey="count"
-            xKey="category"
-            color="green"
-          />
+          <SimpleBarChart data={data.needs.byCategory} dataKey="count" xKey="category" color="green" />
         </CardBody>
       </Card>
 
@@ -265,12 +255,7 @@ function UserAnalyticsTab({ data }) {
           </Typography>
         </CardHeader>
         <CardBody>
-          <SimpleLineChart
-            data={data.activeUsers}
-            dataKey="count"
-            xKey="date"
-            title="فعالیت روزانه"
-          />
+          <SimpleLineChart data={data.activeUsers} dataKey="count" xKey="date" title="فعالیت روزانه" />
         </CardBody>
       </Card>
 
@@ -345,11 +330,7 @@ function EngagementAnalyticsTab({ data }) {
         <StatCard label="کل فالوها" value={data.follows.total} color="blue" />
         <StatCard label="کل استوری‌ها" value={data.stories.totalStories} color="purple" />
         <StatCard label="مشاهده استوری‌ها" value={data.stories.totalViews} color="green" />
-        <StatCard
-          label="نرخ تعامل استوری"
-          value={`${data.stories.engagementRate}%`}
-          color="amber"
-        />
+        <StatCard label="نرخ تعامل استوری" value={`${data.stories.engagementRate}%`} color="amber" />
       </div>
 
       {/* Follow Timeline */}
@@ -482,12 +463,7 @@ export default function AnalyticsPage() {
           </Typography>
         </div>
         <div className="flex items-center gap-3">
-          <Select
-            label="بازه زمانی"
-            value={timeRange}
-            onChange={(val) => setTimeRange(val)}
-            className="w-40"
-          >
+          <Select label="بازه زمانی" value={timeRange} onChange={(val) => setTimeRange(val)} className="w-40">
             <Option value="7">۷ روز اخیر</Option>
             <Option value="30">۳۰ روز اخیر</Option>
             <Option value="90">۹۰ روز اخیر</Option>

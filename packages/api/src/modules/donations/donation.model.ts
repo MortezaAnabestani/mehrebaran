@@ -84,7 +84,7 @@ const donationSchema = new Schema<IDonation>(
 donationSchema.index({ project: 1, status: 1 });
 donationSchema.index({ donor: 1, createdAt: -1 });
 donationSchema.index({ createdAt: -1 });
-donationSchema.index({ trackingCode: 1 });
+// Note: trackingCode already has unique index from schema definition (line 51)
 
 // Virtual for formatted amount
 donationSchema.virtual("formattedAmount").get(function () {

@@ -5,10 +5,11 @@ import { UserRole } from "common-types";
 
 const router = Router();
 
+// Admin routes for getting all donations (must be before :identifier route)
+router.get("/all", protect, restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN), donationController.getAll);
+
 // Public routes
 router.post("/", donationController.create); // Can be used by guests or logged-in users
-
-router.get("/:identifier", donationController.getOne); // Get by ID or tracking code
 
 router.get("/project/:projectId", donationController.getByProject); // Get all donations for a project
 
@@ -33,5 +34,8 @@ router.use(restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN)); // Only admins
 router.patch("/:donationId/verify", donationController.verifyBankTransfer); // Verify bank transfer
 
 router.delete("/:id", donationController.delete); // Delete donation
+
+// This must be last to avoid conflicts with other routes
+router.get("/:identifier", donationController.getOne); // Get by ID or tracking code
 
 export default router;

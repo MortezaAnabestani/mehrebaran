@@ -63,6 +63,45 @@ class DonationService {
     return donation;
   }
 
+  // Get all donations with pagination
+  async findAll(filters?: any): Promise<{ donations: IDonation[]; total: number; page: number; totalPages: number }> {
+    const page = parseInt(filters?.page) || 1;
+    const limit = parseInt(filters?.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const query: any = {};
+
+    if (filters?.status) {
+      query.status = filters.status;
+    }
+
+    if (filters?.paymentMethod) {
+      query.paymentMethod = filters.paymentMethod;
+    }
+
+    if (filters?.projectId) {
+      query.project = filters.projectId;
+    }
+
+    const [donations, total] = await Promise.all([
+      DonationModel.find(query)
+        .populate("project", "title slug featuredImage")
+        .populate("donor", "name email avatar")
+        .populate("verifiedBy", "name email")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit),
+      DonationModel.countDocuments(query),
+    ]);
+
+    return {
+      donations,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
+    };
+  }
+
   // Get all donations for a project
   async findByProject(projectId: string, filters?: any): Promise<IDonation[]> {
     const query: any = { project: projectId };

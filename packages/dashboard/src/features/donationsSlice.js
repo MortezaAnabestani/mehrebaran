@@ -7,7 +7,7 @@ export const fetchDonations = createAsyncThunk(
   async (params = {}, { rejectWithValue }) => {
     try {
       const { projectId, ...queryParams } = params;
-      const url = projectId ? `/donations/project/${projectId}` : `/donations`;
+      const url = projectId ? `/donations/project/${projectId}` : `/donations/all`;
       const response = await api.get(url, { params: queryParams });
       return response.data;
     } catch (error) {

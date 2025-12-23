@@ -7,7 +7,7 @@ export const fetchVolunteers = createAsyncThunk(
   async (params = {}, { rejectWithValue }) => {
     try {
       const { projectId, ...queryParams } = params;
-      const url = projectId ? `/volunteers/project/${projectId}` : `/volunteers`;
+      const url = projectId ? `/volunteers/project/${projectId}` : `/volunteers/all`;
       const response = await api.get(url, { params: queryParams });
       return response.data;
     } catch (error) {

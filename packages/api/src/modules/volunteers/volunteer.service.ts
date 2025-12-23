@@ -61,6 +61,41 @@ class VolunteerService {
     return registration;
   }
 
+  // Get all volunteer registrations with pagination
+  async findAll(filters?: any): Promise<{ volunteers: IVolunteerRegistration[]; total: number; page: number; totalPages: number }> {
+    const page = parseInt(filters?.page) || 1;
+    const limit = parseInt(filters?.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const query: any = {};
+
+    if (filters?.status) {
+      query.status = filters.status;
+    }
+
+    if (filters?.projectId) {
+      query.project = filters.projectId;
+    }
+
+    const [volunteers, total] = await Promise.all([
+      VolunteerRegistrationModel.find(query)
+        .populate("project", "title slug featuredImage")
+        .populate("volunteer", "name email avatar phone")
+        .populate("reviewedBy", "name email")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit),
+      VolunteerRegistrationModel.countDocuments(query),
+    ]);
+
+    return {
+      volunteers,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
+    };
+  }
+
   // Get registration by ID
   async findById(id: string): Promise<IVolunteerRegistration | null> {
     const registration = await VolunteerRegistrationModel.findById(id)

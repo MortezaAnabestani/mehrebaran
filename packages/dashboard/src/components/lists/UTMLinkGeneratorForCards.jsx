@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 const UTMLinkGeneratorForCards = ({ page, slug }) => {
   const [source, setSource] = useState("");
@@ -61,7 +61,7 @@ const UTMLinkGeneratorForCards = ({ page, slug }) => {
           <div className="text-center">
             <button
               onClick={handleGenerateLink}
-              className="px-2 py-1 bg-red-500 text-white rounded-xs cursor-pointer duration-150 hover:bg-red-600 text-xs"
+              className="px-2 py-1 bg-sky-600 text-white rounded-xs cursor-pointer duration-150 hover:bg-sky-700 text-xs"
             >
               ساخت پیوند کمپین
             </button>

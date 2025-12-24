@@ -83,11 +83,11 @@ const TagManager = () => {
         <input
           {...register("tagName")}
           placeholder={isEditing ? "ویرایش نام برچسب" : "نام برچسب جدید"}
-          className="p-2 mb-3 text-white rounded-md border-2 h-15 border-red-100 w-full inset-shadow-xl shadow-red-50 bg-linear-to-r from-red-300 to-red-500 inset-ring-8 shadow-md"
+          className="p-2 mb-3 text-white rounded-md border-2 h-15 border-sky-100 w-full inset-shadow-xl shadow-red-50 bg-linear-to-r from-sky-300 to-sky-500 inset-ring-8 shadow-md"
         />
         <button type="submit" className="cursor-pointer absolute left-4 top-4">
           {isEditing ? (
-            <div className="flex flex-row-reverse gap-1 items-center justify-center border border-red-600 rounded-4xl pr-5 bg-white hover:bg-amber-100">
+            <div className="flex flex-row-reverse gap-1 items-center justify-center border border-sky-600 rounded-4xl pr-5 bg-white hover:bg-amber-100">
               <img
                 className="w-7 h-7 mr-2"
                 src="/assets/images/dashboard/icons/replace2.svg"
@@ -96,7 +96,7 @@ const TagManager = () => {
               <span className="text-sm">ویرایش برچسب</span>
             </div>
           ) : (
-            <div className="flex flex-row-reverse gap-1 items-center justify-center border border-red-600 rounded-4xl pr-5 bg-white hover:bg-green-100">
+            <div className="flex flex-row-reverse gap-1 items-center justify-center border border-sky-600 rounded-4xl pr-5 bg-white hover:bg-amber-100">
               <img
                 loading="lazy"
                 className="w-7 h-7 mr-2"

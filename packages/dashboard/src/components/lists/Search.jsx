@@ -55,7 +55,7 @@ const Search = ({ chart = false }) => {
   }, [query]);
 
   return (
-    <div className=" lg:pl-32 relative md:w-[500px] z-200">
+    <div className=" lg:pl-32 relative md:w-[500px]">
       <div className="flex items-center gap-1 md:w-[530px]">
         <input
           type="text"

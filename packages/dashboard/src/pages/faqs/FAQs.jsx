@@ -42,7 +42,7 @@ const FAQs = () => {
               key={index}
               className="bg-white mb-5 mt-5  shadow-sm shadow-gray-300 border rounded-md border-gray-100 "
             >
-              <div className="flex items-center justify-between mb-2 p-3 border-b border-gray-200 bg-linear-to-l from-red-600 via-red-400 to-red-300">
+              <div className="flex items-center justify-between mb-2 p-3 border-b border-gray-200 bg-linear-to-l from-sky-600 via-sky-400 to-sky-300">
                 <div className="flex items-center gap-2 h-12">
                   <img
                     src="/assets/images/dashboard/icons/ask_question.svg"

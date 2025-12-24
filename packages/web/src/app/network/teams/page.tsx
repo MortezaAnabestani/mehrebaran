@@ -2,29 +2,36 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import OptimizedImage from "@/components/ui/OptimizedImage";
 import SmartButton from "@/components/ui/SmartButton";
 import TeamCard from "@/components/network/TeamCard";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { teamService, GetTeamsParams } from "@/services/team.service";
 import { ITeam } from "common-types";
-import Link from "next/link";
+
+// آیکون‌های ساده برای بهبود بصری (می‌توانید با آیکون‌های پروژه خود جایگزین کنید)
+const ChevronDownIcon = () => (
+  <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+  </svg>
+);
 
 const TeamsPage: React.FC = () => {
   const router = useRouter();
 
-  // State
+  // --- State Management ---
   const [teams, setTeams] = useState<ITeam[]>([]);
   const [myTeams, setMyTeams] = useState<ITeam[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"all" | "my">("all");
 
-  // Filters
+  // --- Filters State ---
   const [selectedStatus, setSelectedStatus] = useState<string>("");
   const [selectedFocusArea, setSelectedFocusArea] = useState<string>("");
 
-  // دریافت تیم‌ها
+  // --- Data Fetching ---
   const fetchTeams = async () => {
     try {
       setIsLoading(true);
@@ -38,24 +45,16 @@ const TeamsPage: React.FC = () => {
       if (selectedStatus) params.status = selectedStatus as any;
       if (selectedFocusArea) params.focusArea = selectedFocusArea;
 
-      console.log("🔵 Fetching teams - activeTab:", activeTab, "params:", params);
-
       if (activeTab === "all") {
         const response = await teamService.getTeams(params);
-        console.log("🔵 Teams response:", response);
-        console.log("🔵 Teams data:", response.data);
-        console.log("🔵 Teams count:", response.data?.length);
         setTeams(response.data);
       } else {
         const response = await teamService.getMyTeams();
-        console.log("🔵 My teams response:", response);
-        console.log("🔵 My teams data:", response.data);
-        console.log("🔵 My teams count:", response.data?.length);
         setMyTeams(response.data);
       }
     } catch (err: any) {
       console.error("🔴 Failed to fetch teams:", err);
-      setError(err.message || "خطا در دریافت تیم‌ها");
+      setError(err.message || "خطا در دریافت اطلاعات تیم‌ها");
     } finally {
       setIsLoading(false);
     }
@@ -63,164 +62,219 @@ const TeamsPage: React.FC = () => {
 
   useEffect(() => {
     fetchTeams();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, selectedStatus, selectedFocusArea]);
 
   const currentTeams = activeTab === "all" ? teams : myTeams;
-  console.log(teams);
+
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-mgray/5">
-        {/* Header */}
-        <header className="relative w-full py-15 bg-mgray/5 overflow-hidden">
+      <main className="min-h-screen bg-[#f0f2f5] text-gray-800 font-sans">
+        {/* --- Hero Header Section --- */}
+        <header className="relative w-full bg-gradient-to-b from-white to-[#f0f2f5] border-b border-gray-200 shadow-sm overflow-hidden">
+          {/* Background Pattern */}
           <div
-            className="absolute left-0 inset-0 bg-no-repeat bg-center pointer-events-none"
+            className="absolute inset-0 opacity-10 pointer-events-none mix-blend-multiply"
             style={{
               backgroundImage: "url('/images/patternMain.webp')",
-              backgroundSize: "700px",
-              opacity: 0.5,
-              backgroundPosition: "left",
+              backgroundSize: "cover",
+              backgroundPosition: "center",
             }}
-          ></div>
-          <div className="relative z-10 flex items-center justify-between w-9/10 mx-auto gap-10">
-            <div>
-              <h1 className="text-lg md:text-2xl font-extrabold mb-5">تیم‌های نیازسنجی</h1>
-              <p className="font-bold text-xs md:text-base/loose">
-                به تیم‌های فعال بپیوندید، مهارت‌های خود را به اشتراک بگذارید و در پروژه‌های خیرخواهانه مشارکت
-                کنید. با همکاری و هماهنگی، می‌توانیم تغییرات مثبتی ایجاد کنیم.
+          />
+
+          <div className="relative z-10 max-w-7xl mx-auto px-6 py-12 md:py-16 flex items-center justify-between">
+            <div className="max-w-2xl">
+              <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4 tracking-tight">
+                <span className="text-[#007acc]">تیم‌های</span> نیازسنجی
+              </h1>
+              <p className="text-gray-600 text-base md:text-lg leading-relaxed">
+                به شبکه‌ای از تیم‌های فعال بپیوندید، مهارت‌های خود را به اشتراک بگذارید و در پروژه‌های
+                خیرخواهانه تأثیرگذار باشید.
               </p>
             </div>
-            <OptimizedImage
-              src="/icons/needsNetwork_blue.svg"
-              alt="teams icon"
-              width={110}
-              height={110}
-              priority="up"
-              className="hidden md:block"
-            />
+
+            {/* 3D/Skeuomorphic Icon Container */}
+            <div className="hidden md:flex items-center justify-center w-32 h-32 bg-white rounded-3xl shadow-[8px_8px_16px_#d1d9e6,-8px_-8px_16px_#ffffff]">
+              <OptimizedImage
+                src="/icons/needsNetwork_blue.svg"
+                alt="Teams Network Icon"
+                width={80}
+                height={80}
+                priority="up"
+                className="drop-shadow-md"
+              />
+            </div>
           </div>
         </header>
 
-        {/* Main Content */}
-        <div className="w-full mx-auto my-10">
+        {/* --- Main Content Area --- */}
+        <div className="max-w-7xl mx-auto px-6 py-8">
           {/* Breadcrumb */}
-          <div className="mb-6 text-sm">
-            <Link href="/network" className="text-mblue hover:underline">
-              شبکه نیازسنجی
-            </Link>
-            <span className="mx-2 text-gray-500">←</span>
-            <span className="text-gray-700">تیم‌ها</span>
-          </div>
+          <nav aria-label="Breadcrumb" className="mb-8">
+            <ol className="flex items-center space-x-2 space-x-reverse text-sm text-gray-500">
+              <li>
+                <Link href="/network" className="hover:text-[#007acc] transition-colors font-medium">
+                  شبکه نیازسنجی
+                </Link>
+              </li>
+              <li className="text-gray-400">/</li>
+              <li className="text-gray-800 font-bold" aria-current="page">
+                تیم‌ها
+              </li>
+            </ol>
+          </nav>
 
-          {/* Tabs and Actions */}
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-8">
-            {/* Tabs */}
-            <div className="flex items-center gap-2">
+          {/* --- Controls: Tabs & Actions --- */}
+          <section className="flex flex-col md:flex-row items-center justify-between gap-6 mb-10">
+            {/* Skeuomorphic Tabs (Segmented Control) */}
+            <div className="bg-[#e6e9ef] p-1.5 rounded-xl shadow-[inset_2px_2px_5px_rgba(0,0,0,0.05),inset_-2px_-2px_5px_rgba(255,255,255,0.7)] flex items-center gap-1 w-full md:w-auto">
               <button
                 onClick={() => setActiveTab("all")}
-                className={`px-4 py-2 rounded-md font-bold transition-colors ${
+                className={`flex-1 md:flex-none px-6 py-2.5 rounded-lg text-sm font-bold transition-all duration-300 ease-out ${
                   activeTab === "all"
-                    ? "bg-mblue text-white"
-                    : "bg-white text-gray-700 border border-mgray/30 hover:bg-mgray/10"
+                    ? "bg-white text-[#007acc] shadow-[2px_2px_5px_rgba(0,0,0,0.05),-2px_-2px_5px_rgba(255,255,255,1)] transform scale-[1.02]"
+                    : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/50"
                 }`}
               >
                 همه تیم‌ها
               </button>
               <button
                 onClick={() => setActiveTab("my")}
-                className={`px-4 py-2 rounded-md font-bold transition-colors ${
+                className={`flex-1 md:flex-none px-6 py-2.5 rounded-lg text-sm font-bold transition-all duration-300 ease-out ${
                   activeTab === "my"
-                    ? "bg-mblue text-white"
-                    : "bg-white text-gray-700 border border-mgray/30 hover:bg-mgray/10"
+                    ? "bg-white text-[#007acc] shadow-[2px_2px_5px_rgba(0,0,0,0.05),-2px_-2px_5px_rgba(255,255,255,1)] transform scale-[1.02]"
+                    : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/50"
                 }`}
               >
                 تیم‌های من
               </button>
             </div>
 
-            {/* Create Team Button */}
-            <SmartButton variant="morange" size="md" onClick={() => router.push("/network/teams/create")}>
-              + ایجاد تیم جدید
-            </SmartButton>
-          </div>
-
-          {/* Filters */}
-          <div className="flex flex-col md:flex-row items-start md:items-center gap-4 mb-8 p-4 bg-white rounded-md border border-mgray/20">
-            {/* Status Filter */}
-            <div className="flex-1">
-              <label className="text-xs text-gray-600 mb-1 block">وضعیت:</label>
-              <select
-                value={selectedStatus}
-                onChange={(e) => setSelectedStatus(e.target.value)}
-                className="w-full px-4 py-2 rounded-md border border-mgray/30 focus:outline-mblue/50 bg-white"
+            {/* Action Button */}
+            <div className="w-full md:w-auto shadow-lg shadow-[#007acc]/20 rounded-lg">
+              <SmartButton
+                variant="morange"
+                size="md"
+                onClick={() => router.push("/network/teams/create")}
+                className="w-full md:w-auto font-bold"
               >
-                <option value="">همه</option>
-                <option value="active">فعال</option>
-                <option value="paused">متوقف</option>
-                <option value="completed">تکمیل شده</option>
-                <option value="disbanded">منحل شده</option>
-              </select>
+                + ایجاد تیم جدید
+              </SmartButton>
             </div>
+          </section>
 
-            {/* Focus Area Filter */}
-            <div className="flex-1">
-              <label className="text-xs text-gray-600 mb-1 block">حوزه فعالیت:</label>
-              <select
-                value={selectedFocusArea}
-                onChange={(e) => setSelectedFocusArea(e.target.value)}
-                className="w-full px-4 py-2 rounded-md border border-mgray/30 focus:outline-mblue/50 bg-white"
-              >
-                <option value="">همه</option>
-                <option value="fundraising">جمع‌آوری کمک</option>
-                <option value="logistics">لجستیک</option>
-                <option value="communication">ارتباطات</option>
-                <option value="technical">فنی</option>
-                <option value="volunteer">داوطلب</option>
-                <option value="coordination">هماهنگی</option>
-                <option value="documentation">مستندسازی</option>
-                <option value="general">عمومی</option>
-              </select>
-            </div>
-          </div>
+          {/* --- Filters Section --- */}
+          <section className="bg-white rounded-2xl p-6 mb-10 shadow-[4px_4px_10px_rgba(0,0,0,0.03),-4px_-4px_10px_rgba(255,255,255,0.8)] border border-white">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Status Filter */}
+              <div className="group">
+                <label className="block text-xs font-bold text-gray-500 mb-2 mr-1 uppercase tracking-wider">
+                  وضعیت تیم
+                </label>
+                <div className="relative">
+                  <select
+                    value={selectedStatus}
+                    onChange={(e) => setSelectedStatus(e.target.value)}
+                    className="w-full appearance-none bg-[#f0f2f5] text-gray-700 px-4 py-3 pr-10 rounded-xl border-none shadow-[inset_2px_2px_5px_rgba(0,0,0,0.05),inset_-2px_-2px_5px_rgba(255,255,255,0.7)] focus:ring-2 focus:ring-[#007acc]/30 focus:outline-none transition-shadow cursor-pointer"
+                  >
+                    <option value="">نمایش همه</option>
+                    <option value="active">فعال</option>
+                    <option value="paused">متوقف شده</option>
+                    <option value="completed">تکمیل شده</option>
+                    <option value="disbanded">منحل شده</option>
+                  </select>
+                  <div className="absolute left-4 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                    <ChevronDownIcon />
+                  </div>
+                </div>
+              </div>
 
-          {/* Teams Grid */}
-          {isLoading ? (
-            <div className="flex items-center justify-center py-20">
-              <div className="text-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-mblue mx-auto mb-4"></div>
-                <p className="text-gray-600">در حال بارگذاری...</p>
+              {/* Focus Area Filter */}
+              <div className="group">
+                <label className="block text-xs font-bold text-gray-500 mb-2 mr-1 uppercase tracking-wider">
+                  حوزه فعالیت
+                </label>
+                <div className="relative">
+                  <select
+                    value={selectedFocusArea}
+                    onChange={(e) => setSelectedFocusArea(e.target.value)}
+                    className="w-full appearance-none bg-[#f0f2f5] text-gray-700 px-4 py-3 pr-10 rounded-xl border-none shadow-[inset_2px_2px_5px_rgba(0,0,0,0.05),inset_-2px_-2px_5px_rgba(255,255,255,0.7)] focus:ring-2 focus:ring-[#007acc]/30 focus:outline-none transition-shadow cursor-pointer"
+                  >
+                    <option value="">نمایش همه</option>
+                    <option value="fundraising">جمع‌آوری کمک (Fundraising)</option>
+                    <option value="logistics">لجستیک و پشتیبانی</option>
+                    <option value="communication">ارتباطات و رسانه</option>
+                    <option value="technical">فنی و مهندسی</option>
+                    <option value="volunteer">نیروی داوطلب</option>
+                    <option value="coordination">هماهنگی و مدیریت</option>
+                    <option value="documentation">مستندسازی</option>
+                    <option value="general">عمومی</option>
+                  </select>
+                  <div className="absolute left-4 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                    <ChevronDownIcon />
+                  </div>
+                </div>
               </div>
             </div>
-          ) : error ? (
-            <div className="flex items-center justify-center py-20">
-              <div className="text-center">
-                <p className="text-red-500 mb-4">{error}</p>
+          </section>
+
+          {/* --- Content Grid --- */}
+          <section aria-live="polite" className="min-h-[300px]">
+            {isLoading ? (
+              <div className="flex flex-col items-center justify-center py-20 space-y-4">
+                <div className="w-12 h-12 border-4 border-[#007acc]/20 border-t-[#007acc] rounded-full animate-spin"></div>
+                <p className="text-gray-500 font-medium animate-pulse">در حال بارگذاری اطلاعات...</p>
+              </div>
+            ) : error ? (
+              <div className="bg-red-50 border border-red-100 rounded-2xl p-8 text-center shadow-sm">
+                <p className="text-red-600 font-bold mb-4">{error}</p>
                 <SmartButton variant="mblue" size="sm" onClick={fetchTeams}>
                   تلاش مجدد
                 </SmartButton>
               </div>
-            </div>
-          ) : currentTeams.length === 0 ? (
-            <div className="flex items-center justify-center py-20">
-              <div className="text-center">
-                <p className="text-gray-600 mb-4">
+            ) : currentTeams.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-20 bg-white rounded-3xl shadow-[inset_0_0_20px_rgba(0,0,0,0.02)] border border-gray-100">
+                <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mb-4 shadow-inner">
+                  <svg
+                    className="w-10 h-10 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                    />
+                  </svg>
+                </div>
+                <p className="text-gray-600 font-medium text-lg mb-2">
                   {activeTab === "all" ? "تیمی یافت نشد." : "شما هنوز عضو هیچ تیمی نیستید."}
                 </p>
+                <p className="text-gray-400 text-sm mb-6">
+                  {activeTab === "all"
+                    ? "با تغییر فیلترها دوباره تلاش کنید."
+                    : "همین حالا اولین تیم خود را بسازید یا به تیمی بپیوندید."}
+                </p>
                 {activeTab === "my" && (
-                  <SmartButton variant="mblue" size="sm" onClick={() => setActiveTab("all")}>
+                  <SmartButton variant="outline" size="sm" onClick={() => setActiveTab("all")}>
                     مشاهده همه تیم‌ها
                   </SmartButton>
                 )}
               </div>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {currentTeams.map((team) => (
-                <TeamCard key={team._id} team={team} variant="card" onUpdate={fetchTeams} />
-              ))}
-            </div>
-          )}
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {currentTeams.map((team) => (
+                  <div key={team._id} className="transform transition-all duration-300 hover:-translate-y-1">
+                    <TeamCard team={team} variant="card" onUpdate={fetchTeams} />
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
         </div>
-      </div>
+      </main>
     </ProtectedRoute>
   );
 };

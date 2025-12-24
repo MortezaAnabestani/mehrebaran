@@ -1,11 +1,9 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
-
-const BASE_URL = import.meta.env.VITE_SERVER_PUBLIC_API_URL;
+import api from "../services/api";
 
 export const fetchview = createAsyncThunk("view/fetch", async (_, { rejectWithValue }) => {
   try {
-    const response = await axios.get(`${BASE_URL}/view`);
+    const response = await api.get("/admin/analytics/views");
     return response.data;
   } catch (error) {
     return rejectWithValue(error.response?.data?.error || "بارگیری اطلاعات بازدید انجام نشد!");

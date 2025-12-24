@@ -1,7 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
-
-const BASE_URL = import.meta.env.VITE_SERVER_PUBLIC_API_URL;
+import api from "../services/api";
 
 // Fetch all help requests
 export const fetchHelpRequests = createAsyncThunk(
@@ -14,11 +12,7 @@ export const fetchHelpRequests = createAsyncThunk(
       params.append("page", page);
       params.append("limit", "20");
 
-      const response = await axios.get(`${BASE_URL}/help-requests?${params}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      const response = await api.get(`/help-requests?${params}`);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
@@ -31,15 +25,7 @@ export const updateHelpRequestStatus = createAsyncThunk(
   "helpRequests/updateStatus",
   async ({ id, status, adminNotes }, { rejectWithValue }) => {
     try {
-      const response = await axios.patch(
-        `${BASE_URL}/help-requests/${id}/status`,
-        { status, adminNotes },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
+      const response = await api.patch(`/help-requests/${id}/status`, { status, adminNotes });
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
@@ -52,11 +38,7 @@ export const deleteHelpRequest = createAsyncThunk(
   "helpRequests/delete",
   async (id, { rejectWithValue }) => {
     try {
-      await axios.delete(`${BASE_URL}/help-requests/${id}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      await api.delete(`/help-requests/${id}`);
       return id;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
@@ -69,11 +51,7 @@ export const fetchHelpRequestStats = createAsyncThunk(
   "helpRequests/fetchStats",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`${BASE_URL}/help-requests/stats`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      const response = await api.get("/help-requests/stats");
       return response.data.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);

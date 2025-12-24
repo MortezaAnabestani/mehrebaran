@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useRef } from "react";
-import SmartButton from "@/components/ui/SmartButton";
+import React, { useState, useRef, DragEvent } from "react";
+import { X, UploadCloud, Image as ImageIcon, Film, Trash2, RefreshCw, CheckCircle2 } from "lucide-react";
 
 interface CreateStoryModalProps {
   isOpen: boolean;
@@ -14,20 +14,19 @@ const CreateStoryModal: React.FC<CreateStoryModalProps> = ({ isOpen, onClose, on
   const [preview, setPreview] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  // --- Handlers ---
 
-    // Validate file type
+  const validateAndSetFile = (file: File) => {
     const validTypes = ["image/jpeg", "image/png", "image/gif", "video/mp4", "video/quicktime"];
+
     if (!validTypes.includes(file.type)) {
-      setError("فرمت فایل پشتیبانی نمی‌شود. لطفاً عکس یا ویدئو انتخاب کنید.");
+      setError("فرمت فایل پشتیبانی نمی‌شود. لطفاً عکس (JPG, PNG) یا ویدئو (MP4) انتخاب کنید.");
       return;
     }
 
-    // Validate file size (max 50MB)
     if (file.size > 50 * 1024 * 1024) {
       setError("حجم فایل نباید بیشتر از 50 مگابایت باشد.");
       return;
@@ -36,7 +35,6 @@ const CreateStoryModal: React.FC<CreateStoryModalProps> = ({ isOpen, onClose, on
     setError(null);
     setSelectedFile(file);
 
-    // Create preview
     const reader = new FileReader();
     reader.onloadend = () => {
       setPreview(reader.result as string);
@@ -44,9 +42,30 @@ const CreateStoryModal: React.FC<CreateStoryModalProps> = ({ isOpen, onClose, on
     reader.readAsDataURL(file);
   };
 
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) validateAndSetFile(file);
+  };
+
+  const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) validateAndSetFile(file);
+  };
+
   const handleSubmit = async () => {
     if (!selectedFile) return;
-
     try {
       setIsSubmitting(true);
       setError(null);
@@ -69,35 +88,71 @@ const CreateStoryModal: React.FC<CreateStoryModalProps> = ({ isOpen, onClose, on
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200">
-          <h2 className="text-xl font-bold">ایجاد استوری جدید</h2>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 transition-all duration-300">
+      {/* Backdrop with Blur */}
+      <div
+        className="absolute inset-0 bg-gray-900/40 backdrop-blur-sm transition-opacity"
+        onClick={handleClose}
+      />
+
+      {/* Skeuomorphic Card */}
+      <div className="relative w-full max-w-lg bg-[#eef2f5] rounded-3xl shadow-[20px_20px_60px_#caced1,-20px_-20px_60px_#ffffff] border border-white/50 overflow-hidden transform transition-all scale-100">
+        {/* Header: Raised Surface */}
+        <div className="flex items-center justify-between px-6 py-5 bg-gradient-to-b from-white to-[#eef2f5] border-b border-gray-200 shadow-sm z-10 relative">
+          <div className="flex items-center gap-3">
+            <h2 className="text-xl font-extrabold text-gray-700 tracking-tight drop-shadow-sm">
+              ایجاد استوری
+            </h2>
+          </div>
+
+          {/* Close Button: Physical Feel */}
           <button
             onClick={handleClose}
-            className="text-gray-500 hover:text-gray-700 text-2xl leading-none"
+            className="group w-10 h-10 rounded-full bg-[#eef2f5] flex items-center justify-center 
+                       shadow-[5px_5px_10px_#caced1,-5px_-5px_10px_#ffffff] 
+                       active:shadow-[inset_5px_5px_10px_#caced1,inset_-5px_-5px_10px_#ffffff] 
+                       transition-all duration-200 text-gray-500 hover:text-red-500"
           >
-            ×
+            <X size={20} strokeWidth={2.5} />
           </button>
         </div>
 
-        {/* Content */}
-        <div className="p-6">
+        {/* Content Body */}
+        <div className="p-6 space-y-6">
           {!preview ? (
-            // Upload Area
+            // Upload Area: Recessed/Sunken Look
             <div
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
               onClick={() => fileInputRef.current?.click()}
-              className="border-2 border-dashed border-gray-300 rounded-xl p-12 text-center cursor-pointer hover:border-mblue hover:bg-blue-50/50 transition-colors"
+              className={`
+                relative group cursor-pointer rounded-2xl p-10 text-center transition-all duration-300
+                border-2 border-dashed
+                ${
+                  isDragging
+                    ? "border-[#007acc] bg-blue-50/50 shadow-[inset_0px_0px_20px_rgba(0,122,204,0.1)]"
+                    : "border-gray-300 bg-[#eef2f5] shadow-[inset_6px_6px_12px_#caced1,inset_-6px_-6px_12px_#ffffff] hover:border-gray-400"
+                }
+              `}
             >
-              <div className="text-6xl mb-4">📸</div>
-              <h3 className="text-lg font-semibold mb-2">انتخاب عکس یا ویدئو</h3>
-              <p className="text-gray-500 text-sm mb-4">
-                فایل خود را انتخاب کنید یا اینجا بکشید
+              <div className="absolute inset-0 rounded-2xl pointer-events-none shadow-[inset_2px_2px_5px_rgba(0,0,0,0.03)]" />
+
+              <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-blue-400 to-[#007acc] flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform duration-300">
+                <UploadCloud className="text-white w-10 h-10 drop-shadow-md" />
+              </div>
+
+              <h3 className="text-lg font-bold text-gray-700 mb-2">فایل را اینجا رها کنید</h3>
+              <p className="text-gray-500 text-sm mb-6 font-medium">
+                یا برای انتخاب کلیک کنید (عکس یا ویدئو)
               </p>
-              <SmartButton variant="mblue" size="md">
-                انتخاب فایل
-              </SmartButton>
+
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white border border-gray-200 shadow-sm text-xs text-gray-400 font-mono">
+                <ImageIcon size={14} /> JPG, PNG
+                <span className="w-1 h-1 bg-gray-300 rounded-full" />
+                <Film size={14} /> MP4
+              </div>
+
               <input
                 ref={fileInputRef}
                 type="file"
@@ -107,72 +162,87 @@ const CreateStoryModal: React.FC<CreateStoryModalProps> = ({ isOpen, onClose, on
               />
             </div>
           ) : (
-            // Preview Area
-            <div className="space-y-4">
-              <div className="relative rounded-xl overflow-hidden bg-black">
+            // Preview Area: Framed Picture Look
+            <div className="space-y-5">
+              <div className="relative rounded-2xl overflow-hidden bg-gray-900 shadow-[0_10px_20px_rgba(0,0,0,0.2)] border-4 border-white ring-1 ring-gray-200">
                 {selectedFile?.type.startsWith("image/") ? (
                   <img
                     src={preview}
                     alt="Preview"
-                    className="w-full h-auto max-h-[400px] object-contain"
+                    className="w-full h-64 object-contain bg-black/50 backdrop-blur-xl"
                   />
                 ) : (
-                  <video
-                    src={preview}
-                    controls
-                    className="w-full h-auto max-h-[400px] object-contain"
-                  />
+                  <video src={preview} controls className="w-full h-64 object-contain bg-black" />
                 )}
+
+                {/* File Badge */}
+                <div className="absolute top-3 right-3 bg-black/60 backdrop-blur-md text-white text-xs px-3 py-1.5 rounded-full border border-white/20 shadow-lg flex items-center gap-2">
+                  {selectedFile?.type.startsWith("image/") ? <ImageIcon size={12} /> : <Film size={12} />}
+                  <span className="font-mono dir-ltr">
+                    {((selectedFile?.size || 0) / 1024 / 1024).toFixed(1)} MB
+                  </span>
+                </div>
               </div>
 
-              {/* File Info */}
-              <div className="flex items-center justify-between text-sm text-gray-600">
-                <span>{selectedFile?.name}</span>
-                <span>{((selectedFile?.size || 0) / 1024 / 1024).toFixed(2)} MB</span>
-              </div>
-
-              {/* Actions */}
-              <div className="flex gap-3">
-                <SmartButton
-                  variant="outline"
-                  size="md"
+              {/* Action Buttons: Skeuomorphic 3D Buttons */}
+              <div className="flex gap-4">
+                <button
                   onClick={() => {
                     setSelectedFile(null);
                     setPreview(null);
                   }}
-                  className="flex-1"
+                  className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-bold text-gray-600 bg-gray-100 
+                             border-b-4 border-gray-300 hover:bg-gray-200 active:border-b-0 active:translate-y-1 active:mt-1
+                             transition-all duration-100"
                 >
+                  <RefreshCw size={18} />
                   تغییر فایل
-                </SmartButton>
-                <SmartButton
-                  variant="mblue"
-                  size="md"
+                </button>
+
+                <button
                   onClick={handleSubmit}
                   disabled={isSubmitting}
-                  className="flex-1"
+                  className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-bold text-white 
+                             bg-gradient-to-b from-[#3399ff] to-[#007acc] 
+                             border-b-4 border-[#005c99] 
+                             shadow-[0_4px_10px_rgba(0,122,204,0.3)]
+                             hover:brightness-110
+                             active:border-b-0 active:translate-y-1 active:mt-1 active:shadow-none
+                             disabled:opacity-70 disabled:cursor-not-allowed
+                             transition-all duration-100"
                 >
-                  {isSubmitting ? "در حال آپلود..." : "انتشار استوری"}
-                </SmartButton>
+                  {isSubmitting ? (
+                    <>
+                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      <span>در حال آپلود...</span>
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle2 size={18} />
+                      <span>انتشار استوری</span>
+                    </>
+                  )}
+                </button>
               </div>
             </div>
           )}
 
-          {/* Error Message */}
+          {/* Error Message: Engraved Plate */}
           {error && (
-            <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
-              {error}
+            <div className="p-4 bg-red-50 rounded-xl border border-red-100 shadow-[inset_2px_2px_5px_rgba(220,38,38,0.05)] flex items-start gap-3">
+              <div className="p-1 bg-red-100 rounded-full text-red-600 mt-0.5">
+                <X size={14} strokeWidth={3} />
+              </div>
+              <p className="text-red-600 text-sm font-medium leading-relaxed">{error}</p>
             </div>
           )}
 
-          {/* Guidelines */}
-          <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-            <h4 className="font-semibold text-sm mb-2">راهنما:</h4>
-            <ul className="text-xs text-gray-600 space-y-1">
-              <li>• فرمت‌های پشتیبانی شده: JPG, PNG, GIF, MP4, MOV</li>
-              <li>• حداکثر حجم فایل: 50 مگابایت</li>
-              <li>• استوری شما برای 24 ساعت نمایش داده می‌شود</li>
-              <li>• توصیه می‌شود از تصاویر عمودی استفاده کنید</li>
-            </ul>
+          {/* Footer Guidelines */}
+          <div className="pt-4 border-t border-gray-200/60">
+            <div className="flex justify-between text-xs text-gray-400 font-medium px-1">
+              <span>مدت نمایش: ۲۴ ساعت</span>
+              <span>حداکثر حجم: ۵۰ مگابایت</span>
+            </div>
           </div>
         </div>
       </div>

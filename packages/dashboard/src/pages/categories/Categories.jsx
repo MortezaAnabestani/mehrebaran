@@ -32,7 +32,7 @@ const Categories = () => {
   );
 
   return (
-    <div className="p-6 min-h-screen bg-[#cccccc]">
+    <div className="p-6 min-h-screen">
       {/* Header Section */}
       <div className="bg-white rounded-[8px] shadow-soft p-5 mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>

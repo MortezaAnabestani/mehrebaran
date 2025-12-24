@@ -11,7 +11,9 @@
       "Bash(cat:*)",
       "Bash(find:*)",
       "Bash(rm -f:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(del nul)",
+      "Bash(git add:*)"
     ]
   }
 }

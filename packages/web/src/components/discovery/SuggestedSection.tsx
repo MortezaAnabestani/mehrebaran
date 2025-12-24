@@ -55,7 +55,7 @@ const SuggestedSection: React.FC<SuggestedSectionProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-100">
+    <div className="bg-white rounded-lg md:p-6 shadow-sm border border-gray-100">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">

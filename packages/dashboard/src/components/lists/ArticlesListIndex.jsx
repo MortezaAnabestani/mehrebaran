@@ -49,7 +49,7 @@ const ArticlesListIndex = ({ articles }) => {
           return (
             <div key={article?._id} className="w-full flex flex-col mb-5 min-h-[290px]">
               <div className="flex">
-                <div className="flex flex-col items-center justify-between min-w-[100px] w-[100px] mx-w-[100px] px-2 bg-linear-to-r from-red-300 via-red-500 to-red-600">
+                <div className="flex flex-col items-center justify-between min-w-[100px] w-[100px] mx-w-[100px] px-2 bg-linear-to-r from-sky-300 via-sky-500 to-sky-600">
                   <Link rel="preconnect" prefetch={true} to={`edit/${article.slug}`}>
                     <img
                       className="w-30 h-40 mx-auto object-cover object-right-bottom rounded-b-full duration-700 cursor-pointer shadow-xl border-2 border-t-0 border-red-200 hover:object-left-top"
@@ -91,11 +91,21 @@ const ArticlesListIndex = ({ articles }) => {
                         <div className="border-b border-gray-100 pb-1">
                           <h3 className="text-[10px] font-medium text-gray-400">
                             دسته‌بندی:
-                            <span className="text-gray-800 font-normal text-xs">{article?.category?.name || 'بدون دسته‌بندی'}</span>
+                            <span className="text-gray-800 font-normal text-xs">
+                              {article?.category?.name || "بدون دسته‌بندی"}
+                            </span>
                           </h3>
                         </div>
                         <p className="text-[10px] font-medium text-gray-400">
-                          وضعیت: <span className="text-red-600 text-xs"> {article?.status === 'published' ? 'منتشر شده' : article?.status === 'draft' ? 'پیش‌نویس' : 'بایگانی'}</span>
+                          وضعیت:{" "}
+                          <span className="text-red-600 text-xs">
+                            {" "}
+                            {article?.status === "published"
+                              ? "منتشر شده"
+                              : article?.status === "draft"
+                              ? "پیش‌نویس"
+                              : "بایگانی"}
+                          </span>
                         </p>
                         <p className="text-[10px] font-medium text-gray-400">
                           انتشار:
@@ -196,7 +206,7 @@ const ArticlesListIndex = ({ articles }) => {
                   <div className="absolute text-[10px] p-1 top-3 left-1 ltr w-full flex gap-2 items-center">
                     <div className="flex flex-col items-center gap-1">
                       <span className="px-2 py-1 text-white bg-blue-500 rounded-full shadow-xs border border-blue-200 shadow-gray-400 hover:scale-95 cursor-grab duration-200">
-                        {article?.category?.name || 'بدون دسته‌بندی'}
+                        {article?.category?.name || "بدون دسته‌بندی"}
                       </span>
                     </div>
                   </div>
@@ -221,7 +231,7 @@ const ArticlesListIndex = ({ articles }) => {
                 <div className="flex flex-col items-center w-[350px]">
                   <div className="flex justify-between w-full mr-2">
                     <span className="px-2 py-1 text-white bg-blue-500 rounded-full shadow-xs border border-blue-400 shadow-blue-300 hover:scale-95 cursor-grab duration-200">
-                      {article?.category?.name || 'بدون دسته‌بندی'}
+                      {article?.category?.name || "بدون دسته‌بندی"}
                     </span>
                     <span className="px-2 py-1 text-red bg-white rounded-full shadow-xs border border-red-400 hover:scale-95 cursor-grab duration-200">
                       {article?.author?.name}
@@ -240,7 +250,8 @@ const ArticlesListIndex = ({ articles }) => {
                 <span className="text-gray-800 font-normal mr-1 text-sm">{article.subtitle}</span>
               </h3>
               <p className="text-xs font-medium text-gray-400">
-                دسته‌بندی: <span className="text-blue-600 text-sm">{article?.category?.name || 'بدون دسته‌بندی'}</span>
+                دسته‌بندی:{" "}
+                <span className="text-blue-600 text-sm">{article?.category?.name || "بدون دسته‌بندی"}</span>
               </p>
               <div className="flex justify-between items-center">
                 <p className="text-xs font-medium text-gray-400">
@@ -250,7 +261,14 @@ const ArticlesListIndex = ({ articles }) => {
                   </span>
                 </p>
                 <p className="text-xs font-medium text-gray-400">
-                  وضعیت: <span className="text-red-600 text-sm">{article?.status === 'published' ? 'منتشر شده' : article?.status === 'draft' ? 'پیش‌نویس' : 'بایگانی'}</span>
+                  وضعیت:{" "}
+                  <span className="text-red-600 text-sm">
+                    {article?.status === "published"
+                      ? "منتشر شده"
+                      : article?.status === "draft"
+                      ? "پیش‌نویس"
+                      : "بایگانی"}
+                  </span>
                 </p>
               </div>
             </div>

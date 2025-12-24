@@ -10,17 +10,6 @@ interface InstagramLayoutProps {
   showRightSidebar?: boolean;
 }
 
-/**
- * Instagram-Style Layout
- * Responsive Breakpoints:
- * - Mobile (< 768px): Feed only
- * - Tablet (768px - 1024px): Feed + Right Sidebar
- * - Desktop (>= 1024px): All three columns (if leftSidebar provided)
- *
- * Layout Modes:
- * - Three columns: When leftSidebar is provided (home, profile)
- * - Two columns: When leftSidebar is not provided (explore, trending, etc.)
- */
 const InstagramLayout: React.FC<InstagramLayoutProps> = ({
   children,
   leftSidebar,
@@ -28,34 +17,53 @@ const InstagramLayout: React.FC<InstagramLayoutProps> = ({
   showLeftSidebar = true,
   showRightSidebar = true,
 }) => {
-  // Determine if left sidebar should be shown (only if provided and showLeftSidebar is true)
   const hasLeftSidebar = leftSidebar && showLeftSidebar;
   const hasRightSidebar = rightSidebar && showRightSidebar;
+
   return (
-    <div className="min-h-screen bg-gray-50 pt-16 flex flex-col">
-      {/* Main Container */}
-      <div className="mx-auto max-w-[1440px] flex-1 w-full">
-        <div className="flex gap-2 md:gap-4 lg:gap-4 px-2 md:px-4 h-full items-start">
-          {/* Left Sidebar - Navigation (Desktop only: >= 1024px) */}
+    <div className="h-full mt-26 md:mt-0 bg-[#eef2f6] p-4 sm:p-6 md:p-12 lg:p-20 flex flex-col font-sans text-slate-700 selection:bg-[#007acc] selection:text-white pb-20 lg:pb-8">
+      <div className="fixed inset-0 pointer-events-none opacity-40 bg-gradient-to-br from-white via-transparent to-[#dbe4f0] z-0" />
+
+      <div className="relative z-10 mx-auto max-w-[1480px] flex-1 w-full px-2 sm:px-4 lg:px-8 pb-8">
+        <div className="flex gap-4 md:gap-6 lg:gap-8 h-full items-start justify-center">
           {hasLeftSidebar && (
-            <aside className="hidden lg:block w-64 xl:w-72 flex-shrink-0 sticky top-16 h-[calc(100vh-64px)] overflow-y-auto pt-4 pb-4 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
-              {leftSidebar}
+            <aside className="hidden lg:block w-72 xl:w-80 flex-shrink-0 sticky top-24 h-[calc(100vh-8rem)]">
+              <div
+                className="h-full w-full overflow-y-auto rounded-3xl bg-[#eef2f6] p-5 
+                shadow-[8px_8px_16px_#d1d9e6,-8px_-8px_16px_#ffffff] 
+                border border-white/40
+                scrollbar-thin scrollbar-thumb-[#007acc]/50 scrollbar-track-transparent hover:scrollbar-thumb-[#007acc]"
+              >
+                {leftSidebar}
+              </div>
             </aside>
           )}
 
-          {/* Main Feed (Always visible, wider when no left sidebar) */}
           <main
-            className={`flex-1 min-w-0 mt-15 py-4 w-full ${
-              hasLeftSidebar ? "md:max-w-[630px] lg:max-w-none md:mx-auto lg:mx-0" : "max-w-[900px] mx-auto"
+            className={`flex-1 min-w-0 transition-all duration-300 w-full ${
+              hasLeftSidebar ? "md:max-w-[680px] lg:max-w-none" : "max-w-[900px] mx-auto"
             }`}
           >
-            <div className={!hasLeftSidebar ? "max-w-[630px] mx-auto lg:mx-0" : "w-full"}>{children}</div>
+            <div
+              className={`w-full flex flex-col gap-4 sm:gap-6 ${
+                !hasLeftSidebar ? "max-w-[700px] mx-auto" : ""
+              }`}
+            >
+              {children}
+            </div>
           </main>
 
-          {/* Right Sidebar - Suggestions (Tablet & Desktop: >= 768px) */}
+          {/* Right Sidebar - Suggestions/Info Panel */}
           {hasRightSidebar && (
-            <aside className="hidden md:block w-72 lg:w-80 flex-shrink-0 sticky top-16 h-[calc(100vh-64px)] overflow-y-auto pt-4 pb-4 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
-              {rightSidebar}
+            <aside className="hidden xl:block w-80 lg:w-96 flex-shrink-0 sticky top-24 h-[calc(100vh-8rem)]">
+              <div
+                className="h-full w-full overflow-y-auto rounded-3xl bg-[#eef2f6] p-5
+                shadow-[8px_8px_16px_#d1d9e6,-8px_-8px_16px_#ffffff]
+                border border-white/40
+                scrollbar-thin scrollbar-thumb-[#007acc]/50 scrollbar-track-transparent hover:scrollbar-thumb-[#007acc]"
+              >
+                {rightSidebar}
+              </div>
             </aside>
           )}
         </div>

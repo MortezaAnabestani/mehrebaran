@@ -11,7 +11,8 @@ interface InstagramProfileTabsProps {
 }
 
 /**
- * InstagramProfileTabs - Tab navigation for profile sections
+ * InstagramProfileTabs - Skeuomorphic Tab navigation
+ * طراحی شده با سبک اسکیومورفیسم (Soft UI) برای ایجاد حس عمق و تعامل واقعی
  */
 const InstagramProfileTabs: React.FC<InstagramProfileTabsProps> = ({
   activeTab,
@@ -23,11 +24,11 @@ const InstagramProfileTabs: React.FC<InstagramProfileTabsProps> = ({
       id: "posts" as TabType,
       label: "پست‌ها",
       icon: (
-        <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-          <rect x="3" y="3" width="7" height="7" />
-          <rect x="13" y="3" width="7" height="7" />
-          <rect x="3" y="13" width="7" height="7" />
-          <rect x="13" y="13" width="7" height="7" />
+        <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="currentColor" viewBox="0 0 24 24">
+          <rect x="3" y="3" width="7" height="7" rx="1" />
+          <rect x="13" y="3" width="7" height="7" rx="1" />
+          <rect x="3" y="13" width="7" height="7" rx="1" />
+          <rect x="13" y="13" width="7" height="7" rx="1" />
         </svg>
       ),
       show: true,
@@ -36,7 +37,7 @@ const InstagramProfileTabs: React.FC<InstagramProfileTabsProps> = ({
       id: "tagged" as TabType,
       label: "تگ شده",
       icon: (
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -51,7 +52,7 @@ const InstagramProfileTabs: React.FC<InstagramProfileTabsProps> = ({
       id: "saved" as TabType,
       label: "ذخیره‌شده",
       icon: (
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -60,33 +61,64 @@ const InstagramProfileTabs: React.FC<InstagramProfileTabsProps> = ({
           />
         </svg>
       ),
-      show: isOwnProfile, // Only show for own profile
+      show: isOwnProfile,
     },
   ];
 
   return (
-    <div className="border-t border-gray-200">
-      <div className="max-w-4xl mx-auto flex justify-center">
-        {tabs
-          .filter((tab) => tab.show)
-          .map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => onTabChange(tab.id)}
-              className={`flex items-center justify-center gap-2 px-6 py-3 border-t-2 transition-colors ${
-                activeTab === tab.id
-                  ? "border-gray-900 text-gray-900"
-                  : "border-transparent text-gray-400 hover:text-gray-600"
-              }`}
-            >
-              <span className={activeTab === tab.id ? "text-gray-900" : "text-gray-400"}>
-                {tab.icon}
-              </span>
-              <span className="text-xs font-semibold tracking-wide hidden sm:inline">
-                {tab.label}
-              </span>
-            </button>
-          ))}
+    <div className="w-full bg-gray-100 px-6 select-none">
+      {/* Container for the tabs mimicking a control panel surface */}
+      <div className="max-w-3xl mx-auto">
+        <div className="flex items-center justify-center gap-5 py-4 rounded-3xl">
+          {tabs
+            .filter((tab) => tab.show)
+            .map((tab) => {
+              const isActive = activeTab === tab.id;
+
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => onTabChange(tab.id)}
+                  className={`
+                    relative group flex items-center justify-center gap-3 
+                    py-3 px-6 rounded-2xl transition-all duration-300 ease-out
+                    outline-none focus:outline-none
+                    ${
+                      isActive
+                        ? "shadow-[inset_6px_6px_12px_#b8b9be,inset_-6px_-6px_12px_#ffffff] text-[#007acc]"
+                        : "shadow-[6px_6px_12px_#b8b9be,-6px_-6px_12px_#ffffff] text-gray-500 hover:text-gray-700 hover:-translate-y-0.5 active:shadow-[inset_4px_4px_8px_#b8b9be,inset_-4px_-4px_8px_#ffffff] active:translate-y-0"
+                    }
+                  `}
+                  aria-label={tab.label}
+                  aria-pressed={isActive}
+                >
+                  {/* Icon Wrapper */}
+                  <span
+                    className={`transition-transform duration-300 ${
+                      isActive ? "scale-110 drop-shadow-sm" : "group-hover:scale-105"
+                    }`}
+                  >
+                    {tab.icon}
+                  </span>
+
+                  {/* Label */}
+                  <span
+                    className={`
+                      text-sm font-bold tracking-wide hidden sm:inline-block transition-colors duration-300
+                      ${isActive ? "text-[#007acc]" : "text-gray-500"}
+                    `}
+                  >
+                    {tab.label}
+                  </span>
+
+                  {/* Active Indicator Dot (Optional aesthetic touch) */}
+                  {isActive && (
+                    <span className="absolute bottom-2 w-1.5 h-1.5 rounded-full bg-[#007acc] shadow-[0_0_5px_#007acc] opacity-80 sm:hidden" />
+                  )}
+                </button>
+              );
+            })}
+        </div>
       </div>
     </div>
   );

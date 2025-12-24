@@ -9,6 +9,8 @@ import TopNav from "@/components/network/TopNav";
 import InstagramLayout from "@/components/network/InstagramLayout";
 import LeftSidebar from "@/components/network/LeftSidebar";
 import RightSidebar from "@/components/network/RightSidebar";
+import MobileBottomNav from "@/components/network/MobileBottomNav";
+import { MobileNavDrawer } from "@/components/network/MobileDrawer";
 import { lazy, Suspense } from "react";
 
 // Lazy load heavy modals
@@ -18,17 +20,12 @@ interface NetworkLayoutProps {
   children: React.ReactNode;
 }
 
-/**
- * Shared Layout for all /network routes
- * Provides consistent TopNav and RightSidebar
- * LeftSidebar only shows on /network (home) and /network/profile
- * Other routes are two-column (content + right sidebar)
- */
 const NetworkLayout: React.FC<NetworkLayoutProps> = ({ children }) => {
   const pathname = usePathname();
   const [showCreateNeed, setShowCreateNeed] = useState<boolean>(false);
+  const [showMobileMenu, setShowMobileMenu] = useState<boolean>(false);
 
-  // Only show LeftSidebar on main feed (/network) and profile pages
+  // Only show RightSidebar on main feed (/network) and profile pages
   const showRightSidebar = pathname === "/network" || pathname?.startsWith("/network/profile");
 
   // Handle need creation
@@ -47,7 +44,7 @@ const NetworkLayout: React.FC<NetworkLayoutProps> = ({ children }) => {
 
   return (
     <ProtectedRoute>
-      <TopNav />
+      <TopNav onMenuClick={() => setShowMobileMenu(true)} />
       <PageTransition>
         <InstagramLayout
           rightSidebar={showRightSidebar ? <RightSidebar /> : undefined}
@@ -56,6 +53,19 @@ const NetworkLayout: React.FC<NetworkLayoutProps> = ({ children }) => {
           {children}
         </InstagramLayout>
       </PageTransition>
+
+      {/* Mobile Bottom Navigation */}
+      <MobileBottomNav onCreateClick={() => setShowCreateNeed(true)} />
+
+      {/* Mobile Navigation Drawer */}
+      <MobileNavDrawer
+        isOpen={showMobileMenu}
+        onClose={() => setShowMobileMenu(false)}
+        onCreateNeed={() => {
+          setShowMobileMenu(false);
+          setShowCreateNeed(true);
+        }}
+      />
 
       {/* Create Need Modal */}
       <Suspense fallback={null}>

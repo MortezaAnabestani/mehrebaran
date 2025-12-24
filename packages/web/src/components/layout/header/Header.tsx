@@ -44,7 +44,11 @@ const Header: React.FC<Props> = ({}) => {
 
   return (
     <header className="h-13.5 md:h-26">
-      <div className={`w-full fixed ${headerBg} ${isNetworkPage ? "py-1" : "py-2"} z-20 duration-300 transition-all`}>
+      <div
+        className={`w-full fixed ${headerBg} ${
+          isNetworkPage ? "py-1" : "py-2"
+        } z-20 duration-300 transition-all`}
+      >
         <div
           className={`flex items-center justify-between w-8/10 mx-auto relative ${
             //این قسمت پس از تصمیم تیم سازمان اصلاح خواهد شد
@@ -61,9 +65,7 @@ const Header: React.FC<Props> = ({}) => {
             </div>
             {open && (
               <div className={`absolute top-16.5 w-full ${mobileBg} pt-2`}>
-                <Search
-                  className="w-9/10 min-w-9/10 mx-auto"
-                />
+                <Search className="w-9/10 min-w-9/10 mx-auto" />
                 <Navbar deviceSize="mobile" />
               </div>
             )}

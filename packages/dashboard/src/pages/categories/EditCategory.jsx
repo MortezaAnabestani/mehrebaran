@@ -50,7 +50,7 @@ const EditCategory = () => {
   }
 
   return (
-    <div className="p-6 min-h-screen bg-[#cccccc]">
+    <div className="p-6 min-h-screen ]">
       <div className="max-w-3xl mx-auto bg-white rounded-[8px] shadow-soft overflow-hidden">
         <div className="bg-[#f7891b] p-6 text-white flex items-center justify-between">
           <h2 className="text-xl font-bold flex items-center gap-2">

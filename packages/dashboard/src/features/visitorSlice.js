@@ -1,11 +1,9 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
-
-const BASE_URL = import.meta.env.VITE_SERVER_PUBLIC_API_URL;
+import api from "../services/api";
 
 export const fetchVisitor = createAsyncThunk("visitor/fetch", async (_, { rejectWithValue }) => {
   try {
-    const response = await axios.get(`${BASE_URL}/visitor/stats`);
+    const response = await api.get("/admin/analytics/visitors");
     return response.data;
   } catch (error) {
     return rejectWithValue(error.response?.data?.error || "بارگیری اطلاعات بازدید انجام نشد!");
@@ -14,7 +12,7 @@ export const fetchVisitor = createAsyncThunk("visitor/fetch", async (_, { reject
 
 export const deleteVisitor = createAsyncThunk("visitors/delete", async (slug, { rejectWithValue }) => {
   try {
-    await axios.delete(`${BASE_URL}/visitor/stats`);
+    await api.delete("/visitor/stats");
     console.log("حذف شما با موفقیت انجام شد");
   } catch (error) {
     return rejectWithValue(error.response?.data?.error || "حذف کمپین انجام نشد!");

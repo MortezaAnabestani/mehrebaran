@@ -204,7 +204,7 @@ const HomePageHeroSettings = () => {
           <button
             type="submit"
             disabled={loading}
-            className={`px-3 w-full lg:w-[120px] cursor-pointer py-[6px] ${
+            className={`px-3 w-full lg:w-30 cursor-pointer py-15 ${
               loading ? "bg-gray-400" : "bg-gray-600 hover:bg-gray-700"
             } rounded-md text-white`}
           >

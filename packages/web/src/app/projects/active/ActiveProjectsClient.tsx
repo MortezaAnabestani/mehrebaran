@@ -171,7 +171,7 @@ export default function ActiveProjectsClient({ initialProjects }: Props) {
                             height={18}
                             className="mt-1"
                           />
-                          <p className="font-bold text-xs md:text-base">{project.likes?.length || 0}</p>
+                          <p className="font-bold text-xs md:text-base">{(project as any).likes?.length || 0}</p>
                         </div>
                         <div className="bg-gray-300 w-8 h-8 md:w-10 md:h-10 rounded-sm flex flex-col items-center justify-center">
                           <OptimizedImage
@@ -181,7 +181,7 @@ export default function ActiveProjectsClient({ initialProjects }: Props) {
                             height={18}
                             className="mt-1"
                           />
-                          <p className="font-bold text-xs md:text-base">{project.comments?.length || 0}</p>
+                          <p className="font-bold text-xs md:text-base">{(project as any).comments?.length || 0}</p>
                         </div>
                       </div>
                     </div>

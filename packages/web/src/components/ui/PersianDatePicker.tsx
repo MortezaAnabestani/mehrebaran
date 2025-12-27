@@ -68,9 +68,7 @@ const PersianDatePicker: React.FC<PersianDatePickerProps> = ({
     }
   };
 
-  const [selectedDay, setSelectedDay] = useState<DayValue>(
-    value ? isoToPersian(value) : null
-  );
+  const [selectedDay, setSelectedDay] = useState<DayValue>(value ? isoToPersian(value) : null);
 
   const handleDateChange = (date: DayValue) => {
     setSelectedDay(date);
@@ -83,7 +81,7 @@ const PersianDatePicker: React.FC<PersianDatePickerProps> = ({
       <div className="w-full">
         {label && <label className="block text-sm font-bold mb-2">{label}</label>}
         <div className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50">
-          <span className="text-gray-400">در حال بارگذاری تقویم...</span>
+          <span className="text-gray-400">باران که می‌بارد، تو در راهی...ویم...</span>
         </div>
       </div>
     );

@@ -105,6 +105,20 @@ class AdminController {
     return ResponseFormatter.success(res, analytics, "آنالیز تعامل با موفقیت دریافت شد");
   });
 
+  /**
+   * Get site views analytics
+   * آنالیز بازدیدهای سایت
+   *
+   * @route GET /api/v1/admin/analytics/views
+   * @access Private (Admin, Super Admin)
+   */
+  public getViewsAnalytics = asyncHandler(async (req: Request, res: Response) => {
+    const days = req.query.days ? parseInt(req.query.days as string) : 30;
+    const analytics = await adminService.getViewsAnalytics(days);
+
+    return ResponseFormatter.success(res, analytics, "آنالیز بازدیدها با موفقیت دریافت شد");
+  });
+
   // ==================== MODERATION ENDPOINTS ====================
 
   /**

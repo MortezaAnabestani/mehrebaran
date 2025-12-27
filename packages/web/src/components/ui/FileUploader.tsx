@@ -2,6 +2,7 @@
 
 import React, { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import OptimizedImage from "./OptimizedImage";
 
 interface FileWithPreview {
   file: File;
@@ -39,15 +40,15 @@ const FileUploader: React.FC<FileUploaderProps> = ({
   const getFileIcon = (type: string) => {
     switch (type) {
       case "image":
-        return "🖼️";
+        return "/icons/image.svg";
       case "video":
-        return "🎬";
+        return "/icons/video.svg";
       case "audio":
-        return "🎵";
+        return "/icons/music.svg";
       case "document":
-        return "📄";
+        return "/icons/paper.svg";
       default:
-        return "📎";
+        return "/icons/attach.svg";
     }
   };
 
@@ -135,15 +136,18 @@ const FileUploader: React.FC<FileUploaderProps> = ({
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
         className={`border-2 border-dashed rounded-lg p-8 text-center transition-all ${
-          isDragging
-            ? "border-mblue bg-mblue/5 scale-105"
-            : "border-gray-300 hover:border-mblue/50"
+          isDragging ? "border-mblue bg-mblue/5 scale-105" : "border-gray-300 hover:border-mblue/50"
         }`}
       >
-        <div className="text-6xl mb-4">📎</div>
+        <OptimizedImage
+          src="/icons/attach.svg"
+          alt="download icon"
+          width={18}
+          height={18}
+          className="inline-block"
+        />{" "}
         <p className="text-gray-600 mb-2 font-bold">فایل‌های خود را اینجا رها کنید</p>
         <p className="text-sm text-gray-500 mb-4">یا روی دکمه زیر کلیک کنید</p>
-
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
@@ -151,7 +155,6 @@ const FileUploader: React.FC<FileUploaderProps> = ({
         >
           انتخاب فایل
         </button>
-
         <input
           ref={fileInputRef}
           type="file"
@@ -160,7 +163,6 @@ const FileUploader: React.FC<FileUploaderProps> = ({
           onChange={handleFileSelect}
           className="hidden"
         />
-
         <p className="text-xs text-gray-400 mt-4">
           فرمت‌های مجاز: تصویر، ویدیو، صدا، PDF | حداکثر حجم: {maxSize}MB | حداکثر تعداد: {maxFiles} فایل
         </p>
@@ -193,26 +195,28 @@ const FileUploader: React.FC<FileUploaderProps> = ({
                   <div className="relative w-full h-32 bg-gray-100 rounded-lg overflow-hidden border-2 border-gray-200">
                     {/* Preview */}
                     {fileWithPreview.type === "image" && (
-                      <img
+                      <OptimizedImage
                         src={fileWithPreview.preview}
                         alt={fileWithPreview.file.name}
+                        width={18}
+                        height={18}
                         className="w-full h-full object-cover"
                       />
                     )}
 
                     {fileWithPreview.type === "video" && (
-                      <video
-                        src={fileWithPreview.preview}
-                        className="w-full h-full object-cover"
-                        muted
-                      />
+                      <video src={fileWithPreview.preview} className="w-full h-full object-cover" muted />
                     )}
 
                     {(fileWithPreview.type === "audio" || fileWithPreview.type === "document") && (
                       <div className="w-full h-full flex items-center justify-center">
-                        <span className="text-5xl">
-                          {getFileIcon(fileWithPreview.type)}
-                        </span>
+                        <OptimizedImage
+                          src={getFileIcon(fileWithPreview.type)}
+                          alt="download icon"
+                          width={18}
+                          height={18}
+                          className="inline-block"
+                        />
                       </div>
                     )}
 
@@ -238,9 +242,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
                     <p className="text-xs font-bold truncate" title={fileWithPreview.file.name}>
                       {fileWithPreview.file.name}
                     </p>
-                    <p className="text-xs text-gray-500">
-                      {formatFileSize(fileWithPreview.file.size)}
-                    </p>
+                    <p className="text-xs text-gray-500">{formatFileSize(fileWithPreview.file.size)}</p>
                   </div>
                 </motion.div>
               ))}

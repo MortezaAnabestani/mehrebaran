@@ -89,7 +89,7 @@ const DonationDetails = () => {
   if (loading) {
     return (
       <div className="bg-white rounded-md p-6">
-        <p className="text-center">در حال بارگذاری...</p>
+        <p className="text-center">باران که می‌بارد، تو در راهی...</p>
       </div>
     );
   }

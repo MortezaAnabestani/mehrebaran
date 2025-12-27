@@ -86,9 +86,7 @@ function NeedsModerationTab() {
       params.append("page", filters.page.toString());
       params.append("limit", filters.limit.toString());
 
-      const response = await api.get(
-        `/admin/moderation/needs?${params}`
-      );
+      const response = await api.get(`/admin/moderation/needs?${params}`);
 
       if (response.data.success) {
         setNeeds(response.data.data);
@@ -113,14 +111,11 @@ function NeedsModerationTab() {
     }
 
     try {
-      await api.put(
-        `/admin/moderation/needs/bulk-status`,
-        {
-          needIds: selectedNeeds,
-          status,
-          reason: status === "rejected" ? rejectionReason : undefined,
-        }
-      );
+      await api.put(`/admin/moderation/needs/bulk-status`, {
+        needIds: selectedNeeds,
+        status,
+        reason: status === "rejected" ? rejectionReason : undefined,
+      });
 
       setSelectedNeeds([]);
       setRejectionReason("");
@@ -186,13 +181,8 @@ function NeedsModerationTab() {
               />
             </div>
 
-            <Button
-              onClick={fetchNeeds}
-              size="sm"
-              className="flex items-center gap-2"
-              disabled={loading}
-            >
-              {loading ? "در حال بارگذاری..." : "اعمال فیلتر"}
+            <Button onClick={fetchNeeds} size="sm" className="flex items-center gap-2" disabled={loading}>
+              {loading ? "باران که می‌بارد، تو در راهی..." : "اعمال فیلتر"}
             </Button>
           </div>
         </CardBody>
@@ -290,7 +280,7 @@ function NeedsModerationTab() {
                 <tr>
                   <td colSpan={6} className="p-8 text-center">
                     <Typography variant="small" className="text-gray-500">
-                      {loading ? "در حال بارگذاری..." : "نیازی یافت نشد"}
+                      {loading ? "باران که می‌بارد، تو در راهی..." : "نیازی یافت نشد"}
                     </Typography>
                   </td>
                 </tr>
@@ -357,9 +347,7 @@ function CommentsModerationTab() {
       params.append("page", filters.page.toString());
       params.append("limit", filters.limit.toString());
 
-      const response = await api.get(
-        `/admin/moderation/comments?${params}`
-      );
+      const response = await api.get(`/admin/moderation/comments?${params}`);
 
       if (response.data.success) {
         setComments(response.data.data);
@@ -389,13 +377,8 @@ function CommentsModerationTab() {
               />
             </div>
 
-            <Button
-              onClick={fetchComments}
-              size="sm"
-              className="flex items-center gap-2"
-              disabled={loading}
-            >
-              {loading ? "در حال بارگذاری..." : "اعمال فیلتر"}
+            <Button onClick={fetchComments} size="sm" className="flex items-center gap-2" disabled={loading}>
+              {loading ? "باران که می‌بارد، تو در راهی..." : "اعمال فیلتر"}
             </Button>
           </div>
         </CardBody>
@@ -443,7 +426,7 @@ function CommentsModerationTab() {
                 <tr>
                   <td colSpan={4} className="p-8 text-center">
                     <Typography variant="small" className="text-gray-500">
-                      {loading ? "در حال بارگذاری..." : "نظری یافت نشد"}
+                      {loading ? "باران که می‌بارد، تو در راهی..." : "نظری یافت نشد"}
                     </Typography>
                   </td>
                 </tr>
@@ -491,9 +474,7 @@ function DonationsModerationTab() {
       params.append("page", filters.page.toString());
       params.append("limit", filters.limit.toString());
 
-      const response = await api.get(
-        `/admin/moderation/donations?${params}`
-      );
+      const response = await api.get(`/admin/moderation/donations?${params}`);
 
       if (response.data.success) {
         setDonations(response.data.data);
@@ -508,10 +489,7 @@ function DonationsModerationTab() {
 
   const handleUpdateStatus = async (donationId, status) => {
     try {
-      await api.put(
-        `/admin/moderation/donations/${donationId}/status`,
-        { status }
-      );
+      await api.put(`/admin/moderation/donations/${donationId}/status`, { status });
 
       fetchDonations();
     } catch (error) {
@@ -558,13 +536,8 @@ function DonationsModerationTab() {
               />
             </div>
 
-            <Button
-              onClick={fetchDonations}
-              size="sm"
-              className="flex items-center gap-2"
-              disabled={loading}
-            >
-              {loading ? "در حال بارگذاری..." : "اعمال فیلتر"}
+            <Button onClick={fetchDonations} size="sm" className="flex items-center gap-2" disabled={loading}>
+              {loading ? "باران که می‌بارد، تو در راهی..." : "اعمال فیلتر"}
             </Button>
           </div>
         </CardBody>
@@ -641,7 +614,7 @@ function DonationsModerationTab() {
                 <tr>
                   <td colSpan={6} className="p-8 text-center">
                     <Typography variant="small" className="text-gray-500">
-                      {loading ? "در حال بارگذاری..." : "کمکی یافت نشد"}
+                      {loading ? "باران که می‌بارد، تو در راهی..." : "کمکی یافت نشد"}
                     </Typography>
                   </td>
                 </tr>

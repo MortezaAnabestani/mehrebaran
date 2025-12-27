@@ -9,21 +9,11 @@ import {
   Avatar,
   Button,
   IconButton,
-  Tooltip,
 } from "@material-tailwind/react";
+import OptimizedImage from "@/components/ui/OptimizedImage";
+
 import api from "../services/api";
 
-// --- Constants & Config ---
-const BRAND_COLORS = {
-  primary: "#007acc",
-  secondary: "#f7891b",
-  bg: "#ffffff",
-  text: "#1e1e1e",
-};
-
-// --- Helper Components ---
-
-// 1. Skeleton Loader for better UX
 const ActivitySkeleton = () => (
   <div className="animate-pulse flex gap-4 mb-8 relative pr-8">
     <div className="absolute right-0 top-0 w-4 h-4 bg-gray-300 rounded-full"></div>
@@ -379,7 +369,11 @@ const ActivityTimelineItem = ({ activity, isLast }) => {
       case "badge":
         return (
           <div className="mt-3 bg-gradient-to-r from-amber-50 to-white p-4 rounded-lg border border-amber-100 flex items-center gap-4">
-            <div className="text-3xl">{details.badgeIcon || "🏆"}</div>
+            <div className="text-3xl">
+              {details.badgeIcon || (
+                <OptimizedImage src="/icons/cup.svg" alt="cup icon" width={18} heieght={18} />
+              )}
+            </div>
             <div>
               <Typography className="font-bold text-gray-800 text-sm">
                 نشان «{details.badgeName}» دریافت شد
@@ -615,12 +609,12 @@ const ActivityFeedPage = () => {
                     className="bg-white"
                   >
                     <Option value="">همه فعالیت‌ها</Option>
-                    <Option value="need">📝 نیازها</Option>
-                    <Option value="donation">💰 کمک‌های مالی</Option>
-                    <Option value="comment">💬 نظرات</Option>
-                    <Option value="story">📸 استوری‌ها</Option>
-                    <Option value="follow">👥 فالوها</Option>
-                    <Option value="badge">🏆 نشان‌ها</Option>
+                    <Option value="need">نیازها</Option>
+                    <Option value="donation"> کمک‌های مالی</Option>
+                    <Option value="comment"> نظرات</Option>
+                    <Option value="story"> استوری‌ها</Option>
+                    <Option value="follow"> فالوها</Option>
+                    <Option value="badge">نشان‌ها</Option>
                   </Select>
                 </div>
                 <div className="w-full md:w-1/3">

@@ -4,7 +4,8 @@ import api from "../services/api";
 export const fetchview = createAsyncThunk("view/fetch", async (_, { rejectWithValue }) => {
   try {
     const response = await api.get("/admin/analytics/views");
-    return response.data;
+    // استخراج داده‌های واقعی از پاسخ ResponseFormatter
+    return response.data.data || response.data;
   } catch (error) {
     return rejectWithValue(error.response?.data?.error || "بارگیری اطلاعات بازدید انجام نشد!");
   }

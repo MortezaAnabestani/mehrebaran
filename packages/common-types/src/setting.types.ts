@@ -11,7 +11,7 @@ export interface ISetting {
 export interface IHomePageHeroSetting {
   image: IResponsiveImage;
   title: string;
-  subtitle: string;
+  description: string;
 }
 
 export interface IBlogBackgroundSetting {

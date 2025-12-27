@@ -19,10 +19,26 @@ export const getDaysRemaining = (deadline?: Date | string): string => {
 
 export const getUrgencyInfo = (urgency: string = "medium") => {
   const urgencyMap: any = {
-    low: { label: "عادی", color: "bg-gray-100 text-gray-700", icon: "⚪" },
-    medium: { label: "متوسط", color: "bg-blue-100 text-blue-700", icon: "🔵" },
-    high: { label: "فوری", color: "bg-orange-100 text-orange-700", icon: "🟠" },
-    critical: { label: "بحرانی", color: "bg-red-100 text-red-700", icon: "🔴" },
+    low: {
+      label: "عادی",
+      color: "bg-gray-100 text-gray-700",
+      icon: "/icons/low.svg",
+    },
+    medium: {
+      label: "متوسط",
+      color: "bg-blue-100 text-blue-700",
+      icon: "/icons/medium.svg",
+    },
+    high: {
+      label: "فوری",
+      color: "bg-orange-100 text-orange-700",
+      icon: "/icons/high.svg",
+    },
+    critical: {
+      label: "بحرانی",
+      color: "bg-red-100 text-red-700",
+      icon: "/icons/critical.svg",
+    },
   };
   return urgencyMap[urgency] || urgencyMap.medium;
 };
@@ -65,23 +81,23 @@ export const formatFileSize = (bytes?: number): string => {
 export const getFileInfo = (url: string, fileName?: string) => {
   const name = fileName || url.split("/").pop() || "فایل";
   const extension = name.split(".").pop()?.toLowerCase() || "";
-  let icon = "📄";
+  let icon = "/icons/paper.svg";
   let color = "bg-gray-100 text-gray-700";
 
   if (["pdf"].includes(extension)) {
-    icon = "📕";
+    icon = "/icons/pdf.svg";
     color = "bg-red-100 text-red-700";
   } else if (["doc", "docx"].includes(extension)) {
-    icon = "📘";
+    icon = "/icons/doc.svg";
     color = "bg-blue-100 text-blue-700";
   } else if (["xls", "xlsx", "csv"].includes(extension)) {
-    icon = "📗";
+    icon = "/icons/xls.svg";
     color = "bg-green-100 text-green-700";
   } else if (["ppt", "pptx"].includes(extension)) {
-    icon = "📙";
+    icon = "/icons/ppt.svg";
     color = "bg-orange-100 text-orange-700";
   } else if (["zip", "rar", "7z"].includes(extension)) {
-    icon = "🗜️";
+    icon = "/icons/zip.svg";
     color = "bg-purple-100 text-purple-700";
   }
 

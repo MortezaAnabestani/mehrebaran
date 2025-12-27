@@ -15,166 +15,205 @@ const ProfileSettings = () => {
     handleImagePreview,
     error,
     setAlerts,
-  } = useAdminForm(true);
+  } = useAdminForm(true, true); // isEdit=true, isProfile=true
 
   useEffect(() => {
     dispatch(resetStatus());
   }, [dispatch, setAlerts]);
 
-  return (
-    <div className="w-full min-h-screen flex flex-col items-center py-10 px-4 font-sans text-gray-700">
-      {/* Header Title with Embossed Effect */}
-      <h1 className="text-xl font-bold text-[#007acc] drop-shadow-sm">تنظیمات پروفایل</h1>
+  console.log("previewImage: " + previewImage);
 
-      {/* Alert Section - Neumorphic Style */}
-      <div className="w-full max-w-2xl mb-6 min-h-[3rem]">
+  return (
+    <div className="w-full min-h-screen bg-slate-50 py-8 px-4 font-sans text-slate-800">
+      <div className="max-w-5xl mx-auto">
+        {/* Header Section */}
+        <div className="flex items-center justify-between mb-6 border-b border-slate-200 pb-4">
+          <div>
+            <h1 className="text-lg font-bold text-slate-800">تنظیمات حساب کاربری</h1>
+            <p className="text-[11px] text-slate-500 mt-1">اطلاعات پروفایل و امنیتی خود را مدیریت کنید.</p>
+          </div>
+          {/* Status Badge (Optional Visual Element) */}
+          <div className="hidden sm:flex items-center gap-2 px-3 py-1 bg-white border border-slate-200 rounded-md">
+            <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <span className="text-[11px] font-medium text-slate-600">وضعیت: فعال</span>
+          </div>
+        </div>
+
+        {/* Alert Section - Functional Style */}
         {alerts && (
           <div
-            className={`px-6 py-3 rounded-xl text-sm font-semibold text-center transition-all duration-300 shadow-[6px_6px_12px_#b8b9be,-6px_-6px_12px_#ffffff] ${
-              error ? "text-red-500 bg-[#e2e6eb]" : "text-[#007acc] bg-[#e0e5ec]"
+            className={`mb-6 px-4 py-3 rounded-md border text-xs font-medium flex items-center gap-2 ${
+              error ? "bg-red-50 border-red-200 text-red-700" : "bg-blue-50 border-blue-200 text-[#007acc]"
             }`}
           >
+            <span className={`w-1.5 h-1.5 rounded-full ${error ? "bg-red-500" : "bg-[#007acc]"}`}></span>
             {alerts}
           </div>
         )}
-      </div>
 
-      {/* Main Card - Raised Skeuomorphic Container */}
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        onMouseDown={() => setAlerts(null)}
-        className="w-full max-w-xl bg-[#e0e5ec] rounded-3xl p-8 shadow-[9px_9px_16px_rgb(163,177,198,0.6),-9px_-9px_16px_rgba(255,255,255,0.5)] border border-white/20"
-      >
-        <div className="flex flex-col md:flex-row gap-8 items-start">
-          {/* Left Column: Avatar Section */}
-          <div className="w-full md:w-1/3 flex flex-col items-center gap-4">
-            <div className="relative group">
-              {/* Avatar Container with Ring Effect */}
-              <div className="w-40 h-40 rounded-full p-2 bg-[#e0e5ec] shadow-[inset_5px_5px_10px_#bebebe,inset_-5px_-5px_10px_#ffffff] flex items-center justify-center overflow-hidden">
-                {previewImage ? (
-                  <img
-                    src={previewImage}
-                    alt="پیش‌نمایش"
-                    className="w-full h-full object-cover rounded-full shadow-md"
-                  />
-                ) : (
-                  <img
-                    src="/assets/images/dashboard/icons/portrait.svg"
-                    alt="default"
-                    className="w-20 h-20 opacity-40"
-                  />
-                )}
-              </div>
-
-              {/* Upload Button Overlay */}
-              <label
-                htmlFor="avatar"
-                className="absolute bottom-0 right-0 bg-[#007acc] text-white p-2 rounded-full shadow-[3px_3px_6px_rgba(0,0,0,0.2)] cursor-pointer hover:bg-[#0062a3] transition-colors active:scale-95"
-                title="تغییر عکس"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
-                  />
-                </svg>
-              </label>
-            </div>
-
-            <input
-              {...register("avatar")}
-              type="file"
-              accept="image/*"
-              id="avatar"
-              className="hidden"
-              onChange={handleImagePreview}
-            />
-            <span className="text-xs text-gray-500 font-medium">
-              {errors.avatar ? (
-                <span className="text-red-500">{errors.avatar.message}</span>
-              ) : (
-                "تصویر پروفایل خود را انتخاب کنید"
-              )}
+        {/* Main Form Container */}
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          onMouseDown={() => setAlerts(null)}
+          className="bg-white border border-slate-200 rounded-md shadow-sm overflow-hidden"
+        >
+          {/* Section Header */}
+          <div className="bg-slate-50/50 px-6 py-3 border-b border-slate-200 flex items-center">
+            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+              اطلاعات عمومی
             </span>
           </div>
 
-          {/* Right Column: Form Inputs */}
-          <div className="w-full md:w-2/3 flex flex-col gap-5">
-            {/* Input Group Component */}
-            <div className="flex flex-col gap-2">
-              <label htmlFor="name" className="text-sm font-bold text-gray-600 mr-2">
-                نام کامل
-              </label>
-              <input
-                className="w-full bg-[#e0e5ec] rounded-xl px-4 py-3 text-gray-700 outline-none shadow-[inset_5px_5px_10px_#bebebe,inset_-5px_-5px_10px_#ffffff] focus:shadow-[inset_2px_2px_5px_#bebebe,inset_-2px_-2px_5px_#ffffff] focus:ring-2 focus:ring-[#007acc]/20 transition-all"
-                type="text"
-                id="name"
-                placeholder="نام خود را وارد کنید"
-                {...register("name")}
-              />
+          <div className="p-6 grid grid-cols-12 gap-8">
+            {/* Left Column: Avatar (Engineering Style) */}
+            <div className="col-span-12 md:col-span-3 flex flex-col gap-4 border-b md:border-b-0 md:border-l border-slate-100 pb-6 md:pb-0 md:pl-6">
+              <span className="text-xs font-semibold text-slate-700">تصویر پروفایل</span>
+
+              <div className="relative group w-full aspect-square max-w-[160px] bg-slate-100 rounded-md border border-slate-200 overflow-hidden flex items-center justify-center self-center md:self-start">
+                {previewImage ? (
+                  <img src={previewImage} alt="Preview" className="w-full h-full object-cover" />
+                ) : (
+                  <div className="flex flex-col items-center gap-2 text-slate-400">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-8 w-8"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1.5}
+                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                      />
+                    </svg>
+                    <span className="text-[10px]">بدون تصویر</span>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex flex-col gap-2 w-full max-w-[160px] self-center md:self-start">
+                <label
+                  htmlFor="avatar"
+                  className="flex items-center justify-center w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-[11px] font-medium text-slate-700 hover:bg-slate-50 hover:border-slate-400 transition-colors cursor-pointer shadow-sm"
+                >
+                  انتخاب فایل...
+                </label>
+                <input
+                  {...register("avatar")}
+                  type="file"
+                  accept="image/*"
+                  id="avatar"
+                  className="hidden"
+                  onChange={handleImagePreview}
+                />
+                {errors.avatar && (
+                  <span className="text-[10px] text-red-500 text-center md:text-right">
+                    {errors.avatar.message}
+                  </span>
+                )}
+                <p className="text-[10px] text-slate-400 text-center md:text-right leading-tight">
+                  فرمت‌های مجاز: JPG, PNG <br /> حداکثر حجم: 2MB
+                </p>
+              </div>
             </div>
 
-            <div className="flex flex-col gap-2">
-              <label htmlFor="username" className="text-sm font-bold text-gray-600 mr-2">
-                نام کاربری
-              </label>
-              <input
-                className="w-full bg-[#e0e5ec] rounded-xl px-4 py-3 text-gray-700 outline-none shadow-[inset_5px_5px_10px_#bebebe,inset_-5px_-5px_10px_#ffffff] focus:ring-2 focus:ring-[#007acc]/20 transition-all text-left dir-ltr"
-                type="text"
-                id="username"
-                {...register("username")}
-              />
-            </div>
+            {/* Right Column: Inputs */}
+            <div className="col-span-12 md:col-span-9 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5 content-start">
+              {/* Full Name */}
+              <div className="col-span-1 md:col-span-2">
+                <label htmlFor="name" className="block text-[11px] font-medium text-slate-500 mb-1.5">
+                  نام کامل
+                </label>
+                <input
+                  id="name"
+                  type="text"
+                  className="w-full h-9 px-3 bg-white border border-slate-300 rounded-md text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-[#007acc] focus:ring-1 focus:ring-[#007acc] transition-all"
+                  placeholder="نام و نام خانوادگی"
+                  {...register("name")}
+                />
+              </div>
 
-            <div className="flex flex-col gap-2">
-              <label htmlFor="email" className="text-sm font-bold text-gray-600 mr-2">
-                ایمیل
-              </label>
-              <input
-                className="w-full bg-[#e0e5ec] rounded-xl px-4 py-3 text-gray-700 outline-none shadow-[inset_5px_5px_10px_#bebebe,inset_-5px_-5px_10px_#ffffff] focus:ring-2 focus:ring-[#007acc]/20 transition-all text-left dir-ltr"
-                type="email"
-                id="email"
-                {...register("email")}
-              />
-            </div>
+              {/* Username */}
+              <div className="col-span-1">
+                <label htmlFor="username" className="block text-[11px] font-medium text-slate-500 mb-1.5">
+                  نام کاربری
+                </label>
+                <input
+                  id="username"
+                  type="text"
+                  className="w-full h-9 px-3 bg-slate-50 border border-slate-300 rounded-md text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-[#007acc] focus:ring-1 focus:ring-[#007acc] transition-all text-left dir-ltr font-mono"
+                  {...register("username")}
+                />
+              </div>
 
-            <div className="flex flex-col gap-2">
-              <label htmlFor="password" className="text-sm font-bold text-gray-600 mr-2">
-                تغییر رمز عبور
-              </label>
-              <input
-                className="w-full bg-[#e0e5ec] rounded-xl px-4 py-3 text-gray-700 outline-none shadow-[inset_5px_5px_10px_#bebebe,inset_-5px_-5px_10px_#ffffff] focus:ring-2 focus:ring-[#007acc]/20 transition-all text-left dir-ltr placeholder-gray-400"
-                type="password"
-                id="password"
-                placeholder="********"
-                {...register("password")}
-              />
-            </div>
+              {/* Email */}
+              <div className="col-span-1">
+                <label htmlFor="email" className="block text-[11px] font-medium text-slate-500 mb-1.5">
+                  آدرس ایمیل
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  className="w-full h-9 px-3 bg-white border border-slate-300 rounded-md text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-[#007acc] focus:ring-1 focus:ring-[#007acc] transition-all text-left dir-ltr font-mono"
+                  {...register("email")}
+                />
+              </div>
 
-            {/* Submit Button - Raised & Pressable */}
+              {/* Password */}
+              <div className="col-span-1 md:col-span-2 pt-2 border-t border-slate-100 mt-2">
+                <label htmlFor="password" className="block text-[11px] font-medium text-slate-500 mb-1.5">
+                  تغییر رمز عبور <span className="text-slate-400 font-normal">(اختیاری)</span>
+                </label>
+                <div className="relative">
+                  <input
+                    id="password"
+                    type="password"
+                    dir="ltr"
+                    placeholder="••••••••"
+                    className="w-full h-9 px-3 bg-white border border-slate-300 rounded-md text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-[#007acc] focus:ring-1 focus:ring-[#007acc] transition-all text-left font-mono"
+                    {...register("password")}
+                  />
+                  <div className="absolute text-left inset-y-0 right-2 pl-3 flex items-center pointer-events-none">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-4 w-4 text-slate-400"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1.5}
+                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                      />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Footer Actions */}
+          <div className="bg-slate-50 px-6 py-4 border-t border-slate-200 flex justify-end items-center gap-3">
+            <button
+              type="button"
+              className="px-4 py-2 text-xs font-medium text-slate-600 bg-white border border-slate-300 rounded-md hover:bg-slate-50 transition-colors"
+              onClick={() => window.history.back()}
+            >
+              انصراف
+            </button>
             <button
               type="submit"
-              className="mt-4 w-full py-3 rounded-xl bg-[#007acc] text-white font-bold text-lg shadow-[6px_6px_12px_#b8b9be,-6px_-6px_12px_#ffffff] hover:bg-[#006bb3] active:shadow-[inset_4px_4px_8px_#004c80,inset_-4px_-4px_8px_#00a8ff] active:translate-y-[2px] transition-all duration-200 ease-in-out"
+              className="px-6 py-2 text-xs font-medium text-white bg-[#007acc] rounded-md hover:bg-[#0062a3] focus:ring-2 focus:ring-offset-2 focus:ring-[#007acc] transition-all shadow-sm"
             >
-              به‌روزرسانی اطلاعات
+              ذخیره تغییرات
             </button>
           </div>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
   );
 };

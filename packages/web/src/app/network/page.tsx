@@ -7,6 +7,7 @@ import StoriesCarousel from "@/components/network/StoriesCarousel";
 import InstagramNeedCard from "@/components/network/InstagramNeedCard";
 import { needService } from "@/services/need.service";
 import { useAuth } from "@/contexts/AuthContext";
+import OptimizedImage from "@/components/ui/OptimizedImage";
 
 // Lazy load story modal for performance optimization
 const CreateStoryModal = lazy(() => import("@/components/network/CreateStoryModal"));
@@ -182,7 +183,7 @@ const NetworkPage: React.FC = () => {
                 {isFetchingNextPage ? (
                   <div className="flex flex-col items-center gap-3">
                     <div className="w-8 h-8 border-3 border-[#007acc]/30 border-t-[#007acc] rounded-full animate-spin"></div>
-                    <span className="text-xs font-medium text-gray-400">در حال بارگذاری...</span>
+                    <span className="text-xs font-medium text-gray-400">باران که می‌بارد، تو در راهی...</span>
                   </div>
                 ) : (
                   <div className="h-10" /> // Spacer for trigger
@@ -194,7 +195,14 @@ const NetworkPage: React.FC = () => {
             {!hasNextPage && needs.length > 0 && (
               <div className="text-center py-12">
                 <div className="inline-block px-4 py-2 bg-gray-50 rounded-full text-gray-400 text-xs font-medium border border-gray-100 shadow-sm">
-                  شما همه مطالب را دیدید ✨
+                  شما همه مطالب را دیدید
+                  <OptimizedImage
+                    src="/icons/complete.svg"
+                    alt="Complete"
+                    width={18}
+                    height={18}
+                    className="inline-block mr-1.5"
+                  />
                 </div>
               </div>
             )}

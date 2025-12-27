@@ -223,7 +223,9 @@ const TeamsPage: React.FC = () => {
             {isLoading ? (
               <div className="flex flex-col items-center justify-center py-20 space-y-4">
                 <div className="w-12 h-12 border-4 border-[#007acc]/20 border-t-[#007acc] rounded-full animate-spin"></div>
-                <p className="text-gray-500 font-medium animate-pulse">در حال بارگذاری اطلاعات...</p>
+                <p className="text-gray-500 font-medium animate-pulse">
+                  باران که می‌بارد، تو در راهی...لاعات...
+                </p>
               </div>
             ) : error ? (
               <div className="bg-red-50 border border-red-100 rounded-2xl p-8 text-center shadow-sm">
@@ -258,7 +260,7 @@ const TeamsPage: React.FC = () => {
                     : "همین حالا اولین تیم خود را بسازید یا به تیمی بپیوندید."}
                 </p>
                 {activeTab === "my" && (
-                  <SmartButton variant="outline" size="sm" onClick={() => setActiveTab("all")}>
+                  <SmartButton variant="mgray" size="sm" onClick={() => setActiveTab("all")}>
                     مشاهده همه تیم‌ها
                   </SmartButton>
                 )}

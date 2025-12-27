@@ -80,7 +80,7 @@ const EditArticle = () => {
         >
           <div className="flex items-center">
             <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-red-500 mr-2"></div>
-            <span>در حال بارگذاری اطلاعات مقاله...</span>
+            <span>باران که می‌بارد، تو در راهی...لاعات مقاله...</span>
           </div>
         </div>
       )}
@@ -116,12 +116,7 @@ const EditArticle = () => {
       )}
 
       <form onSubmit={handleSubmit(onSubmit)}>
-        <ArticleMetadata
-          register={register}
-          categories={categories}
-          authors={authors}
-          errors={errors}
-        />
+        <ArticleMetadata register={register} categories={categories} authors={authors} errors={errors} />
         <TitleAndSubtitle register={register} watch={watch} errors={errors} />
         <Quotation register={register} watch={watch} errors={errors} />
         <Suspense fallback={<Loading />}>

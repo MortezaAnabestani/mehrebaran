@@ -35,6 +35,9 @@ router.get("/analytics/users", adminController.getUserAnalytics);
 // Get engagement analytics (views, reactions, follows, shares)
 router.get("/analytics/engagement", adminController.getEngagementAnalytics);
 
+// Get site views analytics
+router.get("/analytics/views", adminController.getViewsAnalytics);
+
 // ==================== MODERATION ROUTES ====================
 
 // Needs moderation

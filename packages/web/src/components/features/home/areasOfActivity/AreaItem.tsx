@@ -2,23 +2,27 @@
 
 import OptimizedImage from "@/components/ui/OptimizedImage";
 import { AreasOfActivity } from "@/types/types";
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from "framer-motion";
 import React, { useRef, useState } from "react";
 
 const AreaItem: React.FC<AreasOfActivity> = ({ title, icon, description, color, position }) => {
   const [isHovered, setIsHovered] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
 
-  // Magnetic effect - برای افکت 3D
+  // --- تنظیمات فیزیک حرکت (Magnetic Effect) ---
   const x = useMotionValue(0);
   const y = useMotionValue(0);
 
-  const mouseXSpring = useSpring(x, { stiffness: 300, damping: 30 });
-  const mouseYSpring = useSpring(y, { stiffness: 300, damping: 30 });
+  // استفاده از میرایی (Damping) بیشتر برای حس سیال بودن (Fluidity)
+  const mouseXSpring = useSpring(x, { stiffness: 200, damping: 25 });
+  const mouseYSpring = useSpring(y, { stiffness: 200, damping: 25 });
 
-  // برای افکت 3D
-  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["5deg", "-5deg"]);
-  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-5deg", "5deg"]);
+  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["7deg", "-7deg"]);
+  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-7deg", "7deg"]);
+
+  // حرکت درخشش روی کارت بر اساس موقعیت موس
+  const glareX = useTransform(mouseXSpring, [-0.5, 0.5], ["0%", "100%"]);
+  const glareY = useTransform(mouseYSpring, [-0.5, 0.5], ["0%", "100%"]);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!cardRef.current) return;
@@ -43,226 +47,179 @@ const AreaItem: React.FC<AreasOfActivity> = ({ title, icon, description, color, 
     setIsHovered(false);
   };
 
+  // رنگ برند اصلی
+  const brandColor = "#007acc";
+
   return (
     <motion.div
       ref={cardRef}
-      initial={{ opacity: 0, y: 50 }}
+      initial={{ opacity: 0, y: 60 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-50px" }}
-      transition={{ duration: 0.6, ease: "easeOut" }}
-      className={`group relative flex flex-col w-40 my-10 ${
-        position === "bottom" ? "md:mt-30" : "md:-mt-20"
+      viewport={{ once: true, margin: "-10%" }}
+      transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }} // منحنی حرکت نرم
+      className={`group relative flex flex-col items-center w-40 md:w-48 my-8 perspective-1000 ${
+        position === "bottom" ? "md:mt-32" : "md:-mt-16"
       }`}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       onMouseEnter={() => setIsHovered(true)}
+      style={{ perspective: 1000 }}
     >
-      {/* عنوان */}
+      {/* --- بخش عنوان (Title Pill) --- */}
       <motion.div
-        className="relative py-2 px-4 w-full h-12 bg-gradient-to-r from-sky-500 to-sky-600 text-white text-center font-bold rounded-xl overflow-hidden cursor-pointer shadow-lg"
-        whileHover={{ scale: 1.05, y: -2 }}
-        whileTap={{ scale: 0.95 }}
+        className="relative z-20 py-3 px-6 min-w-[140px] text-center rounded-full shadow-lg backdrop-blur-md border border-white/20 overflow-hidden"
+        style={{
+          rotateX,
+          rotateY,
+          transformStyle: "preserve-3d",
+          background: `linear-gradient(135deg, ${brandColor} 0%, #005c99 100%)`,
+        }}
+        whileHover={{ scale: 1.05, y: -5 }}
+      >
+        {/* افکت درخشش شیشه‌ای */}
+        <motion.div
+          className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/30 to-white/0 z-10"
+          style={{ x: glareX, y: glareY, opacity: 0.4 }}
+        />
+        <span className="relative z-20 text-white font-bold text-sm tracking-wide drop-shadow-md">
+          {title}
+        </span>
+      </motion.div>
+
+      {/* --- خط اتصال بالا (Fluid Connector) --- */}
+      <div className="relative h-14 w-0.5 overflow-hidden">
+        <motion.div
+          className="absolute inset-0 bg-gradient-to-b from-[#007acc] to-transparent opacity-50"
+          initial={{ height: 0 }}
+          whileInView={{ height: "100%" }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        />
+        {/* ذره نورانی متحرک */}
+        <motion.div
+          className="absolute top-0 left-1/2 -translate-x-1/2 w-1.5 h-4 bg-cyan-300 rounded-full blur-[2px]"
+          animate={{ top: ["-20%", "120%"], opacity: [0, 1, 0] }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+        />
+      </div>
+
+      {/* --- آیکون مرکزی (Organic Core) --- */}
+      <motion.div
+        className="relative z-10 w-32 h-32 flex items-center justify-center"
         style={{
           rotateX,
           rotateY,
           transformStyle: "preserve-3d",
         }}
       >
-        {/* افکت shimmer */}
+        {/* پس‌زمینه سیال و درخشان */}
         <motion.div
-          className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+          className="absolute inset-0 rounded-[2.5rem] bg-white shadow-[0_10px_40px_-10px_rgba(0,122,204,0.3)]"
           animate={{
-            x: isHovered ? ["0%", "200%"] : "0%",
+            borderRadius: isHovered ? ["2.5rem", "2rem", "2.5rem"] : ["2.5rem", "2.5rem"],
           }}
-          transition={{
-            duration: 1,
-            ease: "easeInOut",
-          }}
+          transition={{ duration: 2, repeat: Infinity }}
         />
-        <span className="relative z-10 flex items-center justify-center h-full">{title}</span>
+
+        {/* حلقه رنگی دور آیکون */}
+        <motion.div
+          className="absolute inset-0 rounded-[2.5rem] border-2 border-[#007acc]/10"
+          animate={{ scale: isHovered ? 1.1 : 1, opacity: isHovered ? 1 : 0 }}
+        />
+
+        {/* کانتینر آیکون */}
+        <motion.div
+          className="relative z-20 w-28 h-28 bg-gradient-to-br from-white via-blue-50 to-blue-100 rounded-[2rem] flex items-center justify-center border border-white/60 shadow-inner overflow-hidden"
+          whileHover={{ scale: 1.05 }}
+          transition={{ type: "spring", stiffness: 300 }}
+        >
+          {/* نور پس‌زمینه داخل آیکون */}
+          <div className="absolute inset-0 bg-gradient-to-tr from-[#007acc]/5 to-transparent" />
+
+          <motion.div
+            animate={{
+              y: isHovered ? [0, -4, 0] : 0,
+              scale: isHovered ? 1.1 : 1,
+            }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          >
+            <OptimizedImage
+              src={icon}
+              alt={`icon ${title}`}
+              width={64}
+              height={64}
+              className="drop-shadow-lg"
+            />
+          </motion.div>
+        </motion.div>
+
+        {/* امواج (Ripples) هنگام هاور */}
+        <AnimatePresence>
+          {isHovered && (
+            <>
+              {[1, 2].map((i) => (
+                <motion.div
+                  key={i}
+                  className="absolute inset-0 rounded-[2.5rem] border border-[#007acc]/30"
+                  initial={{ scale: 1, opacity: 1 }}
+                  animate={{ scale: 1.5, opacity: 0 }}
+                  exit={{ opacity: 0 }}
+                  transition={{
+                    duration: 1.5,
+                    repeat: Infinity,
+                    delay: i * 0.4,
+                    ease: "easeOut",
+                  }}
+                />
+              ))}
+            </>
+          )}
+        </AnimatePresence>
       </motion.div>
 
-      {/* خط اتصال بالایی */}
-      <div className="relative h-12 w-full overflow-hidden">
+      {/* --- خط اتصال پایین --- */}
+      <div className="relative h-14 w-0.5 overflow-hidden">
         <motion.div
-          className="absolute left-1/2 -translate-x-1/2 h-full w-0.5 bg-gradient-to-b from-blue-500 to-transparent"
-          initial={{ scaleY: 0, originY: 0 }}
-          whileInView={{ scaleY: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-        >
-          {/* نقطه نورانی در حال حرکت */}
-          <motion.div
-            className="absolute left-1/2 -translate-x-1/2 w-2 h-2 bg-blue-400 rounded-full shadow-[0_0_10px_rgba(59,130,246,0.8)]"
-            animate={{
-              y: ["0%", "100%"],
-              opacity: [0, 1, 0],
-            }}
-            transition={{
-              duration: 2,
-              repeat: Infinity,
-              ease: "linear",
-            }}
-          />
-        </motion.div>
+          className="absolute inset-0 bg-gradient-to-b from-transparent to-[#007acc] opacity-50"
+          initial={{ height: 0 }}
+          whileInView={{ height: "100%" }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+        />
+        <motion.div
+          className="absolute top-0 left-1/2 -translate-x-1/2 w-1.5 h-4 bg-cyan-300 rounded-full blur-[2px]"
+          animate={{ top: ["-20%", "120%"], opacity: [0, 1, 0] }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+        />
       </div>
 
-      {/* آیکون مرکزی */}
+      {/* --- توضیحات (Description Card) --- */}
       <motion.div
-        className="relative cursor-pointer rounded-2xl bg-gradient-to-br from-blue-50 via-white to-blue-100 border-4 border-blue-500 w-28 h-28 mx-auto flex items-center justify-center overflow-hidden group/icon z-10 shadow-xl"
+        className="relative w-full"
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.5 }}
         style={{
           rotateX,
           rotateY,
           transformStyle: "preserve-3d",
         }}
-        whileHover={{
-          scale: 1.1,
-          borderColor: "#60a5fa",
-          boxShadow: "0 20px 40px rgba(59, 130, 246, 0.3)",
-        }}
-        whileTap={{ scale: 0.95 }}
-        transition={{ type: "spring", stiffness: 300, damping: 20 }}
-      >
-        {/* گلوی پس‌زمینه */}
-        <motion.div
-          className="absolute inset-0 bg-gradient-to-br from-blue-400/20 to-blue-600/20 rounded-2xl"
-          animate={{
-            scale: isHovered ? [1, 1.2, 1] : 1,
-            opacity: isHovered ? [0.3, 0.6, 0.3] : 0.2,
-          }}
-          transition={{
-            duration: 2,
-            repeat: isHovered ? Infinity : 0,
-            ease: "easeInOut",
-          }}
-        />
-
-        {/* آیکون */}
-        <motion.div
-          animate={{
-            scale: isHovered ? [1, 1.1, 1] : 1,
-            rotate: isHovered ? [0, 5, -5, 0] : 0,
-          }}
-          transition={{
-            duration: 0.6,
-            repeat: isHovered ? Infinity : 0,
-            repeatDelay: 1,
-          }}
-        >
-          <OptimizedImage src={icon} alt={`icon ${title}`} width={60} height={60} />
-        </motion.div>
-
-        {/* حلقه‌های موجی */}
-        {isHovered && (
-          <>
-            {[0, 0.3, 0.6].map((delay, i) => (
-              <motion.div
-                key={i}
-                className="absolute inset-0 border-2 border-blue-400 rounded-2xl"
-                initial={{ scale: 1, opacity: 0.6 }}
-                animate={{
-                  scale: [1, 1.5],
-                  opacity: [0.6, 0],
-                }}
-                transition={{
-                  duration: 1.5,
-                  repeat: Infinity,
-                  delay,
-                  ease: "easeOut",
-                }}
-              />
-            ))}
-          </>
-        )}
-      </motion.div>
-
-      {/* خط اتصال پایینی */}
-      <div className="relative h-12 w-full overflow-hidden">
-        <motion.div
-          className="absolute left-1/2 -translate-x-1/2 h-full w-0.5 bg-gradient-to-b from-transparent to-blue-500"
-          initial={{ scaleY: 0, originY: 0 }}
-          whileInView={{ scaleY: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-        >
-          {/* نقطه نورانی در حال حرکت */}
-          <motion.div
-            className="absolute left-1/2 -translate-x-1/2 w-2 h-2 bg-blue-400 rounded-full shadow-[0_0_10px_rgba(59,130,246,0.8)]"
-            animate={{
-              y: ["0%", "100%"],
-              opacity: [0, 1, 0],
-            }}
-            transition={{
-              duration: 2,
-              repeat: Infinity,
-              ease: "linear",
-              delay: 0.5,
-            }}
-          />
-        </motion.div>
-      </div>
-
-      {/* توضیحات */}
-      <motion.div
-        className="relative w-full text-center overflow-hidden"
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6, delay: 0.6 }}
       >
         <motion.div
-          className={`relative mt-2 h-24 flex items-center justify-center rounded-xl p-3 ${
+          className={`relative p-4 rounded-2xl text-center backdrop-blur-sm border border-white/40 shadow-xl transition-colors duration-300 ${
             color === "mgray"
-              ? "bg-gradient-to-br from-gray-100 to-gray-200 text-gray-800"
-              : "bg-gradient-to-br from-sky-500 to-sky-600 text-white"
-          } shadow-lg cursor-pointer`}
+              ? "bg-white/80 text-slate-600"
+              : "bg-gradient-to-br from-[#007acc]/90 to-[#005c99]/90 text-white"
+          }`}
           whileHover={{
-            scale: 1.03,
-            y: -2,
-            boxShadow: "0 10px 30px rgba(0, 0, 0, 0.15)",
-          }}
-          whileTap={{ scale: 0.98 }}
-          style={{
-            rotateX,
-            rotateY,
-            transformStyle: "preserve-3d",
+            scale: 1.02,
+            boxShadow: "0 20px 40px -10px rgba(0, 122, 204, 0.25)",
           }}
         >
-          <span className="text-sm font-medium leading-relaxed">{description}</span>
+          <p className="text-xs font-medium leading-relaxed opacity-90">{description}</p>
 
-          {/* افکت shimmer */}
-          <motion.div
-            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent rounded-xl"
-            animate={{
-              x: isHovered ? ["0%", "200%"] : "0%",
-            }}
-            transition={{
-              duration: 1,
-              ease: "easeInOut",
-            }}
-          />
+          {/* افکت بازتاب نور */}
+          <div className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-white/10 to-transparent rounded-t-2xl pointer-events-none" />
         </motion.div>
       </motion.div>
-
-      {/* هاله نورانی در حالت hover */}
-      {isHovered && (
-        <motion.div
-          className="absolute inset-0 -z-10 rounded-2xl blur-xl"
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{
-            opacity: [0, 0.4, 0],
-            scale: [0.9, 1.1, 1.2],
-          }}
-          transition={{
-            duration: 1.5,
-            repeat: Infinity,
-            ease: "easeOut",
-          }}
-          style={{
-            background: "radial-gradient(circle, rgba(59, 130, 246, 0.4) 0%, transparent 70%)",
-          }}
-        />
-      )}
     </motion.div>
   );
 };

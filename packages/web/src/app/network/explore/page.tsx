@@ -8,6 +8,7 @@ import UserCard from "@/components/social/UserCard";
 import TeamCard from "@/components/network/TeamCard";
 import discoveryService from "@/services/discovery.service";
 import type { INeed, IUser, ITeam } from "common-types";
+import OptimizedImage from "@/components/ui/OptimizedImage";
 
 // آیکون‌ها برای زیبایی بصری (می‌توانید از lucide-react یا heroicons استفاده کنید)
 const SearchIcon = () => (
@@ -62,15 +63,11 @@ const ExplorePage: React.FC = () => {
 
   const itemVariants = {
     hidden: { y: 20, opacity: 0 },
-    visible: { y: 0, opacity: 1, transition: { type: "spring", stiffness: 50 } },
+    visible: { y: 0, opacity: 1, transition: { type: "spring" as const, stiffness: 50 } },
   };
 
   return (
     <div className="min-h-screen bg-[#eef2f5] text-gray-700 pb-20">
-      {/* 
-        Header Section with Skeuomorphic Design 
-        استایل: برجسته (Elevated) با گوشه‌های گرد نرم
-      */}
       <div className="relative pt-8 pb-6 px-4 md:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
@@ -117,9 +114,13 @@ const ExplorePage: React.FC = () => {
           <div className="rounded-3xl bg-[#eef2f6] p-6 md:p-8 shadow-[9px_9px_16px_rgb(163,177,198,0.6),-9px_-9px_16px_rgba(255,255,255,0.5)]">
             <div className="mb-6 border-b border-gray-300/50 pb-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <span className="flex items-center justify-center w-10 h-10 rounded-full bg-[#e0e5ec] shadow-[5px_5px_10px_#bebebe,-5px_-5px_10px_#ffffff] text-xl">
-                  🎯
-                </span>
+                <OptimizedImage
+                  src="/icons/goal.svg"
+                  alt="Goal Icon"
+                  width={30}
+                  height={30}
+                  className="inline-block"
+                />
                 <h2 className="text-xl font-bold text-gray-700">نیازهای پیشنهادی</h2>
               </div>
             </div>
@@ -154,9 +155,8 @@ const ExplorePage: React.FC = () => {
           <div className="rounded-3xl bg-[#eef2f6] p-6 md:p-8 shadow-[9px_9px_16px_rgb(163,177,198,0.6),-9px_-9px_16px_rgba(255,255,255,0.5)]">
             <div className="mb-6 border-b border-gray-300/50 pb-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <span className="flex items-center justify-center w-10 h-10 rounded-full bg-[#eef2f6] shadow-[5px_5px_10px_#bebebe,-5px_-5px_10px_#ffffff] text-xl">
-                  👥
-                </span>
+                <OptimizedImage src="/icons/user.svg" width={30} height={30} alt="user icon" />
+
                 <h2 className="text-xl font-bold text-gray-700">کاربران پیشنهادی</h2>
               </div>
             </div>
@@ -173,12 +173,7 @@ const ExplorePage: React.FC = () => {
             >
               {recommendedUsers.map((user) => (
                 <div key={user._id} className="transform transition-all hover:scale-[1.02]">
-                  <UserCard
-                    user={user}
-                    variant="card"
-                    showFollowButton={true}
-                    onFollowChange={handleUserFollowChange}
-                  />
+                  <UserCard user={user} variant="card" onFollowChange={handleUserFollowChange} />
                 </div>
               ))}
             </SuggestedSection>
@@ -190,9 +185,7 @@ const ExplorePage: React.FC = () => {
           <div className="rounded-3xl bg-[#eef2f6] p-6 md:p-8 shadow-[9px_9px_16px_rgb(163,177,198,0.6),-9px_-9px_16px_rgba(255,255,255,0.5)] mb-12">
             <div className="mb-6 border-b border-gray-300/50 pb-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <span className="flex items-center justify-center w-10 h-10 rounded-full bg-[#eef2f6] shadow-[5px_5px_10px_#bebebe,-5px_-5px_10px_#ffffff] text-xl">
-                  🏆
-                </span>
+                <OptimizedImage src="/icons/cup.svg" width={30} height={30} alt="cup icon" />
                 <h2 className="text-xl font-bold text-gray-700">تیم‌های برتر</h2>
               </div>
             </div>

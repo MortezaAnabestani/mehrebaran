@@ -1,6 +1,4 @@
-import SmartButton from "@/components/ui/SmartButton";
-import { IProject } from "common-types"; // 👈 استفاده از تایپ IProject
-import React from "react";
+import { IProject } from "common-types";
 import ProgressBars from "./ProgressBars";
 
 type Props = {

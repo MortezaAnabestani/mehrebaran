@@ -25,3 +25,5 @@ export * from "./poll.types";
 export * from "./donation.types";
 export * from "./volunteer.types";
 export * from "./focus-area.types";
+export * from "./bug-report.types";
+export * from "./image-upload-center.types";

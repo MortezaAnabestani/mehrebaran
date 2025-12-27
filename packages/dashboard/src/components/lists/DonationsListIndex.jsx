@@ -6,7 +6,15 @@ import ConfirmDelete from "../createContent/ConfirmDelete";
 import { toPersianDigits } from "../../utils/useConvertNumbersToPersian";
 import { convertToPersianTime } from "../../utils/convertTime";
 
-const DonationsListIndex = ({ donations, loading, currentPage, totalPages, totalItems, onNextPage, onPrevPage }) => {
+const DonationsListIndex = ({
+  donations,
+  loading,
+  currentPage,
+  totalPages,
+  totalItems,
+  onNextPage,
+  onPrevPage,
+}) => {
   const dispatch = useDispatch();
   const [selectedDonation, setSelectedDonation] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -37,7 +45,13 @@ const DonationsListIndex = ({ donations, loading, currentPage, totalPages, total
       rejected: { label: "رد شده", class: "bg-gray-100 text-gray-800" },
     };
     const statusInfo = statusMap[status] || { label: status, class: "bg-gray-100 text-gray-800" };
-    return <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${statusInfo.class}`}>{statusInfo.label}</span>;
+    return (
+      <span
+        className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${statusInfo.class}`}
+      >
+        {statusInfo.label}
+      </span>
+    );
   };
 
   const getPaymentMethodLabel = (method) => {
@@ -56,7 +70,7 @@ const DonationsListIndex = ({ donations, loading, currentPage, totalPages, total
   if (loading) {
     return (
       <div className="flex justify-center items-center py-12">
-        <p className="text-gray-600">در حال بارگذاری...</p>
+        <p className="text-gray-600">باران که می‌بارد، تو در راهی...</p>
       </div>
     );
   }
@@ -77,12 +91,18 @@ const DonationsListIndex = ({ donations, loading, currentPage, totalPages, total
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">کد پیگیری</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                  کد پیگیری
+                </th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">پروژه</th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">مبلغ</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">روش پرداخت</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                  روش پرداخت
+                </th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">وضعیت</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">کمک‌کننده</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                  کمک‌کننده
+                </th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">تاریخ</th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">عملیات</th>
               </tr>
@@ -99,17 +119,21 @@ const DonationsListIndex = ({ donations, loading, currentPage, totalPages, total
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="text-sm text-gray-900 font-semibold">{formatAmount(donation.amount)}</span>
+                    <span className="text-sm text-gray-900 font-semibold">
+                      {formatAmount(donation.amount)}
+                    </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="text-sm text-gray-600">{getPaymentMethodLabel(donation.paymentMethod)}</span>
+                    <span className="text-sm text-gray-600">
+                      {getPaymentMethodLabel(donation.paymentMethod)}
+                    </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">{getStatusBadge(donation.status)}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className="text-sm text-gray-600">
                       {donation.donorInfo?.isAnonymous
                         ? "ناشناس"
-                        : (donation.donorInfo?.fullName || donation.donor?.name || "-")}
+                        : donation.donorInfo?.fullName || donation.donor?.name || "-"}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -128,7 +152,10 @@ const DonationsListIndex = ({ donations, loading, currentPage, totalPages, total
                           title="مشاهده جزئیات"
                         />
                       </Link>
-                      <button onClick={() => openDeleteModal(donation)} className="text-red-600 hover:text-red-900">
+                      <button
+                        onClick={() => openDeleteModal(donation)}
+                        className="text-red-600 hover:text-red-900"
+                      >
                         <img
                           className="w-5 h-5"
                           src="/assets/images/dashboard/icons/trash.svg"
@@ -157,9 +184,19 @@ const DonationsListIndex = ({ donations, loading, currentPage, totalPages, total
               {getStatusBadge(donation.status)}
             </div>
             <div className="mt-2 space-y-1 text-sm">
-              <p><span className="font-medium">مبلغ:</span> {formatAmount(donation.amount)}</p>
-              <p><span className="font-medium">روش پرداخت:</span> {getPaymentMethodLabel(donation.paymentMethod)}</p>
-              <p><span className="font-medium">کمک‌کننده:</span> {donation.donorInfo?.isAnonymous ? "ناشناس" : (donation.donorInfo?.fullName || donation.donor?.name || "-")}</p>
+              <p>
+                <span className="font-medium">مبلغ:</span> {formatAmount(donation.amount)}
+              </p>
+              <p>
+                <span className="font-medium">روش پرداخت:</span>{" "}
+                {getPaymentMethodLabel(donation.paymentMethod)}
+              </p>
+              <p>
+                <span className="font-medium">کمک‌کننده:</span>{" "}
+                {donation.donorInfo?.isAnonymous
+                  ? "ناشناس"
+                  : donation.donorInfo?.fullName || donation.donor?.name || "-"}
+              </p>
             </div>
             <div className="mt-3 flex gap-2">
               <Link
@@ -201,16 +238,16 @@ const DonationsListIndex = ({ donations, loading, currentPage, totalPages, total
           <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
             <div>
               <p className="text-sm text-gray-700">
-                نمایش{" "}
-                <span className="font-medium">{toPersianDigits((currentPage - 1) * 10 + 1)}</span> تا{" "}
-                <span className="font-medium">
-                  {toPersianDigits(Math.min(currentPage * 10, totalItems))}
-                </span>{" "}
+                نمایش <span className="font-medium">{toPersianDigits((currentPage - 1) * 10 + 1)}</span> تا{" "}
+                <span className="font-medium">{toPersianDigits(Math.min(currentPage * 10, totalItems))}</span>{" "}
                 از <span className="font-medium">{toPersianDigits(totalItems)}</span> کمک مالی
               </p>
             </div>
             <div>
-              <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+              <nav
+                className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
+                aria-label="Pagination"
+              >
                 <button
                   onClick={onPrevPage}
                   disabled={currentPage === 1}

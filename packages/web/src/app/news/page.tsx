@@ -1,52 +1,74 @@
+import React, { Suspense } from "react";
+import { Metadata } from "next";
 import HeadTitle from "@/components/features/home/HeadTitle";
 import HeroShared_views from "@/components/views/shared/HeroShared_views";
 import { getNews } from "@/services/news.service";
-import { CardType } from "@/types/types";
-import { Metadata } from "next";
-import React from "react";
+import { mapNewsResponseToCards } from "@/utils/mappers/newsMapper";
+import NewsEmptyState from "@/components/features/news/NewsEmptyState";
+import MagazineCta from "@/components/features/news/MagazineCta";
 
 export const metadata: Metadata = {
-  title: "اخبار | کانون مسئولیت اجتماعی مهر باران",
-  description: "گزارش آخرین رویدادها و فعالیت‌های کانون مسئولیت اجتماعی مهر باران",
+  title: "اخبار و رویدادها | کانون مسئولیت اجتماعی مهر باران",
+  description: "گزارش آخرین رویدادها، فعالیت‌های خیرخواهانه و اخبار کانون مسئولیت اجتماعی مهر باران.",
+  openGraph: {
+    title: "اخبار و رویدادها | کانون مهر باران",
+    description: "تازه‌ترین اخبار و گزارش‌های تصویری کانون را دنبال کنید.",
+    type: "website",
+  },
 };
 
-const News: React.FC = async () => {
-  // Fetch all published news from API
-  const newsResponse = await getNews({
-    status: "published",
-    sort: "-createdAt",
-  });
+async function NewsListSection() {
+  let newsCards: any[] = [];
 
-  // Convert INews to CardType format
-  const newsCards: CardType[] = (newsResponse?.data || []).map((news) => ({
-    img: news.featuredImage.desktop,
-    title: news.title,
-    description: news.excerpt,
-    href: `/news/${news.slug}`,
-  }));
+  try {
+    const newsResponse = await getNews({
+      status: "published",
+      sort: "-createdAt",
+    });
+    newsCards = mapNewsResponseToCards(newsResponse?.data);
+  } catch (error) {
+    console.error("Failed to fetch news:", error);
+    // Consider passing error to a monitoring service here
+  }
+
+  if (newsCards.length === 0) {
+    return <NewsEmptyState />;
+  }
 
   return (
-    <div className="w-8/10 mx-auto my-10">
-      <HeadTitle title="اخبار" subTitle="گزارش آخرین رویدادها و فعالیت‌های کانون مسئولیت اجتماعی مهر باران" />
+    <div className="animate-fade-in-up">
       <HeroShared_views cardItems={newsCards} page="news" />
-
-      {/* Blog/Magazine Promotion Section */}
-      <div className="mt-16 mb-10">
-        <div className="bg-gradient-to-tr from-mblue/30 via-mblue/15 to-mblue/30 rounded-2xl p-10 text-center shadow-xl">
-          <h2 className="text-3xl font-bold mb-4">مجله مهرباران</h2>
-          <p className="text-lg mb-6 opacity-90">
-            مقالات، گزارش تصویری و ویدیوهای الهام‌بخش از فعالیت‌های خیریه
-          </p>
-          <a
-            href="/blog"
-            className="inline-block bg-white text-primary-700 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
-          >
-            مشاهده مجله
-          </a>
-        </div>
-      </div>
     </div>
+  );
+}
+
+const NewsPage: React.FC = () => {
+  return (
+    <main className="min-h-screen bg-gray-50/50 relative overflow-hidden">
+      {/* Decorative Background Elements */}
+      <div className="absolute top-0 left-0 w-full h-96 bg-gradient-to-b from-blue-50 to-transparent -z-10" />
+      <div className="absolute top-20 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl -z-10" />
+      <div className="absolute top-40 left-20 w-72 h-72 bg-blue-200/10 rounded-full blur-3xl -z-10" />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
+        {/* Header Section */}
+        <div className="mb-12 text-center lg:text-right">
+          <HeadTitle
+            title="اخبار و اطلاعیه‌ها"
+            subTitle="گزارش آخرین رویدادها و فعالیت‌های کانون مسئولیت اجتماعی مهر باران"
+          />
+        </div>
+
+        {/* Content Section with Suspense Fallback (optional improvement) */}
+        <Suspense fallback={<div className="text-center py-20">در حال بارگذاری اخبار...</div>}>
+          <NewsListSection />
+        </Suspense>
+
+        {/* Enhanced CTA Section */}
+        <MagazineCta />
+      </div>
+    </main>
   );
 };
 
-export default News;
+export default NewsPage;

@@ -3,13 +3,16 @@ import OptimizedImage from "../ui/OptimizedImage";
 import SmartButton from "../ui/SmartButton";
 import { INews, IArticle, IProject, IVideo, IGallery } from "common-types";
 import { CardType } from "@/types/types";
+import truncateText from "@/utils/truncateText";
 
 type CardItem = (INews | IArticle | IProject | IVideo | IGallery) & {
   _id: string;
   slug: string;
   title: string;
-  excerpt: string;
-  featuredImage: { desktop: string; mobile: string };
+  excerpt?: string;
+  description?: string;
+  featuredImage?: { desktop: string; mobile: string };
+  images?: Array<{ desktop: string; mobile: string }>;
 };
 
 interface CardProps {
@@ -29,9 +32,13 @@ const Card: React.FC<CardProps> = ({ cardItem, horizontal = false, page = "news"
   }
 
   // Handle both CardType and CardItem formats
-  const imageSrc = isCardType(cardItem) ? cardItem.img : cardItem.featuredImage?.desktop;
+  const imageSrc = isCardType(cardItem)
+    ? cardItem.img
+    : cardItem.featuredImage?.desktop || cardItem.images?.[0]?.desktop || "";
   const title = cardItem.title;
-  const description = isCardType(cardItem) ? cardItem.description : cardItem.excerpt;
+  const description = isCardType(cardItem)
+    ? cardItem.description
+    : cardItem.excerpt || cardItem.description || "";
   const link = isCardType(cardItem) ? cardItem.href : `/${page}/${cardItem.slug}`;
 
   return (
@@ -43,10 +50,12 @@ const Card: React.FC<CardProps> = ({ cardItem, horizontal = false, page = "news"
       <div className={`${horizontal ? "w-40 md:w-70" : "w-full h-48"} relative `}>
         <OptimizedImage src={imageSrc} alt={title} fill={true} className="object-cover min-h-43 max-h-43" />
       </div>
-      <div className="p-1 md:p-4 flex flex-col justify-between flex-1">
+      <div className="pb-3 md:px-3 flex flex-col justify-between flex-1">
         <div>
-          <h3 className="text-sm md:text-lg font-semibold mb-2">{title}</h3>
-          <p className="text-gray-600 text-xs md:text-sm text-justify line-clamp-3">{description}</p>
+          <h3 className="text-sm md:text-base font-semibold mb-4">{title}</h3>
+          <p className="text-gray-600 text-xs md:text-sm text-justify line-clamp-3">
+            {truncateText(description, 150)}
+          </p>
         </div>
         <div className="text-left mt-3">
           <SmartButton

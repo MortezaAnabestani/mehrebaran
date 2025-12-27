@@ -17,6 +17,10 @@ import {
   ChevronUp,
   LayoutGrid,
   List,
+  TimerIcon,
+  CalendarDays,
+  Calendar1Icon,
+  Calendar,
 } from "lucide-react";
 import OptimizedImage from "@/components/ui/OptimizedImage";
 
@@ -124,9 +128,27 @@ const Podium = ({ topThree }: { topThree: any[] }) => {
 
   return (
     <div className="flex items-end justify-center gap-2 md:gap-4 h-[260px] md:h-[320px] mb-6 md:mb-8 px-2 md:px-4">
-      <PodiumStep entry={second} rank={2} color="bg-gray-300 border-gray-300" height="100px md:140px" delay={0.2} />
-      <PodiumStep entry={first} rank={1} color="bg-yellow-400 border-yellow-400" height="130px md:180px" delay={0.1} />
-      <PodiumStep entry={third} rank={3} color="bg-orange-400 border-orange-400" height="70px md:100px" delay={0.3} />
+      <PodiumStep
+        entry={second}
+        rank={2}
+        color="bg-gray-300 border-gray-300"
+        height="100px md:140px"
+        delay={0.2}
+      />
+      <PodiumStep
+        entry={first}
+        rank={1}
+        color="bg-yellow-400 border-yellow-400"
+        height="130px md:180px"
+        delay={0.1}
+      />
+      <PodiumStep
+        entry={third}
+        rank={3}
+        color="bg-orange-400 border-orange-400"
+        height="70px md:100px"
+        delay={0.3}
+      />
     </div>
   );
 };
@@ -137,8 +159,10 @@ const LeaderboardPage: React.FC = () => {
   // State
   const [leaderboard, setLeaderboard] = useState<ILeaderboardResponse | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [category, setCategory] = useState<string>("points");
-  const [period, setPeriod] = useState<string>("all_time");
+  const [category, setCategory] = useState<
+    "points" | "needs_created" | "needs_supported" | "tasks_completed"
+  >("points");
+  const [period, setPeriod] = useState<"all_time" | "monthly" | "weekly" | "daily">("all_time");
 
   const fetchLeaderboard = async () => {
     try {
@@ -249,9 +273,21 @@ const LeaderboardPage: React.FC = () => {
                 active={category}
                 onChange={setCategory}
                 options={[
-                  { value: "points", label: "امتیاز", icon: <Star size={12} className="md:w-3.5 md:h-3.5" /> },
-                  { value: "needs_created", label: "نیازها", icon: <Target size={12} className="md:w-3.5 md:h-3.5" /> },
-                  { value: "tasks_completed", label: "تسک‌ها", icon: <List size={12} className="md:w-3.5 md:h-3.5" /> },
+                  {
+                    value: "points",
+                    label: "امتیاز",
+                    icon: <Star size={12} className="md:w-3.5 md:h-3.5" />,
+                  },
+                  {
+                    value: "needs_created",
+                    label: "نیازها",
+                    icon: <Target size={12} className="md:w-3.5 md:h-3.5" />,
+                  },
+                  {
+                    value: "tasks_completed",
+                    label: "تسک‌ها",
+                    icon: <List size={12} className="md:w-3.5 md:h-3.5" />,
+                  },
                 ]}
               />
             </div>
@@ -261,9 +297,21 @@ const LeaderboardPage: React.FC = () => {
                 active={period}
                 onChange={setPeriod}
                 options={[
-                  { value: "all_time", label: "کل" },
-                  { value: "monthly", label: "ماهانه" },
-                  { value: "weekly", label: "هفتگی" },
+                  {
+                    value: "all_time",
+                    label: "کل",
+                    icon: <Calendar size={12} className="md:w-3.5 md:h-3.5" />,
+                  },
+                  {
+                    value: "monthly",
+                    label: "ماهانه",
+                    icon: <Calendar1Icon size={12} className="md:w-3.5 md:h-3.5" />,
+                  },
+                  {
+                    value: "weekly",
+                    label: "هفتگی",
+                    icon: <CalendarDays size={12} className="md:w-3.5 md:h-3.5" />,
+                  },
                 ]}
               />
             </div>
@@ -330,10 +378,12 @@ const LeaderboardPage: React.FC = () => {
                                     entry.user?._id === user?._id ? "text-mblue" : "text-gray-700"
                                   }`}
                                 >
-                                  {entry.user?.name}
+                                  {entry.user.name || "نام ناشناس"}
                                 </span>
                                 {entry.user?._id === user?._id && (
-                                  <span className="text-[9px] md:text-[10px] text-blue-400 font-medium">شما</span>
+                                  <span className="text-[9px] md:text-[10px] text-blue-400 font-medium">
+                                    شما
+                                  </span>
                                 )}
                               </div>
                             </div>
@@ -341,7 +391,7 @@ const LeaderboardPage: React.FC = () => {
                             {/* Level (Desktop) */}
                             <div className="w-20 md:w-24 text-center hidden md:block">
                               <span className="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-lg font-bold">
-                                Lvl {entry.level}
+                                سطح {entry.level}
                               </span>
                             </div>
 
@@ -366,12 +416,24 @@ const LeaderboardPage: React.FC = () => {
           {/* --- Footer Info Cards --- */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4 mt-6 md:mt-8">
             {[
-              { title: "ایجاد نیاز", score: "+100", icon: "📢", color: "text-blue-500", bg: "bg-blue-50" },
-              { title: "حمایت مالی", score: "+50", icon: "🤝", color: "text-green-500", bg: "bg-green-50" },
+              {
+                title: "ایجاد نیاز",
+                score: "+100",
+                icon: "/icons/plus.svg",
+                color: "text-blue-500",
+                bg: "bg-blue-50",
+              },
+              {
+                title: "حمایت مالی",
+                score: "+50",
+                icon: "/icons/rial.svg",
+                color: "text-green-500",
+                bg: "bg-green-50",
+              },
               {
                 title: "تکمیل پروفایل",
                 score: "+20",
-                icon: "👤",
+                icon: "/icons/user.svg",
                 color: "text-purple-500",
                 bg: "bg-purple-50",
               },
@@ -381,11 +443,13 @@ const LeaderboardPage: React.FC = () => {
                 className="bg-white p-3 md:p-4 rounded-xl md:rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between hover:shadow-md transition-shadow"
               >
                 <div className="flex items-center gap-2 md:gap-3">
-                  <span
-                    className={`w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-xl ${item.bg} flex items-center justify-center text-base md:text-xl`}
-                  >
-                    {item.icon}
-                  </span>
+                  <OptimizedImage
+                    src={item.icon}
+                    alt={item.title}
+                    width={24}
+                    height={24}
+                    className={`${item.bg} rounded-lg md:rounded-xl`}
+                  />
                   <span className="text-xs md:text-sm font-bold text-gray-600">{item.title}</span>
                 </div>
                 <span className={`font-black text-sm md:text-base ${item.color}`}>{item.score}</span>

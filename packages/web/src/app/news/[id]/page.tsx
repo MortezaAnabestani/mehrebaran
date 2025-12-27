@@ -74,9 +74,7 @@ export default async function NewsDetailPage({ params }: PageProps) {
         <HeadTitle title={news.title} />
 
         {/* Subtitle */}
-        {news.subtitle && (
-          <h2 className="font-bold text-xl text-gray-600 py-3">{news.subtitle}</h2>
-        )}
+        {news.subtitle && <h2 className="font-bold text-xl text-gray-600 py-3">{news.subtitle}</h2>}
 
         {/* Meta Information */}
         <div className="flex items-center gap-4 text-sm text-gray-500 mb-6 border-b border-gray-200 pb-4">

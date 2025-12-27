@@ -22,14 +22,15 @@ const WhatWeDidStatisticsSettings = () => {
     const fetchSettings = async () => {
       try {
         const result = await dispatch(getSettingByKey("whatWeDidStatistics")).unwrap();
-        if (result) {
+        if (result && result.value) {
+          const data = result.value;
           setFormData({
-            totalProjects: result.totalProjects || 0,
-            schoolsCovered: result.schoolsCovered || 0,
-            budgetRaised: result.budgetRaised || 0,
-            partnerOrganizations: result.partnerOrganizations || 0,
-            volunteerHours: result.volunteerHours || 0,
-            activeVolunteers: result.activeVolunteers || 0,
+            totalProjects: data.totalProjects || 0,
+            schoolsCovered: data.schoolsCovered || 0,
+            budgetRaised: data.budgetRaised || 0,
+            partnerOrganizations: data.partnerOrganizations || 0,
+            volunteerHours: data.volunteerHours || 0,
+            activeVolunteers: data.activeVolunteers || 0,
           });
         }
       } catch (err) {

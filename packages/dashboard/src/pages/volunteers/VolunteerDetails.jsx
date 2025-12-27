@@ -99,13 +99,19 @@ const VolunteerDetails = () => {
       rejected: { label: "رد شده", class: "bg-red-100 text-red-800" },
     };
     const statusInfo = statusMap[status] || { label: status, class: "bg-gray-100 text-gray-800" };
-    return <span className={`px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full ${statusInfo.class}`}>{statusInfo.label}</span>;
+    return (
+      <span
+        className={`px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full ${statusInfo.class}`}
+      >
+        {statusInfo.label}
+      </span>
+    );
   };
 
   if (loading) {
     return (
       <div className="bg-white rounded-md p-6">
-        <p className="text-center">در حال بارگذاری...</p>
+        <p className="text-center">باران که می‌بارد، تو در راهی...</p>
       </div>
     );
   }
@@ -114,7 +120,10 @@ const VolunteerDetails = () => {
     return (
       <div className="bg-white rounded-md p-6">
         <p className="text-center text-red-600">خطا در بارگذاری اطلاعات: {error}</p>
-        <button onClick={() => navigate("/dashboard/volunteers")} className="mt-4 px-4 py-2 bg-blue-500 text-white rounded mx-auto block">
+        <button
+          onClick={() => navigate("/dashboard/volunteers")}
+          className="mt-4 px-4 py-2 bg-blue-500 text-white rounded mx-auto block"
+        >
           بازگشت به لیست
         </button>
       </div>
@@ -133,7 +142,10 @@ const VolunteerDetails = () => {
           <div className="flex justify-between items-start flex-wrap gap-4">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">جزئیات ثبت‌نام داوطلبانه</h1>
-              <p className="text-sm text-gray-600 mt-1">تاریخ ثبت‌نام: {toPersianDigits(convertToPersianTime(volunteer.createdAt, "YYYY/MM/DD - HH:mm"))}</p>
+              <p className="text-sm text-gray-600 mt-1">
+                تاریخ ثبت‌نام:{" "}
+                {toPersianDigits(convertToPersianTime(volunteer.createdAt, "YYYY/MM/DD - HH:mm"))}
+              </p>
             </div>
             <div className="flex items-center gap-3">
               {getStatusBadge(volunteer.status)}
@@ -237,11 +249,15 @@ const VolunteerDetails = () => {
           <h2 className="text-lg font-semibold mb-4">آمار مشارکت</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="text-center p-4 bg-blue-50 rounded">
-              <p className="text-2xl font-bold text-blue-600">{toPersianDigits(volunteer.hoursContributed || 0)}</p>
+              <p className="text-2xl font-bold text-blue-600">
+                {toPersianDigits(volunteer.hoursContributed || 0)}
+              </p>
               <p className="text-sm text-gray-600 mt-1">ساعات مشارکت</p>
             </div>
             <div className="text-center p-4 bg-green-50 rounded">
-              <p className="text-2xl font-bold text-green-600">{toPersianDigits(volunteer.tasksCompleted || 0)}</p>
+              <p className="text-2xl font-bold text-green-600">
+                {toPersianDigits(volunteer.tasksCompleted || 0)}
+              </p>
               <p className="text-sm text-gray-600 mt-1">وظایف تکمیل شده</p>
             </div>
             <div className="text-center p-4 bg-purple-50 rounded">
@@ -395,7 +411,9 @@ const VolunteerDetails = () => {
                 <input
                   type="number"
                   value={updateData.hoursContributed}
-                  onChange={(e) => setUpdateData({ ...updateData, hoursContributed: parseInt(e.target.value) || 0 })}
+                  onChange={(e) =>
+                    setUpdateData({ ...updateData, hoursContributed: parseInt(e.target.value) || 0 })
+                  }
                   className="w-full p-2 border rounded"
                 />
               </div>
@@ -404,7 +422,9 @@ const VolunteerDetails = () => {
                 <input
                   type="number"
                   value={updateData.tasksCompleted}
-                  onChange={(e) => setUpdateData({ ...updateData, tasksCompleted: parseInt(e.target.value) || 0 })}
+                  onChange={(e) =>
+                    setUpdateData({ ...updateData, tasksCompleted: parseInt(e.target.value) || 0 })
+                  }
                   className="w-full p-2 border rounded"
                 />
               </div>

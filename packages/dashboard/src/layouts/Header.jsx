@@ -1,13 +1,36 @@
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import Search from "../components/lists/Search";
 import { convertToPersianTime } from "../utils/convertTime";
 import { toPersianDigits } from "../utils/useConvertNumbersToPersian";
 
-const Header = ({ sidebarOpen, setSidebarOpen, role, me }) => {
+const Header = ({ sidebarOpen, setSidebarOpen, role, me: initialMe }) => {
   const rootUrl = `${import.meta.env.VITE_SERVER_PUBLIC_API_URL_WITHOUT_API}/`;
-
+  const [me, setMe] = useState(initialMe);
   const navigate = useNavigate();
+
+  // گوش دادن به تغییرات پروفایل کاربر
+  useEffect(() => {
+    const handleUserUpdate = () => {
+      try {
+        const user = JSON.parse(localStorage.getItem("user"));
+        if (user) {
+          setMe(user);
+        }
+      } catch (error) {
+        console.error("خطا در خواندن اطلاعات کاربر:", error);
+      }
+    };
+
+    window.addEventListener('userUpdated', handleUserUpdate);
+    return () => window.removeEventListener('userUpdated', handleUserUpdate);
+  }, []);
+
+  // بروزرسانی state وقتی prop تغییر می‌کند
+  useEffect(() => {
+    setMe(initialMe);
+  }, [initialMe]);
 
   const logoutHandler = async () => {
     try {
@@ -73,7 +96,7 @@ const Header = ({ sidebarOpen, setSidebarOpen, role, me }) => {
                   <span className="font-bold text-[10px] text-red-500">{me?.name}</span>
                   <span className="font-semibold text-[10px]">{me?.role === "admin" ? "ادمین" : "مدیر"}</span>
                 </div>
-                <Link rel="preconnect" prefetch={true} to={`profile/${me?._id}`}>
+                <Link rel="preconnect" prefetch={true} to="/dashboard/profile">
                   <img
                     src={me?.avatar ? rootUrl + me?.avatar : "/assets/images/dashboard/icons/user_shield.svg"}
                     alt="profile icon"

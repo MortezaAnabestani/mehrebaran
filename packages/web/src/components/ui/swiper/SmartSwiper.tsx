@@ -2,11 +2,12 @@
 
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay, A11y } from "swiper/modules";
+import type { Swiper as SwiperType } from "swiper";
 
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import SwiperButton from "./SwiperButton";
 
 interface SmartSwiperProps {
@@ -47,6 +48,15 @@ const SmartSwiper: React.FC<SmartSwiperProps> = ({
 }) => {
   const prevRef = useRef<HTMLButtonElement>(null);
   const nextRef = useRef<HTMLButtonElement>(null);
+  const [swiperInstance, setSwiperInstance] = useState<SwiperType | null>(null);
+
+  const handleSwiper = (swiper: SwiperType) => {
+    setSwiperInstance(swiper);
+    if (onSwiper) {
+      onSwiper(swiper);
+    }
+  };
+
   return (
     <div className="relative w-full">
       <Swiper
@@ -55,21 +65,26 @@ const SmartSwiper: React.FC<SmartSwiperProps> = ({
         spaceBetween={spaceBetween}
         loop={loop}
         autoplay={autoplay}
-        navigation={{
-          prevEl: prevRef.current,
-          nextEl: nextRef.current,
-        }}
+        navigation={
+          showNavigation
+            ? {
+                prevEl: prevRef.current,
+                nextEl: nextRef.current,
+              }
+            : false
+        }
         pagination={showPagination ? { clickable: true } : false}
         centeredSlides={centeredSlides}
         grabCursor={grabCursor}
         breakpoints={breakpoints}
         onSlideChange={onSlideChange}
-        onSwiper={onSwiper}
-        onBeforeInit={(swiper) => {
-          const navigation = swiper.params.navigation;
-          if (navigation && typeof navigation !== "boolean") {
-            navigation.prevEl = prevRef.current;
-            navigation.nextEl = nextRef.current;
+        onSwiper={handleSwiper}
+        onInit={(swiper) => {
+          if (showNavigation && swiper.params.navigation && typeof swiper.params.navigation !== "boolean") {
+            swiper.params.navigation.prevEl = prevRef.current;
+            swiper.params.navigation.nextEl = nextRef.current;
+            swiper.navigation.init();
+            swiper.navigation.update();
           }
         }}
       >

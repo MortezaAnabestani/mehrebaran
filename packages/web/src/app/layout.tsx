@@ -1,21 +1,10 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/layout/header/Header";
 import Footer from "@/components/layout/footer/Footer";
 import ClientSideEffect from "@/utils/ClientSideEffect";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ReactQueryProvider } from "@/providers/ReactQueryProvider";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -29,9 +18,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" dir="rtl" suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased w-full min-h-screen flex flex-col`}
-      >
+      <body className={`antialiased w-full min-h-screen flex flex-col`}>
         <ReactQueryProvider>
           <AuthProvider>
             <ClientSideEffect />

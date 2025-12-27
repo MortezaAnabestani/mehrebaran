@@ -87,9 +87,7 @@ class NotificationService {
   /**
    * Get all notifications for the current user
    */
-  public async getNotifications(
-    params?: GetNotificationsParams
-  ): Promise<GetNotificationsResponse> {
+  public async getNotifications(params?: GetNotificationsParams): Promise<GetNotificationsResponse> {
     const response = await api.get("/notifications", { params });
     return response.data;
   }
@@ -97,9 +95,7 @@ class NotificationService {
   /**
    * Get unread notifications only
    */
-  public async getUnreadNotifications(
-    limit: number = 20
-  ): Promise<GetNotificationsResponse> {
+  public async getUnreadNotifications(limit: number = 20): Promise<GetNotificationsResponse> {
     const response = await api.get("/notifications", {
       params: { isRead: false, limit },
     });
@@ -109,9 +105,7 @@ class NotificationService {
   /**
    * Get read notifications only
    */
-  public async getReadNotifications(
-    limit: number = 20
-  ): Promise<GetNotificationsResponse> {
+  public async getReadNotifications(limit: number = 20): Promise<GetNotificationsResponse> {
     const response = await api.get("/notifications", {
       params: { isRead: true, limit },
     });
@@ -158,9 +152,7 @@ class NotificationService {
   /**
    * Delete a specific notification
    */
-  public async deleteNotification(
-    id: string
-  ): Promise<DeleteNotificationResponse> {
+  public async deleteNotification(id: string): Promise<DeleteNotificationResponse> {
     const response = await api.delete(`/notifications/${id}`);
     return response.data;
   }
@@ -192,9 +184,10 @@ class NotificationService {
   /**
    * Get grouped notifications
    */
-  public async getGroupedNotifications(
-    params?: { groupBy?: string; limit?: number }
-  ): Promise<{ success: boolean; data: any; message: string }> {
+  public async getGroupedNotifications(params?: {
+    groupBy?: string;
+    limit?: number;
+  }): Promise<{ success: boolean; data: any; message: string }> {
     const response = await api.get("/notifications/grouped", { params });
     return response.data;
   }
@@ -230,9 +223,7 @@ class NotificationService {
   /**
    * Update notification preferences
    */
-  public async updatePreferences(
-    data: any
-  ): Promise<{ success: boolean; data: any; message: string }> {
+  public async updatePreferences(data: any): Promise<{ success: boolean; data: any; message: string }> {
     const response = await api.put("/notifications/preferences", data);
     return response.data;
   }
@@ -268,9 +259,7 @@ class NotificationService {
   /**
    * Toggle global mute
    */
-  public async toggleGlobalMute(
-    enabled: boolean
-  ): Promise<{ success: boolean; data: any; message: string }> {
+  public async toggleGlobalMute(enabled: boolean): Promise<{ success: boolean; data: any; message: string }> {
     const response = await api.post("/notifications/preferences/global-mute", {
       enabled,
     });
@@ -298,9 +287,7 @@ class NotificationService {
   /**
    * Remove push notification token
    */
-  public async removePushToken(
-    token: string
-  ): Promise<{ success: boolean; message: string }> {
+  public async removePushToken(token: string): Promise<{ success: boolean; message: string }> {
     const response = await api.delete(`/notifications/push-token/${token}`);
     return response.data;
   }
@@ -315,7 +302,7 @@ class NotificationService {
   public getNotificationIcon(type: NotificationType): string {
     const icons: Record<NotificationType, string> = {
       like_need: "❤️",
-      follow_user: "👥",
+      follow_user: "/icons/user.svg",
       follow_need: "🔔",
       comment: "💬",
       mention: "📢",
@@ -397,22 +384,16 @@ class NotificationService {
       case "like_need":
       case "follow_need":
       case "comment":
-        return notification.relatedNeed
-          ? `/network/needs/${notification.relatedNeed}`
-          : "/network";
+        return notification.relatedNeed ? `/network/needs/${notification.relatedNeed}` : "/network";
 
       case "follow_user":
         const senderId =
-          typeof notification.sender === "string"
-            ? notification.sender
-            : notification.sender?._id;
+          typeof notification.sender === "string" ? notification.sender : notification.sender?._id;
         return senderId ? `/network/users/${senderId}` : "/network";
 
       case "team_invite":
       case "team_join":
-        return notification.relatedTeam
-          ? `/network/teams/${notification.relatedTeam}`
-          : "/network/teams";
+        return notification.relatedTeam ? `/network/teams/${notification.relatedTeam}` : "/network/teams";
 
       case "task_assigned":
       case "task_completed":

@@ -68,7 +68,7 @@ const SuggestedSection: React.FC<SuggestedSectionProps> = ({
 
         {viewAllLink && hasContent && !isLoading && (
           <Link href={viewAllLink}>
-            <SmartButton variant="outline" size="sm">
+            <SmartButton variant="mgray" size="sm">
               {viewAllText} ←
             </SmartButton>
           </Link>
@@ -81,7 +81,7 @@ const SuggestedSection: React.FC<SuggestedSectionProps> = ({
           <div className="flex items-center justify-center py-12">
             <div className="flex flex-col items-center gap-3">
               <div className="w-12 h-12 border-4 border-mblue border-t-transparent rounded-full animate-spin"></div>
-              <p className="text-gray-500 text-sm">در حال بارگذاری...</p>
+              <p className="text-gray-500 text-sm">باران که می‌بارد، تو در راهی...</p>
             </div>
           </div>
         ) : hasContent ? (

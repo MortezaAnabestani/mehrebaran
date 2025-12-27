@@ -96,7 +96,11 @@ const NeedDetailPage: React.FC = () => {
     setLikesCount((prev) => (isLiked ? prev - 1 : prev + 1));
 
     try {
-      await needService.upvoteNeed(needId);
+      if (isLiked) {
+        await needService.unlikeNeed(needId);
+      } else {
+        await needService.likeNeed(needId);
+      }
     } catch {
       setIsLiked(prevLiked); // Revert on error
       setLikesCount((prev) => (prevLiked ? prev + 1 : prev - 1));
@@ -111,7 +115,11 @@ const NeedDetailPage: React.FC = () => {
     setIsFollowing(!isFollowing);
 
     try {
-      await needService.supportNeed(needId);
+      if (isFollowing) {
+        await needService.unfollowNeed(needId);
+      } else {
+        await needService.followNeed(needId);
+      }
     } catch {
       setIsFollowing(prevFollowing);
     }
@@ -180,7 +188,7 @@ const NeedDetailPage: React.FC = () => {
                       isLiked={isLiked}
                       likesCount={likesCount}
                       commentsCount={comments.length}
-                      sharesCount={need.sharesCount || 0}
+                      sharesCount={0}
                       onLike={handleLike}
                       onSupport={handleFollow}
                     />

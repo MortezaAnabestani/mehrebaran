@@ -69,7 +69,7 @@ const Comment: React.FC<CommentProps> = ({ postId, postType }) => {
         {isLoading ? (
           <div className="text-center py-8">
             <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-mblue"></div>
-            <p className="mt-3 text-gray-600">در حال بارگذاری نظرات...</p>
+            <p className="mt-3 text-gray-600">باران که می‌بارد، تو در راهی...رات...</p>
           </div>
         ) : comments.length > 0 ? (
           comments.map((comment) => (

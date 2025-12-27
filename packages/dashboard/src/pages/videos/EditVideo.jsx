@@ -155,7 +155,7 @@ const EditVideo = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center py-12">
-        <p className="text-gray-600">در حال بارگذاری...</p>
+        <p className="text-gray-600">باران که می‌بارد، تو در راهی...</p>
       </div>
     );
   }
@@ -180,7 +180,9 @@ const EditVideo = () => {
       {submitSuccess && (
         <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4">
           <strong className="font-bold ml-1">موفقیت!</strong>
-          <span className="block sm:inline">ویدئو با موفقیت به‌روزرسانی شد. در حال انتقال به صفحه ویدئوها...</span>
+          <span className="block sm:inline">
+            ویدئو با موفقیت به‌روزرسانی شد. در حال انتقال به صفحه ویدئوها...
+          </span>
         </div>
       )}
 
@@ -224,7 +226,9 @@ const EditVideo = () => {
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             {errors.videoUrl && <p className="text-red-500 text-xs mt-1">{errors.videoUrl.message}</p>}
-            <p className="text-xs text-gray-500 mt-1">می‌توانید لینک آپارات، یوتیوب یا فایل مستقیم را وارد کنید</p>
+            <p className="text-xs text-gray-500 mt-1">
+              می‌توانید لینک آپارات، یوتیوب یا فایل مستقیم را وارد کنید
+            </p>
           </div>
 
           {/* توضیحات */}

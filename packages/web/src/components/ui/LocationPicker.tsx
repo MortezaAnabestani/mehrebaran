@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
+import OptimizedImage from "./OptimizedImage";
 
 // Fix for default marker icon issue in React-Leaflet
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -35,9 +36,7 @@ function LocationMarker({ position, setPosition }: any) {
 
 const LocationPicker: React.FC<LocationPickerProps> = ({ value, onChange, label }) => {
   const [position, setPosition] = useState<L.LatLng | null>(
-    value.latitude && value.longitude
-      ? L.latLng(value.latitude, value.longitude)
-      : L.latLng(35.6892, 51.389) // Default to Tehran
+    value.latitude && value.longitude ? L.latLng(value.latitude, value.longitude) : L.latLng(35.6892, 51.389) // Default to Tehran
   );
   const [mounted, setMounted] = useState(false);
   const [isReady, setIsReady] = useState(false);
@@ -86,7 +85,7 @@ const LocationPicker: React.FC<LocationPickerProps> = ({ value, onChange, label 
       <div className="w-full">
         {label && <label className="block text-sm font-bold mb-2">{label}</label>}
         <div className="w-full h-[400px] bg-gray-100 rounded-lg flex items-center justify-center">
-          <p className="text-gray-600">در حال بارگذاری نقشه...</p>
+          <p className="text-gray-600">باران که می‌بارد، تو در راهی...شه...</p>
         </div>
       </div>
     );
@@ -102,7 +101,13 @@ const LocationPicker: React.FC<LocationPickerProps> = ({ value, onChange, label 
           onClick={getCurrentLocation}
           className="px-4 py-2 bg-mblue text-white rounded-lg hover:bg-mblue/90 transition-colors text-sm"
         >
-          📍 موقعیت فعلی من
+          <OptimizedImage
+            src="/icons/placeLocation.svg"
+            alt="download icon"
+            width={18}
+            height={18}
+            className="inline-block"
+          />
         </button>
         {position && (
           <div className="text-xs text-gray-600">

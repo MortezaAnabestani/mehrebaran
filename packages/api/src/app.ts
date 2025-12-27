@@ -35,10 +35,15 @@ import focusAreaRoutes from "./modules/focus-areas/focus-area.routes";
 import searchRoutes from "./modules/search/search.routes";
 import adminRoutes from "./modules/admin/admin.routes";
 import helpRequestRoutes from "./modules/help-requests/help-request.routes";
+import bugReportRoutes from "./modules/bug-reports/bug-report.routes";
+import imageUploadCenterRoutes from "./modules/image-upload-center/image-upload-center.routes";
 
 const app = express();
 
-app.use(cors({ origin: "*" }));
+app.use(cors({
+  origin: ["http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:3000"],
+  credentials: true
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "../public")));
@@ -75,6 +80,8 @@ app.use("/api/v1/focus-areas", focusAreaRoutes);
 app.use("/api/v1/search", searchRoutes);
 app.use("/api/v1/admin", adminRoutes);
 app.use("/api/v1/help-requests", helpRequestRoutes);
+app.use("/api/v1/bug-reports", bugReportRoutes);
+app.use("/api/v1/imageUploadCenter", imageUploadCenterRoutes);
 
 app.use(globalErrorHandler);
 

@@ -241,7 +241,7 @@ const TagsPage: React.FC = () => {
                     }
                   `}
                 >
-                  🔥 محبوب‌ترین‌ها
+                  محبوب‌ترین‌ها
                 </button>
                 <button
                   onClick={() => setActiveTab("trending")}

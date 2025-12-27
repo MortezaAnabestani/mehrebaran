@@ -86,11 +86,7 @@ export default function PaymentVerificationPage() {
             <SmartButton variant="mblue" onClick={() => router.push("/projects")} fullWidth>
               بازگشت به پروژه‌ها
             </SmartButton>
-            <SmartButton
-              variant="outline"
-              onClick={() => router.back()}
-              fullWidth
-            >
+            <SmartButton variant="mgray" onClick={() => router.back()} fullWidth>
               تلاش مجدد
             </SmartButton>
           </div>
@@ -152,11 +148,7 @@ export default function PaymentVerificationPage() {
             <SmartButton variant="mblue" onClick={() => router.push("/projects")} fullWidth>
               مشاهده پروژه‌های دیگر
             </SmartButton>
-            <SmartButton
-              variant="outline"
-              onClick={() => router.push("/network")}
-              fullWidth
-            >
+            <SmartButton variant="mgray" onClick={() => router.push("/network")} fullWidth>
               ورود به شبکه نیازسنجی
             </SmartButton>
           </div>

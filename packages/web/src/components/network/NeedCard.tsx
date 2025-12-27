@@ -27,7 +27,9 @@ const Icons = {
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className={`w-4 h-4 sm:w-5 sm:h-5 transition-transform duration-300 ${filled ? "scale-110" : "scale-100"}`}
+      className={`w-4 h-4 sm:w-5 sm:h-5 transition-transform duration-300 ${
+        filled ? "scale-110" : "scale-100"
+      }`}
     >
       <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
     </svg>
@@ -236,12 +238,12 @@ const NeedCard: React.FC<NeedCardProps> = ({ need, variant = "feed", onUpdate })
 
   // --- FEED VARIANT (FULL DESIGN) ---
   return (
-    <div className="relative flex flex-col justify-between bg-white rounded-xl md:rounded-2xl border border-gray-100 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.08)] overflow-hidden transition-all duration-300 hover:shadow-[0_20px_40px_-10px_rgba(0,122,204,0.15)]">
+    <div className="relative h-100 flex flex-col justify-between bg-white rounded-xl md:rounded-2xl border border-gray-100 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.08)] overflow-hidden transition-all duration-300 hover:shadow-[0_20px_40px_-10px_rgba(0,122,204,0.15)]">
       {/* Trending Badge - Glassmorphism */}
       {need.isTrending && (
         <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10">
           <div className="bg-morange/90 backdrop-blur-sm text-white text-[9px] sm:text-[10px] font-bold px-2 py-1 sm:px-3 sm:py-1.5 rounded-full shadow-lg shadow-morange/30 flex items-center gap-1 animate-pulse">
-            <span>🔥</span>
+            <OptimizedImage src="/icons/need.svg" width={18} height={18} alt="need icon" />
             <span>ترند</span>
           </div>
         </div>
@@ -278,7 +280,9 @@ const NeedCard: React.FC<NeedCardProps> = ({ need, variant = "feed", onUpdate })
           </h2>
         </Link>
 
-        <p className="text-xs sm:text-sm text-gray-600 mb-3 sm:mb-4 leading-relaxed line-clamp-2 sm:line-clamp-3">{need.description}</p>
+        <p className="text-xs sm:text-sm text-gray-600 mb-3 sm:mb-4 leading-relaxed line-clamp-2 sm:line-clamp-3">
+          {need.description}
+        </p>
 
         {/* Tags - Soft UI Pills */}
         {need.tags && need.tags.length > 0 && (
@@ -385,7 +389,9 @@ const NeedCard: React.FC<NeedCardProps> = ({ need, variant = "feed", onUpdate })
 
             <button className="flex items-center gap-1 sm:gap-1.5 px-2 py-1.5 sm:px-3 sm:py-2 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-[#007acc] transition-all active:scale-95">
               <Icons.Message />
-              <span className="text-[10px] sm:text-xs font-bold">{formatNumber(need.commentsCount || 0)}</span>
+              <span className="text-[10px] sm:text-xs font-bold">
+                {formatNumber(need.commentsCount || 0)}
+              </span>
             </button>
 
             <button className="p-1.5 sm:p-2 rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-all active:scale-95">
@@ -399,17 +405,6 @@ const NeedCard: React.FC<NeedCardProps> = ({ need, variant = "feed", onUpdate })
               className="hidden sm:block px-3 py-2 md:px-4 md:py-2.5 rounded-xl text-xs font-bold text-gray-600 bg-white border border-gray-200 shadow-sm hover:shadow-md hover:border-gray-300 active:shadow-inner active:translate-y-[1px] transition-all"
             >
               جزئیات
-            </button>
-
-            <button
-              onClick={handleFollow}
-              className={`px-3 py-2 md:px-4 md:py-2.5 rounded-lg md:rounded-xl text-[10px] sm:text-xs font-bold text-white shadow-[0_4px_10px_rgba(0,122,204,0.3)] hover:shadow-[0_6px_15px_rgba(0,122,204,0.4)] active:shadow-inner active:translate-y-[1px] transition-all ${
-                isFollowing
-                  ? "bg-gray-400 shadow-none cursor-default"
-                  : "bg-gradient-to-r from-[#007acc] to-[#0096ff]"
-              }`}
-            >
-              {isFollowing ? "در حال حمایت" : "حمایت کنید"}
             </button>
           </div>
         </div>

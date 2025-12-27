@@ -129,11 +129,11 @@ const UploadImage = () => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-slate-900 via-[#001f3f] to-slate-900 p-4 md:p-8 font-sans text-white flex flex-col items-center">
+    <div className="min-h-screen w-full p-4 md:p-8 flex flex-col items-center">
       {/* Glass Card Container */}
       <div className="w-full max-w-3xl bg-white/10 backdrop-blur-lg border border-white/20 shadow-2xl rounded-3xl p-6 md:p-10 relative overflow-hidden">
         {/* Decorative Glows */}
-        <div className="absolute top-0 left-0 w-32 h-32 bg-[#007acc] opacity-20 blur-[80px] rounded-full pointer-events-none"></div>
+        <div className="absolute top-0 left-0 w-62 h-62 bg-[#007acc] opacity-50 blur-[80px] rounded-full pointer-events-none"></div>
         <div className="absolute bottom-0 right-0 w-40 h-40 bg-purple-600 opacity-20 blur-[80px] rounded-full pointer-events-none"></div>
 
         {/* Header */}
@@ -147,7 +147,7 @@ const UploadImage = () => {
                 style={{ filter: "brightness(0) invert(1)" }}
               />
             </div>
-            <h2 className="text-xl md:text-2xl font-bold text-white tracking-wide">مرکز فضای ابری</h2>
+            <h2 className="text-xl md:text-2xl font-bold ">مرکز فضای ابری</h2>
           </div>
           <div className="hidden md:block p-2 bg-white/5 rounded-full animate-pulse">
             <img
@@ -202,23 +202,23 @@ const UploadImage = () => {
               />
             </div>
             <div className="text-center">
-              <p className="text-white font-medium text-lg">
-                برای آپلود کلیک کنید <span className="text-white/50 text-sm">یا فایل را اینجا رها کنید</span>
+              <p className="font-medium text-lg">
+                برای آپلود کلیک کنید <span className="text-sm">یا فایل را اینجا رها کنید</span>
               </p>
-              <p className="text-white/40 text-xs mt-1">(JPEG, PNG, GIF, WebP - Max 5MB)</p>
+              <p className=" text-xs mt-1">(JPEG, PNG, GIF, WebP - Max 5MB)</p>
             </div>
           </div>
         </div>
 
         {/* Title Input */}
         <div className="mt-6 relative z-10">
-          <label className="block text-sm text-white/70 mb-2 mr-1">عنوان تصویر:</label>
+          <label className="block text-sm mb-2 mr-1">عنوان تصویر:</label>
           <input
             type="text"
             placeholder="مثلاً: بنر تبلیغاتی نوروز..."
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-[#007acc] focus:bg-white/10 transition-all"
+            className="w-full bg-white/5 border border-blue-300 rounded-xl px-4 py-3 focus:outline-none focus:border-[#007acc] focus:bg-white/10 transition-all"
           />
         </div>
 
@@ -237,7 +237,7 @@ const UploadImage = () => {
                   setPreview(null);
                   setFile(null);
                 }}
-                className="bg-red-500/80 hover:bg-red-600 text-white p-2 rounded-full backdrop-blur-sm transition-transform hover:scale-110"
+                className="bg-red-500/80 hover:bg-red-600 p-2 rounded-full backdrop-blur-sm transition-transform hover:scale-110"
                 title="حذف تصویر"
               >
                 <img src="/assets/images/dashboard/icons/close.svg" className="w-6 h-6 invert" alt="close" />
@@ -259,7 +259,7 @@ const UploadImage = () => {
           {uploading ? (
             <>
               <svg
-                className="animate-spin h-5 w-5 text-white"
+                className="animate-spin h-5 w-5 "
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -294,7 +294,7 @@ const UploadImage = () => {
                 href={imageUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-[#007acc] text-xs hover:text-white transition-colors"
+                className="text-[#007acc] text-xs hover:text-black transition-colors"
               >
                 مشاهده در تب جدید &rarr;
               </a>
@@ -304,7 +304,7 @@ const UploadImage = () => {
                 type="text"
                 value={imageUrl}
                 readOnly
-                className="bg-transparent w-full text-xs text-white/80 outline-none font-mono ltr"
+                className="bg-transparent w-full text-xs outline-none font-mono ltr"
               />
               <button
                 onClick={() => copyToClipboard(imageUrl)}
@@ -320,8 +320,7 @@ const UploadImage = () => {
 
       {/* List Component Wrapper */}
       <div className="w-full max-w-6xl mt-12">
-        <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-6">
-          <h3 className="text-white/80 text-lg mb-4 border-b border-white/10 pb-2">گالری تصاویر آپلود شده</h3>
+        <div className=" backdrop-blur-md border border-white/10 rounded-3xl p-6">
           <UploadImageList images={images} loading={loading} />
         </div>
       </div>

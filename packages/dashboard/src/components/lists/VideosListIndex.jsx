@@ -39,7 +39,7 @@ const VideosListIndex = ({
   if (loading) {
     return (
       <div className="flex justify-center items-center py-12">
-        <p className="text-gray-600">در حال بارگذاری...</p>
+        <p className="text-gray-600">باران که می‌بارد، تو در راهی...</p>
       </div>
     );
   }

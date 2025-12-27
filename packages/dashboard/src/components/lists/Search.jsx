@@ -1,32 +1,37 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import debounce from "lodash.debounce";
 import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { fetchArticleBySlug } from "../../features/articlesSlice";
+import api from "../../services/api";
 
 const Search = ({ chart = false }) => {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
-  const BASE_URL = import.meta.env.VITE_SERVER_PUBLIC_API_URL;
   const dispatch = useDispatch();
 
   const persianTypeName = (type) => {
     switch (type) {
+      case "article":
       case "articles":
         return "مقاله";
       case "authors":
         return "نویسنده";
-      case "educations":
-        return "محتوای آموزشی";
-      case "events":
-        return "رویداد";
+      case "video":
+      case "videos":
+        return "ویدیو";
+      case "gallery":
       case "galleries":
         return "گالری";
-      case "issues":
-        return "شماره‌های نشریه";
-      case "honors":
-        return "افتخارات";
+      case "project":
+      case "projects":
+        return "پروژه";
+      case "news":
+        return "خبر";
+      case "focus-area":
+        return "حوزه فعالیت";
+      default:
+        return type;
     }
   };
 
@@ -42,8 +47,10 @@ const Search = ({ chart = false }) => {
     }
 
     try {
-      const res = await axios.get(`${BASE_URL}/search?q=${value}`);
-      setResults(res?.data); // مثلا آرایه‌ای از نتایج
+      const res = await api.get("/search", {
+        params: { query: value.trim() }
+      });
+      setResults(res?.data?.results || []); // استخراج results از پاسخ API
     } catch (err) {
       console.error(err);
     }
@@ -76,28 +83,26 @@ const Search = ({ chart = false }) => {
       {results?.length > 0 && (
         <ul className="absolute z-50 w-full bg-white border border-gray-300 mt-1 rounded shadow">
           {results
-            .flatMap((group) => {
-              const type = chart ? "articles" : group.type;
-              const items = Object.keys(group)
-                .filter((key) => (chart ? key !== "type" && group.type === "articles" : key !== "type"))
-                .map((key) => ({
-                  ...group[key],
-                  type,
-                }));
-              return items;
-            })
+            .filter((item) => (chart ? item.type === "article" : true))
             .map((item, index) => {
-              const path = `${item.type}/edit/${item.slug || item._id}`;
+              // تبدیل type به فرمت مناسب برای route
+              const routeType = item.type === "article" ? "articles" :
+                               item.type === "video" ? "videos" :
+                               item.type === "gallery" ? "galleries" :
+                               item.type === "project" ? "projects" :
+                               item.type;
+              const path = `${routeType}/edit/${item.slug || item.id}`;
+
               return (
                 <Link
                   rel="preconnect"
                   prefetch={true}
                   to={!chart && path}
-                  key={index}
+                  key={item.id || index}
                   onClick={chart ? () => passArticleSlug(item.slug) : () => setResults([])}
                 >
                   <li className="p-2 hover:bg-gray-100 cursor-pointer flex justify-between items-center border-b border-red-100">
-                    <p>{item.title || item.name || item._id}</p>
+                    <p>{item.title || item._id}</p>
                     <p className="text-xs py-1 px-3 bg-red-100 rounded-full">{persianTypeName(item.type)}</p>
                   </li>
                 </Link>

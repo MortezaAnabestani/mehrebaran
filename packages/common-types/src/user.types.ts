@@ -9,6 +9,9 @@ export interface IUser {
   mobile: string;
   name: string;
   nationalId: string;
+  avatar?: string;
+  username?: string;
+  email?: string;
 
   profile?: {
     major: string;

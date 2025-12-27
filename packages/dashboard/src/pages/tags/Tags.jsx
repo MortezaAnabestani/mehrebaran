@@ -111,7 +111,7 @@ const TagManager = () => {
       {/* نمایش برچسب‌ها */}
       <div className="flex flex-wrap gap-4">
         {loading ? (
-          <p className="text-center mx-auto text-sm text-gray-300">در حال بارگذاری...</p>
+          <p className="text-center mx-auto text-sm text-gray-300">باران که می‌بارد، تو در راهی...</p>
         ) : (
           filteredTags.map((tag) => (
             <div

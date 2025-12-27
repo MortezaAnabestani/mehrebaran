@@ -14,6 +14,9 @@ const userSchema = new Schema<IUser, UserModelType, IUserMethods>(
     name: { type: String, required: true },
     password: { type: String, select: false },
     nationalId: { type: String, required: true, unique: true },
+    avatar: { type: String },
+    username: { type: String },
+    email: { type: String },
     profile: {
       major: String,
       yearOfAdmission: String,

@@ -39,8 +39,8 @@ export default function VideoPlayer({ video }: VideoPlayerProps) {
         className="absolute top-0 left-0"
         width="100%"
         height="100%"
-        controls={true}
-        playing={true}
+        controls
+        playing
       />
     </div>
   );

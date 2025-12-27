@@ -46,15 +46,16 @@ const useFaqForm = (isEdit = false) => {
   const onSubmit = async (data) => {
     setAlerts(null);
     try {
-      const formData = new FormData();
-      formData.append("question", data.question.trim());
-      formData.append("answer", data.answer.trim());
-      formData.append("order", data.order);
+      const payload = {
+        question: data.question.trim(),
+        answer: data.answer.trim(),
+        order: data.order || 0,
+      };
 
       if (isEdit) {
-        dispatch(updateFaq({ id, formData }));
+        dispatch(updateFaq({ id, data: payload }));
       } else {
-        dispatch(createFaq(formData));
+        dispatch(createFaq(payload));
       }
       setAlerts(isEdit ? " ویرایش انجام شد!" : "شمارۀ جدید با موفقیت اضافه شد!");
       // setTimeout(() => navigate("/dashboard/faqs"), 3000);

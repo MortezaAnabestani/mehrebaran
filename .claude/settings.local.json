@@ -13,7 +13,18 @@
       "Bash(rm -f:*)",
       "Bash(ls:*)",
       "Bash(del nul)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(node find-unused-files.js:*)",
+      "Bash(node:*)",
+      "Bash(if exist \"d:\\\\Sefareshat\\\\jahad\\\\mehrebaran\\\\mehre-baran-app\\\\packages\\\\web\\\\src\\\\components\\\\ui\\\\responsive\" rmdir \"d:\\\\Sefareshat\\\\jahad\\\\mehrebaran\\\\mehre-baran-app\\\\packages\\\\web\\\\src\\\\components\\\\ui\\\\responsive\")",
+      "Bash(if exist \"d:\\\\Sefareshat\\\\jahad\\\\mehrebaran\\\\mehre-baran-app\\\\packages\\\\web\\\\src\\\\components\\\\features\\\\home\\\\areasOfActivity\" dir /b \"d:\\\\Sefareshat\\\\jahad\\\\mehrebaran\\\\mehre-baran-app\\\\packages\\\\web\\\\src\\\\components\\\\features\\\\home\\\\areasOfActivity\")",
+      "Bash(test:*)",
+      "Bash(python find-unused-files.py:*)",
+      "Bash(timeout /t 5 /nobreak)",
+      "Bash(ping:*)",
+      "Bash(echo export * from \"./bug-report.types\")",
+      "Bash(pnpm add:*)",
+      "Bash(timeout /t 3 /nobreak)"
     ]
   }
 }

@@ -1,11 +1,5 @@
 import api from "@/lib/api";
-import type {
-  IStory,
-  IStoryFeed,
-  IStoryStats,
-  StoryType,
-  StoryPrivacy,
-} from "@mehrebaran/common-types";
+import type { IStory, IStoryFeed, IStoryStats, StoryType, StoryPrivacy } from "@mehrebaran/common-types";
 
 // ===========================
 // Request Types
@@ -105,9 +99,7 @@ class StoryService {
   /**
    * Get story feed (stories from followed users)
    */
-  public async getStoryFeed(
-    limit: number = 20
-  ): Promise<GetStoryFeedResponse> {
+  public async getStoryFeed(limit: number = 20): Promise<GetStoryFeedResponse> {
     const response = await api.get("/stories/feed", { params: { limit } });
     return response.data;
   }
@@ -139,9 +131,7 @@ class StoryService {
   /**
    * Get active stories (not expired)
    */
-  public async getActiveStories(
-    params?: GetStoriesParams
-  ): Promise<GetStoriesResponse> {
+  public async getActiveStories(params?: GetStoriesParams): Promise<GetStoriesResponse> {
     const response = await api.get("/stories", {
       params: { ...params, isActive: true },
     });
@@ -175,10 +165,7 @@ class StoryService {
   /**
    * View a story
    */
-  public async viewStory(
-    id: string,
-    viewDuration?: number
-  ): Promise<ViewStoryResponse> {
+  public async viewStory(id: string, viewDuration?: number): Promise<ViewStoryResponse> {
     const response = await api.post(`/stories/${id}/view`, {
       viewDuration,
     });
@@ -188,10 +175,7 @@ class StoryService {
   /**
    * React to a story
    */
-  public async reactToStory(
-    id: string,
-    emoji: string
-  ): Promise<ReactToStoryResponse> {
+  public async reactToStory(id: string, emoji: string): Promise<ReactToStoryResponse> {
     const response = await api.post(`/stories/${id}/react`, {
       emoji,
     });
@@ -221,9 +205,7 @@ class StoryService {
   /**
    * Get viewers of a story
    */
-  public async getViewers(
-    id: string
-  ): Promise<{ success: boolean; data: any[]; message: string }> {
+  public async getViewers(id: string): Promise<{ success: boolean; data: any[]; message: string }> {
     const response = await api.get(`/stories/${id}/viewers`);
     return response.data;
   }
@@ -273,9 +255,7 @@ class StoryService {
     highlightId: string,
     storyId: string
   ): Promise<{ success: boolean; message: string }> {
-    const response = await api.delete(
-      `/stories/highlights/${highlightId}/remove-story/${storyId}`
-    );
+    const response = await api.delete(`/stories/highlights/${highlightId}/remove-story/${storyId}`);
     return response.data;
   }
 
@@ -296,9 +276,7 @@ class StoryService {
   /**
    * Delete highlight
    */
-  public async deleteHighlight(
-    highlightId: string
-  ): Promise<{ success: boolean; message: string }> {
+  public async deleteHighlight(highlightId: string): Promise<{ success: boolean; message: string }> {
     const response = await api.delete(`/stories/highlights/${highlightId}`);
     return response.data;
   }
@@ -343,10 +321,8 @@ class StoryService {
     const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
     if (seconds < 60) return "لحظاتی پیش";
-    if (seconds < 3600)
-      return `${Math.floor(seconds / 60)} دقیقه پیش`;
-    if (seconds < 86400)
-      return `${Math.floor(seconds / 3600)} ساعت پیش`;
+    if (seconds < 3600) return `${Math.floor(seconds / 60)} دقیقه پیش`;
+    if (seconds < 86400) return `${Math.floor(seconds / 3600)} ساعت پیش`;
     return `${Math.floor(seconds / 86400)} روز پیش`;
   }
 
@@ -369,7 +345,7 @@ class StoryService {
   public getPrivacyIcon(privacy: StoryPrivacy): string {
     const icons: Record<StoryPrivacy, string> = {
       public: "🌐",
-      followers: "👥",
+      followers: "/icons/user.svg",
       close_friends: "⭐",
       custom: "🔒",
     };

@@ -104,10 +104,7 @@ class MediaService {
   /**
    * Get media by user ID
    */
-  public async getUserMedia(
-    userId: string,
-    params?: GetMediaParams
-  ): Promise<GetMediaResponse> {
+  public async getUserMedia(userId: string, params?: GetMediaParams): Promise<GetMediaResponse> {
     const response = await api.get(`/media/user/${userId}`, { params });
     return response.data;
   }
@@ -115,10 +112,7 @@ class MediaService {
   /**
    * Get media related to a specific entity
    */
-  public async getRelatedMedia(
-    model: string,
-    id: string
-  ): Promise<GetMediaResponse> {
+  public async getRelatedMedia(model: string, id: string): Promise<GetMediaResponse> {
     const response = await api.get(`/media/related/${model}/${id}`);
     return response.data;
   }
@@ -126,10 +120,7 @@ class MediaService {
   /**
    * Get media by category
    */
-  public async getMediaByCategory(
-    category: MediaCategory,
-    limit: number = 20
-  ): Promise<GetMediaResponse> {
+  public async getMediaByCategory(category: MediaCategory, limit: number = 20): Promise<GetMediaResponse> {
     const response = await api.get("/media", {
       params: { category, limit },
     });
@@ -139,10 +130,7 @@ class MediaService {
   /**
    * Get media by type
    */
-  public async getMediaByType(
-    type: MediaType,
-    limit: number = 20
-  ): Promise<GetMediaResponse> {
+  public async getMediaByType(type: MediaType, limit: number = 20): Promise<GetMediaResponse> {
     const response = await api.get("/media", {
       params: { type, limit },
     });
@@ -156,10 +144,7 @@ class MediaService {
   /**
    * Upload a single file
    */
-  public async uploadFile(
-    file: File,
-    options: IMediaUploadOptions
-  ): Promise<UploadMediaResponse> {
+  public async uploadFile(file: File, options: IMediaUploadOptions): Promise<UploadMediaResponse> {
     const formData = new FormData();
     formData.append("file", file);
     formData.append("category", options.category);
@@ -197,13 +182,8 @@ class MediaService {
   /**
    * Upload multiple files
    */
-  public async uploadFiles(
-    files: File[],
-    options: IMediaUploadOptions
-  ): Promise<UploadMediaResponse[]> {
-    const uploadPromises = files.map((file) =>
-      this.uploadFile(file, options)
-    );
+  public async uploadFiles(files: File[], options: IMediaUploadOptions): Promise<UploadMediaResponse[]> {
+    const uploadPromises = files.map((file) => this.uploadFile(file, options));
     return Promise.all(uploadPromises);
   }
 
@@ -238,7 +218,11 @@ class MediaService {
   /**
    * Get total storage used by current user
    */
-  public async getTotalStorage(): Promise<{ success: boolean; data: { totalStorage: number }; message: string }> {
+  public async getTotalStorage(): Promise<{
+    success: boolean;
+    data: { totalStorage: number };
+    message: string;
+  }> {
     const response = await api.get("/media/storage");
     return response.data;
   }
@@ -250,9 +234,7 @@ class MediaService {
   /**
    * Get all galleries
    */
-  public async getMediaGalleries(
-    params?: GetMediaGalleriesParams
-  ): Promise<GetMediaGalleriesResponse> {
+  public async getMediaGalleries(params?: GetMediaGalleriesParams): Promise<GetMediaGalleriesResponse> {
     const response = await api.get("/media/galleries", { params });
     return response.data;
   }
@@ -268,9 +250,7 @@ class MediaService {
   /**
    * Get gallery by ID
    */
-  public async getGalleryById(
-    id: string
-  ): Promise<GetMediaGalleryByIdResponse> {
+  public async getGalleryById(id: string): Promise<GetMediaGalleryByIdResponse> {
     const response = await api.get(`/media/galleries/${id}`);
     return response.data;
   }
@@ -309,9 +289,7 @@ class MediaService {
     galleryId: string,
     mediaId: string
   ): Promise<GetMediaGalleryByIdResponse> {
-    const response = await api.delete(
-      `/media/galleries/${galleryId}/media/${mediaId}`
-    );
+    const response = await api.delete(`/media/galleries/${galleryId}/media/${mediaId}`);
     return response.data;
   }
 
@@ -335,8 +313,8 @@ class MediaService {
       image: "🖼️",
       video: "🎥",
       audio: "🎵",
-      document: "📄",
-      file: "📎",
+      document: "/icons/paper.svg",
+      file: "/icons/attach.svg",
     };
     return icons[type];
   }

@@ -622,12 +622,7 @@ class AdminService {
    * Get needs for moderation with filtering
    * دریافت نیازها برای مدیریت با فیلتر
    */
-  async getModerationNeeds(filters: {
-    status?: string;
-    search?: string;
-    page?: number;
-    limit?: number;
-  }) {
+  async getModerationNeeds(filters: { status?: string; search?: string; page?: number; limit?: number }) {
     const { status, search, page = 1, limit = 20 } = filters;
     const skip = (page - 1) * limit;
 
@@ -688,11 +683,7 @@ class AdminService {
    * Get comments for moderation
    * دریافت نظرات برای مدیریت
    */
-  async getModerationComments(filters: {
-    search?: string;
-    page?: number;
-    limit?: number;
-  }) {
+  async getModerationComments(filters: { search?: string; page?: number; limit?: number }) {
     const { search, page = 1, limit = 20 } = filters;
     const skip = (page - 1) * limit;
 
@@ -750,12 +741,7 @@ class AdminService {
    * Get donations for moderation
    * دریافت کمک‌ها برای مدیریت
    */
-  async getModerationDonations(filters: {
-    status?: string;
-    search?: string;
-    page?: number;
-    limit?: number;
-  }) {
+  async getModerationDonations(filters: { status?: string; search?: string; page?: number; limit?: number }) {
     const { status, search, page = 1, limit = 20 } = filters;
     const skip = (page - 1) * limit;
 
@@ -816,12 +802,7 @@ class AdminService {
    * Get activity feed with all recent activities
    * دریافت فید فعالیت‌ها با تمام فعالیت‌های اخیر
    */
-  async getActivityFeed(filters: {
-    activityType?: string;
-    page?: number;
-    limit?: number;
-    days?: number;
-  }) {
+  async getActivityFeed(filters: { activityType?: string; page?: number; limit?: number; days?: number }) {
     const { activityType, page = 1, limit = 20, days = 7 } = filters;
     const skip = (page - 1) * limit;
     const startDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
@@ -848,7 +829,7 @@ class AdminService {
             status: need.status,
             urgencyLevel: need.urgencyLevel,
           },
-          icon: "📝",
+          icon: "/icons/paper.svg",
           description: `نیاز جدید ثبت شد`,
         });
       });
@@ -875,7 +856,7 @@ class AdminService {
             projectTitle: donation.project?.title,
             projectId: donation.project?._id,
           },
-          icon: "💰",
+          icon: "/icons/rial.svg",
           description: `کمک مالی جدید دریافت شد`,
         });
       });
@@ -936,7 +917,7 @@ class AdminService {
     if (!activityType || activityType === "follow") {
       const follows = await FollowModel.find({
         createdAt: { $gte: startDate },
-        followType: "user" // Only user follows, not need follows
+        followType: "user", // Only user follows, not need follows
       })
         .populate("follower", "username fullName profilePicture")
         .populate("following", "username fullName")
@@ -957,7 +938,7 @@ class AdminService {
               fullName: follow.following?.fullName,
             },
           },
-          icon: "👥",
+          icon: "/icons/user.svg",
           description: `کاربر جدید دنبال شد`,
         });
       });
@@ -984,7 +965,7 @@ class AdminService {
             badgeDescription: badgeAward.badge?.description,
             progress: badgeAward.progress,
           },
-          icon: "🏆",
+          icon: "/icons/cup.svg",
           description: `نشان جدید دریافت شد`,
         });
       });
@@ -1004,6 +985,40 @@ class AdminService {
         page,
         limit,
         totalPages: Math.ceil(total / limit),
+      },
+    };
+  }
+
+  /**
+   * Get site views analytics
+   * آنالیز بازدیدهای سایت
+   */
+  async getViewsAnalytics(days: number = 30) {
+    const startDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+
+    // Generate daily stats for the requested period
+    const dailyStats = [];
+    let totalVisits = 0;
+
+    // Create a date for each day in the range
+    for (let i = 0; i < days; i++) {
+      const date = new Date(Date.now() - i * 24 * 60 * 60 * 1000);
+      const count = Math.floor(Math.random() * 500) + 100; // Mock data for now
+      totalVisits += count;
+
+      dailyStats.unshift({
+        date: date.toISOString(),
+        count,
+      });
+    }
+
+    return {
+      totalVisits,
+      dailyStats,
+      period: {
+        start: startDate,
+        end: new Date(),
+        days,
       },
     };
   }

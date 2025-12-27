@@ -21,6 +21,15 @@ class FaqController {
     res.status(200).json({ data: faqs });
   });
 
+  public getById = asyncHandler(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const faq = await faqService.findById(id);
+    if (!faq) {
+      throw new ApiError(404, "سوال یافت نشد.");
+    }
+    res.status(200).json({ data: faq });
+  });
+
   public update = asyncHandler(async (req: Request, res: Response) => {
     const validatedData = updateFaqSchema.parse({ body: req.body, params: req.params });
     const faq = await faqService.update(validatedData.params.id, validatedData.body);

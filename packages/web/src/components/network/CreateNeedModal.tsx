@@ -14,7 +14,7 @@ const PersianDatePicker = dynamic(() => import("@/components/ui/PersianDatePicke
   ssr: false,
   loading: () => (
     <div className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 shadow-inner animate-pulse">
-      <span className="text-gray-400 text-sm">در حال بارگذاری تقویم...</span>
+      <span className="text-gray-400 text-sm">باران که می‌بارد، تو در راهی...ویم...</span>
     </div>
   ),
 });
@@ -23,7 +23,7 @@ const LocationPicker = dynamic(() => import("@/components/ui/LocationPicker"), {
   ssr: false,
   loading: () => (
     <div className="w-full h-[300px] bg-gray-100 rounded-2xl shadow-inner flex items-center justify-center border border-gray-200">
-      <p className="text-gray-500 font-medium">در حال بارگذاری نقشه...</p>
+      <p className="text-gray-500 font-medium">باران که می‌بارد، تو در راهی...شه...</p>
     </div>
   ),
 });
@@ -74,10 +74,10 @@ const CreateNeedModal: React.FC<CreateNeedModalProps> = ({ isOpen, onClose, onSu
   const steps = [
     { id: 1, title: "اطلاعات پایه", icon: "📝" },
     { id: 2, title: "جزئیات فنی", icon: "⚡" },
-    { id: 3, title: "موقعیت", icon: "📍" },
+    { id: 3, title: "موقعیت", icon: "/icons/placeLocation.svg" },
     { id: 4, title: "زمان‌بندی", icon: "📅" },
-    { id: 5, title: "بودجه", icon: "💰" },
-    { id: 6, title: "مستندات", icon: "📎" },
+    { id: 5, title: "بودجه", icon: "/icons/rial.svg" },
+    { id: 6, title: "مستندات", icon: "/icons/attach.svg" },
   ];
 
   const updateFormData = (field: string, value: any) => {
@@ -547,7 +547,13 @@ const Step3Location: React.FC<any> = ({ formData, updateFormData }) => {
     <div className="space-y-8">
       <div className="flex items-center gap-4 mb-6">
         <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-green-50 to-green-100 flex items-center justify-center text-2xl shadow-inner border border-green-200">
-          📍
+          <OptimizedImage
+            src="/icons/placeLocation.svg"
+            alt="download icon"
+            width={18}
+            height={18}
+            className="inline-block"
+          />
         </div>
         <div>
           <h3 className="text-xl font-bold text-gray-800">موقعیت مکانی</h3>
@@ -690,9 +696,7 @@ const Step5Budget: React.FC<any> = ({ formData, updateFormData }) => {
     <div className="space-y-8">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-yellow-50 to-yellow-100 flex items-center justify-center text-2xl shadow-inner border border-yellow-200">
-            💰
-          </div>
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-yellow-50 to-yellow-100 flex items-center justify-center text-2xl shadow-inner border border-yellow-200"></div>
           <div>
             <h3 className="text-xl font-bold text-gray-800">برآورد بودجه</h3>
             <p className="text-sm text-gray-500">هزینه‌های پروژه را شفاف‌سازی کنید</p>
@@ -795,7 +799,13 @@ const Step6Files: React.FC<any> = ({ formData, updateFormData }) => (
   <div className="space-y-8">
     <div className="flex items-center gap-4 mb-6">
       <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-50 to-indigo-100 flex items-center justify-center text-2xl shadow-inner border border-indigo-200">
-        📎
+        <OptimizedImage
+          src="/icons/attach.svg"
+          alt="download icon"
+          width={18}
+          height={18}
+          className="inline-block"
+        />
       </div>
       <div>
         <h3 className="text-xl font-bold text-gray-800">پیوست‌ها</h3>

@@ -40,7 +40,7 @@ const focusAreaData = [
   {
     title: "مسئولیت اجتماعی",
     description: "آموزش، فرهنگ‌سازی و ارتقای سطح آگاهی و مشارکت اجتماعی",
-    icon: "🎯",
+    icon: "/icons/goal.svg",
     gradient: "from-amber-500 to-yellow-600",
     order: 4,
     isActive: true,

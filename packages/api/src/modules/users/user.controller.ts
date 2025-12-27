@@ -30,6 +30,26 @@ class UserController {
     });
   });
 
+  public updateUser = asyncHandler(async (req: Request, res: Response) => {
+    const userId = req.params.id;
+    const updates = req.body;
+
+    // اگر فایل آپلود شده باشد، مسیر آن را به updates اضافه کن
+    if (req.processedFiles?.desktop) {
+      updates.avatar = req.processedFiles.desktop;
+    }
+
+    const user = await userService.updateUser(userId, updates);
+    if (!user) {
+      throw new ApiError(404, "کاربری با این شناسه یافت نشد.");
+    }
+
+    res.status(200).json({
+      message: "اطلاعات کاربر با موفقیت بروز شد.",
+      data: user,
+    });
+  });
+
   public deleteUser = asyncHandler(async (req: Request, res: Response) => {
     const user = await userService.deleteUser(req.params.id);
     if (!user) {

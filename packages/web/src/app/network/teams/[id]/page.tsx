@@ -133,7 +133,7 @@ const TeamDetailPage: React.FC = () => {
         <div className="flex items-center justify-center min-h-screen bg-[#f4f7f9]">
           <div className="text-center p-8 bg-white rounded-2xl shadow-lg">
             <div className="animate-spin rounded-full h-12 w-12 border-4 border-slate-200 border-t-[#007acc] mx-auto mb-4"></div>
-            <p className="text-slate-600 font-medium">در حال بارگذاری اطلاعات تیم...</p>
+            <p className="text-slate-600 font-medium">باران که می‌بارد، تو در راهی...لاعات تیم...</p>
           </div>
         </div>
       </ProtectedRoute>
@@ -160,7 +160,7 @@ const TeamDetailPage: React.FC = () => {
     );
   }
 
-  const needId = typeof team.need === "string" ? team.need : team.need?._id;
+  const needId = typeof team.need === "string" ? team.need : team.need?._id?.toString();
 
   return (
     <ProtectedRoute>
@@ -321,7 +321,10 @@ const TeamDetailPage: React.FC = () => {
 
                 <div className="space-y-3 max-h-[300px] overflow-y-auto pr-1 custom-scrollbar">
                   {team.members?.slice(0, 10).map((member, index) => {
-                    const userName = typeof member.user === "object" ? member.user.name : "کاربر";
+                    const userName =
+                      typeof member.user === "object" && member.user && "name" in member.user
+                        ? member.user.name
+                        : "کاربر";
                     const isLeaderRole = member.role === "leader" || member.role === "co_leader";
 
                     return (
@@ -348,7 +351,7 @@ const TeamDetailPage: React.FC = () => {
                               : "عضو تیم"}
                           </p>
                         </div>
-                        {member.tasksCompleted > 0 && (
+                        {(member.tasksCompleted ?? 0) > 0 && (
                           <div className="flex flex-col items-center bg-emerald-50 px-2 py-1 rounded border border-emerald-100">
                             <span className="text-[10px] text-emerald-600 font-bold">
                               {member.tasksCompleted}

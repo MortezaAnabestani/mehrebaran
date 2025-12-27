@@ -11,6 +11,6 @@ router.use(protect, restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN));
 
 router.route("/").post(faqController.create).get(faqController.getAllForAdmin);
 
-router.route("/:id").patch(faqController.update).delete(faqController.delete);
+router.route("/:id").get(faqController.getById).patch(faqController.update).delete(faqController.delete);
 
 export default router;

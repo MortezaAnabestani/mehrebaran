@@ -140,7 +140,7 @@ const Comments = () => {
       {loading ? (
         <div className="flex flex-col items-center justify-center py-20 space-y-4">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#007acc]"></div>
-          <p className="text-gray-500 animate-pulse">در حال بارگذاری اطلاعات...</p>
+          <p className="text-gray-500 animate-pulse">باران که می‌بارد، تو در راهی...لاعات...</p>
         </div>
       ) : comments.length === 0 ? (
         <div className="text-center py-20 bg-gray-50 rounded-[8px] border-2 border-dashed border-gray-200">

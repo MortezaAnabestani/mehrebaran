@@ -1,14 +1,12 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
-
-const BASE_URL = import.meta.env.VITE_SERVER_PUBLIC_API_URL;
+import api from "../services/api";
 
 //   1. `POST` ایجاد عکس آپلود سنتر جدید
 export const createImageUploadCenter = createAsyncThunk(
   "imageUploadCenter/create",
   async (formData, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`${BASE_URL}/imageUploadCenter`, formData, {
+      const response = await api.post("/imageUploadCenter", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       return response.data;
@@ -23,7 +21,7 @@ export const deleteImageUploadCenter = createAsyncThunk(
   "imageUploadCenter/delete",
   async (id, { rejectWithValue }) => {
     try {
-      await axios.delete(`${BASE_URL}/imageUploadCenter/${id}`);
+      await api.delete(`/imageUploadCenter/${id}`);
       console.log("حذف شما با موفقیت انجام شد");
       return id;
     } catch (error) {
@@ -37,7 +35,7 @@ export const fetchImageUploadCenter = createAsyncThunk(
   "imageUploadCenter/fetch",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`${BASE_URL}/imageUploadCenter`);
+      const response = await api.get("/imageUploadCenter");
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.error || "بارگیری عکسها انجام نشد!");

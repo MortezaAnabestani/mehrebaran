@@ -7,6 +7,7 @@ import discoveryService from "@/services/discovery.service";
 import type { INeed } from "common-types";
 import type { IUser } from "common-types";
 import { clsx } from "clsx"; // Assuming clsx or similar utility exists, otherwise standard template literals work
+import OptimizedImage from "@/components/ui/OptimizedImage";
 
 // ===========================
 // Types
@@ -91,7 +92,7 @@ const TrendingPage: React.FC = () => {
 
   const renderEmptyState = (message: string) => (
     <div className="flex flex-col items-center justify-center py-24 bg-gray-50 rounded-3xl border border-gray-200 shadow-inner">
-      <span className="text-6xl mb-4 opacity-50">📉</span>
+      <OptimizedImage src="/icons/trend.svg" width={50} height={50} alt="need icon" />
       <p className="text-gray-500 text-lg font-medium">{message}</p>
     </div>
   );
@@ -142,12 +143,7 @@ const TrendingPage: React.FC = () => {
               )}
 
               <div className="h-full transition-transform duration-300 hover:-translate-y-1">
-                <UserCard
-                  user={user}
-                  variant="card"
-                  showFollowButton={true}
-                  onFollowChange={handleUserFollowChange}
-                />
+                <UserCard user={user} variant="card" onFollowChange={handleUserFollowChange} />
               </div>
             </article>
           ))}
@@ -220,7 +216,13 @@ const TrendingPage: React.FC = () => {
                     }
                   `}
                 >
-                  <span>{category === "needs" ? "🔥" : "⭐"}</span>
+                  <span>
+                    {category === "needs" ? (
+                      <OptimizedImage src="/icons/need.svg" width={20} height={20} alt="need icon" />
+                    ) : (
+                      <OptimizedImage src="/icons/star.svg" width={20} height={20} alt="star icon" />
+                    )}
+                  </span>
                   {category === "needs" ? "نیازها" : "کاربران"}
                 </button>
               );

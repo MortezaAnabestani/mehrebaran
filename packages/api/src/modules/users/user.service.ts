@@ -10,6 +10,19 @@ class UserService {
     return UserModel.find().select("-password");
   }
 
+  public async updateUser(id: string, updates: Partial<IUser>): Promise<IUser | null> {
+    // اگر پسورد وجود داشت، هش کن
+    if (updates.password) {
+      const bcrypt = require('bcryptjs');
+      updates.password = await bcrypt.hash(updates.password, 12);
+    }
+
+    return UserModel.findByIdAndUpdate(id, updates, {
+      new: true,
+      runValidators: true,
+    }).select("-password");
+  }
+
   public async deleteUser(id: string): Promise<IUser | null> {
     return UserModel.findByIdAndDelete(id);
   }

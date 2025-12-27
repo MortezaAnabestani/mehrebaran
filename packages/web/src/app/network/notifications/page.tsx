@@ -289,7 +289,7 @@ const NotificationsPage: React.FC = () => {
             {isLoading ? (
               <div className="flex flex-col items-center justify-center py-20 opacity-60">
                 <div className="w-12 h-12 border-4 border-[#007acc] border-t-transparent rounded-full animate-spin mb-4"></div>
-                <p className="text-gray-500 font-medium animate-pulse">در حال دریافت اطلاعات...</p>
+                <p className="text-gray-500 font-medium animate-pulse">باران که می‌بارد، تو در راهی...</p>
               </div>
             ) : notifications.length === 0 ? (
               <div

@@ -179,7 +179,7 @@ const AppRouter = () => {
               <Route path="categories/edit/:id" element={<EditCategory />} />
               <Route path="calendar" element={<CalendarPage />} />
               <Route path="upload-center" element={<UploadImage />} />
-              <Route path="profile/:id" element={<ProfileSettings />} />
+              <Route path="profile" element={<ProfileSettings />} />
               <Route path="report-bug" element={<ReportBug />} />
             </Route>
           </Route>

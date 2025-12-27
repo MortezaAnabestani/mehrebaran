@@ -8,7 +8,7 @@ import StoryViewer from "@/components/stories/StoryViewer";
 import MediaUploader from "@/components/media/MediaUploader";
 import SmartButton from "@/components/ui/SmartButton";
 import storyService, { type CreateStoryData } from "@/services/story.service";
-import type { IStory, IStoryFeedItem } from "@mehrebaran/common-types";
+import type { IStory, IStoryFeedItem } from "common-types";
 
 // ===========================
 // Stories Page Component
@@ -173,8 +173,12 @@ const StoriesPage: React.FC = () => {
           <div className="mt-4 sm:mt-6 md:mt-8 bg-mblue p-3 sm:p-4 md:p-6 text-white rounded-xl sm:rounded-2xl">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 mb-3 sm:mb-4">
               <div>
-                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold mb-1 sm:mb-2 flex items-center gap-2 sm:gap-3">روایت مهر</h1>
-                <p className="text-xs sm:text-sm md:text-base text-gray-100">استوری‌های 24 ساعته از دوستان و همکاران</p>
+                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold mb-1 sm:mb-2 flex items-center gap-2 sm:gap-3">
+                  روایت مهر
+                </h1>
+                <p className="text-xs sm:text-sm md:text-base text-gray-100">
+                  استوری‌های 24 ساعته از دوستان و همکاران
+                </p>
               </div>
 
               <SmartButton onClick={() => setShowCreateModal(true)} variant="morange" size="md">
@@ -188,7 +192,9 @@ const StoriesPage: React.FC = () => {
             <div className="flex items-center justify-center py-12 sm:py-16 md:py-20">
               <div className="flex flex-col items-center gap-2 sm:gap-3">
                 <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 border-3 sm:border-4 border-mblue border-t-transparent rounded-full animate-spin"></div>
-                <p className="text-xs sm:text-sm md:text-base text-gray-500">در حال بارگذاری استوری‌ها...</p>
+                <p className="text-xs sm:text-sm md:text-base text-gray-500">
+                  باران که می‌بارد، تو در راهی...‌ها...
+                </p>
               </div>
             </div>
           ) : (
@@ -220,7 +226,9 @@ const StoriesPage: React.FC = () => {
               {/* Friends Stories */}
               {storyFeed.length > 0 ? (
                 <div>
-                  <h2 className="text-base sm:text-lg font-bold text-gray-900 mb-3 sm:mb-4">استوری‌های دوستان</h2>
+                  <h2 className="text-base sm:text-lg font-bold text-gray-900 mb-3 sm:mb-4">
+                    استوری‌های دوستان
+                  </h2>
                   <div className="flex gap-2 sm:gap-3 md:gap-4 overflow-x-auto pb-3 sm:pb-4">
                     {storyFeed.map((feedItem) => (
                       <StoryCard
@@ -257,7 +265,12 @@ const StoriesPage: React.FC = () => {
                   onClick={() => setShowCreateModal(false)}
                   className="text-gray-400 hover:text-gray-600"
                 >
-                  <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg
+                    className="w-5 h-5 sm:w-6 sm:h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -270,7 +283,9 @@ const StoriesPage: React.FC = () => {
 
               {/* Story Type Selector */}
               <div className="mb-4 sm:mb-5 md:mb-6">
-                <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">نوع استوری:</label>
+                <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">
+                  نوع استوری:
+                </label>
                 <div className="flex gap-1.5 sm:gap-2">
                   {(["image", "video", "text"] as const).map((type) => (
                     <SmartButton
@@ -289,7 +304,9 @@ const StoriesPage: React.FC = () => {
               {storyType === "text" ? (
                 <div className="space-y-3 sm:space-y-4 mb-4 sm:mb-5 md:mb-6">
                   <div>
-                    <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">متن استوری:</label>
+                    <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">
+                      متن استوری:
+                    </label>
                     <textarea
                       value={storyText}
                       onChange={(e) => setStoryText(e.target.value)}
@@ -298,11 +315,15 @@ const StoriesPage: React.FC = () => {
                       rows={4}
                       maxLength={200}
                     />
-                    <p className="text-[10px] sm:text-xs text-gray-500 mt-1">{storyText.length}/200 کاراکتر</p>
+                    <p className="text-[10px] sm:text-xs text-gray-500 mt-1">
+                      {storyText.length}/200 کاراکتر
+                    </p>
                   </div>
 
                   <div>
-                    <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">رنگ پس‌زمینه:</label>
+                    <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">
+                      رنگ پس‌زمینه:
+                    </label>
                     <div className="flex gap-1.5 sm:gap-2 flex-wrap">
                       {backgroundColors.map((color) => (
                         <button
@@ -319,7 +340,9 @@ const StoriesPage: React.FC = () => {
 
                   {/* Preview */}
                   <div>
-                    <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">پیش‌نمایش:</label>
+                    <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">
+                      پیش‌نمایش:
+                    </label>
                     <div
                       className="w-full h-48 sm:h-56 md:h-64 rounded-lg flex items-center justify-center p-4 sm:p-5 md:p-6"
                       style={{
@@ -327,7 +350,9 @@ const StoriesPage: React.FC = () => {
                         color: "#ffffff",
                       }}
                     >
-                      <p className="text-lg sm:text-xl md:text-2xl text-center font-bold">{storyText || "متن استوری شما..."}</p>
+                      <p className="text-lg sm:text-xl md:text-2xl text-center font-bold">
+                        {storyText || "متن استوری شما..."}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -350,7 +375,9 @@ const StoriesPage: React.FC = () => {
 
               {/* Caption */}
               <div className="mb-4 sm:mb-5 md:mb-6">
-                <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">توضیحات (اختیاری):</label>
+                <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">
+                  توضیحات (اختیاری):
+                </label>
                 <input
                   type="text"
                   value={storyCaption}

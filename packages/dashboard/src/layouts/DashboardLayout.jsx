@@ -2,7 +2,8 @@ import { Outlet } from "react-router-dom";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../services/api";
+
 const DashboardLayout = ({ role }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [me, setMe] = useState(null);
@@ -10,16 +11,11 @@ const DashboardLayout = ({ role }) => {
   useEffect(() => {
     async function fetchMe() {
       try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_SERVER_PUBLIC_API_URL_WITHOUT_API}/api/admins/me`,
-          {
-            withCredentials: true,
-          }
-        );
-        setMe(response.data.admin);
+        const response = await api.get("/users/me");
+        setMe(response.data.data);
         return response.data;
       } catch (error) {
-        console.error("خطا در خروج:", error);
+        console.error("خطا در دریافت اطلاعات کاربر:", error);
         throw error;
       }
     }

@@ -4,27 +4,47 @@ import { IHomePageHeroSetting } from "common-types";
 
 export default function HeroSection({ settings }: { settings: IHomePageHeroSetting | null }) {
   const title = settings?.title || "کانون مسئولیت اجتماعی مهر باران";
-  const subtitle = settings?.subtitle || "متن پیش‌فرض توضیحات...";
+  const subtitle = settings?.description || "متن پیش‌فرض توضیحات...";
   const image = settings?.image.desktop || "/images/hero_img.jpg";
 
   return (
-    <section className=" w-full min-h-screen">
-      <div className="w-full relative h-[100vh]">
-        <OptimizedImage src={image} alt={title} fill={true} className=" -translate-y-27" priority="up" />
-        <div className="absolute w-8/10 md:w-4/10 top-35 right-1/10 md:right-5/10 bg-neutral-600/70 text-white text-justify p-4 rounded-2xl">
-          <h1 className="text-center text-sm md:text-[25px] font-extrabold pb-3 border-b-2 border-white">
-            {title}
-          </h1>
-          <p className=" text-[10px]/loose md:text-[16.5px]/loose font-bold my-4">{subtitle}</p>
-          <SmartButton
-            variant="mblue"
-            className="text-xs md:text-base"
-            size="md"
-            asLink={true}
-            href={"/about-us"}
-          >
-            اطلاعات بیش‌تر...
-          </SmartButton>
+    <section className="relative w-full h-screen min-h-[600px] overflow-hidden bg-neutral-900">
+      {/* Background Image with Overlay */}
+      <div className="absolute inset-0 w-full h-full">
+        <OptimizedImage
+          src={image}
+          alt={title}
+          fill={true}
+          className="object-cover object-center"
+          priority="up"
+        />
+        {/* Minimalist Gradient Overlay for Readability */}
+        <div className="absolute inset-0 bg-linear-to-l from-black/30 via-black/60 to-black/80" />
+      </div>
+
+      {/* Content Container */}
+      <div
+        className="relative z-10 md:w-6/10 mx-auto h-full flex flex-col justify-center px-6 md:px-12 "
+        dir="ltr"
+      >
+        <div className="md:w-7/10 h-fit text-center md:text-left space-y-2 p-4 md:p-6 rounded-xl bg-blue-100/30 bg-clip-padding backdrop-filter backdrop-blur-sm border-4 border-blue-400/20">
+          <h1 className="text-2xl font-extrabold text-white leading-tight drop-shadow-sm">{title}</h1>
+
+          <p className="text-sm md:text-lg text-gray-200 font-medium leading-loose opacity-90 text-justify">
+            {subtitle}
+          </p>
+
+          <div>
+            <SmartButton
+              variant="mblue" // Assumed to match #007acc based on branding
+              className="px-6 py-3 text-xs md:text-sm shadow-lg hover:shadow-blue-500/30 transition-shadow duration-300"
+              size="lg"
+              asLink={true}
+              href={"/about-us"}
+            >
+              اطلاعات بیش‌تر
+            </SmartButton>
+          </div>
         </div>
       </div>
     </section>

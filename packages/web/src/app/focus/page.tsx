@@ -176,7 +176,7 @@ const FocusPage: React.FC = () => {
 
         {loading ? (
           <div className="text-center py-20">
-            <div className="text-xl text-gray-600">در حال بارگذاری...</div>
+            <div className="text-xl text-gray-600">باران که می‌بارد، تو در راهی...</div>
           </div>
         ) : focusAreas.length === 0 ? (
           <div className="text-center py-20">

@@ -74,9 +74,9 @@ const AreasOfActivitySection: React.FC = () => {
   };
 
   return (
-    <section ref={sectionRef} className="relative overflow-hidden py-16">
+    <section ref={sectionRef} className="relative overflow-hidden md:py-16">
       {/* افکت پس‌زمینه ساده */}
-      <div className="absolute inset-0 bg-gradient-to-b from-blue-50/50 via-white to-blue-50/30 pointer-events-none" />
+      <div className="absolute inset-0  pointer-events-none" />
 
       {/* عنوان */}
       <motion.div
@@ -95,7 +95,7 @@ const AreasOfActivitySection: React.FC = () => {
         variants={containerVariants}
         initial="hidden"
         animate={isInView ? "visible" : "hidden"}
-        className="relative mb-10 flex flex-row-reverse items-center justify-between flex-wrap w-9/10 mx-auto md:w-full"
+        className="relative mb-10 flex flex-row-reverse items-center justify-between flex-wrap mx-auto w-full"
       >
         {activities.map((activity, index) => {
           const next = activities[index + 1];

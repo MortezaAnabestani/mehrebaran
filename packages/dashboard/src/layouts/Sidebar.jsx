@@ -1177,7 +1177,7 @@ const Sidebar = ({ sidebarOpen, me }) => {
 
               <Link
                 rel="preconnect"
-                to={`/dashboard/profile/${me?._id}`}
+                to="/dashboard/profile"
                 className={`${
                   pathname === "/dashboard/profile" ? "bg-gray-100" : ""
                 } text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 group transition duration-75 flex items-center p-2`}

@@ -2,11 +2,9 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../services/api";
 
 //   1. `POST` ایجاد پرسشاپاسخ جدید
-export const createFaq = createAsyncThunk("faqs/create", async (formData, { rejectWithValue }) => {
+export const createFaq = createAsyncThunk("faqs/create", async (data, { rejectWithValue }) => {
   try {
-    const response = await api.post("/faqs", formData, {
-      headers: { "Content-Type": "application/json" },
-    });
+    const response = await api.post("/faqs", data);
     return response.data;
   } catch (error) {
     return rejectWithValue(error.response?.data?.message || "خطایی در ایجاد پرسشاپاسخ رخ داده است!");
@@ -14,11 +12,9 @@ export const createFaq = createAsyncThunk("faqs/create", async (formData, { reje
 });
 
 //   2. `PATCH` ویرایش پرسشاپاسخ
-export const updateFaq = createAsyncThunk("faqs/update", async ({ id, formData }, { rejectWithValue }) => {
+export const updateFaq = createAsyncThunk("faqs/update", async ({ id, data }, { rejectWithValue }) => {
   try {
-    const response = await api.patch(`/faqs/${id}`, formData, {
-      headers: { "Content-Type": "application/json" },
-    });
+    const response = await api.patch(`/faqs/${id}`, data);
     return response.data;
   } catch (error) {
     return rejectWithValue(error.response?.data?.message || "خطایی در ویرایش پرسشاپاسخ رخ داده است!");

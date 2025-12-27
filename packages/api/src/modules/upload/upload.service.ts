@@ -22,7 +22,7 @@ declare global {
   }
 }
 
-type SupportedSection = "projects" | "articles" | "news" | "stories" | "needs" | "users" | "categories" | "general";
+type SupportedSection = "projects" | "articles" | "news" | "stories" | "needs" | "users" | "categories" | "general" | "bug-reports";
 
 class UploadService {
   private storage: StorageEngine;

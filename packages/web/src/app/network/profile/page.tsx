@@ -49,7 +49,8 @@ const InstagramProfilePage: React.FC = () => {
 
         if (isMounted) {
           const userNeeds = response.data.filter((need) => {
-            const creatorId = typeof need.createdBy === "string" ? need.createdBy : need.createdBy?._id;
+            const creator = need.submittedBy?.user;
+            const creatorId = typeof creator === "string" ? creator : creator?._id;
             return creatorId === user._id;
           });
           setNeeds(userNeeds);
@@ -97,7 +98,9 @@ const InstagramProfilePage: React.FC = () => {
             <div className="relative w-16 h-16 rounded-full bg-[#eef2f6] shadow-[6px_6px_10px_#d1d9e6,-6px_-6px_10px_#ffffff] flex items-center justify-center">
               <div className="w-12 h-12 rounded-full border-4 border-[#eef2f6] border-t-[#007acc] animate-spin shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff]"></div>
             </div>
-            <p className="text-slate-500 font-medium text-sm animate-pulse">در حال دریافت اطلاعات...</p>
+            <p className="text-slate-500 font-medium text-sm animate-pulse">
+              باران که می‌بارد، تو در راهی...
+            </p>
           </div>
         </div>
       </ProtectedRoute>

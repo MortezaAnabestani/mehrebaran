@@ -477,7 +477,7 @@ export default function AnalyticsPage() {
             className="flex items-center gap-2"
           >
             <ArrowTrendingUpIcon className="w-4 h-4" />
-            {loading ? "در حال بارگذاری..." : "به‌روزرسانی"}
+            {loading ? "باران که می‌بارد، تو در راهی..." : "به‌روزرسانی"}
           </Button>
         </div>
       </div>
@@ -500,7 +500,7 @@ export default function AnalyticsPage() {
                 <div className="text-center py-12">
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-700 mx-auto"></div>
                   <Typography variant="small" className="mt-4 text-gray-600">
-                    در حال بارگذاری...
+                    باران که می‌بارد، تو در راهی...
                   </Typography>
                 </div>
               ) : (
@@ -513,7 +513,7 @@ export default function AnalyticsPage() {
                 <div className="text-center py-12">
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-700 mx-auto"></div>
                   <Typography variant="small" className="mt-4 text-gray-600">
-                    در حال بارگذاری...
+                    باران که می‌بارد، تو در راهی...
                   </Typography>
                 </div>
               ) : (
@@ -526,7 +526,7 @@ export default function AnalyticsPage() {
                 <div className="text-center py-12">
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-700 mx-auto"></div>
                   <Typography variant="small" className="mt-4 text-gray-600">
-                    در حال بارگذاری...
+                    باران که می‌بارد، تو در راهی...
                   </Typography>
                 </div>
               ) : (

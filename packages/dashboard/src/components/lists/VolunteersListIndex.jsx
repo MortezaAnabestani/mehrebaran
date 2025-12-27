@@ -6,7 +6,15 @@ import ConfirmDelete from "../createContent/ConfirmDelete";
 import { toPersianDigits } from "../../utils/useConvertNumbersToPersian";
 import { convertToPersianTime } from "../../utils/convertTime";
 
-const VolunteersListIndex = ({ volunteers, loading, currentPage, totalPages, totalItems, onNextPage, onPrevPage }) => {
+const VolunteersListIndex = ({
+  volunteers,
+  loading,
+  currentPage,
+  totalPages,
+  totalItems,
+  onNextPage,
+  onPrevPage,
+}) => {
   const dispatch = useDispatch();
   const [selectedVolunteer, setSelectedVolunteer] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -38,13 +46,19 @@ const VolunteersListIndex = ({ volunteers, loading, currentPage, totalPages, tot
       rejected: { label: "رد شده", class: "bg-red-100 text-red-800" },
     };
     const statusInfo = statusMap[status] || { label: status, class: "bg-gray-100 text-gray-800" };
-    return <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${statusInfo.class}`}>{statusInfo.label}</span>;
+    return (
+      <span
+        className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${statusInfo.class}`}
+      >
+        {statusInfo.label}
+      </span>
+    );
   };
 
   if (loading) {
     return (
       <div className="flex justify-center items-center py-12">
-        <p className="text-gray-600">در حال بارگذاری...</p>
+        <p className="text-gray-600">باران که می‌بارد، تو در راهی...</p>
       </div>
     );
   }
@@ -65,12 +79,18 @@ const VolunteersListIndex = ({ volunteers, loading, currentPage, totalPages, tot
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">نام داوطلب</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                  نام داوطلب
+                </th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">پروژه</th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">مهارت‌ها</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">ساعات موجود</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                  ساعات موجود
+                </th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">وضعیت</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">تاریخ ثبت‌نام</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+                  تاریخ ثبت‌نام
+                </th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">عملیات</th>
               </tr>
             </thead>
@@ -83,9 +103,7 @@ const VolunteersListIndex = ({ volunteers, loading, currentPage, totalPages, tot
                         <div className="text-sm font-medium text-gray-900">
                           {volunteer.volunteer?.name || "-"}
                         </div>
-                        <div className="text-xs text-gray-500">
-                          {volunteer.volunteer?.email || "-"}
-                        </div>
+                        <div className="text-xs text-gray-500">{volunteer.volunteer?.email || "-"}</div>
                       </div>
                     </div>
                   </td>
@@ -132,7 +150,10 @@ const VolunteersListIndex = ({ volunteers, loading, currentPage, totalPages, tot
                           title="مشاهده جزئیات"
                         />
                       </Link>
-                      <button onClick={() => openDeleteModal(volunteer)} className="text-red-600 hover:text-red-900">
+                      <button
+                        onClick={() => openDeleteModal(volunteer)}
+                        className="text-red-600 hover:text-red-900"
+                      >
                         <img
                           className="w-5 h-5"
                           src="/assets/images/dashboard/icons/trash.svg"
@@ -220,16 +241,16 @@ const VolunteersListIndex = ({ volunteers, loading, currentPage, totalPages, tot
           <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
             <div>
               <p className="text-sm text-gray-700">
-                نمایش{" "}
-                <span className="font-medium">{toPersianDigits((currentPage - 1) * 10 + 1)}</span> تا{" "}
-                <span className="font-medium">
-                  {toPersianDigits(Math.min(currentPage * 10, totalItems))}
-                </span>{" "}
+                نمایش <span className="font-medium">{toPersianDigits((currentPage - 1) * 10 + 1)}</span> تا{" "}
+                <span className="font-medium">{toPersianDigits(Math.min(currentPage * 10, totalItems))}</span>{" "}
                 از <span className="font-medium">{toPersianDigits(totalItems)}</span> داوطلب
               </p>
             </div>
             <div>
-              <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+              <nav
+                className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
+                aria-label="Pagination"
+              >
                 <button
                   onClick={onPrevPage}
                   disabled={currentPage === 1}

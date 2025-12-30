@@ -11,7 +11,7 @@ const schema = yup.object().shape({
   title: yup.string().min(5, "عنوان باید حداقل 5 کاراکتر باشد").required("عنوان نیاز اجباری است"),
   description: yup.string().min(20, "توضیحات باید حداقل 20 کاراکتر باشد").required("توضیحات اجباری است"),
   category: yup.string().required("انتخاب دسته‌بندی اجباری است"),
-  user: yup.string().required("انتخاب کاربر اجباری است"),
+  user: yup.string(), // Made optional - can be empty for guest submissions
   status: yup
     .string()
     .oneOf([
@@ -124,38 +124,47 @@ const useNeedForm = (isEdit = false) => {
   useEffect(() => {
     if (isEdit && selectedNeed) {
       console.log('📋 Selected Need Data:', selectedNeed);
-      console.log('👤 User ID:', selectedNeed.submittedBy?.user?._id || selectedNeed.submittedBy?.user);
-      console.log('📁 Category ID:', selectedNeed.category?._id);
-      console.log('📎 Attachments:', selectedNeed.attachments);
+      console.log('👤 submittedBy:', selectedNeed.submittedBy);
+      console.log('📁 Category:', selectedNeed.category);
+      console.log('📍 Location:', selectedNeed.location);
 
-      reset({
+      // این نیاز بدون کاربر (مهمان) ساخته شده - نیاز به انتخاب کاربر دارد
+      const formData = {
         title: selectedNeed.title || "",
         description: selectedNeed.description || "",
-        category: selectedNeed.category?._id || "",
-        user: selectedNeed.submittedBy?.user?._id || selectedNeed.submittedBy?.user || selectedNeed.user?._id || selectedNeed.createdBy?._id || "",
+        category: selectedNeed.category?._id || selectedNeed.category || "",
+        user: selectedNeed.submittedBy?.user?._id || selectedNeed.submittedBy?.user || "",
         status: selectedNeed.status || "draft",
         urgencyLevel: selectedNeed.urgencyLevel || "medium",
         estimatedDuration: selectedNeed.estimatedDuration || "",
-        requiredSkills: selectedNeed.requiredSkills || [],
-        tags: selectedNeed.tags || [],
+        requiredSkills: Array.isArray(selectedNeed.requiredSkills) ? selectedNeed.requiredSkills : [],
+        tags: Array.isArray(selectedNeed.tags) ? selectedNeed.tags : [],
         location: {
           address: selectedNeed.location?.address || "",
           locationName: selectedNeed.location?.locationName || "",
           city: selectedNeed.location?.city || "",
           province: selectedNeed.location?.province || "",
-          coordinates: selectedNeed.location?.coordinates || [],
+          coordinates: Array.isArray(selectedNeed.location?.coordinates) ? selectedNeed.location.coordinates : [],
         },
-      });
+      };
 
+      console.log('📝 Resetting form with:', formData);
+      reset(formData);
+
+      // Set editor content
       if (selectedNeed.description) {
         setEditorContent(selectedNeed.description);
       }
 
-      if (selectedNeed.tags) {
+      // Set tags
+      if (Array.isArray(selectedNeed.tags) && selectedNeed.tags.length > 0) {
+        console.log('🏷️ Setting tags:', selectedNeed.tags);
         setSelectedTags(selectedNeed.tags);
       }
 
-      if (selectedNeed.requiredSkills) {
+      // Set skills
+      if (Array.isArray(selectedNeed.requiredSkills) && selectedNeed.requiredSkills.length > 0) {
+        console.log('🔧 Setting skills:', selectedNeed.requiredSkills);
         setSelectedSkills(selectedNeed.requiredSkills);
       }
     }

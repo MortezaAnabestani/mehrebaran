@@ -1,7 +1,6 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getSettingByKey, updateSettingByKey, clearMessages } from "../../features/settingsSlice";
-import styles from "../../styles/admin.module.css";
 
 const FocusPageHeroSettings = () => {
   const dispatch = useDispatch();
@@ -20,15 +19,15 @@ const FocusPageHeroSettings = () => {
     dockImages: ["", "", "", ""],
   });
 
-  // بارگذاری تنظیمات فعلی
+  // بارگذاری تنظیمات
   useEffect(() => {
     dispatch(getSettingByKey("focusPageHero"));
   }, [dispatch]);
 
-  // پر کردن فرم با داده‌های موجود
+  // پر کردن فرم
   useEffect(() => {
     if (settings.focusPageHero) {
-      const data = {
+      setFormData({
         title: settings.focusPageHero.title || "",
         subtitle: settings.focusPageHero.subtitle || "",
         description: settings.focusPageHero.description || "",
@@ -39,314 +38,309 @@ const FocusPageHeroSettings = () => {
         beneficiariesLabel: settings.focusPageHero.stats?.beneficiaries?.label || "",
         beneficiariesValue: settings.focusPageHero.stats?.beneficiaries?.value || "",
         dockImages: settings.focusPageHero.dockImages || ["", "", "", ""],
-      };
-      setFormData(data);
+      });
     }
   }, [settings.focusPageHero]);
 
-  // پاک کردن پیام‌ها پس از 3 ثانیه
+  // مدیریت پیام‌ها
   useEffect(() => {
     if (successMessage || error) {
-      const timer = setTimeout(() => {
-        dispatch(clearMessages());
-      }, 3000);
+      const timer = setTimeout(() => dispatch(clearMessages()), 3000);
       return () => clearTimeout(timer);
     }
   }, [successMessage, error, dispatch]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleImageChange = (index, value) => {
     const newImages = [...formData.dockImages];
     newImages[index] = value;
-    setFormData((prev) => ({
-      ...prev,
-      dockImages: newImages,
-    }));
+    setFormData((prev) => ({ ...prev, dockImages: newImages }));
   };
 
   const addImageField = () => {
-    setFormData((prev) => ({
-      ...prev,
-      dockImages: [...prev.dockImages, ""],
-    }));
+    setFormData((prev) => ({ ...prev, dockImages: [...prev.dockImages, ""] }));
   };
 
   const removeImageField = (index) => {
     if (formData.dockImages.length > 4) {
       const newImages = formData.dockImages.filter((_, i) => i !== index);
-      setFormData((prev) => ({
-        ...prev,
-        dockImages: newImages,
-      }));
+      setFormData((prev) => ({ ...prev, dockImages: newImages }));
     }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
     const value = {
       title: formData.title,
       subtitle: formData.subtitle,
       description: formData.description,
       stats: {
-        projects: {
-          label: formData.projectsLabel,
-          value: formData.projectsValue,
-        },
-        volunteers: {
-          label: formData.volunteersLabel,
-          value: formData.volunteersValue,
-        },
-        beneficiaries: {
-          label: formData.beneficiariesLabel,
-          value: formData.beneficiariesValue,
-        },
+        projects: { label: formData.projectsLabel, value: formData.projectsValue },
+        volunteers: { label: formData.volunteersLabel, value: formData.volunteersValue },
+        beneficiaries: { label: formData.beneficiariesLabel, value: formData.beneficiariesValue },
       },
       dockImages: formData.dockImages.filter((img) => img.trim() !== ""),
     };
-
     dispatch(updateSettingByKey({ key: "focusPageHero", value }));
   };
 
+  // کامپوننت‌های کمکی برای استایل یکپارچه
+  const Label = ({ children, htmlFor }) => (
+    <label htmlFor={htmlFor} className="block text-[11px] font-medium text-slate-500 mb-1.5">
+      {children}
+    </label>
+  );
+
+  const Input = ({ ...props }) => (
+    <input
+      {...props}
+      className="w-full h-9 px-3 text-[12px] text-slate-700 border border-slate-300 rounded-md focus:outline-none focus:border-[#007acc] focus:ring-1 focus:ring-[#007acc] transition-all placeholder-slate-400"
+    />
+  );
+
+  const SectionHeader = ({ title }) => (
+    <div className="pb-2 mb-4 border-b border-slate-100">
+      <h3 className="text-[12px] font-bold text-slate-800 uppercase tracking-wide flex items-center gap-2">
+        <span className="w-1.5 h-1.5 bg-[#007acc] rounded-full"></span>
+        {title}
+      </h3>
+    </div>
+  );
+
   return (
-    <div>
-      <div className="bg-white rounded-md mb-6">
-        <div className="flex items-center justify-between p-4">
-          <h2 className="text-xl font-medium">تنظیمات Hero Section صفحه حوزه‌های فعالیت</h2>
+    <div className="w-full max-w-6xl mx-auto font-sans">
+      {/* هدر صفحه */}
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="text-lg font-bold text-slate-800">تنظیمات Hero Section</h1>
+          <p className="text-[12px] text-slate-500 mt-1">مدیریت محتوای بخش اصلی صفحه حوزه‌های فعالیت</p>
         </div>
+        {/* دکمه ذخیره اصلی */}
+        <button
+          onClick={handleSubmit}
+          disabled={loading}
+          className={`px-6 py-2 text-[12px] font-medium text-white rounded-md transition-colors ${
+            loading ? "bg-slate-400 cursor-not-allowed" : "bg-[#007acc] hover:bg-[#0062a3]"
+          }`}
+        >
+          {loading ? "در حال پردازش..." : "ذخیره تغییرات"}
+        </button>
       </div>
 
-      {/* پیام‌ها */}
-      {successMessage && (
+      {/* نمایش پیام‌ها */}
+      {(successMessage || error) && (
         <div
-          className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4"
-          role="alert"
+          className={`mb-4 p-3 rounded-md border text-[12px] ${
+            successMessage
+              ? "bg-emerald-50 border-emerald-200 text-emerald-700"
+              : "bg-red-50 border-red-200 text-red-700"
+          }`}
         >
-          <strong className="font-bold ml-1">موفقیت!</strong>
-          <span className="block sm:inline">{successMessage}</span>
+          <span className="font-bold ml-1">{successMessage ? "موفقیت:" : "خطا:"}</span>
+          {successMessage || error}
         </div>
       )}
 
-      {error && (
-        <div
-          className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"
-          role="alert"
-        >
-          <strong className="font-bold ml-1">خطا!</strong>
-          <span className="block sm:inline">{error}</span>
-        </div>
-      )}
-
-      <form onSubmit={handleSubmit}>
-        {/* عنوان اصلی */}
-        <div className={styles.createContent_title}>
-          <label className="text-[12px] mb-0" htmlFor="title">
-            عنوان اصلی
-          </label>
-          <input
-            type="text"
-            id="title"
-            name="title"
-            value={formData.title}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border rounded-md border-gray-300 h-10"
-            required
-          />
-        </div>
-
-        {/* زیرعنوان */}
-        <div className={styles.createContent_title}>
-          <label className="text-[12px] mb-0" htmlFor="subtitle">
-            زیرعنوان
-          </label>
-          <input
-            type="text"
-            id="subtitle"
-            name="subtitle"
-            value={formData.subtitle}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border rounded-md border-gray-300 h-10"
-            required
-          />
-        </div>
-
-        {/* توضیحات */}
-        <div className={`${styles.createContent_title} mb-10`}>
-          <label className="text-[12px] mb-0" htmlFor="description">
-            توضیحات
-          </label>
-          <textarea
-            id="description"
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border rounded-md border-gray-300 focus:border-gray-500 outline-none transition"
-            rows={4}
-            required
-          />
-        </div>
-
-        {/* آمار - پروژه‌ها */}
-        <h3 className="text-lg font-semibold mb-4 mt-8">آمارها</h3>
-        <div className="grid grid-cols-2 gap-4 mb-6">
-          <div className={styles.createContent_title}>
-            <label className="text-[12px] mb-0" htmlFor="projectsLabel">
-              برچسب پروژه‌ها
-            </label>
-            <input
-              type="text"
-              id="projectsLabel"
-              name="projectsLabel"
-              value={formData.projectsLabel}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border rounded-md border-gray-300 h-10"
-              required
-            />
-          </div>
-          <div className={styles.createContent_title}>
-            <label className="text-[12px] mb-0" htmlFor="projectsValue">
-              مقدار پروژه‌ها
-            </label>
-            <input
-              type="text"
-              id="projectsValue"
-              name="projectsValue"
-              value={formData.projectsValue}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border rounded-md border-gray-300 h-10"
-              required
-            />
-          </div>
-        </div>
-
-        {/* آمار - داوطلبان */}
-        <div className="grid grid-cols-2 gap-4 mb-6">
-          <div className={styles.createContent_title}>
-            <label className="text-[12px] mb-0" htmlFor="volunteersLabel">
-              برچسب داوطلبان
-            </label>
-            <input
-              type="text"
-              id="volunteersLabel"
-              name="volunteersLabel"
-              value={formData.volunteersLabel}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border rounded-md border-gray-300 h-10"
-              required
-            />
-          </div>
-          <div className={styles.createContent_title}>
-            <label className="text-[12px] mb-0" htmlFor="volunteersValue">
-              مقدار داوطلبان
-            </label>
-            <input
-              type="text"
-              id="volunteersValue"
-              name="volunteersValue"
-              value={formData.volunteersValue}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border rounded-md border-gray-300 h-10"
-              required
-            />
-          </div>
-        </div>
-
-        {/* آمار - ذینفعان */}
-        <div className="grid grid-cols-2 gap-4 mb-6">
-          <div className={styles.createContent_title}>
-            <label className="text-[12px] mb-0" htmlFor="beneficiariesLabel">
-              برچسب ذینفعان
-            </label>
-            <input
-              type="text"
-              id="beneficiariesLabel"
-              name="beneficiariesLabel"
-              value={formData.beneficiariesLabel}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border rounded-md border-gray-300 h-10"
-              required
-            />
-          </div>
-          <div className={styles.createContent_title}>
-            <label className="text-[12px] mb-0" htmlFor="beneficiariesValue">
-              مقدار ذینفعان
-            </label>
-            <input
-              type="text"
-              id="beneficiariesValue"
-              name="beneficiariesValue"
-              value={formData.beneficiariesValue}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border rounded-md border-gray-300 h-10"
-              required
-            />
-          </div>
-        </div>
-
-        {/* تصاویر AppleWatchDock */}
-        <h3 className="text-lg font-semibold mb-4 mt-8">تصاویر AppleWatchDock</h3>
-        <p className="text-sm text-gray-600 mb-4">حداقل ۴ تصویر برای AppleWatchDock لازم است</p>
-
-        {formData.dockImages.map((image, index) => (
-          <div key={index} className="flex gap-2 mb-4">
-            <div className="flex-1">
-              <input
-                type="url"
-                value={image}
-                onChange={(e) => handleImageChange(index, e.target.value)}
-                className="w-full px-4 py-2 border rounded-md border-gray-300 h-10"
-                placeholder={`URL تصویر ${index + 1}`}
-                required
-              />
-            </div>
-            {formData.dockImages.length > 4 && (
-              <button
-                type="button"
-                onClick={() => removeImageField(index)}
-                className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
-              >
-                حذف
-              </button>
-            )}
-            {image && (
-              <div className="w-12 h-12 border rounded-md overflow-hidden">
-                <img
-                  src={image}
-                  alt={`پیش‌نمایش ${index + 1}`}
-                  className="w-full h-full object-cover"
-                  onError={(e) => (e.target.style.display = "none")}
+      <form onSubmit={handleSubmit} className="grid grid-cols-12 gap-6">
+        {/* ستون چپ: اطلاعات اصلی و آمار */}
+        <div className="col-span-12 lg:col-span-8 space-y-6">
+          {/* پنل اطلاعات عمومی */}
+          <div className="bg-white border border-slate-200 rounded-md p-5">
+            <SectionHeader title="اطلاعات عمومی" />
+            <div className="grid grid-cols-12 gap-4">
+              <div className="col-span-12 md:col-span-6">
+                <Label htmlFor="title">عنوان اصلی</Label>
+                <Input
+                  type="text"
+                  id="title"
+                  name="title"
+                  value={formData.title}
+                  onChange={handleChange}
+                  required
                 />
               </div>
-            )}
+              <div className="col-span-12 md:col-span-6">
+                <Label htmlFor="subtitle">زیرعنوان</Label>
+                <Input
+                  type="text"
+                  id="subtitle"
+                  name="subtitle"
+                  value={formData.subtitle}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div className="col-span-12">
+                <Label htmlFor="description">توضیحات</Label>
+                <textarea
+                  id="description"
+                  name="description"
+                  value={formData.description}
+                  onChange={handleChange}
+                  rows={4}
+                  className="w-full p-3 text-[12px] text-slate-700 border border-slate-300 rounded-md focus:outline-none focus:border-[#007acc] focus:ring-1 focus:ring-[#007acc] transition-all placeholder-slate-400 resize-none"
+                  required
+                />
+              </div>
+            </div>
           </div>
-        ))}
 
-        <button
-          type="button"
-          onClick={addImageField}
-          className="mb-6 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-        >
-          افزودن تصویر
-        </button>
+          {/* پنل آمارها */}
+          <div className="bg-white border border-slate-200 rounded-md p-5">
+            <SectionHeader title="آمار و ارقام (Stats)" />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* آمار پروژه‌ها */}
+              <div className="bg-slate-50 border border-slate-100 rounded-md p-3">
+                <div className="mb-3 pb-2 border-b border-slate-200 text-[11px] font-bold text-slate-600">
+                  پروژه‌ها
+                </div>
+                <div className="space-y-3">
+                  <div>
+                    <Label htmlFor="projectsLabel">برچسب</Label>
+                    <Input
+                      name="projectsLabel"
+                      value={formData.projectsLabel}
+                      onChange={handleChange}
+                      placeholder="مثال: پروژه موفق"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="projectsValue">مقدار</Label>
+                    <Input
+                      name="projectsValue"
+                      value={formData.projectsValue}
+                      onChange={handleChange}
+                      placeholder="مثال: +150"
+                    />
+                  </div>
+                </div>
+              </div>
 
-        {/* دکمه ذخیره */}
-        <div className="mt-10">
-          <button
-            type="submit"
-            disabled={loading}
-            className={`w-full sm:w-auto px-8 py-3 rounded-md text-white font-medium ${
-              loading ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
-            }`}
-          >
-            {loading ? "در حال ذخیره..." : "ذخیره تنظیمات"}
-          </button>
+              {/* آمار داوطلبان */}
+              <div className="bg-slate-50 border border-slate-100 rounded-md p-3">
+                <div className="mb-3 pb-2 border-b border-slate-200 text-[11px] font-bold text-slate-600">
+                  داوطلبان
+                </div>
+                <div className="space-y-3">
+                  <div>
+                    <Label htmlFor="volunteersLabel">برچسب</Label>
+                    <Input name="volunteersLabel" value={formData.volunteersLabel} onChange={handleChange} />
+                  </div>
+                  <div>
+                    <Label htmlFor="volunteersValue">مقدار</Label>
+                    <Input name="volunteersValue" value={formData.volunteersValue} onChange={handleChange} />
+                  </div>
+                </div>
+              </div>
+
+              {/* آمار ذینفعان */}
+              <div className="bg-slate-50 border border-slate-100 rounded-md p-3">
+                <div className="mb-3 pb-2 border-b border-slate-200 text-[11px] font-bold text-slate-600">
+                  ذینفعان
+                </div>
+                <div className="space-y-3">
+                  <div>
+                    <Label htmlFor="beneficiariesLabel">برچسب</Label>
+                    <Input
+                      name="beneficiariesLabel"
+                      value={formData.beneficiariesLabel}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="beneficiariesValue">مقدار</Label>
+                    <Input
+                      name="beneficiariesValue"
+                      value={formData.beneficiariesValue}
+                      onChange={handleChange}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ستون راست: تصاویر */}
+        <div className="col-span-12 lg:col-span-4">
+          <div className="bg-white border border-slate-200 rounded-md p-5 sticky top-4">
+            <div className="flex items-center justify-between mb-4 border-b border-slate-100 pb-2">
+              <h3 className="text-[12px] font-bold text-slate-800 uppercase tracking-wide flex items-center gap-2">
+                <span className="w-1.5 h-1.5 bg-[#007acc] rounded-full"></span>
+                تصاویر Dock
+              </h3>
+              <button
+                type="button"
+                onClick={addImageField}
+                className="text-[10px] bg-slate-100 hover:bg-slate-200 text-slate-600 px-2 py-1 rounded transition-colors"
+              >
+                + افزودن
+              </button>
+            </div>
+
+            <div className="space-y-3 max-h-[500px] overflow-y-auto pr-1 custom-scrollbar">
+              {formData.dockImages.map((image, index) => (
+                <div
+                  key={index}
+                  className="group relative bg-slate-50 border border-slate-200 rounded-md p-2 flex gap-2 items-start"
+                >
+                  <div className="flex-shrink-0 w-10 h-10 bg-slate-200 rounded overflow-hidden border border-slate-300">
+                    {image ? (
+                      <img
+                        src={image}
+                        alt=""
+                        className="w-full h-full object-cover"
+                        onError={(e) => (e.target.style.display = "none")}
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-slate-400 text-[8px]">
+                        Empty
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex-grow min-w-0">
+                    <input
+                      type="url"
+                      value={image}
+                      onChange={(e) => handleImageChange(index, e.target.value)}
+                      className="w-full h-7 px-2 text-[11px] bg-white border border-slate-300 rounded focus:border-[#007acc] focus:outline-none"
+                      placeholder={`URL تصویر ${index + 1}`}
+                    />
+                  </div>
+                  {formData.dockImages.length > 4 && (
+                    <button
+                      type="button"
+                      onClick={() => removeImageField(index)}
+                      className="flex-shrink-0 w-7 h-7 flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors"
+                      title="حذف"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                      </svg>
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+            <div className="mt-4 pt-3 border-t border-slate-100">
+              <p className="text-[10px] text-slate-400 text-center">حداقل ۴ تصویر الزامی است.</p>
+            </div>
+          </div>
         </div>
       </form>
     </div>

@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { fetchProjects, deleteProject } from "../../features/projectsSlice";
-import { Card, Button, Typography, Chip, IconButton, Progress } from "@material-tailwind/react";
 import {
   PlusIcon,
   PencilIcon,
@@ -11,6 +10,7 @@ import {
   CurrencyDollarIcon,
   UsersIcon,
   CalendarIcon,
+  ChartBarIcon,
 } from "@heroicons/react/24/outline";
 import ConfirmDelete from "../../components/createContent/ConfirmDelete";
 
@@ -24,12 +24,10 @@ const Projects = () => {
     projectTitle: "",
   });
 
-  // بارگذاری پروژه‌ها
   useEffect(() => {
     dispatch(fetchProjects());
   }, [dispatch]);
 
-  // حذف پروژه
   const handleDelete = (project) => {
     setDeleteModal({
       isOpen: true,
@@ -47,268 +45,230 @@ const Projects = () => {
     }
   };
 
-  // محاسبه درصد پیشرفت مالی
+  // Helpers
   const getFinancialProgress = (project) => {
     if (!project.targetAmount || project.targetAmount === 0) return 0;
     return Math.min((project.amountRaised / project.targetAmount) * 100, 100);
   };
 
-  // محاسبه درصد پیشرفت داوطلب
   const getVolunteerProgress = (project) => {
     if (!project.targetVolunteer || project.targetVolunteer === 0) return 0;
     return Math.min((project.collectedVolunteer / project.targetVolunteer) * 100, 100);
   };
 
-  // رنگ وضعیت
-  const getStatusColor = (status) => {
-    const statusColors = {
-      draft: "gray",
-      active: "green",
-      completed: "blue",
+  const getStatusStyles = (status) => {
+    const styles = {
+      draft: "bg-slate-100 text-slate-600 border-slate-200",
+      active: "bg-emerald-50 text-emerald-600 border-emerald-200",
+      completed: "bg-blue-50 text-blue-600 border-blue-200",
     };
-    return statusColors[status] || "gray";
+    return styles[status] || "bg-gray-100 text-gray-600 border-gray-200";
   };
 
-  // متن وضعیت
   const getStatusLabel = (status) => {
-    const statusLabels = {
+    const labels = {
       draft: "پیش‌نویس",
       active: "فعال",
-      completed: "تکمیل شده",
+      completed: "تکمیل",
     };
-    return statusLabels[status] || status;
+    return labels[status] || status;
   };
 
-  // فرمت مبلغ
   const formatAmount = (amount) => {
-    return new Intl.NumberFormat("fa-IR").format(amount) + " تومان";
+    return new Intl.NumberFormat("fa-IR").format(amount);
   };
 
-  // فرمت تاریخ
-  const formatDate = (date) => {
-    return new Date(date).toLocaleDateString("fa-IR");
-  };
-
-  // محاسبه روزهای باقی‌مانده
   const getDaysRemaining = (deadline) => {
+    if (!deadline) return "نامشخص";
     const now = new Date();
     const end = new Date(deadline);
     const diff = Math.ceil((end - now) / (1000 * 60 * 60 * 24));
-    if (diff < 0) return "منقضی شده";
+    if (diff < 0) return "منقضی";
     if (diff === 0) return "امروز";
     return `${diff} روز`;
   };
 
   return (
-    <div className="p-6">
-      <Card className="p-6">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <Typography variant="h4" color="blue-gray">
+    <div className="min-h-screen bg-slate-50/50 p-6 font-sans text-slate-800">
+      {/* Header Section */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 border-b border-slate-200 pb-4">
+        <div>
+          <h1 className="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
+            <ChartBarIcon className="w-5 h-5 text-[#007acc]" />
             مدیریت پروژه‌ها
-          </Typography>
-          <Link to="/dashboard/projects/create">
-            <Button color="blue" className="flex items-center gap-2 cursor-pointer">
-              <PlusIcon className="w-5 h-5" />
-              ایجاد پروژه جدید
-            </Button>
-          </Link>
+          </h1>
+          <p className="text-[11px] text-slate-500 mt-1">لیست تمام کمپین‌ها و وضعیت پیشرفت آن‌ها</p>
         </div>
+        <Link to="/dashboard/projects/create">
+          <button className="flex items-center gap-2 bg-[#007acc] hover:bg-[#006bb3] text-white text-xs font-medium px-4 py-2 rounded-md transition-colors shadow-sm">
+            <PlusIcon className="w-4 h-4" />
+            ایجاد پروژه جدید
+          </button>
+        </Link>
+      </div>
 
-        {/* Loading */}
-        {loading ? (
-          <div className="flex justify-center items-center py-10">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-          </div>
-        ) : (
-          <>
-            {/* Projects Grid */}
-            {projects && projects.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {projects.map((project) => (
-                  <Card
-                    key={project._id}
-                    className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow h-full flex flex-col"
-                  >
-                    {/* Featured Image */}
-                    <div className="relative h-48 bg-gray-100">
-                      {project.featuredImage?.desktop ? (
-                        <img
-                          src={`${import.meta.env.VITE_SERVER_PUBLIC_UPLOADS}${
-                            project.featuredImage.desktop
-                          }`}
-                          alt={project.title}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            e.target.src = "/placeholder-project.jpg";
-                          }}
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100">
-                          <Typography variant="h6" color="gray">
-                            بدون تصویر
-                          </Typography>
-                        </div>
-                      )}
-                      <div className="absolute top-2 right-2">
-                        <Chip
-                          value={getStatusLabel(project.status)}
-                          color={getStatusColor(project.status)}
-                          size="sm"
-                          className="shadow-md"
-                        />
+      {/* Content Area */}
+      {loading ? (
+        <div className="grid grid-cols-12 gap-4">
+          {[1, 2, 3].map((i) => (
+            <div
+              key={i}
+              className="col-span-12 md:col-span-6 lg:col-span-4 h-64 bg-slate-100 rounded-md animate-pulse border border-slate-200"
+            ></div>
+          ))}
+        </div>
+      ) : (
+        <>
+          {projects && projects.length > 0 ? (
+            <div className="grid grid-cols-12 gap-4">
+              {projects.map((project) => (
+                <div
+                  key={project._id}
+                  className="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3 bg-white border border-slate-200 rounded-md overflow-hidden hover:border-[#007acc]/50 transition-colors group flex flex-col"
+                >
+                  {/* Card Image & Status */}
+                  <div className="relative h-36 bg-slate-100 border-b border-slate-100">
+                    {project.featuredImage?.desktop ? (
+                      <img
+                        src={`${import.meta.env.VITE_SERVER_PUBLIC_UPLOADS}${project.featuredImage.desktop}`}
+                        alt={project.title}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.target.src = "/placeholder-project.jpg";
+                        }}
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-slate-50">
+                        <span className="text-[10px] text-slate-400">بدون تصویر</span>
                       </div>
+                    )}
+                    <div
+                      className={`absolute top-2 right-2 px-2 py-0.5 rounded text-[10px] font-medium border ${getStatusStyles(
+                        project.status
+                      )}`}
+                    >
+                      {getStatusLabel(project.status)}
+                    </div>
+                  </div>
+
+                  {/* Card Body */}
+                  <div className="p-3 flex-1 flex flex-col gap-3">
+                    {/* Title */}
+                    <div>
+                      <h3 className="text-sm font-semibold text-slate-900 line-clamp-1" title={project.title}>
+                        {project.title}
+                      </h3>
+                      <p className="text-[11px] text-slate-500 mt-0.5 line-clamp-1">
+                        {project.subtitle || "بدون زیرعنوان"}
+                      </p>
                     </div>
 
-                    {/* Content */}
-                    <div className="p-4 space-y-4 flex-1 flex flex-col">
-                      {/* Title */}
-                      <div>
-                        <Typography variant="h6" color="blue-gray" className="mb-1">
-                          {project.title}
-                        </Typography>
-                        {project.subtitle && (
-                          <Typography variant="small" color="gray">
-                            {project.subtitle}
-                          </Typography>
-                        )}
-                      </div>
-
-                      {/* Excerpt */}
-                      {project.excerpt && (
-                        <Typography variant="small" color="gray" className="line-clamp-2">
-                          {project.excerpt}
-                        </Typography>
-                      )}
-
-                      {/* Financial Progress */}
-                      <div>
-                        <div className="flex items-center justify-between mb-1">
-                          <div className="flex items-center gap-1">
-                            <CurrencyDollarIcon className="w-4 h-4 text-green-500" />
-                            <Typography variant="small" color="gray">
-                              پیشرفت مالی
-                            </Typography>
-                          </div>
-                          <Typography variant="small" color="blue-gray" className="font-bold">
+                    {/* Metrics Grid */}
+                    <div className="grid grid-cols-2 gap-2 py-2 border-t border-b border-slate-50">
+                      {/* Financial */}
+                      <div className="space-y-1">
+                        <div className="flex justify-between items-center text-[10px] text-slate-500">
+                          <span className="flex items-center gap-1">
+                            <CurrencyDollarIcon className="w-3 h-3" /> مالی
+                          </span>
+                          <span className="font-mono text-slate-700">
                             {Math.round(getFinancialProgress(project))}%
-                          </Typography>
+                          </span>
                         </div>
-                        <Progress value={getFinancialProgress(project)} color="green" size="sm" />
-                        <div className="flex justify-between mt-1">
-                          <Typography variant="small" color="gray">
-                            {formatAmount(project.amountRaised)}
-                          </Typography>
-                          <Typography variant="small" color="gray">
-                            از {formatAmount(project.targetAmount)}
-                          </Typography>
+                        <div className="h-1 w-full bg-slate-100 rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-emerald-500 rounded-full"
+                            style={{ width: `${getFinancialProgress(project)}%` }}
+                          ></div>
+                        </div>
+                        <div className="flex justify-between text-[10px] text-slate-400 font-mono">
+                          <span>{formatAmount(project.amountRaised)}</span>
+                          <span>/ {formatAmount(project.targetAmount)}</span>
                         </div>
                       </div>
 
-                      {/* Volunteer Progress */}
-                      <div>
-                        <div className="flex items-center justify-between mb-1">
-                          <div className="flex items-center gap-1">
-                            <UsersIcon className="w-4 h-4 text-blue-500" />
-                            <Typography variant="small" color="gray">
-                              پیشرفت داوطلب
-                            </Typography>
-                          </div>
-                          <Typography variant="small" color="blue-gray" className="font-bold">
+                      {/* Volunteer */}
+                      <div className="space-y-1 border-r border-slate-100 pr-2 mr-[-1px]">
+                        <div className="flex justify-between items-center text-[10px] text-slate-500">
+                          <span className="flex items-center gap-1">
+                            <UsersIcon className="w-3 h-3" /> داوطلب
+                          </span>
+                          <span className="font-mono text-slate-700">
                             {Math.round(getVolunteerProgress(project))}%
-                          </Typography>
+                          </span>
                         </div>
-                        <Progress value={getVolunteerProgress(project)} color="blue" size="sm" />
-                        <div className="flex justify-between mt-1">
-                          <Typography variant="small" color="gray">
-                            {project.collectedVolunteer} نفر
-                          </Typography>
-                          <Typography variant="small" color="gray">
-                            از {project.targetVolunteer} نفر
-                          </Typography>
+                        <div className="h-1 w-full bg-slate-100 rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-[#007acc] rounded-full"
+                            style={{ width: `${getVolunteerProgress(project)}%` }}
+                          ></div>
                         </div>
-                      </div>
-
-                      {/* Stats */}
-                      <div className="grid grid-cols-2 gap-2 py-3 border-t border-b">
-                        <div className="flex items-center gap-2">
-                          <EyeIcon className="w-4 h-4 text-gray-500" />
-                          <Typography variant="small" color="gray">
-                            {project.views || 0} بازدید
-                          </Typography>
+                        <div className="flex justify-between text-[10px] text-slate-400 font-mono">
+                          <span>{project.collectedVolunteer}</span>
+                          <span>/ {project.targetVolunteer}</span>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <CalendarIcon className="w-4 h-4 text-gray-500" />
-                          <Typography variant="small" color="gray">
-                            {getDaysRemaining(project.deadline)}
-                          </Typography>
-                        </div>
-                      </div>
-
-                      {/* Actions */}
-                      <div className="flex gap-2 mt-auto pt-4 border-t">
-                        <Link to={`/dashboard/projects/${project._id}`} className="flex-1">
-                          <Button
-                            size="sm"
-                            variant="gradient"
-                            color="blue"
-                            className="w-full flex items-center justify-center gap-2 text-black bg-blue-200 cursor-pointer"
-                          >
-                            <EyeIcon className="w-4 h-4 text-black" />
-                            مشاهده
-                          </Button>
-                        </Link>
-                        <Link to={`/dashboard/projects/edit/${project._id}`}>
-                          <IconButton
-                            size="sm"
-                            variant="gradient"
-                            color="amber"
-                            className="shadow-md hover:shadow-lg bg-amber-500 flex items-center justify-center cursor-pointer"
-                          >
-                            <PencilIcon className="w-5 h-5 translate-x-2.5 text-white" />
-                          </IconButton>
-                        </Link>
-                        <IconButton
-                          size="sm"
-                          variant="gradient"
-                          color="red"
-                          className="shadow-md hover:shadow-lg bg-red-500 flex items-center justify-center cursor-pointer"
-                          onClick={() => handleDelete(project)}
-                        >
-                          <TrashIcon className="w-5 h-5 translate-x-2.5" />
-                        </IconButton>
                       </div>
                     </div>
-                  </Card>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-10">
-                <Typography variant="h6" color="gray">
-                  هنوز پروژه‌ای ایجاد نشده است
-                </Typography>
-                <Typography variant="small" color="gray" className="mb-4">
-                  با ایجاد پروژه، فعالیت‌های خیریه خود را مدیریت کنید
-                </Typography>
-                <Link to="/dashboard/projects/create">
-                  <Button color="blue" className="flex items-center gap-2 mx-auto">
-                    <PlusIcon className="w-5 h-5" />
-                    ایجاد اولین پروژه
-                  </Button>
-                </Link>
-              </div>
-            )}
-          </>
-        )}
-      </Card>
 
-      {/* Delete Confirmation Modal */}
+                    {/* Meta Info */}
+                    <div className="flex items-center justify-between text-[11px] text-slate-500">
+                      <div className="flex items-center gap-1.5 bg-slate-50 px-2 py-1 rounded border border-slate-100">
+                        <EyeIcon className="w-3.5 h-3.5 text-slate-400" />
+                        <span>{project.views || 0}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5 bg-slate-50 px-2 py-1 rounded border border-slate-100">
+                        <CalendarIcon className="w-3.5 h-3.5 text-slate-400" />
+                        <span>{getDaysRemaining(project.deadline)}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Actions Footer */}
+                  <div className="px-3 py-2 bg-slate-50 border-t border-slate-200 flex gap-2">
+                    <Link to={`/dashboard/projects/${project._id}`} className="flex-1">
+                      <button className="w-full flex items-center justify-center gap-1.5 text-[11px] font-medium text-slate-700 bg-white border border-slate-200 hover:border-[#007acc] hover:text-[#007acc] py-1.5 rounded transition-all">
+                        <EyeIcon className="w-3.5 h-3.5" />
+                        مشاهده
+                      </button>
+                    </Link>
+                    <Link to={`/dashboard/projects/edit/${project._id}`}>
+                      <button className="p-1.5 text-slate-600 bg-white border border-slate-200 hover:border-amber-400 hover:text-amber-600 rounded transition-all">
+                        <PencilIcon className="w-4 h-4" />
+                      </button>
+                    </Link>
+                    <button
+                      onClick={() => handleDelete(project)}
+                      className="p-1.5 text-slate-600 bg-white border border-slate-200 hover:border-red-400 hover:text-red-600 rounded transition-all"
+                    >
+                      <TrashIcon className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-20 border-2 border-dashed border-slate-200 rounded-lg bg-slate-50">
+              <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mb-3">
+                <PlusIcon className="w-6 h-6 text-slate-400" />
+              </div>
+              <h3 className="text-sm font-medium text-slate-900">هنوز پروژه‌ای ایجاد نشده است</h3>
+              <p className="text-xs text-slate-500 mt-1 mb-4">برای شروع فعالیت، اولین پروژه خود را بسازید</p>
+              <Link to="/dashboard/projects/create">
+                <button className="bg-[#007acc] text-white text-xs px-4 py-2 rounded-md hover:bg-[#006bb3] transition-colors">
+                  ایجاد اولین پروژه
+                </button>
+              </Link>
+            </div>
+          )}
+        </>
+      )}
+
       <ConfirmDelete
         isOpen={deleteModal.isOpen}
         onClose={() => setDeleteModal({ isOpen: false, projectId: null, projectTitle: "" })}
         onConfirm={confirmDelete}
         title="حذف پروژه"
-        message={`آیا از حذف پروژه "${deleteModal.projectTitle}" اطمینان دارید؟`}
+        message={`آیا از حذف پروژه "${deleteModal.projectTitle}" اطمینان دارید؟ این عملیات غیرقابل بازگشت است.`}
       />
     </div>
   );

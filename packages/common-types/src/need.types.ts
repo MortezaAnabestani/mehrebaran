@@ -128,11 +128,11 @@ export interface IVerificationRequest {
   revisionNotes?: string;
 }
 
-export type TaskStatus = "todo" | "in_progress" | "review" | "completed" | "blocked";
+export type NeedTaskStatus = "todo" | "in_progress" | "review" | "completed" | "blocked";
 
-export type TaskPriority = "low" | "medium" | "high" | "critical";
+export type NeedTaskPriority = "low" | "medium" | "high" | "critical";
 
-export interface ITask {
+export interface INeedTask {
   _id: string;
   title: string;
   description?: string;
@@ -143,8 +143,8 @@ export interface ITask {
   assignedAt?: Date;
 
   // Status & Priority
-  status: TaskStatus;
-  priority: TaskPriority;
+  status: NeedTaskStatus;
+  priority: NeedTaskPriority;
 
   // Timeline
   deadline?: Date;
@@ -264,7 +264,7 @@ export interface INeed {
   pendingVerificationsCount?: number; // تعداد درخواست‌های در انتظار (محاسبه شده)
 
   // Task Management
-  tasks?: ITask[];
+  tasks?: INeedTask[];
   totalTasksCount?: number; // تعداد کل task ها (محاسبه شده)
   completedTasksCount?: number; // تعداد task های تکمیل شده (محاسبه شده)
   tasksProgress?: number; // درصد پیشرفت task ها (محاسبه شده)

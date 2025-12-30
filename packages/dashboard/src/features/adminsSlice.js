@@ -9,7 +9,7 @@ export const createAdmin = createAsyncThunk("admins/create", async (formData, { 
     const response = await api.post(`/admins/create`, formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
-    return response.data;
+    return response.data?.data; // برگرداندن data.data چون پاسخ در فرمت { success, data, message } است
   } catch (error) {
     return rejectWithValue(error.response?.data?.error || "خطایی رخ داده است!");
   }
@@ -20,7 +20,7 @@ export const updateAdmin = createAsyncThunk(
   "admins/update",
   async ({ id, formData }, { rejectWithValue }) => {
     try {
-      const response = await api.patch(`/users/${id}`, formData, {
+      const response = await api.patch(`/admins/${id}`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
@@ -49,7 +49,7 @@ export const deleteAdmin = createAsyncThunk("admins/delete", async (id, { reject
 export const fetchAdmins = createAsyncThunk("admins/fetch", async (_, { rejectWithValue }) => {
   try {
     const response = await api.get(`/admins/all`);
-    return response?.data;
+    return response?.data?.data; // برگرداندن data.data چون پاسخ در فرمت { success, data, message } است
   } catch (error) {
     return rejectWithValue(error.response?.data?.error || "بارگیری ادمین‌ها انجام نشد!");
   }
@@ -58,7 +58,7 @@ export const fetchAdmins = createAsyncThunk("admins/fetch", async (_, { rejectWi
 export const fetchAdminById = createAsyncThunk("admins/fetchById", async (id, { rejectWithValue }) => {
   try {
     const response = await api.get(`/admins/one/${id}`);
-    return response?.data;
+    return response?.data?.data; // برگرداندن data.data چون پاسخ در فرمت { success, data, message } است
   } catch (error) {
     return rejectWithValue(error.response?.data?.error || "بارگیری ادمین انجام نشد!");
   }

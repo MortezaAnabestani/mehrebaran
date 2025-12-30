@@ -4,7 +4,7 @@ import { Card, CardBody, Typography, Button } from "@material-tailwind/react";
 const SiteSettings = () => {
   const settingsCards = [
     {
-      title: "تنظیمات Hero Section صفحه اصلی",
+      title: "تنظیمات عکس بخش اصلی صفحه اول",
       description: "مدیریت تصویر، عنوان و توضیحات بخش اصلی صفحه اول",
       link: "/dashboard/settings/home-hero",
       icon: "/assets/images/dashboard/icons/photo_gallery.svg",
@@ -27,30 +27,59 @@ const SiteSettings = () => {
       link: "/dashboard/settings/completed-projects-page",
       icon: "/assets/images/dashboard/icons/category.svg",
     },
+    {
+      title: "تنظیمات صفحه حوزه‌های فعالیت",
+      description: "مدیریت تصاویر، عنوان و توضیحات صفحه حوزه‌های فعالیت ",
+      link: "/dashboard/settings/focus-page-hero",
+      icon: "/assets/images/dashboard/icons/stage.svg",
+    },
   ];
 
   return (
-    <div className="bg-white rounded-md p-6">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-medium">تنظیمات سایت</h2>
+    // M3 Surface Container: استفاده از رنگ پس‌زمینه ملایم و گوشه‌های گرد بزرگ
+    <div className="bg-[#f8fafd] rounded-[28px] p-6 md:p-8 shadow-sm border border-gray-100">
+      <div className="flex items-center justify-between mb-8">
+        {/* M3 Headline Typography */}
+        <h2 className="text-2xl md:text-3xl font-normal text-[#1a1c1e] tracking-tight">تنظیمات سایت</h2>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {settingsCards.map((setting, index) => (
-          <Card key={index} className="w-full hover:shadow-lg transition-shadow">
-            <CardBody>
-              <div className="flex items-start gap-4">
-                <img src={setting.icon} alt={setting.title} className="w-12 h-12" />
-                <div className="flex-1">
-                  <Typography variant="h5" color="blue-gray" className="mb-2 text-base">
-                    {setting.title}
-                  </Typography>
-                  <Typography className="text-sm text-gray-600 mb-4">{setting.description}</Typography>
-                  <Link to={setting.link}>
-                    <Button size="sm" variant="gradient" color="blue">
-                      مدیریت تنظیمات
-                    </Button>
-                  </Link>
+          <Card
+            key={index}
+            className="w-full bg-white rounded-3xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] border border-transparent hover:border-[#007acc]/20 overflow-hidden"
+          >
+            <CardBody className="p-6">
+              <div className="flex items-start gap-5">
+                {/* Icon Container with Tonal Background */}
+                <div className="flex items-center justify-center w-16 h-16 rounded-2xl bg-[#007acc]/10 shrink-0">
+                  <img src={setting.icon} alt={setting.title} className="w-8 h-8 opacity-90" />
+                </div>
+
+                <div className="flex-1 flex flex-col h-full justify-between">
+                  <div>
+                    <Typography
+                      variant="h5"
+                      className="mb-2 text-lg font-medium text-[#1a1c1e] tracking-normal"
+                    >
+                      {setting.title}
+                    </Typography>
+                    <Typography className="text-sm text-gray-500 mb-5 leading-relaxed font-normal">
+                      {setting.description}
+                    </Typography>
+                  </div>
+
+                  <div className="flex justify-end">
+                    <Link to={setting.link}>
+                      {/* M3 Pill Button: دکمه‌های کاملا گرد */}
+                      <Button
+                        size="sm"
+                        className="rounded-full bg-[#007acc] hover:bg-[#0062a3] shadow-none hover:shadow-md transition-all duration-300 normal-case font-medium px-6 py-2.5"
+                      >
+                        مدیریت تنظیمات
+                      </Button>
+                    </Link>
+                  </div>
                 </div>
               </div>
             </CardBody>

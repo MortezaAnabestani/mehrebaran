@@ -8,9 +8,10 @@ const gallerySchema = new Schema<IGallery>(
     title: { type: String, required: true },
     subtitle: { type: String },
     slug: { type: String, unique: true, index: true },
-    seo: { type: seoSchema, required: true },
-    description: { type: String, required: true },
-    images: { type: [responsiveImageSchema], required: true },
+    seo: { type: seoSchema },
+    description: { type: String },
+    details: { type: String },
+    images: { type: [responsiveImageSchema] },
     photographer: { type: Types.ObjectId, ref: "Author" },
     category: { type: Types.ObjectId, ref: "Category" }, // 👈 الزامی نیست
     tags: [{ type: Types.ObjectId, ref: "Tag" }],

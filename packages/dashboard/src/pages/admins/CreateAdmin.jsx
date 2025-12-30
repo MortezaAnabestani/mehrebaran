@@ -106,9 +106,9 @@ const CreateAdmin = () => {
               >
                 <option value={""}>سطح دسترسی</option>
                 <option value={"admin"}>ادمین (سطح دسترسی محدود)</option>
-                <option value={"manager"}>مدیر (سطح دسترسی نامحدود)</option>
+                <option value={"super_admin"}>مدیر کل (سطح دسترسی نامحدود)</option>
               </select>
-              <p className="text-xs text-red-500">{errors.favoriteTemplate?.message}</p>
+              <p className="text-xs text-red-500">{errors.role?.message}</p>
             </div>
             <div className="flex flex-col gap-y-2">
               <label htmlFor="password" className="block text-xs font-medium text-gray-400">

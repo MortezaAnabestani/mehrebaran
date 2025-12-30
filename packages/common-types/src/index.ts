@@ -27,3 +27,4 @@ export * from "./volunteer.types";
 export * from "./focus-area.types";
 export * from "./bug-report.types";
 export * from "./image-upload-center.types";
+export * from "./task.types";

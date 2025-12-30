@@ -64,7 +64,6 @@ export default function RunningProjectsSection({ projects }: { projects: IProjec
         <HeadTitle title="طرح‌های در حال اجرا" />
 
         <div className="grid grid-cols-12 gap-4 lg:gap-6">
-          {/* ستون کناری: لیست تامب‌نیل‌ها (فقط دسکتاپ) */}
           {/* محتوای اصلی: نمایش پروژه‌ها */}
           <div
             className={`col-span-12 ${projects.length > 2 ? "lg:col-span-9 xl:col-span-10" : ""} grid gap-4`}
@@ -72,7 +71,7 @@ export default function RunningProjectsSection({ projects }: { projects: IProjec
             {displayedProjects.map((project, idx) => (
               <article
                 key={project._id}
-                className="bg-white border border-slate-200 rounded-md overflow-hidden flex flex-col md:flex-row h-auto md:h-64 group"
+                className="bg-white rounded-2xl border border-slate-300 shadow-md hover:scale-101 transition-all overflow-hidden flex flex-col md:flex-row h-auto md:h-64 group"
               >
                 {/* بخش تصویر */}
                 <div className="w-full md:w-64 lg:w-72 shrink-0 relative border-b md:border-b-0 md:border-l border-slate-200 bg-slate-100">
@@ -81,7 +80,7 @@ export default function RunningProjectsSection({ projects }: { projects: IProjec
                       src={process.env.NEXT_PUBLIC_UPLOADS + project.featuredImage.desktop}
                       alt={project.title}
                       fill={true}
-                      className="object-cover transition-transform duration-700 group-hover:scale-105"
+                      className="object-cover transition-transform duration-700 group-hover:scale-103"
                     />
                     {/* Overlay تکنیکال */}
                     <div className="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/5 transition-colors duration-300" />

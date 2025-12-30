@@ -3,6 +3,7 @@ import { UserModel } from "../users/user.model";
 import { StoryModel } from "../stories/story.model";
 import { DonationModel } from "../donations/donation.model";
 import { NeedComment } from "../needs/needComment.model";
+import { CommentModel } from "../comment/comment.model";
 import { FollowModel } from "../social/follow.model";
 import { UserBadgeModel } from "../gamification/userBadge.model";
 
@@ -693,14 +694,14 @@ class AdminService {
     }
 
     const [comments, total] = await Promise.all([
-      NeedComment.find(query)
-        .populate("user", "username fullName email")
-        .populate("target", "title")
+      CommentModel.find(query)
+        .populate("author", "username fullName email avatar")
+        .populate("post")
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)
         .lean(),
-      NeedComment.countDocuments(query),
+      CommentModel.countDocuments(query),
     ]);
 
     return {
@@ -1021,6 +1022,87 @@ class AdminService {
         days,
       },
     };
+  }
+
+  /**
+   * Get all admin users (ADMIN and SUPER_ADMIN roles)
+   * دریافت لیست کاربران ادمین
+   */
+  async getAllAdmins() {
+    const admins = await UserModel.find({
+      role: { $in: ["admin", "super_admin"] },
+    })
+      .select("name email avatar role createdAt lastLogin loginHistory")
+      .sort({ createdAt: -1 })
+      .lean();
+
+    return admins;
+  }
+
+  /**
+   * Get admin by ID
+   * دریافت ادمین بر اساس ID
+   */
+  async getAdminById(id: string) {
+    const admin = await UserModel.findOne({
+      _id: id,
+      role: { $in: ["admin", "super_admin"] },
+    })
+      .select("name email avatar role createdAt lastLogin loginHistory username")
+      .lean();
+
+    return admin;
+  }
+
+  /**
+   * Create new admin
+   * ایجاد ادمین جدید
+   */
+  async createAdmin(data: any) {
+    // Generate unique mobile and nationalId for admin users if not provided
+    // برای کاربران ادمین، اگر موبایل و کد ملی ارسال نشده، مقادیر یکتا تولید می‌کنیم
+    const adminData = {
+      ...data,
+      role: data.role || "admin",
+      mobile: data.mobile || `admin_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      nationalId: data.nationalId || `admin_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+    };
+
+    const admin = await UserModel.create(adminData);
+
+    return admin;
+  }
+
+  /**
+   * Update admin
+   * ویرایش ادمین
+   */
+  async updateAdmin(id: string, data: any) {
+    const admin = await UserModel.findOneAndUpdate(
+      {
+        _id: id,
+        role: { $in: ["admin", "super_admin"] },
+      },
+      data,
+      { new: true }
+    )
+      .select("name email avatar role createdAt lastLogin loginHistory username")
+      .lean();
+
+    return admin;
+  }
+
+  /**
+   * Delete admin
+   * حذف ادمین
+   */
+  async deleteAdmin(id: string) {
+    const admin = await UserModel.findOneAndDelete({
+      _id: id,
+      role: { $in: ["admin", "super_admin"] },
+    }).lean();
+
+    return admin;
   }
 }
 

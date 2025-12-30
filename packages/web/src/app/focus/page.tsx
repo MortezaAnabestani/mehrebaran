@@ -8,7 +8,15 @@ import { getFocusAreas } from "@/services/focus-area.service";
 import { getFocusPageHeroSettings } from "@/services/setting.service";
 import { IFocusArea, IFocusPageHeroSetting } from "common-types";
 
-// Default values fallback
+// --- SWISS NEO CONFIGURATION ---
+const BRAND_COLOR = "#007acc";
+const BG_COLOR = "#F5F5F7"; // Off-white Swiss standard
+
+const SWISS_TRANSITION = {
+  duration: 0.6,
+  ease: "linear", // No bounce, strict digital movement
+};
+
 const DEFAULT_HERO_SETTINGS: IFocusPageHeroSetting = {
   title: "حوزه‌های فعالیت",
   subtitle: "کانون مهرباران",
@@ -49,53 +57,33 @@ const FocusPage: React.FC = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50">
-      {/* Hero Section with AppleWatchDock */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-mblue via-blue-600 to-sky-300">
-        {/* Animated Background */}
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full blur-3xl animate-pulse" />
-          <div className="absolute bottom-0 right-0 w-96 h-96 bg-cyan-300 rounded-full blur-3xl animate-pulse delay-700" />
-        </div>
-
-        <div className="relative container mx-auto px-4 py-16">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-8">
-            {/* AppleWatchDock Section */}
-            <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-              className="w-full md:w-1/2 relative"
-            >
-              <div className="relative border-l-8 border-white/30 rounded-2xl bg-gradient-to-r from-white/10 to-transparent backdrop-blur-sm p-8 shadow-2xl">
-                <div className="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-cyan-400 to-blue-600 rounded-full" />
-                <AppleWatchDock images={heroSettings.dockImages} />
-              </div>
-            </motion.div>
-
-            {/* Content Section */}
-            <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="w-full md:w-1/2 text-white"
-            >
+    <div
+      className={`min-h-screen bg-[${BG_COLOR}] text-slate-900 selection:bg-[#007acc] selection:text-white overflow-x-hidden`}
+    >
+      {/* --- HERO SECTION: Swiss Layout --- */}
+      <section className="relative pt-32 pb-16 px-6 md:px-12 lg:px-24 border-b border-slate-200">
+        <div className="container mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-end">
+            {/* Typography Block */}
+            <div className="lg:col-span-7 flex flex-col gap-8 z-10">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
+                transition={SWISS_TRANSITION}
               >
-                <h1 className="text-5xl md:text-6xl font-black mb-6 leading-tight">
+                <span className="inline-block text-[#007acc] font-bold tracking-[0.2em] text-sm mb-4 uppercase">
+                  {heroSettings.subtitle}
+                </span>
+                <h1 className="text-6xl md:text-8xl lg:text-9xl font-thin tracking-tighter leading-[0.9] text-slate-900">
                   {heroSettings.title}
-                  <span className="block text-cyan-300">{heroSettings.subtitle}</span>
                 </h1>
               </motion.div>
 
               <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6 }}
-                className="text-xl text-blue-100 leading-relaxed mb-8"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ ...SWISS_TRANSITION, delay: 0.2 }}
+                className="text-lg md:text-xl text-slate-500 font-light max-w-2xl leading-relaxed mt-8 pl-8 border-l-2 border-[#007acc]"
               >
                 {heroSettings.description}
               </motion.p>
@@ -103,151 +91,176 @@ const FocusPage: React.FC = () => {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.8 }}
-                className="flex flex-wrap gap-4"
+                transition={{ ...SWISS_TRANSITION, delay: 0.4 }}
+                className="flex flex-wrap gap-6 mt-12"
               >
                 <Link href="/projects">
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="px-8 py-4 bg-white text-mblue font-bold rounded-full shadow-lg hover:shadow-2xl transition-all"
-                  >
-                    مشاهده پروژه‌ها
-                  </motion.button>
+                  <button className="group relative rounded-md px-10 py-4 bg-slate-900 text-white text-sm font-bold tracking-widest overflow-hidden">
+                    <span className="relative z-10  group-hover:text-[#007acc] transition-colors duration-300">
+                      مشاهده پروژه‌ها
+                    </span>
+                    <div className="absolute inset-0 bg-white transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-linear" />
+                  </button>
                 </Link>
                 <Link href="/signup">
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="px-8 py-4 border-2 border-white text-white font-bold rounded-full hover:bg-white hover:text-mblue transition-all"
-                  >
+                  <button className="px-10 py-4 border  rounded-md border-slate-900 text-slate-900 text-sm font-bold tracking-widest hover:bg-[#007acc] hover:border-[#007acc] hover:text-white transition-colors duration-300">
                     عضویت داوطلبان
-                  </motion.button>
+                  </button>
                 </Link>
               </motion.div>
+            </div>
 
-              {/* Stats */}
+            {/* Visual/Dock Block - Strictly Aligned */}
+            <div className="lg:col-span-5 relative rounded-xl">
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1 }}
-                className="grid grid-cols-3 gap-6 mt-12"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={SWISS_TRANSITION}
+                className="relative w-full rounded-xl aspect-square md:aspect-auto md:h-[500px] bg-white border border-slate-200 p-4 shadow-none"
               >
-                {[
-                  heroSettings.stats.projects,
-                  heroSettings.stats.volunteers,
-                  heroSettings.stats.beneficiaries,
-                ].map((stat, i) => (
-                  <div key={i} className="text-center">
-                    <div className="text-3xl font-black text-cyan-300">{stat.value}</div>
-                    <div className="text-sm text-blue-200 mt-1">{stat.label}</div>
+                {/* Abstract decorative element */}
+                <div className="absolute  rounded-xl -top-4 -right-4 w-24 h-24 bg-[#007acc] opacity-10 z-0" />
+
+                <div className="relative z-10 h-full w-full flex items-center justify-center bg-slate-50 overflow-hidden">
+                  {/* Wrapping the dock to fit the strict container */}
+                  <div className="scale-90 transform">
+                    <AppleWatchDock images={heroSettings.dockImages} />
                   </div>
-                ))}
-              </motion.div>
-            </motion.div>
-          </div>
-        </div>
-
-        {/* Wave separator */}
-        <div className="absolute bottom-0 left-0 right-0">
-          <svg viewBox="0 0 1440 120" className="w-full h-auto">
-            <path
-              fill="#f8fafc"
-              d="M0,64L80,69.3C160,75,320,85,480,80C640,75,800,53,960,48C1120,43,1280,53,1360,58.7L1440,64L1440,120L1360,120C1280,120,1120,120,960,120C800,120,640,120,480,120C320,120,160,120,80,120L0,120Z"
-            />
-          </svg>
-        </div>
-      </div>
-
-      {/* Focus Areas Grid */}
-      <div className="container mx-auto px-4 py-20">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-16"
-        >
-          <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-4">حوزه‌های تخصصی فعالیت</h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            ما در حوزه‌های کلیدی با هدف ایجاد تحول پایدار و ارتقای کیفیت زندگی جامعه فعالیت می‌کنیم
-          </p>
-        </motion.div>
-
-        {loading ? (
-          <div className="text-center py-20">
-            <div className="text-xl text-gray-600">باران که می‌بارد، تو در راهی...</div>
-          </div>
-        ) : focusAreas.length === 0 ? (
-          <div className="text-center py-20">
-            <div className="text-xl text-gray-600">هیچ حوزه فعالیتی یافت نشد.</div>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {focusAreas.map((area, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                className="group relative bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden"
-              >
-                <div
-                  className={`absolute inset-0 bg-gradient-to-br ${area.gradient} opacity-0 group-hover:opacity-10 transition-opacity`}
-                />
-
-                <div className="relative p-8">
-                  <div className="text-5xl mb-4">{area.icon}</div>
-                  <h3
-                    className={`text-2xl font-black mb-4 bg-gradient-to-r ${area.gradient} bg-clip-text text-transparent`}
-                  >
-                    {area.title}
-                  </h3>
-                  <p className="text-gray-600 leading-relaxed mb-6">{area.description}</p>
-
-                  <Link href="/projects">
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className={`w-full py-3 px-6 bg-gradient-to-r ${area.gradient} text-white font-semibold rounded-xl shadow-md hover:shadow-xl transition-all`}
-                    >
-                      مشاهده پروژه‌ها
-                    </motion.button>
-                  </Link>
                 </div>
+              </motion.div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* --- STATS STRIP: Minimalist Grid --- */}
+      <section className="border-b border-slate-200 bg-white">
+        <div className="container mx-auto px-6 md:px-24">
+          <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x md:divide-x-reverse divide-slate-200">
+            {[
+              heroSettings.stats.projects,
+              heroSettings.stats.volunteers,
+              heroSettings.stats.beneficiaries,
+            ].map((stat, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ ...SWISS_TRANSITION, delay: i * 0.1 }}
+                className="py-12 px-8 text-center md:text-right group hover:bg-slate-50 transition-colors duration-300"
+              >
+                <div className="text-5xl font-thin text-slate-900 mb-2 group-hover:text-[#007acc] transition-colors">
+                  {stat.value}
+                </div>
+                <div className="text-xs font-bold uppercase tracking-widest text-slate-400">{stat.label}</div>
               </motion.div>
             ))}
           </div>
-        )}
-      </div>
+        </div>
+      </section>
 
-      {/* CTA Section */}
-      <div className="bg-gradient-to-r from-mblue to-sky-400 py-20">
-        <div className="container mx-auto px-4">
+      {/* --- FOCUS AREAS: Brutalist Grid --- */}
+      <section className="py-32 px-6 md:px-12 lg:px-24 bg-[#F5F5F7]">
+        <div className="container mx-auto">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="text-center text-white"
+            transition={SWISS_TRANSITION}
+            className="mb-24 flex flex-col md:flex-row justify-between items-end border-b border-slate-300 pb-8"
           >
-            <h2 className="text-4xl md:text-5xl font-black mb-6">یه‌دَس صدا نداره!</h2>
-            <p className="text-xl text-blue-100 mb-5 max-w-2xl mx-auto">
-              با پیوستن به کانون مهرباران، شما نیز می‌توانید بخشی از این تحول باشید
+            <h2 className="text-5xl md:text-7xl font-thin text-slate-900 max-w-2xl leading-tight">
+              حوزه‌های <br /> <span className="font-bold text-[#007acc]">تخصصی</span>
+            </h2>
+            <p className="text-slate-500 max-w-md mt-6 md:mt-0 text-justify">
+              ما در حوزه‌های کلیدی با هدف ایجاد تحول پایدار و ارتقای کیفیت زندگی جامعه فعالیت می‌کنیم. رویکرد
+              ما مبتنی بر داده و تاثیرگذاری است.
             </p>
-            <Link href="/signup">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="px-12 py-4 bg-white text-mblue font-bold rounded-full shadow-2xl hover:shadow-3xl transition-all text-lg"
-              >
-                همین حالا عضو شوید
-              </motion.button>
-            </Link>
           </motion.div>
+
+          {loading ? (
+            <div className="py-20 text-center font-mono text-sm text-slate-400 animate-pulse">
+              LOADING DATA...
+            </div>
+          ) : focusAreas.length === 0 ? (
+            <div className="py-20 text-center font-mono text-sm text-slate-400">NO DATA AVAILABLE</div>
+          ) : (
+            <div className="grid grid-cols-1 rounded-xl md:grid-cols-2 lg:grid-cols-3 gap-px bg-slate-300 border border-slate-300">
+              {/* Gap-px with bg-slate-300 creates the grid lines effect */}
+              {focusAreas.map((area, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ ...SWISS_TRANSITION, delay: index * 0.1 }}
+                  className="group relative bg-white p-12 h-full rounded-xl flex flex-col justify-between hover:bg-[#007acc] transition-colors duration-300"
+                >
+                  <div>
+                    <div className="text-4xl mb-8 text-slate-300 group-hover:text-white/80 transition-colors">
+                      {/* Assuming icon is a string/emoji, if component render directly */}
+                      {area.icon}
+                    </div>
+                    <h3 className="text-2xl font-bold text-slate-900 mb-4 group-hover:text-white transition-colors">
+                      {area.title}
+                    </h3>
+                    <p className="text-slate-500 text-sm leading-relaxed mb-8 group-hover:text-white/90 transition-colors">
+                      {area.description}
+                    </p>
+                  </div>
+
+                  <Link href="/projects" className="mt-auto">
+                    <div className="flex items-center gap-4 text-slate-900 font-bold text-sm tracking-widest group-hover:text-white transition-colors">
+                      <span>مشاهده</span>
+                      <span className="block w-8 h-[1px] bg-slate-900 group-hover:bg-white transition-colors" />
+                    </div>
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+          )}
         </div>
-      </div>
+      </section>
+
+      {/* --- CTA SECTION: High Contrast --- */}
+      <section className="bg-slate-900 text-white py-32 px-6 md:px-24 relative overflow-hidden">
+        {/* Abstract geometric shape */}
+        <div className="absolute top-0 left-0 w-64 h-full bg-[#007acc] opacity-20 transform -skew-x-12" />
+
+        <div className="container mx-auto relative z-10">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-16">
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={SWISS_TRANSITION}
+              className="max-w-3xl"
+            >
+              <h2 className="text-6xl md:text-8xl font-thin mb-8 leading-none">
+                <span className="font-bold text-[#007acc]">یه‌دَص</span>
+                دا نداره!
+              </h2>
+              <p className="text-slate-400 text-xl font-light max-w-xl">
+                با پیوستن به کانون مهرباران، شما بخشی از یک ساختار مدرن برای تغییر هستید.
+              </p>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={SWISS_TRANSITION}
+            >
+              <Link href="/signup">
+                <button className="w-64 h-64 rounded-full bg-[#007acc] hover:bg-white hover:text-[#007acc] text-white text-2xl font-bold transition-all duration-500 flex items-center justify-center shadow-none border-none">
+                  عضویت
+                </button>
+              </Link>
+            </motion.div>
+          </div>
+        </div>
+      </section>
     </div>
   );
 };

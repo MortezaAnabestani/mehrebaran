@@ -73,7 +73,7 @@ class GalleryService {
   public async update(id: string, data: UpdateGalleryData): Promise<IGallery | null> {
     if (data.images) {
       const currentGallery = await GalleryModel.findById(id).select("images");
-      if (currentGallery) {
+      if (currentGallery && currentGallery.images) {
         const newImageUrls = new Set(data.images.map((img) => img.desktop));
         currentGallery.images.forEach((oldImage) => {
           if (!newImageUrls.has(oldImage.desktop)) {
@@ -89,7 +89,7 @@ class GalleryService {
 
   public async delete(id: string): Promise<void> {
     const galleryToDelete = await GalleryModel.findById(id);
-    if (galleryToDelete) {
+    if (galleryToDelete && galleryToDelete.images) {
       galleryToDelete.images.forEach((image) => this.deleteImageFiles(image));
     }
     await GalleryModel.findByIdAndDelete(id);

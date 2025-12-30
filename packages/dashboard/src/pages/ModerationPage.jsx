@@ -1,75 +1,127 @@
 import { useEffect, useState } from "react";
 import {
-  Card,
-  CardBody,
-  CardHeader,
-  Typography,
-  Tabs,
-  TabsHeader,
-  TabsBody,
-  Tab,
-  TabPanel,
-  Button,
-  Checkbox,
-  Input,
-  Select,
-  Option,
-  Dialog,
-  DialogHeader,
-  DialogBody,
-  DialogFooter,
-  Textarea,
-  Chip,
-} from "@material-tailwind/react";
-import {
-  DocumentTextIcon,
-  ChatBubbleLeftIcon,
-  CurrencyDollarIcon,
   MagnifyingGlassIcon,
   CheckIcon,
   XMarkIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  DocumentTextIcon,
+  ChatBubbleLeftIcon,
+  CurrencyDollarIcon,
+  FunnelIcon,
+  ArrowPathIcon,
 } from "@heroicons/react/24/outline";
 import api from "../services/api";
 
-// Pagination Component
-function Pagination({ currentPage, totalPages, onPageChange }) {
+// --- UI COMPONENTS (Functional Design System) ---
+
+const Badge = ({ children, color = "slate" }) => {
+  const colors = {
+    slate: "bg-slate-100 text-slate-600 border-slate-200",
+    blue: "bg-blue-50 text-blue-600 border-blue-200",
+    green: "bg-emerald-50 text-emerald-600 border-emerald-200",
+    amber: "bg-amber-50 text-amber-600 border-amber-200",
+    red: "bg-rose-50 text-rose-600 border-rose-200",
+  };
   return (
-    <div className="flex items-center justify-center gap-2 mt-4">
+    <span className={`px-2 py-0.5 rounded text-[11px] font-medium border ${colors[color] || colors.slate}`}>
+      {children}
+    </span>
+  );
+};
+
+const Button = ({ children, variant = "primary", size = "md", className = "", ...props }) => {
+  const base =
+    "inline-flex items-center justify-center font-medium transition-colors focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed rounded-md";
+
+  const variants = {
+    primary: "bg-[#007acc] text-white hover:bg-[#0062a3] shadow-sm",
+    secondary: "bg-white text-slate-700 border border-slate-300 hover:bg-slate-50",
+    danger: "bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-100",
+    success: "bg-emerald-50 text-emerald-600 border border-emerald-200 hover:bg-emerald-100",
+    ghost: "text-slate-500 hover:bg-slate-100 hover:text-slate-700",
+  };
+
+  const sizes = {
+    sm: "h-7 px-2 text-[11px]",
+    md: "h-8 px-3 text-[12px]",
+    lg: "h-10 px-4 text-[13px]",
+  };
+
+  return (
+    <button className={`${base} ${variants[variant]} ${sizes[size]} ${className}`} {...props}>
+      {children}
+    </button>
+  );
+};
+
+const Input = ({ icon: Icon, ...props }) => (
+  <div className="relative w-full">
+    {Icon && <Icon className="absolute right-2.5 top-2 h-4 w-4 text-slate-400" />}
+    <input
+      className={`w-full h-8 rounded-md border border-slate-300 bg-white text-[12px] text-slate-900 placeholder:text-slate-400 focus:border-[#007acc] focus:ring-1 focus:ring-[#007acc] transition-all ${
+        Icon ? "pr-9 pl-2" : "px-2"
+      }`}
+      {...props}
+    />
+  </div>
+);
+
+const Select = ({ options, ...props }) => (
+  <div className="relative w-full">
+    <select
+      className="w-full h-8 rounded-md border border-slate-300 bg-white text-[12px] text-slate-900 focus:border-[#007acc] focus:ring-1 focus:ring-[#007acc] px-2 outline-none appearance-none"
+      {...props}
+    >
+      {options.map((opt) => (
+        <option key={opt.value} value={opt.value}>
+          {opt.label}
+        </option>
+      ))}
+    </select>
+    <div className="absolute left-2 top-2.5 pointer-events-none">
+      <svg className="h-3 w-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+      </svg>
+    </div>
+  </div>
+);
+
+const Pagination = ({ currentPage, totalPages, onPageChange }) => (
+  <div className="flex items-center justify-between border-t border-slate-200 pt-3 mt-4">
+    <span className="text-[11px] text-slate-500">
+      صفحه <span className="font-medium text-slate-900">{currentPage}</span> از{" "}
+      <span className="font-medium text-slate-900">{totalPages}</span>
+    </span>
+    <div className="flex gap-1">
       <Button
+        variant="secondary"
         size="sm"
-        variant="outlined"
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
       >
-        قبلی
+        <ChevronRightIcon className="h-3 w-3" />
       </Button>
-      <Typography variant="small" className="text-gray-700">
-        صفحه {currentPage.toLocaleString("fa-IR")} از {totalPages.toLocaleString("fa-IR")}
-      </Typography>
       <Button
+        variant="secondary"
         size="sm"
-        variant="outlined"
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
       >
-        بعدی
+        <ChevronLeftIcon className="h-3 w-3" />
       </Button>
     </div>
-  );
-}
+  </div>
+);
 
-// Needs Moderation Tab
+// --- SUB-PAGES ---
+
 function NeedsModerationTab() {
   const [needs, setNeeds] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedNeeds, setSelectedNeeds] = useState([]);
-  const [filters, setFilters] = useState({
-    status: "",
-    search: "",
-    page: 1,
-    limit: 20,
-  });
-  const [pagination, setPagination] = useState({ total: 0, page: 1, totalPages: 1, limit: 20 });
+  const [filters, setFilters] = useState({ status: "", search: "", page: 1, limit: 20 });
+  const [pagination, setPagination] = useState({ total: 0, page: 1, totalPages: 1 });
   const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
   const [rejectionReason, setRejectionReason] = useState("");
 
@@ -80,14 +132,12 @@ function NeedsModerationTab() {
   const fetchNeeds = async () => {
     setLoading(true);
     try {
-      const params = new URLSearchParams();
-      if (filters.status) params.append("status", filters.status);
-      if (filters.search) params.append("search", filters.search);
-      params.append("page", filters.page.toString());
-      params.append("limit", filters.limit.toString());
-
+      const params = new URLSearchParams({
+        ...filters,
+        page: filters.page.toString(),
+        limit: filters.limit.toString(),
+      });
       const response = await api.get(`/admin/moderation/needs?${params}`);
-
       if (response.data.success) {
         setNeeds(response.data.data);
         setPagination(response.data.pagination);
@@ -100,240 +150,179 @@ function NeedsModerationTab() {
   };
 
   const handleBulkAction = async (status) => {
-    if (selectedNeeds.length === 0) {
-      alert("لطفاً حداقل یک نیاز را انتخاب کنید");
-      return;
-    }
-
+    if (selectedNeeds.length === 0) return;
     if (status === "rejected" && !rejectionReason) {
       setRejectDialogOpen(true);
       return;
     }
-
     try {
       await api.put(`/admin/moderation/needs/bulk-status`, {
         needIds: selectedNeeds,
         status,
         reason: status === "rejected" ? rejectionReason : undefined,
       });
-
       setSelectedNeeds([]);
       setRejectionReason("");
       setRejectDialogOpen(false);
       fetchNeeds();
     } catch (error) {
-      console.error("Error updating needs:", error);
-      alert("خطا در به‌روزرسانی نیازها");
+      alert("خطا در عملیات");
     }
   };
 
-  const toggleNeed = (needId) => {
-    setSelectedNeeds((prev) =>
-      prev.includes(needId) ? prev.filter((id) => id !== needId) : [...prev, needId]
-    );
+  const toggleNeed = (id) => {
+    setSelectedNeeds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
   };
 
   const toggleAll = () => {
-    if (selectedNeeds.length === needs.length) {
-      setSelectedNeeds([]);
-    } else {
-      setSelectedNeeds(needs.map((need) => need._id));
-    }
+    setSelectedNeeds(selectedNeeds.length === needs.length ? [] : needs.map((n) => n._id));
   };
 
-  const statusColors = {
-    pending: "amber",
-    active: "green",
-    rejected: "red",
-    completed: "blue",
-  };
-
-  const statusLabels = {
-    pending: "در انتظار",
-    active: "فعال",
-    rejected: "رد شده",
-    completed: "تکمیل شده",
+  const statusConfig = {
+    pending: { label: "در انتظار", color: "amber" },
+    active: { label: "فعال", color: "green" },
+    rejected: { label: "رد شده", color: "red" },
+    completed: { label: "تکمیل", color: "blue" },
   };
 
   return (
-    <div className="space-y-4">
-      {/* Filters */}
-      <Card>
-        <CardBody className="p-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Select
-              label="فیلتر بر اساس وضعیت"
-              value={filters.status}
-              onChange={(val) => setFilters({ ...filters, status: val || "", page: 1 })}
-            >
-              <Option value="">همه</Option>
-              <Option value="pending">در انتظار</Option>
-              <Option value="active">فعال</Option>
-              <Option value="rejected">رد شده</Option>
-            </Select>
+    <div className="space-y-3">
+      {/* Toolbar */}
+      <div className="flex flex-col md:flex-row gap-2 bg-slate-50 p-3 rounded-md border border-slate-200">
+        <div className="w-full md:w-48">
+          <Select
+            value={filters.status}
+            onChange={(e) => setFilters({ ...filters, status: e.target.value, page: 1 })}
+            options={[
+              { value: "", label: "همه وضعیت‌ها" },
+              { value: "pending", label: "در انتظار" },
+              { value: "active", label: "فعال" },
+              { value: "rejected", label: "رد شده" },
+            ]}
+          />
+        </div>
+        <div className="w-full md:w-64">
+          <Input
+            icon={MagnifyingGlassIcon}
+            placeholder="جستجو در عنوان..."
+            value={filters.search}
+            onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+          />
+        </div>
+        <div className="flex-1 flex justify-end gap-2">
+          <Button variant="secondary" onClick={fetchNeeds} disabled={loading}>
+            <ArrowPathIcon className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+          </Button>
+          {selectedNeeds.length > 0 && (
+            <>
+              <Button variant="success" onClick={() => handleBulkAction("active")}>
+                <CheckIcon className="h-4 w-4 ml-1" /> تایید ({selectedNeeds.length})
+              </Button>
+              <Button variant="danger" onClick={() => handleBulkAction("rejected")}>
+                <XMarkIcon className="h-4 w-4 ml-1" /> رد ({selectedNeeds.length})
+              </Button>
+            </>
+          )}
+        </div>
+      </div>
 
-            <div className="relative">
-              <Input
-                label="جستجو"
-                value={filters.search}
-                onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-                icon={<MagnifyingGlassIcon className="h-5 w-5" />}
-              />
-            </div>
-
-            <Button onClick={fetchNeeds} size="sm" className="flex items-center gap-2" disabled={loading}>
-              {loading ? "باران که می‌بارد، تو در راهی..." : "اعمال فیلتر"}
-            </Button>
-          </div>
-        </CardBody>
-      </Card>
-
-      {/* Bulk Actions */}
-      {selectedNeeds.length > 0 && (
-        <Card className="bg-blue-50">
-          <CardBody className="p-4">
-            <div className="flex items-center gap-4">
-              <Typography variant="small" className="font-semibold">
-                {selectedNeeds.length.toLocaleString("fa-IR")} نیاز انتخاب شده
-              </Typography>
-              <div className="flex gap-2">
-                <Button
-                  size="sm"
-                  color="green"
-                  onClick={() => handleBulkAction("active")}
-                  className="flex items-center gap-1"
-                >
-                  <CheckIcon className="h-4 w-4" />
-                  تایید
-                </Button>
-                <Button
-                  size="sm"
-                  color="red"
-                  onClick={() => handleBulkAction("rejected")}
-                  className="flex items-center gap-1"
-                >
-                  <XMarkIcon className="h-4 w-4" />
-                  رد
-                </Button>
-              </div>
-            </div>
-          </CardBody>
-        </Card>
-      )}
-
-      {/* Needs List */}
-      <Card>
-        <CardBody className="p-0">
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b">
-              <tr>
-                <th className="p-4 text-right">
-                  <Checkbox checked={selectedNeeds.length === needs.length} onChange={toggleAll} />
-                </th>
-                <th className="p-4 text-right text-sm font-semibold">عنوان</th>
-                <th className="p-4 text-right text-sm font-semibold">ایجادکننده</th>
-                <th className="p-4 text-right text-sm font-semibold">دسته‌بندی</th>
-                <th className="p-4 text-right text-sm font-semibold">وضعیت</th>
-                <th className="p-4 text-right text-sm font-semibold">تاریخ</th>
-              </tr>
-            </thead>
-            <tbody>
-              {needs.length > 0 ? (
-                needs.map((need) => (
-                  <tr key={need._id} className="border-b hover:bg-gray-50">
-                    <td className="p-4">
-                      <Checkbox
-                        checked={selectedNeeds.includes(need._id)}
-                        onChange={() => toggleNeed(need._id)}
-                      />
-                    </td>
-                    <td className="p-4">
-                      <Typography variant="small" className="font-medium">
-                        {need.title}
-                      </Typography>
-                    </td>
-                    <td className="p-4">
-                      <Typography variant="small" className="text-gray-600">
-                        {need.createdBy?.fullName || need.createdBy?.username || "ناشناس"}
-                      </Typography>
-                    </td>
-                    <td className="p-4">
-                      <Typography variant="small" className="text-gray-600">
-                        {need.category?.name || "-"}
-                      </Typography>
-                    </td>
-                    <td className="p-4">
-                      <Chip
-                        value={statusLabels[need.status] || need.status}
-                        color={statusColors[need.status] || "gray"}
-                        size="sm"
-                      />
-                    </td>
-                    <td className="p-4">
-                      <Typography variant="small" className="text-gray-600">
-                        {new Date(need.createdAt).toLocaleDateString("fa-IR")}
-                      </Typography>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={6} className="p-8 text-center">
-                    <Typography variant="small" className="text-gray-500">
-                      {loading ? "باران که می‌بارد، تو در راهی..." : "نیازی یافت نشد"}
-                    </Typography>
+      {/* Table */}
+      <div className="border border-slate-200 rounded-md overflow-hidden bg-white">
+        <table className="w-full text-right border-collapse">
+          <thead className="bg-slate-50 border-b border-slate-200">
+            <tr>
+              <th className="p-3 w-10">
+                <input
+                  type="checkbox"
+                  className="rounded border-slate-300"
+                  checked={selectedNeeds.length === needs.length && needs.length > 0}
+                  onChange={toggleAll}
+                />
+              </th>
+              <th className="p-3 text-[11px] font-semibold text-slate-500">عنوان نیاز</th>
+              <th className="p-3 text-[11px] font-semibold text-slate-500">کاربر</th>
+              <th className="p-3 text-[11px] font-semibold text-slate-500">دسته‌بندی</th>
+              <th className="p-3 text-[11px] font-semibold text-slate-500">وضعیت</th>
+              <th className="p-3 text-[11px] font-semibold text-slate-500">تاریخ</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100">
+            {needs.length > 0 ? (
+              needs.map((need) => (
+                <tr key={need._id} className="hover:bg-slate-50 transition-colors">
+                  <td className="p-3">
+                    <input
+                      type="checkbox"
+                      className="rounded border-slate-300"
+                      checked={selectedNeeds.includes(need._id)}
+                      onChange={() => toggleNeed(need._id)}
+                    />
+                  </td>
+                  <td className="p-3 text-[12px] font-medium text-slate-800">{need.title}</td>
+                  <td className="p-3 text-[12px] text-slate-600">{need.createdBy?.fullName || "ناشناس"}</td>
+                  <td className="p-3 text-[12px] text-slate-500 font-mono">{need.category?.name || "-"}</td>
+                  <td className="p-3">
+                    <Badge color={statusConfig[need.status]?.color}>
+                      {statusConfig[need.status]?.label || need.status}
+                    </Badge>
+                  </td>
+                  <td className="p-3 text-[11px] text-slate-400 font-mono">
+                    {new Date(need.createdAt).toLocaleDateString("fa-IR")}
                   </td>
                 </tr>
-              )}
-            </tbody>
-          </table>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={6} className="p-8 text-center text-[12px] text-slate-500">
+                  داده‌ای یافت نشد
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+        {pagination.totalPages > 1 && (
+          <div className="px-3 pb-3">
+            <Pagination
+              currentPage={pagination.page}
+              totalPages={pagination.totalPages}
+              onPageChange={(p) => setFilters({ ...filters, page: p })}
+            />
+          </div>
+        )}
+      </div>
 
-          {pagination.totalPages > 1 && (
-            <div className="p-4">
-              <Pagination
-                currentPage={pagination.page}
-                totalPages={pagination.totalPages}
-                onPageChange={(page) => setFilters({ ...filters, page })}
-              />
+      {/* Reject Dialog (Simple Modal) */}
+      {rejectDialogOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm">
+          <div className="bg-white rounded-lg shadow-lg border border-slate-200 w-full max-w-md p-4 space-y-4">
+            <h3 className="text-sm font-bold text-slate-800">دلیل رد درخواست</h3>
+            <textarea
+              className="w-full p-2 text-[12px] border border-slate-300 rounded-md focus:border-[#007acc] outline-none"
+              rows={4}
+              placeholder="توضیحات..."
+              value={rejectionReason}
+              onChange={(e) => setRejectionReason(e.target.value)}
+            />
+            <div className="flex justify-end gap-2">
+              <Button variant="secondary" onClick={() => setRejectDialogOpen(false)}>
+                انصراف
+              </Button>
+              <Button variant="danger" onClick={() => handleBulkAction("rejected")}>
+                تایید رد
+              </Button>
             </div>
-          )}
-        </CardBody>
-      </Card>
-
-      {/* Reject Dialog */}
-      <Dialog open={rejectDialogOpen} handler={() => setRejectDialogOpen(false)}>
-        <DialogHeader>دلیل رد نیاز</DialogHeader>
-        <DialogBody>
-          <Textarea
-            label="دلیل رد را وارد کنید"
-            value={rejectionReason}
-            onChange={(e) => setRejectionReason(e.target.value)}
-            rows={4}
-          />
-        </DialogBody>
-        <DialogFooter className="gap-2">
-          <Button variant="outlined" onClick={() => setRejectDialogOpen(false)}>
-            انصراف
-          </Button>
-          <Button color="red" onClick={() => handleBulkAction("rejected")}>
-            رد نیاز
-          </Button>
-        </DialogFooter>
-      </Dialog>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
-// Comments Moderation Tab
 function CommentsModerationTab() {
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [filters, setFilters] = useState({
-    search: "",
-    page: 1,
-    limit: 20,
-  });
-  const [pagination, setPagination] = useState({ total: 0, page: 1, totalPages: 1, limit: 20 });
+  const [filters, setFilters] = useState({ search: "", page: 1, limit: 20 });
+  const [pagination, setPagination] = useState({ total: 0, page: 1, totalPages: 1 });
 
   useEffect(() => {
     fetchComments();
@@ -342,124 +331,88 @@ function CommentsModerationTab() {
   const fetchComments = async () => {
     setLoading(true);
     try {
-      const params = new URLSearchParams();
-      if (filters.search) params.append("search", filters.search);
-      params.append("page", filters.page.toString());
-      params.append("limit", filters.limit.toString());
-
+      const params = new URLSearchParams({
+        ...filters,
+        page: filters.page.toString(),
+        limit: filters.limit.toString(),
+      });
       const response = await api.get(`/admin/moderation/comments?${params}`);
-
       if (response.data.success) {
         setComments(response.data.data);
         setPagination(response.data.pagination);
       }
     } catch (error) {
-      console.error("Error fetching comments:", error);
+      console.error(error);
     } finally {
       setLoading(false);
     }
   };
 
-  // NOTE: Bulk approval disabled - NeedComment model does not have isApproved field
-
   return (
-    <div className="space-y-4">
-      {/* Filters */}
-      <Card>
-        <CardBody className="p-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="relative">
-              <Input
-                label="جستجو"
-                value={filters.search}
-                onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-                icon={<MagnifyingGlassIcon className="h-5 w-5" />}
-              />
-            </div>
+    <div className="space-y-3">
+      <div className="flex gap-2 bg-slate-50 p-3 rounded-md border border-slate-200">
+        <div className="w-full md:w-64">
+          <Input
+            icon={MagnifyingGlassIcon}
+            placeholder="جستجو در نظرات..."
+            value={filters.search}
+            onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+          />
+        </div>
+        <Button variant="secondary" onClick={fetchComments} disabled={loading}>
+          <ArrowPathIcon className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+        </Button>
+      </div>
 
-            <Button onClick={fetchComments} size="sm" className="flex items-center gap-2" disabled={loading}>
-              {loading ? "باران که می‌بارد، تو در راهی..." : "اعمال فیلتر"}
-            </Button>
-          </div>
-        </CardBody>
-      </Card>
-
-      {/* Comments List */}
-      <Card>
-        <CardBody className="p-0">
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b">
-              <tr>
-                <th className="p-4 text-right text-sm font-semibold">محتوا</th>
-                <th className="p-4 text-right text-sm font-semibold">کاربر</th>
-                <th className="p-4 text-right text-sm font-semibold">هدف</th>
-                <th className="p-4 text-right text-sm font-semibold">تاریخ</th>
+      <div className="border border-slate-200 rounded-md overflow-hidden bg-white">
+        <table className="w-full text-right border-collapse">
+          <thead className="bg-slate-50 border-b border-slate-200">
+            <tr>
+              <th className="p-3 text-[11px] font-semibold text-slate-500 w-1/2">محتوا</th>
+              <th className="p-3 text-[11px] font-semibold text-slate-500">کاربر</th>
+              <th className="p-3 text-[11px] font-semibold text-slate-500">هدف</th>
+              <th className="p-3 text-[11px] font-semibold text-slate-500">تاریخ</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100">
+            {comments.map((comment) => (
+              <tr key={comment._id} className="hover:bg-slate-50">
+                <td className="p-3 text-[12px] text-slate-700 leading-relaxed">{comment.content}</td>
+                <td className="p-3 text-[12px] text-slate-600">{comment.user?.fullName || "ناشناس"}</td>
+                <td className="p-3 text-[12px] text-slate-500">{comment.target?.title || "-"}</td>
+                <td className="p-3 text-[11px] text-slate-400 font-mono">
+                  {new Date(comment.createdAt).toLocaleDateString("fa-IR")}
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {comments.length > 0 ? (
-                comments.map((comment) => (
-                  <tr key={comment._id} className="border-b hover:bg-gray-50">
-                    <td className="p-4 max-w-md">
-                      <Typography variant="small" className="line-clamp-2">
-                        {comment.content}
-                      </Typography>
-                    </td>
-                    <td className="p-4">
-                      <Typography variant="small" className="text-gray-600">
-                        {comment.user?.fullName || comment.user?.username || "ناشناس"}
-                      </Typography>
-                    </td>
-                    <td className="p-4">
-                      <Typography variant="small" className="text-gray-600">
-                        {comment.target?.title || "-"}
-                      </Typography>
-                    </td>
-                    <td className="p-4">
-                      <Typography variant="small" className="text-gray-600">
-                        {new Date(comment.createdAt).toLocaleDateString("fa-IR")}
-                      </Typography>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={4} className="p-8 text-center">
-                    <Typography variant="small" className="text-gray-500">
-                      {loading ? "باران که می‌بارد، تو در راهی..." : "نظری یافت نشد"}
-                    </Typography>
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-
-          {pagination.totalPages > 1 && (
-            <div className="p-4">
-              <Pagination
-                currentPage={pagination.page}
-                totalPages={pagination.totalPages}
-                onPageChange={(page) => setFilters({ ...filters, page })}
-              />
-            </div>
-          )}
-        </CardBody>
-      </Card>
+            ))}
+            {comments.length === 0 && (
+              <tr>
+                <td colSpan={4} className="p-8 text-center text-[12px] text-slate-500">
+                  نظری یافت نشد
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+        {pagination.totalPages > 1 && (
+          <div className="px-3 pb-3">
+            <Pagination
+              currentPage={pagination.page}
+              totalPages={pagination.totalPages}
+              onPageChange={(p) => setFilters({ ...filters, page: p })}
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 }
 
-// Donations Moderation Tab
 function DonationsModerationTab() {
   const [donations, setDonations] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [filters, setFilters] = useState({
-    status: "",
-    search: "",
-    page: 1,
-    limit: 20,
-  });
-  const [pagination, setPagination] = useState({ total: 0, page: 1, totalPages: 1, limit: 20 });
+  const [filters, setFilters] = useState({ status: "", search: "", page: 1, limit: 20 });
+  const [pagination, setPagination] = useState({ total: 0, page: 1, totalPages: 1 });
 
   useEffect(() => {
     fetchDonations();
@@ -468,223 +421,201 @@ function DonationsModerationTab() {
   const fetchDonations = async () => {
     setLoading(true);
     try {
-      const params = new URLSearchParams();
-      if (filters.status) params.append("status", filters.status);
-      if (filters.search) params.append("search", filters.search);
-      params.append("page", filters.page.toString());
-      params.append("limit", filters.limit.toString());
-
+      const params = new URLSearchParams({
+        ...filters,
+        page: filters.page.toString(),
+        limit: filters.limit.toString(),
+      });
       const response = await api.get(`/admin/moderation/donations?${params}`);
-
       if (response.data.success) {
         setDonations(response.data.data);
         setPagination(response.data.pagination);
       }
     } catch (error) {
-      console.error("Error fetching donations:", error);
+      console.error(error);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleUpdateStatus = async (donationId, status) => {
+  const handleUpdateStatus = async (id, status) => {
     try {
-      await api.put(`/admin/moderation/donations/${donationId}/status`, { status });
-
+      await api.put(`/admin/moderation/donations/${id}/status`, { status });
       fetchDonations();
     } catch (error) {
-      console.error("Error updating donation:", error);
-      alert("خطا در به‌روزرسانی کمک");
+      alert("خطا در بروزرسانی");
     }
   };
 
-  const statusColors = {
-    pending: "amber",
-    completed: "green",
-    failed: "red",
-  };
-
-  const statusLabels = {
-    pending: "در انتظار",
-    completed: "تکمیل شده",
-    failed: "ناموفق",
+  const statusConfig = {
+    pending: { label: "در انتظار", color: "amber" },
+    completed: { label: "تکمیل شده", color: "green" },
+    failed: { label: "ناموفق", color: "red" },
   };
 
   return (
-    <div className="space-y-4">
-      {/* Filters */}
-      <Card>
-        <CardBody className="p-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Select
-              label="فیلتر بر اساس وضعیت"
-              value={filters.status}
-              onChange={(val) => setFilters({ ...filters, status: val || "", page: 1 })}
-            >
-              <Option value="">همه</Option>
-              <Option value="pending">در انتظار</Option>
-              <Option value="completed">تکمیل شده</Option>
-              <Option value="failed">ناموفق</Option>
-            </Select>
+    <div className="space-y-3">
+      <div className="flex flex-col md:flex-row gap-2 bg-slate-50 p-3 rounded-md border border-slate-200">
+        <div className="w-full md:w-48">
+          <Select
+            value={filters.status}
+            onChange={(e) => setFilters({ ...filters, status: e.target.value, page: 1 })}
+            options={[
+              { value: "", label: "همه وضعیت‌ها" },
+              { value: "pending", label: "در انتظار" },
+              { value: "completed", label: "تکمیل شده" },
+              { value: "failed", label: "ناموفق" },
+            ]}
+          />
+        </div>
+        <div className="w-full md:w-64">
+          <Input
+            icon={MagnifyingGlassIcon}
+            placeholder="جستجو..."
+            value={filters.search}
+            onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+          />
+        </div>
+        <div className="flex-1 flex justify-end">
+          <Button variant="secondary" onClick={fetchDonations} disabled={loading}>
+            <ArrowPathIcon className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+          </Button>
+        </div>
+      </div>
 
-            <div className="relative">
-              <Input
-                label="جستجو"
-                value={filters.search}
-                onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-                icon={<MagnifyingGlassIcon className="h-5 w-5" />}
-              />
-            </div>
-
-            <Button onClick={fetchDonations} size="sm" className="flex items-center gap-2" disabled={loading}>
-              {loading ? "باران که می‌بارد، تو در راهی..." : "اعمال فیلتر"}
-            </Button>
-          </div>
-        </CardBody>
-      </Card>
-
-      {/* Donations List */}
-      <Card>
-        <CardBody className="p-0">
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b">
-              <tr>
-                <th className="p-4 text-right text-sm font-semibold">مبلغ</th>
-                <th className="p-4 text-right text-sm font-semibold">کمک‌کننده</th>
-                <th className="p-4 text-right text-sm font-semibold">نیاز</th>
-                <th className="p-4 text-right text-sm font-semibold">وضعیت</th>
-                <th className="p-4 text-right text-sm font-semibold">تاریخ</th>
-                <th className="p-4 text-right text-sm font-semibold">عملیات</th>
-              </tr>
-            </thead>
-            <tbody>
-              {donations.length > 0 ? (
-                donations.map((donation) => (
-                  <tr key={donation._id} className="border-b hover:bg-gray-50">
-                    <td className="p-4">
-                      <Typography variant="small" className="font-semibold">
-                        {donation.amount?.toLocaleString("fa-IR")} تومان
-                      </Typography>
-                    </td>
-                    <td className="p-4">
-                      <Typography variant="small" className="text-gray-600">
-                        {donation.donor?.fullName || donation.donor?.username || "ناشناس"}
-                      </Typography>
-                    </td>
-                    <td className="p-4">
-                      <Typography variant="small" className="text-gray-600">
-                        {donation.need?.title || "-"}
-                      </Typography>
-                    </td>
-                    <td className="p-4">
-                      <Chip
-                        value={statusLabels[donation.status] || donation.status}
-                        color={statusColors[donation.status] || "gray"}
+      <div className="border border-slate-200 rounded-md overflow-hidden bg-white">
+        <table className="w-full text-right border-collapse">
+          <thead className="bg-slate-50 border-b border-slate-200">
+            <tr>
+              <th className="p-3 text-[11px] font-semibold text-slate-500">مبلغ</th>
+              <th className="p-3 text-[11px] font-semibold text-slate-500">کمک‌کننده</th>
+              <th className="p-3 text-[11px] font-semibold text-slate-500">نیاز</th>
+              <th className="p-3 text-[11px] font-semibold text-slate-500">وضعیت</th>
+              <th className="p-3 text-[11px] font-semibold text-slate-500">تاریخ</th>
+              <th className="p-3 text-[11px] font-semibold text-slate-500">عملیات</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100">
+            {donations.map((donation) => (
+              <tr key={donation._id} className="hover:bg-slate-50">
+                <td className="p-3 text-[12px] font-mono font-medium text-slate-800">
+                  {donation.amount?.toLocaleString("fa-IR")}{" "}
+                  <span className="text-[10px] text-slate-500">تومان</span>
+                </td>
+                <td className="p-3 text-[12px] text-slate-600">{donation.donor?.fullName || "ناشناس"}</td>
+                <td className="p-3 text-[12px] text-slate-500">{donation.need?.title || "-"}</td>
+                <td className="p-3">
+                  <Badge color={statusConfig[donation.status]?.color}>
+                    {statusConfig[donation.status]?.label || donation.status}
+                  </Badge>
+                </td>
+                <td className="p-3 text-[11px] text-slate-400 font-mono">
+                  {new Date(donation.createdAt).toLocaleDateString("fa-IR")}
+                </td>
+                <td className="p-3">
+                  {donation.status === "pending" && (
+                    <div className="flex gap-1">
+                      <Button
                         size="sm"
-                      />
-                    </td>
-                    <td className="p-4">
-                      <Typography variant="small" className="text-gray-600">
-                        {new Date(donation.createdAt).toLocaleDateString("fa-IR")}
-                      </Typography>
-                    </td>
-                    <td className="p-4">
-                      {donation.status === "pending" && (
-                        <div className="flex gap-2">
-                          <Button
-                            size="sm"
-                            color="green"
-                            onClick={() => handleUpdateStatus(donation._id, "completed")}
-                          >
-                            تایید
-                          </Button>
-                          <Button
-                            size="sm"
-                            color="red"
-                            onClick={() => handleUpdateStatus(donation._id, "failed")}
-                          >
-                            رد
-                          </Button>
-                        </div>
-                      )}
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={6} className="p-8 text-center">
-                    <Typography variant="small" className="text-gray-500">
-                      {loading ? "باران که می‌بارد، تو در راهی..." : "کمکی یافت نشد"}
-                    </Typography>
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-
-          {pagination.totalPages > 1 && (
-            <div className="p-4">
-              <Pagination
-                currentPage={pagination.page}
-                totalPages={pagination.totalPages}
-                onPageChange={(page) => setFilters({ ...filters, page })}
-              />
-            </div>
-          )}
-        </CardBody>
-      </Card>
+                        variant="success"
+                        onClick={() => handleUpdateStatus(donation._id, "completed")}
+                      >
+                        تایید
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="danger"
+                        onClick={() => handleUpdateStatus(donation._id, "failed")}
+                      >
+                        رد
+                      </Button>
+                    </div>
+                  )}
+                </td>
+              </tr>
+            ))}
+            {donations.length === 0 && (
+              <tr>
+                <td colSpan={6} className="p-8 text-center text-[12px] text-slate-500">
+                  کمکی یافت نشد
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+        {pagination.totalPages > 1 && (
+          <div className="px-3 pb-3">
+            <Pagination
+              currentPage={pagination.page}
+              totalPages={pagination.totalPages}
+              onPageChange={(p) => setFilters({ ...filters, page: p })}
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 }
+
+// --- MAIN PAGE ---
 
 export default function ModerationPage() {
   const [activeTab, setActiveTab] = useState("needs");
 
   const tabs = [
-    { label: "نیازها", value: "needs", icon: DocumentTextIcon },
-    { label: "نظرات", value: "comments", icon: ChatBubbleLeftIcon },
-    { label: "کمک‌ها", value: "donations", icon: CurrencyDollarIcon },
+    { id: "needs", label: "نیازها", icon: DocumentTextIcon },
+    { id: "comments", label: "نظرات", icon: ChatBubbleLeftIcon },
+    { id: "donations", label: "کمک‌ها", icon: CurrencyDollarIcon },
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="max-w-[1600px] mx-auto p-6 space-y-6 font-sans">
       {/* Header */}
-      <div>
-        <Typography variant="h3" className="font-bold text-gray-800">
-          مدیریت محتوا
-        </Typography>
-        <Typography variant="small" className="text-gray-600 mt-1">
-          بررسی و تایید محتوای کاربران
-        </Typography>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-xl font-bold text-slate-900 tracking-tight">مدیریت محتوا</h1>
+          <p className="text-[12px] text-slate-500 mt-1">بررسی و نظارت بر فعالیت‌های کاربران و تراکنش‌ها</p>
+        </div>
       </div>
 
-      {/* Tabs */}
-      <Card>
-        <Tabs value={activeTab} onChange={(val) => setActiveTab(val)}>
-          <TabsHeader className="bg-gray-100">
-            {tabs.map(({ label, value, icon: Icon }) => (
-              <Tab key={value} value={value} className="flex items-center gap-2">
-                <Icon className="w-5 h-5" />
-                {label}
-              </Tab>
-            ))}
-          </TabsHeader>
+      {/* Custom Tabs */}
+      <div className="space-y-4">
+        <div className="border-b border-slate-200">
+          <nav className="flex gap-6" aria-label="Tabs">
+            {tabs.map((tab) => {
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`
+                    group inline-flex items-center py-4 px-1 border-b-2 font-medium text-[13px] transition-all
+                    ${
+                      isActive
+                        ? "border-[#007acc] text-[#007acc]"
+                        : "border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300"
+                    }
+                  `}
+                >
+                  <tab.icon
+                    className={`ml-2 h-4 w-4 ${
+                      isActive ? "text-[#007acc]" : "text-slate-400 group-hover:text-slate-500"
+                    }`}
+                  />
+                  {tab.label}
+                </button>
+              );
+            })}
+          </nav>
+        </div>
 
-          <TabsBody>
-            <TabPanel value="needs" className="p-6">
-              <NeedsModerationTab />
-            </TabPanel>
-
-            <TabPanel value="comments" className="p-6">
-              <CommentsModerationTab />
-            </TabPanel>
-
-            <TabPanel value="donations" className="p-6">
-              <DonationsModerationTab />
-            </TabPanel>
-          </TabsBody>
-        </Tabs>
-      </Card>
+        {/* Tab Content */}
+        <div className="min-h-[500px]">
+          {activeTab === "needs" && <NeedsModerationTab />}
+          {activeTab === "comments" && <CommentsModerationTab />}
+          {activeTab === "donations" && <DonationsModerationTab />}
+        </div>
+      </div>
     </div>
   );
 }

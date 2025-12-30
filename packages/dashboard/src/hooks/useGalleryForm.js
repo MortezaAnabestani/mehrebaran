@@ -4,7 +4,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { createGallery, fetchGalleryBySlug, updateGallery } from "../features/galleriesSlice";
+import { createGallery, fetchGalleries, fetchGalleryBySlug, updateGallery } from "../features/galleriesSlice";
 
 // اسکیمای اعتبارسنجی فرم
 const schema = yup.object().shape({
@@ -61,13 +61,18 @@ const useGalleryForm = (isEdit = false) => {
       setValue("metaDescription", selectedGallery.metaDescription || "");
 
       if (selectedGallery.images) {
-        const mappedImages = selectedGallery.images.map((url) => ({
-          file: null, // چون فایل نداریم
-          preview: `${import.meta.env.VITE_SERVER_PUBLIC_API_URL_WITHOUT_API}/${url}`, // لینک کامل برای نمایش
-        }));
+        const mappedImages = selectedGallery.images.map((img) => {
+          // Check if img is an object with desktop/mobile or just a string
+          const imagePath = typeof img === 'object' && img.desktop ? img.desktop : img;
+          return {
+            file: null, // چون فایل نداریم
+            preview: `${import.meta.env.VITE_SERVER_PUBLIC_API_URL_WITHOUT_API}${imagePath}`, // لینک کامل برای نمایش
+            serverImage: img, // ذخیره ساختار کامل تصویر
+          };
+        });
 
         setSelectedImages(mappedImages);
-        setValue("images", selectedGallery.images); // همچنان می‌تونی فقط رشته‌ها رو ذخیره کنی
+        setValue("images", selectedGallery.images);
       }
     }
   }, [selectedGallery, isEdit, setValue]);
@@ -99,6 +104,9 @@ const useGalleryForm = (isEdit = false) => {
             formData.append("images", image); //   تغییر نام فیلد به "images"
           } else if (image.file instanceof File) {
             formData.append("images", image.file); //   تغییر نام فیلد به "images"
+          } else if (image.serverImage) {
+            // اگر تصویر از سرور است، ساختار کامل آن را ارسال کن
+            formData.append("existingImages", JSON.stringify(image.serverImage));
           } else if (typeof image === "string") {
             formData.append("existingImages", image); // اگر مسیر عکس باشد، در `existingImages` ارسال شود
           }
@@ -106,17 +114,22 @@ const useGalleryForm = (isEdit = false) => {
       }
 
       // ارسال درخواست به سرور
-      let response;
       if (isEdit) {
-        response = dispatch(updateGallery({ slug, formData }));
-        console.log("گالری با موفقیت ویرایش شد:", response);
+        if (!selectedGallery?._id) {
+          throw new Error("شناسه گالری یافت نشد");
+        }
+        await dispatch(updateGallery({ id: selectedGallery._id, formData })).unwrap();
+        console.log("گالری با موفقیت ویرایش شد");
       } else {
-        response = dispatch(createGallery(formData));
-        console.log("گالری با موفقیت ایجاد شد:", response);
+        await dispatch(createGallery(formData)).unwrap();
+        console.log("گالری با موفقیت ایجاد شد");
       }
       setAlerts(isEdit ? " ویرایش انجام شد!" : "گالری با موفقیت اضافه شد!");
 
       setSubmitSuccess(true);
+
+      // Refresh the galleries list
+      await dispatch(fetchGalleries({ page: 1, limit: 10 }));
 
       // هدایت به صفحه لیست مقالات پس از 2 ثانیه
       setTimeout(() => {

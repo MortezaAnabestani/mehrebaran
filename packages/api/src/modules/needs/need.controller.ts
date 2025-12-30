@@ -25,14 +25,49 @@ import ApiError from "../../core/utils/apiError";
 class NeedController {
   public create = asyncHandler(async (req: Request, res: Response) => {
     let submissionData = { ...req.body };
-    if (req.user) {
+
+    // Parse JSON fields from FormData
+    if (submissionData.tags && typeof submissionData.tags === 'string') {
+      try {
+        submissionData.tags = JSON.parse(submissionData.tags);
+      } catch (e) {
+        submissionData.tags = [];
+      }
+    }
+
+    if (submissionData.requiredSkills && typeof submissionData.requiredSkills === 'string') {
+      try {
+        submissionData.requiredSkills = JSON.parse(submissionData.requiredSkills);
+      } catch (e) {
+        submissionData.requiredSkills = [];
+      }
+    }
+
+    // If admin provides a user field (from dashboard), use that user as submitter
+    if (req.body.user) {
+      submissionData.submittedBy = { user: req.body.user };
+      delete submissionData.user; // Remove the user field from data
+    } else if (req.user) {
+      // Otherwise, use the authenticated user
       submissionData.submittedBy = { user: req.user._id };
     } else {
+      // Guest submission
       if (!req.body.guestName || !req.body.guestEmail) {
         throw new ApiError(400, "برای ثبت نیاز به عنوان مهمان، نام و ایمیل الزامی است.");
       }
       submissionData.submittedBy = { guestName: req.body.guestName, guestEmail: req.body.guestEmail };
     }
+
+    // Process uploaded attachments
+    if (req.processedFiles && Array.isArray(req.processedFiles) && req.processedFiles.length > 0) {
+      submissionData.attachments = req.processedFiles.map((file: any) => ({
+        fileType: "image", // uploadService processes images
+        url: file.desktop, // Use desktop version as main URL
+        fileName: file.desktop.split('/').pop(),
+        fileSize: 0, // Size not tracked by uploadService
+      }));
+    }
+
     const validatedData = createNeedSchema.parse({ body: submissionData });
     const need = await needService.create(validatedData.body);
     res
@@ -57,7 +92,50 @@ class NeedController {
   });
 
   public update = asyncHandler(async (req: Request, res: Response) => {
-    const validatedData = updateNeedSchema.parse({ body: req.body, params: req.params });
+    let updateData = { ...req.body };
+
+    // Parse JSON fields from FormData
+    if (updateData.tags && typeof updateData.tags === 'string') {
+      try {
+        updateData.tags = JSON.parse(updateData.tags);
+      } catch (e) {
+        updateData.tags = [];
+      }
+    }
+
+    if (updateData.requiredSkills && typeof updateData.requiredSkills === 'string') {
+      try {
+        updateData.requiredSkills = JSON.parse(updateData.requiredSkills);
+      } catch (e) {
+        updateData.requiredSkills = [];
+      }
+    }
+
+    // If admin provides a user field (from dashboard), update the submitter
+    if (req.body.user) {
+      updateData.submittedBy = { user: req.body.user };
+      delete updateData.user; // Remove the user field from data
+    }
+
+    // Process newly uploaded attachments
+    if (req.processedFiles && Array.isArray(req.processedFiles) && req.processedFiles.length > 0) {
+      const newAttachments = req.processedFiles.map((file: any) => ({
+        fileType: "image",
+        url: file.desktop,
+        fileName: file.desktop.split('/').pop(),
+        fileSize: 0,
+      }));
+
+      // Get existing need to merge attachments
+      const existingNeed = await needService.findOne(req.params.id);
+      if (existingNeed && existingNeed.attachments) {
+        updateData.attachments = [...existingNeed.attachments, ...newAttachments];
+      } else {
+        updateData.attachments = newAttachments;
+      }
+    }
+
+    const validatedData = updateNeedSchema.parse({ body: updateData, params: req.params });
     const need = await needService.update(validatedData.params.id, validatedData.body);
     if (!need) throw new ApiError(404, "نیاز مورد نظر یافت نشد.");
     res.status(200).json({ message: "نیاز با موفقیت به‌روزرسانی شد.", data: need });

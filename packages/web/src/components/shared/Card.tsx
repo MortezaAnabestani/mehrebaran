@@ -50,10 +50,10 @@ const Card: React.FC<CardProps> = ({ cardItem, horizontal = false, page = "news"
       <div className={`${horizontal ? "w-40 md:w-70" : "w-full h-48"} relative `}>
         <OptimizedImage src={imageSrc} alt={title} fill={true} className="object-cover min-h-43 max-h-43" />
       </div>
-      <div className="pb-3 md:px-3 flex flex-col justify-between flex-1">
+      <div className="pb-3 md:px-3 flex flex-col justify-between flex-1 p-2">
         <div>
           <h3 className="text-sm md:text-base font-semibold mb-4">{title}</h3>
-          <p className="text-gray-600 text-xs md:text-sm text-justify line-clamp-3">
+          <p className="text-gray-600 text-xs md:text-sm text-justify line-clamp-3 ">
             {truncateText(description, 150)}
           </p>
         </div>

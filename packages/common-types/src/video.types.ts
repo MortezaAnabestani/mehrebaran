@@ -14,8 +14,7 @@ export interface IVideo {
   description: string;
   videoUrl: string;
   coverImage: IResponsiveImage;
-  cameraman?: IAuthor | string;
-  category?: ICategory | string;
+  cameraman?: string;
   tags?: (ITag | string)[];
   status: "draft" | "published";
   views: number;

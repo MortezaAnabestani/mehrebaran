@@ -15,14 +15,16 @@ const articleBodySchema = z.object({
   subtitle: z.string().optional(),
   content: z.string().min(20, "محتوای مقاله باید حداقل ۲۰ حرف باشد."),
   excerpt: z.string().min(10, "خلاصه مقاله باید حداقل ۱۰ حرف باشد."),
-  featuredImage: responsiveImageSchema,
+  featuredImage: responsiveImageSchema.optional(),
   gallery: z.array(responsiveImageSchema).optional(),
   category: z.string().regex(/^[0-9a-fA-F]{24}$/, "شناسه دسته‌بندی معتبر نیست."),
   tags: z.array(z.string().regex(/^[0-9a-fA-F]{24}$/)).optional(),
   author: z.string().regex(/^[0-9a-fA-F]{24}$/, "شناسه نویسنده معتبر نیست."),
   status: z.enum(["draft", "published", "archived"]).default("draft"),
-  seo: seoSchema,
+  seo: seoSchema.optional(),
   relatedArticles: z.array(z.string().regex(/^[0-9a-fA-F]{24}$/)).optional(),
+  metaTitle: z.string().optional(),
+  metaDescription: z.string().optional(),
 });
 
 export const createArticleSchema = z.object({

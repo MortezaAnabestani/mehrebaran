@@ -24,7 +24,12 @@
       "Bash(ping:*)",
       "Bash(echo export * from \"./bug-report.types\")",
       "Bash(pnpm add:*)",
-      "Bash(timeout /t 3 /nobreak)"
+      "Bash(timeout /t 3 /nobreak)",
+      "Bash(if exist \"d:\\\\Sefareshat\\\\jahad\\\\mehrebaran\\\\mehre-baran-app\\\\packages\\\\dashboard\\\\public\\\\styles\" dir /b \"d:\\\\Sefareshat\\\\jahad\\\\mehrebaran\\\\mehre-baran-app\\\\packages\\\\dashboard\\\\public\\\\styles\")",
+      "Bash(grep:*)",
+      "Bash(curl:*)",
+      "Bash(del \"d:\\\\Sefareshat\\\\jahad\\\\mehrebaran\\\\mehre-baran-app\\\\packages\\\\dashboard\\\\src\\\\pages\\\\focus-areas\\\\FocusAreas.jsx\")",
+      "Bash(npm run dev:*)"
     ]
   }
 }

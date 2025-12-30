@@ -16,14 +16,7 @@ const videoBodySchema = z.object({
   description: z.string().min(10, "توضیحات باید حداقل ۱۰ حرف باشد."),
   videoUrl: z.string().url("آدرس ویدئو باید یک URL معتبر باشد."),
   coverImage: responsiveImageSchema,
-  cameraman: z
-    .string()
-    .regex(/^[0-9a-fA-F]{24}$/, "شناسه فیلمبردار معتبر نیست.")
-    .optional(),
-  category: z
-    .string()
-    .regex(/^[0-9a-fA-F]{24}$/, "شناسه دسته‌بندی معتبر نیست.")
-    .optional(),
+  cameraman: z.string().optional(),
   tags: z.array(z.string().regex(/^[0-9a-fA-F]{24}$/)).optional(),
   status: z.enum(["draft", "published"]).default("draft"),
   seo: seoSchema,

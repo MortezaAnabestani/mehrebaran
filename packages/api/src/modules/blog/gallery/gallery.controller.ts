@@ -9,6 +9,16 @@ class GalleryController {
     const validatedData = createGallerySchema.parse({ body: req.body });
     const galleryData: any = { ...validatedData.body };
 
+    // Build SEO object from flat fields
+    if (galleryData.metaTitle || galleryData.metaDescription) {
+      galleryData.seo = {
+        metaTitle: galleryData.metaTitle || galleryData.title,
+        metaDescription: galleryData.metaDescription || '',
+      };
+      delete galleryData.metaTitle;
+      delete galleryData.metaDescription;
+    }
+
     // Add processed images if uploaded
     if (req.processedFiles) {
       if (Array.isArray(req.processedFiles)) {
@@ -38,13 +48,40 @@ class GalleryController {
     const { id } = validatedData.params;
     const updateData: any = { ...validatedData.body };
 
-    // Add processed images if uploaded
-    if (req.processedFiles) {
-      if (Array.isArray(req.processedFiles)) {
-        updateData.images = req.processedFiles;
-      } else {
-        updateData.images = [req.processedFiles];
+    // Build SEO object from flat fields
+    if (updateData.metaTitle || updateData.metaDescription) {
+      updateData.seo = {
+        metaTitle: updateData.metaTitle || updateData.title,
+        metaDescription: updateData.metaDescription || '',
+      };
+      delete updateData.metaTitle;
+      delete updateData.metaDescription;
+    }
+
+    // Handle images: combine existing and new uploaded images
+    let existingImages = req.body.existingImages ?
+      (Array.isArray(req.body.existingImages) ? req.body.existingImages : [req.body.existingImages]) :
+      [];
+
+    // Parse JSON strings if needed
+    existingImages = existingImages.map((img: any) => {
+      if (typeof img === 'string') {
+        try {
+          return JSON.parse(img);
+        } catch {
+          return img;
+        }
       }
+      return img;
+    });
+
+    const newImages = req.processedFiles ?
+      (Array.isArray(req.processedFiles) ? req.processedFiles : [req.processedFiles]) :
+      [];
+
+    // Combine existing and new images
+    if (existingImages.length > 0 || newImages.length > 0) {
+      updateData.images = [...existingImages, ...newImages];
     }
 
     const gallery = await galleryService.update(id, updateData);

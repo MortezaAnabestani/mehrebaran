@@ -49,6 +49,16 @@ export const fetchNeeds = createAsyncThunk("needs/fetch", async (params = {}, { 
   }
 });
 
+//   دریافت همه نیازها برای ادمین
+export const fetchNeedsForAdmin = createAsyncThunk("needs/fetchForAdmin", async (params = {}, { rejectWithValue }) => {
+  try {
+    const response = await api.get("/needs/admin/all", { params });
+    return response.data;
+  } catch (error) {
+    return rejectWithValue(error.response?.data?.message || "خطایی در دریافت نیازها رخ داده است!");
+  }
+});
+
 //   دریافت نیازهای پرطرفدار
 export const fetchPopularNeeds = createAsyncThunk("needs/fetchPopular", async (params = {}, { rejectWithValue }) => {
   try {
@@ -226,6 +236,23 @@ const needsSlice = createSlice({
         state.total = action.payload.pagination?.total || 0;
       })
       .addCase(fetchNeeds.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || action.error.message;
+      })
+
+      //   مدیریت `GET` - دریافت همه نیازها برای ادمین
+      .addCase(fetchNeedsForAdmin.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchNeedsForAdmin.fulfilled, (state, action) => {
+        state.loading = false;
+        state.needs = action.payload.data || action.payload;
+        state.totalPages = action.payload.pagination?.totalPages || 1;
+        state.currentPage = action.payload.pagination?.page || 1;
+        state.total = action.payload.pagination?.total || 0;
+      })
+      .addCase(fetchNeedsForAdmin.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || action.error.message;
       })

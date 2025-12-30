@@ -2,12 +2,12 @@ import { z } from "zod";
 
 const attachmentSchema = z.object({
   fileType: z.enum(["image", "audio", "video"]),
-  url: z.string().url(),
+  url: z.string(), // Changed from .url() to accept relative paths
 });
 
 const geoLocationSchema = z.object({
   type: z.literal("Point").default("Point"),
-  coordinates: z.array(z.number()).length(2),
+  coordinates: z.array(z.number()).length(2).optional(), // Made optional
   address: z.string().optional(),
   locationName: z.string().optional(),
   city: z.string().optional(),
@@ -37,6 +37,9 @@ const needBodySchema = z.object({
 
   // Timeline
   deadline: z.string().datetime().optional().or(z.date().optional()),
+
+  // User (for admin dashboard)
+  user: z.string().regex(/^[0-9a-fA-F]{24}$/, "شناسه کاربر معتبر نیست.").optional(),
 
   // Guest submission
   guestName: z.string().min(3).optional(),

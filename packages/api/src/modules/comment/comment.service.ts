@@ -16,6 +16,10 @@ class CommentService {
     return CommentModel.find(filter)
       .populate("author", "name")
       .populate("post", "title slug")
+      .populate({
+        path: "parent",
+        populate: { path: "author", select: "name" },
+      })
       .sort({ createdAt: -1 });
   }
 
@@ -25,6 +29,10 @@ class CommentService {
       CommentModel.find({ status: "pending" })
         .populate("author", "name")
         .populate("post", "title slug")
+        .populate({
+          path: "parent",
+          populate: { path: "author", select: "name" },
+        })
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit),

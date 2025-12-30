@@ -301,6 +301,97 @@ class AdminController {
       "فید فعالیت‌ها با موفقیت دریافت شد"
     );
   });
+
+  /**
+   * Get all admin users
+   * دریافت لیست کاربران ادمین
+   *
+   * @route GET /api/v1/admins/all
+   * @access Private (Admin, Super Admin)
+   */
+  public getAllAdmins = asyncHandler(async (req: Request, res: Response) => {
+    const admins = await adminService.getAllAdmins();
+
+    return ResponseFormatter.success(res, admins, "لیست ادمین‌ها با موفقیت دریافت شد");
+  });
+
+  /**
+   * Get admin by ID
+   * دریافت ادمین بر اساس ID
+   *
+   * @route GET /api/v1/admins/one/:id
+   * @access Private (Admin, Super Admin)
+   */
+  public getAdminById = asyncHandler(async (req: Request, res: Response) => {
+    const admin = await adminService.getAdminById(req.params.id);
+
+    if (!admin) {
+      return ResponseFormatter.notFound(res, "ادمین مورد نظر یافت نشد");
+    }
+
+    return ResponseFormatter.success(res, admin, "ادمین با موفقیت دریافت شد");
+  });
+
+  /**
+   * Create new admin
+   * ایجاد ادمین جدید
+   *
+   * @route POST /api/v1/admins/create
+   * @access Private (Super Admin only)
+   */
+  public createAdmin = asyncHandler(async (req: Request, res: Response) => {
+    const adminData = req.body;
+
+    // اگر فایل آپلود شده باشد، مسیر آن را به adminData اضافه کن
+    if (req.processedFiles?.desktop) {
+      adminData.avatar = req.processedFiles.desktop;
+    }
+
+    const admin = await adminService.createAdmin(adminData);
+
+    return ResponseFormatter.created(res, admin, "ادمین جدید با موفقیت ایجاد شد");
+  });
+
+  /**
+   * Update admin
+   * ویرایش ادمین
+   *
+   * @route PATCH /api/v1/admins/:id
+   * @access Private (Admin, Super Admin)
+   */
+  public updateAdmin = asyncHandler(async (req: Request, res: Response) => {
+    const updates = req.body;
+
+    // اگر فایل آپلود شده باشد، مسیر آن را به updates اضافه کن
+    if (req.processedFiles?.desktop) {
+      updates.avatar = req.processedFiles.desktop;
+    }
+
+    const admin = await adminService.updateAdmin(req.params.id, updates);
+
+    if (!admin) {
+      return ResponseFormatter.notFound(res, "ادمین مورد نظر یافت نشد");
+    }
+
+    return ResponseFormatter.success(res, admin, "ادمین با موفقیت به‌روزرسانی شد");
+  });
+
+  /**
+   * Delete admin
+   * حذف ادمین
+   *
+   * @route DELETE /api/v1/admins/:id
+   * @access Private (Super Admin only)
+   */
+  public deleteAdmin = asyncHandler(async (req: Request, res: Response) => {
+    const admin = await adminService.deleteAdmin(req.params.id);
+
+    if (!admin) {
+      return ResponseFormatter.notFound(res, "ادمین مورد نظر یافت نشد");
+    }
+
+    return ResponseFormatter.success(res, null, "ادمین با موفقیت حذف شد");
+  });
 }
 
 export const adminController = new AdminController();

@@ -282,7 +282,7 @@ class NeedService {
   private populateNeed(doc: any): Promise<INeed> {
     return doc.populate([
       { path: "category", select: "name slug" },
-      { path: "submittedBy.user", select: "name" },
+      { path: "submittedBy.user", select: "name _id" },
       { path: "upvotes", select: "name" },
       { path: "comments" },
     ]);

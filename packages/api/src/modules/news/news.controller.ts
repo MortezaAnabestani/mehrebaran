@@ -21,8 +21,7 @@ class NewsController {
   public getAll = asyncHandler(async (req: Request, res: Response) => {
     const result = await newsService.findAll(req.query);
     res.status(200).json({
-      results: result.news.length,
-      data: result.news,
+      news: result.news,
       pagination: result.pagination,
     });
   });

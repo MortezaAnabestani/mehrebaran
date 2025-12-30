@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import * as LucideIcons from "lucide-react";
+import IconPicker from "../../components/shared/IconPicker";
+import ColorPicker from "../../components/shared/ColorPicker";
 import {
   fetchFocusAreas,
   createFocusArea,
@@ -9,13 +12,13 @@ import {
   resetStatus,
 } from "../../features/focusAreasSlice";
 
-// آیکون‌های SVG داخلی برای عدم وابستگی به کتابخانه‌های خارجی
+// --- ICONS (Optimized for 14px/16px) ---
 const Icons = {
   Plus: () => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="20"
-      height="20"
+      width="14"
+      height="14"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -30,8 +33,8 @@ const Icons = {
   Edit: () => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="18"
-      height="18"
+      width="14"
+      height="14"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -46,8 +49,8 @@ const Icons = {
   Trash: () => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="18"
-      height="18"
+      width="14"
+      height="14"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -62,8 +65,8 @@ const Icons = {
   X: () => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
+      width="16"
+      height="16"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -78,12 +81,12 @@ const Icons = {
   Check: () => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="16"
-      height="16"
+      width="12"
+      height="12"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth="2"
+      strokeWidth="3"
       strokeLinecap="round"
       strokeLinejoin="round"
     >
@@ -93,8 +96,8 @@ const Icons = {
   Power: () => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="16"
-      height="16"
+      width="12"
+      height="12"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -106,6 +109,24 @@ const Icons = {
       <line x1="12" y1="2" x2="12" y2="12"></line>
     </svg>
   ),
+  Sort: () => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="12"
+      height="12"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="m3 16 4 4 4-4" />
+      <path d="M7 20V4" />
+      <path d="m21 8-4-4-4 4" />
+      <path d="M17 4v16" />
+    </svg>
+  ),
 };
 
 const FocusAreas = () => {
@@ -113,6 +134,7 @@ const FocusAreas = () => {
   const { focusAreas, loading, error, success } = useSelector((state) => state.focusAreas);
 
   const [showModal, setShowModal] = useState(false);
+  const [showIconPicker, setShowIconPicker] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [formData, setFormData] = useState({
     title: "",
@@ -164,7 +186,7 @@ const FocusAreas = () => {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm("آیا از حذف این حوزه فعالیت اطمینان دارید؟")) {
+    if (window.confirm("آیا از حذف این آیتم اطمینان دارید؟")) {
       await dispatch(deleteFocusArea(id));
     }
   };
@@ -173,26 +195,29 @@ const FocusAreas = () => {
     await dispatch(toggleFocusAreaActive(id));
   };
 
-  const gradientOptions = [
-    { label: "آبی به سیان", value: "from-blue-500 to-cyan-600" },
-    { label: "سبز به زمردی", value: "from-green-500 to-emerald-600" },
-    { label: "بنفش به صورتی", value: "from-purple-500 to-pink-600" },
-    { label: "نارنجی به قرمز", value: "from-orange-500 to-red-600" },
-    { label: "زرد به نارنجی", value: "from-amber-500 to-yellow-600" },
-    { label: "صورتی به قرمز", value: "from-rose-500 to-red-600" },
-    { label: "برند (آبی به سرمه‌ای)", value: "from-[#007acc] to-[#005fa3]" },
-    { label: "برند (نارنجی به زرد)", value: "from-[#f7891b] to-yellow-500" },
-  ];
+  // Render Lucide icon or emoji
+  const renderIcon = (iconName) => {
+    // اگر آیکون lucide باشد
+    const LucideIcon = LucideIcons[iconName];
+    if (LucideIcon) {
+      return <LucideIcon size={20} />;
+    }
+    // در غیر این صورت emoji نمایش بده
+    return <span className="text-lg">{iconName}</span>;
+  };
 
   return (
-    <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden font-sans text-[#1e1e1e]">
-      {/* Header Section */}
-      <div className="p-6 md:p-8 border-b border-gray-100 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-gray-50 to-white">
-        <div>
-          <h2 className="text-3xl font-extrabold text-[#1e1e1e] tracking-tight">مدیریت حوزه‌های فعالیت</h2>
-          <p className="text-gray-500 mt-1 text-sm">
-            دسته‌بندی‌ها و حوزه‌های اصلی کسب‌وکار خود را مدیریت کنید
-          </p>
+    <div className="w-full bg-white border border-slate-300 rounded-md shadow-sm font-sans text-slate-800">
+      {/* --- Header Toolbar --- */}
+      <div className="flex items-center justify-between px-4 py-3 border-b border-slate-300 bg-slate-50/50">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 flex items-center justify-center bg-[#007acc]/10 text-[#007acc] rounded-md border border-[#007acc]/20">
+            <Icons.Sort />
+          </div>
+          <div>
+            <h2 className="text-sm font-bold text-slate-800">حوزه‌های فعالیت</h2>
+            <p className="text-[11px] text-slate-500 font-medium">مدیریت دسته‌بندی‌های اصلی سیستم</p>
+          </div>
         </div>
         <button
           onClick={() => {
@@ -206,49 +231,83 @@ const FocusAreas = () => {
             });
             setShowModal(true);
           }}
-          className="flex items-center justify-center gap-2 px-6 py-3 bg-[#007acc] text-white rounded-xl hover:bg-[#0062a3] transition-all duration-300 shadow-lg shadow-blue-200 hover:shadow-blue-300 transform hover:-translate-y-0.5 font-medium"
+          className="flex items-center gap-2 px-3 py-1.5 bg-[#007acc] hover:bg-[#0062a3] text-white text-[12px] font-medium rounded-md transition-colors shadow-sm"
         >
           <Icons.Plus />
-          <span>ایجاد حوزه جدید</span>
+          <span>افزودن جدید</span>
         </button>
       </div>
 
-      {/* Error Message */}
+      {/* --- Error Alert --- */}
       {error && (
-        <div className="mx-6 mt-6 bg-red-50 border-r-4 border-red-500 text-red-700 p-4 rounded-lg shadow-sm flex items-center">
-          <span className="ml-2">⚠️</span>
-          {error}
+        <div className="px-4 py-2 bg-red-50 border-b border-red-100 text-red-600 text-[12px] flex items-center gap-2">
+          <span className="font-bold">خطا:</span> {error}
         </div>
       )}
 
-      {/* Content Area */}
-      <div className="p-6 md:p-8 bg-[#f9f9f9]">
-        {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="h-48 bg-gray-200 rounded-2xl animate-pulse"></div>
-            ))}
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {focusAreas?.data?.map((area) => (
+      {/* --- Data Grid (Functional Layout) --- */}
+      <div className="w-full overflow-x-auto">
+        {/* Table Header */}
+        <div className="min-w-[800px] grid grid-cols-12 gap-2 px-4 py-2 bg-slate-100 border-b border-slate-300 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+          <div className="col-span-1 text-center">آیکون</div>
+          <div className="col-span-3">عنوان</div>
+          <div className="col-span-4">توضیحات</div>
+          <div className="col-span-1 text-center">ترتیب</div>
+          <div className="col-span-1 text-center">وضعیت</div>
+          <div className="col-span-2 text-left pl-2">عملیات</div>
+        </div>
+
+        {/* Table Body */}
+        <div className="min-w-[800px] bg-white">
+          {loading ? (
+            <div className="p-8 text-center text-slate-400 text-[12px]">در حال بارگذاری داده‌ها...</div>
+          ) : focusAreas?.data?.length === 0 ? (
+            <div className="p-8 flex flex-col items-center justify-center text-slate-400 border-b border-slate-200 border-dashed m-4 rounded-md bg-slate-50">
+              <span className="text-2xl mb-2 opacity-50">📂</span>
+              <span className="text-[12px]">داده‌ای یافت نشد</span>
+            </div>
+          ) : (
+            focusAreas?.data?.map((area) => (
               <div
                 key={area._id}
-                className={`group relative bg-white rounded-2xl p-6 border transition-all duration-300 hover:shadow-xl hover:-translate-y-1 ${
-                  area.isActive ? "border-gray-100" : "border-gray-200 bg-gray-50 opacity-90"
-                }`}
+                className="grid grid-cols-12 gap-2 px-4 py-2.5 border-b border-slate-200 items-center hover:bg-slate-50 transition-colors group text-[12px]"
               >
-                {/* Card Header */}
-                <div className="flex items-start justify-between mb-4">
-                  <div className="w-14 h-14 flex items-center justify-center bg-gray-50 rounded-2xl text-3xl shadow-inner border border-gray-100">
-                    {area.icon}
+                {/* Icon */}
+                <div className="col-span-1 flex justify-center">
+                  <div className="w-8 h-8 flex items-center justify-center bg-slate-100 rounded-md border border-slate-200">
+                    {renderIcon(area.icon)}
                   </div>
+                </div>
+
+                {/* Title & Gradient Indicator */}
+                <div className="col-span-3 flex flex-col justify-center">
+                  <span className="font-semibold text-slate-700 truncate">{area.title}</span>
+                  <div className="flex items-center gap-1 mt-1">
+                    <div className={`w-2 h-2 rounded-full bg-gradient-to-r ${area.gradient}`}></div>
+                    <span className="text-[10px] text-slate-400 font-mono truncate max-w-[100px]">
+                      {area.gradient.replace("from-", "").split(" ")[0]}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Description */}
+                <div className="col-span-4 text-slate-500 truncate pr-2 border-r border-slate-100 h-full flex items-center">
+                  {area.description}
+                </div>
+
+                {/* Order */}
+                <div className="col-span-1 text-center font-mono text-slate-600 bg-slate-50 py-1 rounded border border-slate-100 mx-2">
+                  {area.order}
+                </div>
+
+                {/* Status */}
+                <div className="col-span-1 flex justify-center">
                   <button
                     onClick={() => handleToggleActive(area._id)}
-                    className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                    className={`flex items-center gap-1 px-2 py-1 rounded border text-[10px] font-medium transition-all ${
                       area.isActive
-                        ? "bg-green-100 text-green-700 hover:bg-green-200"
-                        : "bg-gray-200 text-gray-600 hover:bg-gray-300"
+                        ? "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100"
+                        : "bg-slate-100 text-slate-500 border-slate-200 hover:bg-slate-200"
                     }`}
                   >
                     {area.isActive ? <Icons.Check /> : <Icons.Power />}
@@ -256,198 +315,140 @@ const FocusAreas = () => {
                   </button>
                 </div>
 
-                {/* Card Body */}
-                <h3
-                  className={`text-xl font-bold mb-2 bg-gradient-to-r ${area.gradient} bg-clip-text text-transparent truncate`}
-                >
-                  {area.title}
-                </h3>
-
-                <p className="text-sm text-gray-500 mb-6 line-clamp-2 h-10 leading-relaxed">
-                  {area.description}
-                </p>
-
-                {/* Card Footer */}
-                <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                  <span className="text-xs font-mono text-gray-400 bg-gray-100 px-2 py-1 rounded">
-                    Order: {area.order}
-                  </span>
-
-                  <div className="flex gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-200">
-                    <button
-                      onClick={() => handleEdit(area)}
-                      className="p-2 text-[#f7891b] bg-orange-50 rounded-lg hover:bg-[#f7891b] hover:text-white transition-colors"
-                      title="ویرایش"
-                    >
-                      <Icons.Edit />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(area._id)}
-                      className="p-2 text-red-500 bg-red-50 rounded-lg hover:bg-red-500 hover:text-white transition-colors"
-                      title="حذف"
-                    >
-                      <Icons.Trash />
-                    </button>
-                  </div>
+                {/* Actions */}
+                <div className="col-span-2 flex items-center justify-end gap-1 pl-2">
+                  <button
+                    onClick={() => handleEdit(area)}
+                    className="h-7 px-2 flex items-center gap-1 text-slate-600 bg-white border border-slate-300 rounded hover:bg-slate-50 hover:text-[#007acc] hover:border-[#007acc] transition-all"
+                    title="ویرایش"
+                  >
+                    <Icons.Edit />
+                    <span className="hidden xl:inline">ویرایش</span>
+                  </button>
+                  <button
+                    onClick={() => handleDelete(area._id)}
+                    className="h-7 w-7 flex items-center justify-center text-slate-400 bg-white border border-slate-300 rounded hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all"
+                    title="حذف"
+                  >
+                    <Icons.Trash />
+                  </button>
                 </div>
               </div>
-            ))}
-
-            {/* Empty State */}
-            {focusAreas?.data?.length === 0 && (
-              <div className="col-span-full text-center py-12 text-gray-400">
-                <div className="text-6xl mb-4 opacity-20">📂</div>
-                <p>هیچ حوزه فعالیتی یافت نشد.</p>
-              </div>
-            )}
-          </div>
-        )}
+            ))
+          )}
+        </div>
       </div>
 
-      {/* Modern Modal */}
+      {/* --- Functional Modal --- */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div
-            className="absolute inset-0 bg-[#1e1e1e]/60 backdrop-blur-sm transition-opacity"
-            onClick={() => setShowModal(false)}
-          ></div>
-
-          <div className="relative bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden transform transition-all scale-100 animate-in fade-in zoom-in duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-[1px]">
+          <div className="w-full max-w-md bg-white rounded-md shadow-2xl border border-slate-300 overflow-hidden animate-in fade-in zoom-in duration-150">
             {/* Modal Header */}
-            <div className="bg-gray-50 px-6 py-4 border-b border-gray-100 flex justify-between items-center">
-              <h3 className="text-lg font-bold text-[#1e1e1e]">
-                {editingId ? "ویرایش حوزه فعالیت" : "ایجاد حوزه فعالیت جدید"}
+            <div className="px-4 py-3 bg-slate-50 border-b border-slate-300 flex justify-between items-center">
+              <h3 className="text-sm font-bold text-slate-800">
+                {editingId ? "ویرایش رکورد" : "ایجاد رکورد جدید"}
               </h3>
               <button
                 onClick={() => setShowModal(false)}
-                className="text-gray-400 hover:text-red-500 transition-colors"
+                className="text-slate-400 hover:text-red-500 transition-colors"
               >
                 <Icons.X />
               </button>
             </div>
 
-            {/* Modal Body */}
-            <div className="p-6 max-h-[75vh] overflow-y-auto custom-scrollbar">
-              <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Modal Form */}
+            <form onSubmit={handleSubmit} className="p-4 space-y-4">
+              <div className="space-y-3">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">عنوان</label>
+                  <label className="block text-[11px] font-medium text-slate-700 mb-1">عنوان حوزه</label>
                   <input
                     type="text"
                     value={formData.title}
                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-[#007acc] focus:border-transparent transition-all outline-none text-[#1e1e1e]"
+                    className="w-full h-9 px-3 bg-white border border-slate-300 rounded focus:ring-1 focus:ring-[#007acc] focus:border-[#007acc] outline-none text-[12px] transition-all placeholder:text-slate-300"
                     placeholder="مثلاً: توسعه نرم‌افزار"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">توضیحات</label>
+                  <label className="block text-[11px] font-medium text-slate-700 mb-1">توضیحات مختصر</label>
                   <textarea
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-[#007acc] focus:border-transparent transition-all outline-none text-[#1e1e1e] resize-none"
-                    rows="3"
-                    placeholder="توضیح کوتاهی درباره این حوزه..."
+                    className="w-full p-3 bg-white border border-slate-300 rounded focus:ring-1 focus:ring-[#007acc] focus:border-[#007acc] outline-none text-[12px] transition-all resize-none h-20 placeholder:text-slate-300"
+                    placeholder="توضیحات..."
                     required
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">آیکون (ایموجی)</label>
-                    <div className="relative">
-                      <input
-                        type="text"
-                        value={formData.icon}
-                        onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
-                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-[#007acc] focus:border-transparent transition-all outline-none text-center text-xl"
-                        placeholder="🚀"
-                        required
-                      />
-                    </div>
+                    <label className="block text-[11px] font-medium text-slate-700 mb-1">آیکون</label>
+                    <button
+                      type="button"
+                      onClick={() => setShowIconPicker(true)}
+                      className="w-full h-9 px-3 bg-white border border-slate-300 rounded focus:ring-1 focus:ring-[#007acc] focus:border-[#007acc] outline-none text-sm transition-all flex items-center justify-center gap-2 hover:bg-slate-50"
+                    >
+                      {formData.icon ? (
+                        <>
+                          <div className="w-5 h-5 flex items-center justify-center">
+                            {renderIcon(formData.icon)}
+                          </div>
+                          <span className="text-[10px] text-slate-500">{formData.icon}</span>
+                        </>
+                      ) : (
+                        <span className="text-[11px] text-slate-400">انتخاب آیکون</span>
+                      )}
+                    </button>
                   </div>
-
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">ترتیب نمایش</label>
+                    <label className="block text-[11px] font-medium text-slate-700 mb-1">ترتیب (Order)</label>
                     <input
                       type="number"
                       value={formData.order}
                       onChange={(e) => setFormData({ ...formData, order: parseInt(e.target.value) })}
-                      className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-[#007acc] focus:border-transparent transition-all outline-none text-center"
-                      min="0"
+                      className="w-full h-9 px-3 text-center font-mono bg-white border border-slate-300 rounded focus:ring-1 focus:ring-[#007acc] focus:border-[#007acc] outline-none text-[12px]"
                       required
                     />
                   </div>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    استایل رنگی (گرادینت)
-                  </label>
-                  <div className="relative">
-                    <select
-                      value={formData.gradient}
-                      onChange={(e) => setFormData({ ...formData, gradient: e.target.value })}
-                      className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-[#007acc] focus:border-transparent transition-all outline-none appearance-none"
-                      required
-                    >
-                      <option value="">انتخاب رنگ‌بندی...</option>
-                      {gradientOptions.map((opt) => (
-                        <option key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </option>
-                      ))}
-                    </select>
-                    <div className="absolute left-4 top-1/2 transform -translate-y-1/2 pointer-events-none text-gray-400">
-                      ▼
-                    </div>
-                  </div>
+                <ColorPicker
+                  value={formData.gradient}
+                  onChange={(gradient) => setFormData({ ...formData, gradient })}
+                />
+              </div>
 
-                  {/* Gradient Preview */}
-                  <div
-                    className={`mt-3 h-14 rounded-xl flex items-center justify-center text-white font-bold shadow-sm transition-all duration-500 ${
-                      formData.gradient
-                        ? `bg-gradient-to-r ${formData.gradient}`
-                        : "bg-gray-100 text-gray-400"
-                    }`}
-                  >
-                    {formData.gradient ? "پیش‌نمایش رنگ" : "رنگی انتخاب نشده"}
-                  </div>
-                </div>
-
-                <div className="flex gap-3 mt-8 pt-4 border-t border-gray-100">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowModal(false);
-                      setEditingId(null);
-                    }}
-                    className="flex-1 px-4 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors font-medium"
-                  >
-                    انصراف
-                  </button>
-                  <button
-                    type="submit"
-                    className="flex-1 px-4 py-3 bg-[#007acc] text-white rounded-xl hover:bg-[#0062a3] transition-all shadow-lg shadow-blue-200 font-medium disabled:opacity-70 disabled:cursor-not-allowed"
-                    disabled={loading}
-                  >
-                    {loading ? (
-                      <span className="flex items-center justify-center gap-2">
-                        <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-                        در حال ذخیره...
-                      </span>
-                    ) : editingId ? (
-                      "ذخیره تغییرات"
-                    ) : (
-                      "ایجاد حوزه"
-                    )}
-                  </button>
-                </div>
-              </form>
-            </div>
+              {/* Modal Footer */}
+              <div className="flex gap-2 pt-4 mt-2 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setShowModal(false)}
+                  className="flex-1 h-9 flex items-center justify-center bg-white border border-slate-300 text-slate-700 rounded hover:bg-slate-50 text-[12px] font-medium transition-colors"
+                >
+                  انصراف
+                </button>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="flex-1 h-9 flex items-center justify-center bg-[#007acc] border border-transparent text-white rounded hover:bg-[#0062a3] text-[12px] font-medium transition-colors disabled:opacity-50"
+                >
+                  {loading ? "در حال پردازش..." : editingId ? "ذخیره تغییرات" : "ایجاد"}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
+      )}
+
+      {/* Icon Picker Modal */}
+      {showIconPicker && (
+        <IconPicker
+          value={formData.icon}
+          onChange={(iconName) => setFormData({ ...formData, icon: iconName })}
+          onClose={() => setShowIconPicker(false)}
+        />
       )}
     </div>
   );

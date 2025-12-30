@@ -149,23 +149,39 @@ const useArticleForm = (isEdit = false) => {
     setValue("tags", article.tags?.map((tag) => tag._id) || []);
     setValue("relatedArticles", article.relatedArticles || []);
 
-    if (article.images) {
-      const mappedImages = article.images.map((url) => ({
-        file: null, // چون فایل نداریم
-        preview: `${import.meta.env.VITE_SERVER_PUBLIC_API_URL_WITHOUT_API}/${url}`, // لینک کامل برای نمایش
-      }));
+    // بارگذاری تصاویر: coverImage + gallery
+    const allImages = [];
 
-      setSelectedImages(mappedImages);
-      setValue("images", article.images); // همچنان می‌تونی فقط رشته‌ها رو ذخیره کنی
+    // افزودن coverImage به عنوان اولین تصویر
+    if (article.featuredImage) {
+      const coverImagePath = typeof article.featuredImage === 'object' && article.featuredImage.desktop
+        ? article.featuredImage.desktop
+        : article.featuredImage;
+      allImages.push({
+        file: null,
+        preview: `${import.meta.env.VITE_SERVER_PUBLIC_API_URL_WITHOUT_API}${coverImagePath}`,
+        serverImage: article.featuredImage,
+      });
+      setPreviewImage(`${import.meta.env.VITE_SERVER_PUBLIC_API_URL_WITHOUT_API}${coverImagePath}`);
     }
+
+    // افزودن تصاویر گالری
+    if (article.gallery && article.gallery.length > 0) {
+      article.gallery.forEach((img) => {
+        const imagePath = typeof img === 'object' && img.desktop ? img.desktop : img;
+        allImages.push({
+          file: null,
+          preview: `${import.meta.env.VITE_SERVER_PUBLIC_API_URL_WITHOUT_API}${imagePath}`,
+          serverImage: img,
+        });
+      });
+    }
+
+    setSelectedImages(allImages);
 
     setSelectedTags(article.tags?.map((tag) => tag._id) || []);
-    setSelectedRelatedArticles(article.relatedArticles || []);
+    setSelectedRelatedArticles(article.relatedArticles?.map((a) => typeof a === 'string' ? a : a._id) || []);
     setEditorContent(article.content || "");
-
-    if (article.coverImage) {
-      setPreviewImage(`${import.meta.env.VITE_SERVER_PUBLIC_API_URL_WITHOUT_API}/${article.coverImage}`);
-    }
 
     // یکبار اجرا بشه
     setStep2Data({ ready: false, article: null });
@@ -277,7 +293,7 @@ const useArticleForm = (isEdit = false) => {
       }
       const imageFile = data?.coverImage;
       if (imageFile instanceof File) {
-        formData.append("coverImage", imageFile);
+        formData.append("images", imageFile);
       }
 
       // افزودن تگ‌ها
@@ -298,11 +314,14 @@ const useArticleForm = (isEdit = false) => {
       if (selectedImages.length > 0) {
         selectedImages.forEach((image) => {
           if (image instanceof File) {
-            formData.append("images", image); //   تغییر نام فیلد به "images"
+            formData.append("images", image);
           } else if (image.file instanceof File) {
-            formData.append("images", image.file); //   تغییر نام فیلد به "images"
+            formData.append("images", image.file);
+          } else if (image.serverImage) {
+            // اگر تصویر از سرور است، اطلاعات کامل را به صورت JSON ارسال کن
+            formData.append("existingImages", JSON.stringify(image.serverImage));
           } else if (typeof image === "string") {
-            formData.append("existingImages", image); // اگر مسیر عکس باشد، در `existingImages` ارسال شود
+            formData.append("existingImages", image);
           }
         });
       }

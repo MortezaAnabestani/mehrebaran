@@ -37,6 +37,7 @@ import adminRoutes from "./modules/admin/admin.routes";
 import helpRequestRoutes from "./modules/help-requests/help-request.routes";
 import bugReportRoutes from "./modules/bug-reports/bug-report.routes";
 import imageUploadCenterRoutes from "./modules/image-upload-center/image-upload-center.routes";
+import taskRoutes from "./modules/tasks/task.routes";
 
 const app = express();
 
@@ -82,6 +83,7 @@ app.use("/api/v1/admin", adminRoutes);
 app.use("/api/v1/help-requests", helpRequestRoutes);
 app.use("/api/v1/bug-reports", bugReportRoutes);
 app.use("/api/v1/imageUploadCenter", imageUploadCenterRoutes);
+app.use("/api/v1/tasks", taskRoutes);
 
 app.use(globalErrorHandler);
 

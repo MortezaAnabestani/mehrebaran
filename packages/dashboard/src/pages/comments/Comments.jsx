@@ -163,7 +163,9 @@ const Comments = () => {
                     <User size={20} />
                   </div>
                   <div>
-                    <p className="font-bold text-sm">{comment?.user || "کاربر مهمان"}</p>
+                    <p className="font-bold text-sm">
+                      {comment?.author?.name || comment?.guestName || "کاربر مهمان"}
+                    </p>
                     <div className="flex items-center gap-3 mt-1 text-[11px] text-gray-500">
                       <span className="flex items-center gap-1">
                         <Clock size={12} />
@@ -171,16 +173,20 @@ const Comments = () => {
                       </span>
                       <span className="flex items-center gap-1">
                         <FileText size={12} />
-                        {comment?.article?.title || "بدون عنوان"}
+                        {comment?.post?.title || "بدون عنوان"}
                       </span>
                     </div>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-2">
-                  {comment.approved ? (
+                  {comment.status === "approved" ? (
                     <span className="flex items-center gap-1 px-2 py-1 bg-green-50 text-green-600 text-[10px] font-bold rounded-full border border-green-100">
                       <CheckCircle size={12} /> تایید شده
+                    </span>
+                  ) : comment.status === "rejected" ? (
+                    <span className="flex items-center gap-1 px-2 py-1 bg-red-50 text-red-600 text-[10px] font-bold rounded-full border border-red-100">
+                      <XCircle size={12} /> رد شده
                     </span>
                   ) : (
                     <span className="flex items-center gap-1 px-2 py-1 bg-orange-50 text-orange-600 text-[10px] font-bold rounded-full border border-orange-100">
@@ -194,7 +200,11 @@ const Comments = () => {
               <div className="p-4">
                 {comment?.parent && (
                   <div className="mb-3 p-2 bg-gray-50 rounded text-[11px] text-gray-500 border-r-2 border-[#f7891b]">
-                    در پاسخ به <span className="font-bold text-gray-700">{comment?.parent?.user}</span>:
+                    در پاسخ به{" "}
+                    <span className="font-bold text-gray-700">
+                      {comment?.parent?.author?.name || comment?.parent?.guestName || "کاربر"}
+                    </span>
+                    :
                     <span className="italic opacity-80 block mt-1 line-clamp-1">
                       "{comment?.parent?.content}"
                     </span>
@@ -205,7 +215,7 @@ const Comments = () => {
 
               {/* Actions */}
               <div className="px-4 py-3 bg-gray-50/50 flex justify-end items-center gap-3 rounded-b-[8px]">
-                {!comment.approved && (
+                {comment.status !== "approved" && (
                   <button
                     onClick={() => handleApprove(comment._id)}
                     disabled={actionLoading === comment._id}

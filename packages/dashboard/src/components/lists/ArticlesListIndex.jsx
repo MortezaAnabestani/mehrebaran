@@ -21,7 +21,7 @@ const ArticlesListIndex = ({ articles }) => {
   const confirmDelete = async () => {
     if (selectedThing) {
       try {
-        await dispatch(deleteArticle(selectedThing.slug)).unwrap();
+        await dispatch(deleteArticle(selectedThing._id)).unwrap();
         dispatch(fetchArticles());
       } catch (error) {
         console.error(" خطا در حذف مقاله:", error);
@@ -53,15 +53,15 @@ const ArticlesListIndex = ({ articles }) => {
                   <Link rel="preconnect" prefetch={true} to={`edit/${article.slug}`}>
                     <img
                       className="w-30 h-40 mx-auto object-cover object-right-bottom rounded-b-full duration-700 cursor-pointer shadow-xl border-2 border-t-0 border-red-200 hover:object-left-top"
-                      src={`${import.meta.env.VITE_SERVER_PUBLIC_API_URL_WITHOUT_API}/${article?.coverImage}`}
+                      src={`${import.meta.env.VITE_SERVER_PUBLIC_API_URL_WITHOUT_API}${article?.featuredImage?.desktop || article?.featuredImage}`}
                       alt={article?.title}
                     />
                   </Link>
                   <div>
                     <span key={article?.author?._id}>
                       <img
-                        src={`${import.meta.env.VITE_SERVER_PUBLIC_API_URL_WITHOUT_API}/${
-                          article?.author?.avatar
+                        src={`${import.meta.env.VITE_SERVER_PUBLIC_API_URL_WITHOUT_API}${
+                          article?.author?.avatar?.desktop || article?.author?.avatar
                         }`}
                         alt={article?.author?.name}
                         className="mx-auto h-15 w-12 mt-2 object-cover rounded-t-full duration-300 cursor-pointer border-2 border-b-0 border-red-200 hover:hover:object-right-bottom"
@@ -224,7 +224,7 @@ const ArticlesListIndex = ({ articles }) => {
             <div className="flex flex-col relative">
               <img
                 className="w-full h-50 object-cover rounded-md rounded-b-none"
-                src={`${import.meta.env.VITE_SERVER_PUBLIC_API_URL_WITHOUT_API}/${article.coverImage}`}
+                src={`${import.meta.env.VITE_SERVER_PUBLIC_API_URL_WITHOUT_API}${article?.featuredImage?.desktop || article?.featuredImage}`}
                 alt={article.title}
               />
               <div className="absolute text-[10px] p-1 bottom-1 left-1 w-full flex gap-2 items-center">

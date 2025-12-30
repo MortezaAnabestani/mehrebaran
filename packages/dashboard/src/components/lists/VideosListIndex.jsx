@@ -36,156 +36,227 @@ const VideosListIndex = ({
     setIsModalOpen(false);
   };
 
+  // Loading State - Functional Skeleton
   if (loading) {
     return (
-      <div className="flex justify-center items-center py-12">
-        <p className="text-gray-600">باران که می‌بارد، تو در راهی...</p>
+      <div className="w-full h-64 border border-slate-200 rounded-md bg-slate-50 flex flex-col items-center justify-center gap-3">
+        <div className="w-6 h-6 border-2 border-slate-300 border-t-[#007acc] rounded-full animate-spin"></div>
+        <span className="text-[12px] font-medium text-slate-500">در حال بارگذاری داده‌ها...</span>
       </div>
     );
   }
 
+  // Empty State - Dashed Border
   if (!videos || videos.length === 0) {
     return (
-      <div className="mt-5 p-4 bg-white rounded-md">
-        <p className="font-bold">هنوز ویدئویی ثبت نشده است</p>
-        <p className="mt-2">از این مسیر برای ثبت ویدئو اقدام کنید: ویدئوها ← ایجاد ویدئوی جدید</p>
+      <div className="mt-4 border-2 border-dashed border-slate-300 rounded-md p-8 text-center bg-slate-50/50">
+        <p className="text-slate-700 font-medium text-sm">داده‌ای یافت نشد</p>
+        <p className="text-slate-500 text-[12px] mt-1">برای شروع، یک ویدئوی جدید ثبت کنید.</p>
       </div>
     );
   }
 
   return (
-    <div>
-      {/* Desktop View */}
-      <div className="hidden lg:block">
-        <div className="bg-white rounded-md shadow">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">تصویر</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">عنوان</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
-                  دسته‌بندی
+    <div className="w-full space-y-4 font-sans">
+      {/* Desktop View - High Density Table */}
+      <div className="hidden lg:block border border-slate-200 rounded-md overflow-hidden bg-white">
+        <table className="min-w-full divide-y divide-slate-200">
+          <thead className="bg-slate-50">
+            <tr>
+              {[
+                "تصویر",
+                "عنوان / زیرعنوان",
+                "دسته‌بندی",
+                "فیلمبردار",
+                "وضعیت",
+                "تاریخ",
+                "بازدید",
+                "عملیات",
+              ].map((header) => (
+                <th
+                  key={header}
+                  className="px-4 py-3 text-right text-[11px] font-semibold text-slate-500 uppercase tracking-wider"
+                >
+                  {header}
                 </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
-                  فیلمبردار
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">وضعیت</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">تاریخ</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">بازدید</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">عملیات</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {videos.map((video) => (
-                <tr key={video._id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap">
+              ))}
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-slate-100">
+            {videos.map((video) => (
+              <tr key={video._id} className="hover:bg-slate-50/80 transition-colors duration-150">
+                {/* Image */}
+                <td className="px-4 py-2.5 whitespace-nowrap w-24">
+                  <div className="h-10 w-16 bg-slate-100 rounded border border-slate-200 overflow-hidden">
                     <img
                       src={`${import.meta.env.VITE_SERVER_PUBLIC_API_URL_WITHOUT_API}/${
                         video.coverImage?.desktop
                       }`}
                       alt={video.title}
-                      className="h-16 w-24 object-cover rounded"
+                      className="h-full w-full object-cover"
                     />
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="text-sm font-medium text-gray-900 max-w-xs truncate">{video.title}</div>
-                    {video.subtitle && (
-                      <div className="text-xs text-gray-500 max-w-xs truncate">{video.subtitle}</div>
-                    )}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="text-sm text-gray-600">{video.category?.name || "-"}</span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="text-sm text-gray-600">{video.cameraman?.name || "-"}</span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span
-                      className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        video.status === "published"
-                          ? "bg-green-100 text-green-800"
-                          : "bg-yellow-100 text-yellow-800"
-                      }`}
-                    >
-                      {video.status === "published" ? "منتشرشده" : "پیش‌نویس"}
+                  </div>
+                </td>
+
+                {/* Title & Subtitle */}
+                <td className="px-4 py-2.5">
+                  <div className="flex flex-col max-w-[200px]">
+                    <span className="text-[13px] font-medium text-slate-800 truncate" title={video.title}>
+                      {video.title}
                     </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {video.subtitle && (
+                      <span className="text-[11px] text-slate-500 truncate mt-0.5">{video.subtitle}</span>
+                    )}
+                  </div>
+                </td>
+
+                {/* Category */}
+                <td className="px-4 py-2.5 whitespace-nowrap">
+                  <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-600 border border-slate-200">
+                    {video.category?.name || "---"}
+                  </span>
+                </td>
+
+                {/* Cameraman */}
+                <td className="px-4 py-2.5 whitespace-nowrap">
+                  <span className="text-[12px] text-slate-600">{video.cameraman?.name || "---"}</span>
+                </td>
+
+                {/* Status */}
+                <td className="px-4 py-2.5 whitespace-nowrap">
+                  <span
+                    className={`inline-flex items-center px-2 py-0.5 rounded-sm text-[11px] font-medium border ${
+                      video.status === "published"
+                        ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                        : "bg-amber-50 text-amber-700 border-amber-200"
+                    }`}
+                  >
+                    <span
+                      className={`w-1.5 h-1.5 rounded-full ml-1.5 ${
+                        video.status === "published" ? "bg-emerald-500" : "bg-amber-500"
+                      }`}
+                    ></span>
+                    {video.status === "published" ? "منتشرشده" : "پیش‌نویس"}
+                  </span>
+                </td>
+
+                {/* Date */}
+                <td className="px-4 py-2.5 whitespace-nowrap">
+                  <span className="text-[12px] text-slate-500 font-mono">
                     {toPersianDigits(convertToPersianTime(video.createdAt, "YYYY/MM/DD"))}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  </span>
+                </td>
+
+                {/* Views */}
+                <td className="px-4 py-2.5 whitespace-nowrap">
+                  <span className="text-[12px] text-slate-600 font-mono">
                     {toPersianDigits(String(video.views || 0))}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <div className="flex gap-2">
-                      <Link
-                        to={`/dashboard/videos/edit/${video.slug}`}
-                        className="text-blue-600 hover:text-blue-900"
+                  </span>
+                </td>
+
+                {/* Actions */}
+                <td className="px-4 py-2.5 whitespace-nowrap text-left">
+                  <div className="flex items-center justify-end gap-2">
+                    <Link
+                      to={`/dashboard/videos/edit/${video.slug}`}
+                      className="p-1.5 text-slate-400 hover:text-[#007acc] hover:bg-blue-50 rounded transition-all"
+                      title="ویرایش"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       >
-                        <img
-                          className="w-5 h-5"
-                          src="/assets/images/dashboard/icons/replace.svg"
-                          alt="ویرایش"
-                          title="ویرایش"
-                        />
-                      </Link>
-                      <button
-                        onClick={() => openDeleteModal(video)}
-                        className="text-red-600 hover:text-red-900"
+                        <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+                      </svg>
+                    </Link>
+                    <button
+                      onClick={() => openDeleteModal(video)}
+                      className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition-all"
+                      title="حذف"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       >
-                        <img
-                          className="w-5 h-5"
-                          src="/assets/images/dashboard/icons/trash.svg"
-                          alt="حذف"
-                          title="حذف"
-                        />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                      </svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
 
-      {/* Mobile View */}
-      <div className="lg:hidden grid grid-cols-1 gap-4">
+      {/* Mobile View - Functional Grid List */}
+      <div className="lg:hidden grid grid-cols-1 gap-3">
         {videos.map((video) => (
-          <div key={video._id} className="bg-white shadow rounded-lg p-4">
+          <div
+            key={video._id}
+            className="bg-white border border-slate-200 rounded-md p-3 flex flex-col gap-3"
+          >
             <div className="flex gap-3">
-              <img
-                src={`${import.meta.env.VITE_SERVER_PUBLIC_API_URL_WITHOUT_API}/${video.coverImage?.mobile}`}
-                alt={video.title}
-                className="w-24 h-24 object-cover rounded"
-              />
-              <div className="flex-1">
-                <h3 className="font-semibold text-sm">{video.title}</h3>
-                {video.subtitle && <p className="text-xs text-gray-600 mt-1">{video.subtitle}</p>}
-                <div className="mt-2 flex gap-2 text-xs">
+              <div className="w-20 h-20 bg-slate-100 rounded border border-slate-200 overflow-hidden flex-shrink-0">
+                <img
+                  src={`${import.meta.env.VITE_SERVER_PUBLIC_API_URL_WITHOUT_API}/${
+                    video.coverImage?.mobile
+                  }`}
+                  alt={video.title}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
+                <div>
+                  <h3 className="text-[13px] font-semibold text-slate-800 truncate">{video.title}</h3>
+                  {video.subtitle && (
+                    <p className="text-[11px] text-slate-500 truncate mt-0.5">{video.subtitle}</p>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-2 mt-2">
                   <span
-                    className={`px-2 py-1 rounded-full ${
+                    className={`inline-flex items-center px-1.5 py-0.5 rounded-sm text-[10px] font-medium border ${
                       video.status === "published"
-                        ? "bg-green-100 text-green-800"
-                        : "bg-yellow-100 text-yellow-800"
+                        ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                        : "bg-amber-50 text-amber-700 border-amber-200"
                     }`}
                   >
                     {video.status === "published" ? "منتشرشده" : "پیش‌نویس"}
                   </span>
-                  <span className="text-gray-500">بازدید: {toPersianDigits(String(video.views || 0))}</span>
+                  <span className="text-[10px] text-slate-400 font-mono border-r border-slate-200 pr-2 mr-auto">
+                    {toPersianDigits(convertToPersianTime(video.createdAt, "YYYY/MM/DD"))}
+                  </span>
                 </div>
               </div>
             </div>
-            <div className="mt-3 flex gap-2">
+
+            {/* Mobile Actions - Full Width Buttons */}
+            <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100">
               <Link
                 to={`/dashboard/videos/edit/${video.slug}`}
-                className="flex-1 text-center py-2 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm"
+                className="flex items-center justify-center py-1.5 text-[12px] font-medium text-[#007acc] bg-blue-50 border border-blue-100 rounded hover:bg-blue-100 transition-colors"
               >
                 ویرایش
               </Link>
               <button
                 onClick={() => openDeleteModal(video)}
-                className="flex-1 py-2 bg-red-500 text-white rounded hover:bg-red-600 text-sm"
+                className="flex items-center justify-center py-1.5 text-[12px] font-medium text-red-600 bg-red-50 border border-red-100 rounded hover:bg-red-100 transition-colors"
               >
                 حذف
               </button>
@@ -194,57 +265,43 @@ const VideosListIndex = ({
         ))}
       </div>
 
-      {/* Pagination */}
+      {/* Pagination - Compact & Bordered */}
       {totalPages > 1 && (
-        <div className="mt-6 flex items-center justify-between bg-white px-4 py-3 rounded-md shadow">
-          <div className="flex-1 flex justify-between sm:hidden">
+        <div className="flex items-center justify-between border-t border-slate-200 pt-4">
+          <div className="hidden sm:flex items-center gap-2 text-[12px] text-slate-500">
+            <span>نمایش</span>
+            <span className="font-mono font-medium text-slate-700">
+              {toPersianDigits((currentPage - 1) * 10 + 1)}
+            </span>
+            <span>تا</span>
+            <span className="font-mono font-medium text-slate-700">
+              {toPersianDigits(Math.min(currentPage * 10, totalItems))}
+            </span>
+            <span>از</span>
+            <span className="font-mono font-medium text-slate-700">{toPersianDigits(totalItems)}</span>
+            <span>ویدئو</span>
+          </div>
+
+          <div className="flex items-center gap-1 mr-auto sm:mr-0 w-full sm:w-auto justify-between sm:justify-end">
             <button
               onClick={onPrevPage}
               disabled={currentPage === 1}
-              className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+              className="px-3 py-1.5 border border-slate-300 rounded text-[12px] font-medium text-slate-600 bg-white hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               قبلی
             </button>
+
+            <span className="text-[12px] text-slate-600 font-medium sm:hidden">
+              {toPersianDigits(currentPage)} / {toPersianDigits(totalPages)}
+            </span>
+
             <button
               onClick={onNextPage}
               disabled={currentPage === totalPages}
-              className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+              className="px-3 py-1.5 border border-slate-300 rounded text-[12px] font-medium text-slate-600 bg-white hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               بعدی
             </button>
-          </div>
-          <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-            <div>
-              <p className="text-sm text-gray-700">
-                نمایش <span className="font-medium">{toPersianDigits((currentPage - 1) * 10 + 1)}</span> تا{" "}
-                <span className="font-medium">{toPersianDigits(Math.min(currentPage * 10, totalItems))}</span>{" "}
-                از <span className="font-medium">{toPersianDigits(totalItems)}</span> ویدئو
-              </p>
-            </div>
-            <div>
-              <nav
-                className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
-                aria-label="Pagination"
-              >
-                <button
-                  onClick={onPrevPage}
-                  disabled={currentPage === 1}
-                  className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
-                >
-                  قبلی
-                </button>
-                <span className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
-                  صفحه {toPersianDigits(currentPage)} از {toPersianDigits(totalPages)}
-                </span>
-                <button
-                  onClick={onNextPage}
-                  disabled={currentPage === totalPages}
-                  className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
-                >
-                  بعدی
-                </button>
-              </nav>
-            </div>
           </div>
         </div>
       )}

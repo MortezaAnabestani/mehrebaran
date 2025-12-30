@@ -25,6 +25,7 @@ import donationsReducer from "../features/donationsSlice";
 import volunteersReducer from "../features/volunteersSlice";
 import focusAreasReducer from "../features/focusAreasSlice";
 import helpRequestsReducer from "../features/helpRequestsSlice";
+import tasksReducer from "../features/tasksSlice";
 
 export const store = configureStore({
   reducer: {
@@ -54,6 +55,7 @@ export const store = configureStore({
     volunteers: volunteersReducer,
     focusAreas: focusAreasReducer,
     helpRequests: helpRequestsReducer,
+    tasks: tasksReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

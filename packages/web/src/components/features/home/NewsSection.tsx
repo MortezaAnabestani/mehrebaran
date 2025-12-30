@@ -8,7 +8,7 @@ export default function NewsSection({ newsItems }: { newsItems: INews[] }) {
     return null;
   }
   return (
-    <section className="my-4">
+    <section className="my-4 md:my-15">
       <HeadTitle title="اخبار" subTitle="گزارش آخرین رویدادها و فعالیت‌های کانون" />
       <div className="w-9/10 md:w-full mx-auto">
         <SmartSwiper

@@ -2,6 +2,7 @@ import { Router } from "express";
 import { needController } from "./need.controller";
 import { protect, protectOptional, restrictTo } from "../auth/auth.middleware";
 import { UserRole } from "common-types";
+import { uploadService } from "../upload/upload.service";
 import supporterMessageRoutes from "../supporter/supporter-messages/supporterMessage.routes";
 import directMessageRoutes from "../direct-messages/directMessage.routes";
 import teamRoutes from "../teams/team.routes";
@@ -11,7 +12,13 @@ import supporterSubmissionRoutes from "../supporter/supporter-submissions/suppor
 const router = Router();
 
 // Public routes
-router.post("/", protectOptional, needController.create);
+router.post(
+  "/",
+  protectOptional,
+  uploadService.uploadMultipleImages("attachments", 20, "needs"),
+  uploadService.resizeAndProcessMultipleImages,
+  needController.create
+);
 router.get("/", needController.getAll);
 
 // Special feeds (must be before /:identifier)
@@ -80,7 +87,14 @@ router.get(
   restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
   needController.getAllForAdmin
 );
-router.patch("/:id", protect, restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN), needController.update);
+router.patch(
+  "/:id",
+  protect,
+  restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
+  uploadService.uploadMultipleImages("attachments", 20, "needs"),
+  uploadService.resizeAndProcessMultipleImages,
+  needController.update
+);
 router.delete("/:id", protect, restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN), needController.delete);
 
 // Nested routes for supporters

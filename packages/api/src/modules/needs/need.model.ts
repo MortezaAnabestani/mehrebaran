@@ -11,7 +11,7 @@ const geoLocationSchema = new Schema(
     },
     coordinates: {
       type: [Number],
-      required: true,
+      required: false, // Changed to optional
       index: "2dsphere",
     },
     address: { type: String },

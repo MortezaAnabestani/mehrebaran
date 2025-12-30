@@ -248,7 +248,7 @@ export default function DashboardPage() {
     try {
       setLoading(true);
       setError(null);
-      const response = await api.get("/admin/dashboard/overview");
+      const response = await api.get("/admins/dashboard/overview");
 
       if (response.data.success) {
         setOverview(response.data.data);

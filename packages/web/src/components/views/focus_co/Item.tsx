@@ -3,6 +3,7 @@
 import { motion, MotionValue, useMotionValue } from "framer-motion";
 import { icon } from "./settings";
 import { useIconTransform } from "./use-icon-transform";
+import OptimizedImage from "@/components/ui/OptimizedImage";
 
 interface ItemProps {
   row: number;
@@ -19,25 +20,23 @@ export function Item({ row, col, planeX, planeY, images }: ItemProps) {
   const y = useMotionValue(0);
   const scale = useMotionValue(1);
 
+  // محاسبه موقعیت در شبکه (Grid)
   const xOffset = col * (icon.size + icon.margin) + (row % 2) * ((icon.size + icon.margin) / 2);
   const yOffset = row * icon.size;
 
+  // اعمال فیزیک حرکت
   useIconTransform({ x, y, scale, planeX, planeY, xOffset, yOffset });
 
-  // استفاده از تصاویر prop یا تصاویر پیش‌فرض
   const imagesList = images && images.length >= 4 ? images : defaultImages;
-
-  // محاسبه ایندکس تصویر برای این آیکون
   const imageIndex = (row * 4 + col) % imagesList.length;
 
-  // تولید رنگ حاشیه تصادفی بر اساس index
-  const hue = (imageIndex * 50) % 360;
-  const borderColor = `hsl(${hue}, 90%, 60%)`;
+  // BRANDING: استفاده از رنگ اصلی برند به جای رنگ‌های تصادفی
+  const primaryColor = "#007acc";
 
   return (
     <motion.div
+      className="absolute flex items-center justify-center cursor-pointer"
       style={{
-        position: "absolute",
         left: xOffset,
         top: yOffset,
         x,
@@ -45,26 +44,49 @@ export function Item({ row, col, planeX, planeY, images }: ItemProps) {
         scale,
         width: icon.size,
         height: icon.size,
-        borderRadius: "50%",
-        border: `4px solid ${borderColor}`, // حاشیه رنگی
-        overflow: "hidden", // برای برش تصویر در دایره
-        backgroundColor: "transparent", // حذف رنگ پس‌زمینه
-        boxSizing: "border-box",
       }}
     >
-      <img
-        src={imagesList[imageIndex]}
-        alt={`icon-${row}-${col}`}
+      {/* 
+        M3 SURFACE CONTAINER 
+        - Elevation: استفاده از سایه برای عمق
+        - Shape: دایره کامل (Rounded Full)
+        - Border: استفاده از رنگ برند برای تاکید
+      */}
+      <div
+        className="relative w-full h-full rounded-full overflow-hidden bg-white shadow-md transition-shadow duration-300 hover:shadow-xl"
         style={{
-          width: "100%",
-          height: "100%",
-          objectFit: "cover",
-          pointerEvents: "none",
-          userSelect: "none",
-          borderRadius: "50%",
+          border: `3px solid ${primaryColor}`, // حاشیه با رنگ برند
+          boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)", // Elevation Level 2
         }}
-        draggable={false}
-      />
+      >
+        {/* تصویر بهینه شده */}
+        <OptimizedImage
+          src={imagesList[imageIndex]}
+          width={icon.size} // استفاده از سایز واقعی آیکون برای کیفیت بهتر
+          height={icon.size}
+          alt={`icon-${row}-${col}`}
+          className="w-full h-full object-cover"
+        />
+
+        {/* 
+          M3 STATE LAYER 
+          - لایه تعاملی که روی تصویر قرار می‌گیرد
+          - در حالت هاور رنگ برند با شفافیت کم نمایش داده می‌شود
+        */}
+        <div
+          className="absolute inset-0 transition-colors duration-300 ease-in-out"
+          style={{
+            backgroundColor: primaryColor,
+            opacity: 0, // حالت عادی
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.opacity = "0.12"; // State Layer Opacity (M3 Standard)
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.opacity = "0";
+          }}
+        />
+      </div>
     </motion.div>
   );
 }

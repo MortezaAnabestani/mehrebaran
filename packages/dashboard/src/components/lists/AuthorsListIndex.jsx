@@ -108,9 +108,9 @@ const AuthorsListIndex = () => {
                         </tr>
                       </thead>
                       <tbody key={author._id} className="text-gray-600 text-sm ">
-                        <tr className="bg-white min-h-50 w-[100%] border-b border-gray-200">
+                        <tr className="bg-white min-h-50 w-full border-b border-gray-200">
                           <td className="flex justify-center items-center h-50 mt-6 border-b-4 border-gray-700">
-                            <div className="w-40 h-full flex flex-col justify-around items-center bg-linear-to-b from-gray-200 via-red-500 to-red-700 rounded-t-full ">
+                            <div className="w-40 h-full flex flex-col justify-around items-center bg-linear-to-b from-gray-200 via-blue-300 to-blue-500 rounded-t-full ">
                               <Link rel="preconnect" prefetch={true} to={`edit/${author.slug}`}>
                                 <img
                                   className="object-cover h-30 w-30 rounded-full border-2 m-2 p-0.5 border-white hover:scale-105 hover:p-2.5 duration-400 hover:animate-pulse cursor-pointer"
@@ -222,7 +222,9 @@ const AuthorsListIndex = () => {
                       className="w-full h-40 object-cover rounded-md"
                       src={
                         author?.avatar?.desktop
-                          ? `${import.meta.env.VITE_SERVER_PUBLIC_API_URL_WITHOUT_API}/${author.avatar.desktop}`
+                          ? `${import.meta.env.VITE_SERVER_PUBLIC_API_URL_WITHOUT_API}/${
+                              author.avatar.desktop
+                            }`
                           : "/assets/images/dashboard/icons/profileIcon.svg"
                       }
                       alt={author.name}

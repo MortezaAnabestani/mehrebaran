@@ -42,7 +42,7 @@ const ArticleMetadata = ({ register, categories, authors, errors }) => {
           <option className="text-gray-400" value="">
             انتخاب نویسنده
           </option>
-          {authors?.articles?.map((author) => (
+          {authors?.authors?.map((author) => (
             <option key={author._id} value={author._id}>
               {author.name}
             </option>

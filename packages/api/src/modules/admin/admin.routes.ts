@@ -3,12 +3,41 @@ import { adminController } from "./admin.controller";
 import { protect } from "../auth/auth.middleware";
 import { restrictTo } from "../auth/auth.middleware";
 import { UserRole } from "../users/user.model";
+import { uploadService } from "../upload/upload.service";
 
 const router = Router();
 
 // Protect all admin routes - only ADMIN and SUPER_ADMIN can access
 router.use(protect);
 router.use(restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN));
+
+// ==================== ADMIN MANAGEMENT ROUTES ====================
+
+// Get all admin users
+router.get("/all", adminController.getAllAdmins);
+
+// Get admin by ID
+router.get("/one/:id", adminController.getAdminById);
+
+// Create new admin (Super Admin only)
+router.post(
+  "/create",
+  restrictTo(UserRole.SUPER_ADMIN),
+  uploadService.uploadSingleImage("avatar", "users"),
+  uploadService.resizeAndProcessImages,
+  adminController.createAdmin
+);
+
+// Update admin
+router.patch(
+  "/:id",
+  uploadService.uploadSingleImage("avatar", "users"),
+  uploadService.resizeAndProcessImages,
+  adminController.updateAdmin
+);
+
+// Delete admin (Super Admin only)
+router.delete("/:id", restrictTo(UserRole.SUPER_ADMIN), adminController.deleteAdmin);
 
 // ==================== DASHBOARD ROUTES ====================
 

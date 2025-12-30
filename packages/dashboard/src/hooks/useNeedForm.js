@@ -123,6 +123,11 @@ const useNeedForm = (isEdit = false) => {
   // پر کردن فرم با داده‌های نیاز در حالت ویرایش
   useEffect(() => {
     if (isEdit && selectedNeed) {
+      console.log('📋 Selected Need Data:', selectedNeed);
+      console.log('👤 User ID:', selectedNeed.submittedBy?.user?._id || selectedNeed.submittedBy?.user);
+      console.log('📁 Category ID:', selectedNeed.category?._id);
+      console.log('📎 Attachments:', selectedNeed.attachments);
+
       reset({
         title: selectedNeed.title || "",
         description: selectedNeed.description || "",

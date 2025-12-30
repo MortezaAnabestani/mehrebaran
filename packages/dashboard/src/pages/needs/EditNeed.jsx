@@ -12,6 +12,15 @@ import {
 } from "@heroicons/react/24/outline";
 import useNeedForm from "../../hooks/useNeedForm";
 
+// Helper function to get full URL for attachments
+const getAttachmentUrl = (url) => {
+  if (!url) return '';
+  if (url.startsWith('http')) return url;
+  const apiUrl = import.meta.env.VITE_SERVER_PUBLIC_API_URL || 'http://localhost:5001/api/v1';
+  const baseUrl = apiUrl.replace('/api/v1', '');
+  return `${baseUrl}${url}`;
+};
+
 const EditNeed = () => {
   const {
     register,
@@ -229,9 +238,12 @@ const EditNeed = () => {
                           {attachment.fileType === "image" ? (
                             <div className="aspect-video w-full overflow-hidden">
                               <img
-                                src={attachment.url}
+                                src={getAttachmentUrl(attachment.url)}
                                 alt={attachment.fileName}
                                 className="w-full h-full object-cover"
+                                onError={() => {
+                                  console.error('Failed to load image:', attachment.url);
+                                }}
                               />
                             </div>
                           ) : (

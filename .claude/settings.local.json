@@ -29,7 +29,9 @@
       "Bash(grep:*)",
       "Bash(curl:*)",
       "Bash(del \"d:\\\\Sefareshat\\\\jahad\\\\mehrebaran\\\\mehre-baran-app\\\\packages\\\\dashboard\\\\src\\\\pages\\\\focus-areas\\\\FocusAreas.jsx\")",
-      "Bash(npm run dev:*)"
+      "Bash(npm run dev:*)",
+      "Bash(git checkout:*)",
+      "Bash(git commit:*)"
     ]
   }
 }

@@ -54,12 +54,13 @@ const EditNeed = () => {
   }
 
   // Reusable Input Component for Consistency
-  const FormInput = ({ label, error, ...props }) => (
+  const FormInput = React.forwardRef(({ label, error, ...props }, ref) => (
     <div className="flex flex-col gap-1.5 w-full">
       <label className="text-[11px] font-medium text-slate-500 uppercase tracking-wide">{label}</label>
       <input
+        ref={ref}
         className={`
-          w-full h-9 px-3 rounded-md border bg-white text-[13px] text-slate-900 
+          w-full h-9 px-3 rounded-md border bg-white text-[13px] text-slate-900
           placeholder:text-slate-400 transition-all outline-none
           focus:border-[#007acc] focus:ring-1 focus:ring-[#007acc]
           ${error ? "border-red-500 focus:border-red-500 focus:ring-red-500" : "border-slate-300"}
@@ -68,16 +69,17 @@ const EditNeed = () => {
       />
       {error && <span className="text-[11px] text-red-500 font-medium">{error.message}</span>}
     </div>
-  );
+  ));
 
   // Reusable Select Component
-  const FormSelect = ({ label, error, children, ...props }) => (
+  const FormSelect = React.forwardRef(({ label, error, children, ...props }, ref) => (
     <div className="flex flex-col gap-1.5 w-full">
       <label className="text-[11px] font-medium text-slate-500 uppercase tracking-wide">{label}</label>
       <div className="relative">
         <select
+          ref={ref}
           className={`
-            w-full h-9 pl-3 pr-8 rounded-md border bg-white text-[13px] text-slate-900 
+            w-full h-9 pl-3 pr-8 rounded-md border bg-white text-[13px] text-slate-900
             appearance-none outline-none transition-all
             focus:border-[#007acc] focus:ring-1 focus:ring-[#007acc]
             ${error ? "border-red-500" : "border-slate-300"}
@@ -94,7 +96,7 @@ const EditNeed = () => {
       </div>
       {error && <span className="text-[11px] text-red-500 font-medium">{error.message}</span>}
     </div>
-  );
+  ));
 
   return (
     <div className="min-h-screen bg-slate-50/50 pb-20 font-sans">

@@ -27,7 +27,7 @@ const schema = yup.object().shape({
     .min(2, "حداقل ۲ عضو مورد نیاز است")
     .max(100, "حداکثر ۱۰۰ عضو مجاز است")
     .default(10),
-  tags: yup.array().of(yup.string()),
+  tags: yup.string(),
 });
 
 const useTeamForm = (isEdit = false) => {
@@ -56,17 +56,17 @@ const useTeamForm = (isEdit = false) => {
       focusArea: "",
       status: "active",
       maxMembers: 10,
-      tags: [],
+      tags: "",
     },
   });
 
   // بارگذاری تیم برای ویرایش
   useEffect(() => {
-    if (isEdit && teamId) {
+    if (isEdit && teamId && needId) {
       const loadTeam = async () => {
         setLoading(true);
         try {
-          const result = await dispatch(fetchTeamById({ needId: needId || selectedTeam?.need, teamId })).unwrap();
+          const result = await dispatch(fetchTeamById({ needId, teamId })).unwrap();
 
           // پر کردن فرم با داده‌های تیم
           if (result.data) {
@@ -76,7 +76,7 @@ const useTeamForm = (isEdit = false) => {
               focusArea: result.data.focusArea || "",
               status: result.data.status || "active",
               maxMembers: result.data.maxMembers || 10,
-              tags: result.data.tags || [],
+              tags: Array.isArray(result.data.tags) ? result.data.tags.join(", ") : "",
             });
           }
         } catch (error) {
@@ -89,7 +89,8 @@ const useTeamForm = (isEdit = false) => {
 
       loadTeam();
     }
-  }, [isEdit, teamId, needId, dispatch, reset, selectedTeam]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isEdit, teamId, needId]);
 
   // مدیریت ارسال فرم
   const handleSubmit = rhfHandleSubmit(async (data) => {
@@ -98,23 +99,32 @@ const useTeamForm = (isEdit = false) => {
 
     try {
       // آماده‌سازی داده‌ها
+      let tags = [];
+      if (data.tags) {
+        if (Array.isArray(data.tags)) {
+          tags = data.tags;
+        } else if (typeof data.tags === 'string') {
+          // Split by comma and trim whitespace
+          tags = data.tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
+        }
+      }
+
       const teamData = {
         name: data.name,
-        description: data.description,
+        description: data.description || undefined,
         focusArea: data.focusArea || undefined,
         status: data.status,
-        maxMembers: parseInt(data.maxMembers),
-        tags: data.tags || [],
+        maxMembers: data.maxMembers ? parseInt(data.maxMembers, 10) : undefined,
+        tags: tags.length > 0 ? tags : undefined,
       };
 
       if (isEdit) {
         // ویرایش تیم
-        const effectiveNeedId = needId || selectedTeam?.need;
-        await dispatch(updateTeam({ needId: effectiveNeedId, teamId, teamData })).unwrap();
+        await dispatch(updateTeam({ needId, teamId, teamData })).unwrap();
         setSubmitSuccess(true);
 
         setTimeout(() => {
-          navigate(`/dashboard/teams/${teamId}`);
+          navigate(`/dashboard/teams/${needId}/${teamId}`);
         }, 1500);
       } else {
         // ایجاد تیم جدید

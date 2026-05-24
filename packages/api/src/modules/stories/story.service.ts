@@ -248,8 +248,18 @@ class StoryService {
   /**
    * حذف استوری
    */
-  public async deleteStory(storyId: string, userId: string): Promise<boolean> {
-    const story = await StoryModel.findOne({ _id: storyId, user: userId });
+  public async deleteStory(storyId: string, userId: string, userRole?: string): Promise<boolean> {
+    // Admins can delete any story
+    const isAdmin = userRole === "admin" || userRole === "super_admin";
+
+    let story;
+    if (isAdmin) {
+      // Admin can delete any story
+      story = await StoryModel.findById(storyId);
+    } else {
+      // Regular users can only delete their own stories
+      story = await StoryModel.findOne({ _id: storyId, user: userId });
+    }
 
     if (!story) {
       return false;
@@ -262,8 +272,18 @@ class StoryService {
   /**
    * دریافت viewers استوری
    */
-  public async getStoryViewers(storyId: string, userId: string) {
-    const story = await StoryModel.findOne({ _id: storyId, user: userId });
+  public async getStoryViewers(storyId: string, userId: string, userRole?: string) {
+    // Admins can view any story's viewers
+    const isAdmin = userRole === "admin" || userRole === "super_admin";
+
+    let story;
+    if (isAdmin) {
+      // Admin can access any story
+      story = await StoryModel.findById(storyId);
+    } else {
+      // Regular users can only access their own stories
+      story = await StoryModel.findOne({ _id: storyId, user: userId });
+    }
 
     if (!story) {
       throw new Error("استوری یافت نشد یا دسترسی ندارید.");
@@ -411,8 +431,18 @@ class StoryService {
   /**
    * حذف highlight
    */
-  public async deleteHighlight(highlightId: string, userId: string): Promise<boolean> {
-    const highlight = await StoryHighlightModel.findOne({ _id: highlightId, user: userId });
+  public async deleteHighlight(highlightId: string, userId: string, userRole?: string): Promise<boolean> {
+    // Admins can delete any highlight
+    const isAdmin = userRole === "admin" || userRole === "super_admin";
+
+    let highlight;
+    if (isAdmin) {
+      // Admin can delete any highlight
+      highlight = await StoryHighlightModel.findById(highlightId);
+    } else {
+      // Regular users can only delete their own highlights
+      highlight = await StoryHighlightModel.findOne({ _id: highlightId, user: userId });
+    }
 
     if (!highlight) {
       return false;
@@ -420,6 +450,98 @@ class StoryService {
 
     await highlight.deleteOne();
     return true;
+  }
+
+  /**
+   * دریافت تمام استوری‌ها برای ادمین (با فیلتر و صفحه‌بندی)
+   */
+  public async getAllStoriesForAdmin(filters: {
+    type?: string;
+    privacy?: string;
+    search?: string;
+    userId?: string;
+    page: number;
+    limit: number;
+  }): Promise<{ stories: IStory[]; total: number }> {
+    const query: any = {};
+
+    // Filter by type
+    if (filters.type) {
+      query.type = filters.type;
+    }
+
+    // Filter by privacy
+    if (filters.privacy) {
+      query.privacy = filters.privacy;
+    }
+
+    // Filter by user
+    if (filters.userId) {
+      query.user = filters.userId;
+    }
+
+    // Search in caption or text
+    if (filters.search) {
+      query.$or = [
+        { caption: { $regex: filters.search, $options: "i" } },
+        { text: { $regex: filters.search, $options: "i" } },
+      ];
+    }
+
+    // Calculate pagination
+    const skip = (filters.page - 1) * filters.limit;
+
+    // Get total count
+    const total = await StoryModel.countDocuments(query);
+
+    // Get stories with pagination
+    const stories = await StoryModel.find(query)
+      .populate("user", "name email avatar")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(filters.limit)
+      .lean();
+
+    return { stories: stories as IStory[], total };
+  }
+
+  /**
+   * دریافت تمام highlights برای ادمین (با فیلتر و صفحه‌بندی)
+   */
+  public async getAllHighlightsForAdmin(filters: {
+    search?: string;
+    userId?: string;
+    page: number;
+    limit: number;
+  }): Promise<{ highlights: any[]; total: number }> {
+    const query: any = { isActive: true };
+
+    // Filter by user
+    if (filters.userId) {
+      query.user = filters.userId;
+    }
+
+    // Search in title
+    if (filters.search) {
+      query.title = { $regex: filters.search, $options: "i" };
+    }
+
+    // Calculate pagination
+    const skip = (filters.page - 1) * filters.limit;
+
+    // Get total count
+    const total = await StoryHighlightModel.countDocuments(query);
+
+    // Get highlights with pagination
+    const highlights = await StoryHighlightModel.find(query)
+      .populate("user", "name email avatar")
+      .populate("stories", "type media.thumbnail caption")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(filters.limit)
+      .lean();
+
+    return { highlights, total };
   }
 
   /**

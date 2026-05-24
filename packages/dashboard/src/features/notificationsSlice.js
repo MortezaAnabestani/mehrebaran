@@ -248,6 +248,19 @@ const notificationsSlice = createSlice({
     unreadCount: 0,
     stats: null,
     preferences: null,
+
+    // Admin states
+    networkStats: null,
+    allNotifications: [],
+    pushTokenStats: null,
+    allPushTokens: [],
+    pagination: {
+      page: 1,
+      limit: 20,
+      total: 0,
+      totalPages: 0,
+    },
+
     loading: false,
     error: null,
   },
@@ -393,8 +406,173 @@ const notificationsSlice = createSlice({
       .addCase(toggleGlobalMute.fulfilled, (state, action) => {
         state.preferences = action.payload.data || action.payload;
       });
+
+    // ==================== ADMIN REDUCERS ====================
+
+    // Get network stats
+    builder
+      .addCase(getNetworkNotificationStats.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getNetworkNotificationStats.fulfilled, (state, action) => {
+        state.loading = false;
+        state.networkStats = action.payload.data || action.payload;
+      })
+      .addCase(getNetworkNotificationStats.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
+
+    // Get all notifications
+    builder
+      .addCase(getAllNotifications.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getAllNotifications.fulfilled, (state, action) => {
+        state.loading = false;
+        state.allNotifications = action.payload.data || [];
+        state.pagination = {
+          page: action.payload.page || 1,
+          limit: action.payload.limit || 20,
+          total: action.payload.total || 0,
+          totalPages: action.payload.totalPages || 0,
+        };
+      })
+      .addCase(getAllNotifications.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
+
+    // Get push token stats
+    builder
+      .addCase(getPushTokenStats.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getPushTokenStats.fulfilled, (state, action) => {
+        state.loading = false;
+        state.pushTokenStats = action.payload.data || action.payload;
+      })
+      .addCase(getPushTokenStats.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
+
+    // Get all push tokens
+    builder
+      .addCase(getAllPushTokens.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getAllPushTokens.fulfilled, (state, action) => {
+        state.loading = false;
+        state.allPushTokens = action.payload.data || [];
+        state.pagination = {
+          page: action.payload.page || 1,
+          limit: action.payload.limit || 20,
+          total: action.payload.total || 0,
+          totalPages: action.payload.totalPages || 0,
+        };
+      })
+      .addCase(getAllPushTokens.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
+
+    // Cleanup old notifications
+    builder
+      .addCase(cleanupOldNotifications.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(cleanupOldNotifications.fulfilled, (state) => {
+        state.loading = false;
+      })
+      .addCase(cleanupOldNotifications.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
   },
 });
+
+// ==================== ADMIN ACTIONS ====================
+
+// Get network notification stats (Admin)
+export const getNetworkNotificationStats = createAsyncThunk(
+  "notifications/admin/getNetworkStats",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await api.get("/notifications/admin/stats");
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "خطایی در دریافت آمار شبکه رخ داده است!"
+      );
+    }
+  }
+);
+
+// Get all notifications (Admin)
+export const getAllNotifications = createAsyncThunk(
+  "notifications/admin/getAll",
+  async (params = {}, { rejectWithValue }) => {
+    try {
+      const response = await api.get("/notifications/admin/all", { params });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "خطایی در دریافت لیست اعلانات رخ داده است!"
+      );
+    }
+  }
+);
+
+// Get push token stats (Admin)
+export const getPushTokenStats = createAsyncThunk(
+  "notifications/admin/getPushTokenStats",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await api.get("/notifications/admin/push-tokens/stats");
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "خطایی در دریافت آمار توکن‌ها رخ داده است!"
+      );
+    }
+  }
+);
+
+// Get all push tokens (Admin)
+export const getAllPushTokens = createAsyncThunk(
+  "notifications/admin/getAllPushTokens",
+  async (params = {}, { rejectWithValue }) => {
+    try {
+      const response = await api.get("/notifications/admin/push-tokens", { params });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "خطایی در دریافت لیست توکن‌ها رخ داده است!"
+      );
+    }
+  }
+);
+
+// Cleanup old notifications (Admin)
+export const cleanupOldNotifications = createAsyncThunk(
+  "notifications/admin/cleanup",
+  async (daysOld = 90, { rejectWithValue }) => {
+    try {
+      const response = await api.delete(`/notifications/admin/cleanup?daysOld=${daysOld}`);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "خطایی در پاکسازی اعلانات رخ داده است!"
+      );
+    }
+  }
+);
 
 export const { clearError, incrementUnreadCount, decrementUnreadCount } = notificationsSlice.actions;
 export default notificationsSlice.reducer;

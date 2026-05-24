@@ -97,7 +97,7 @@ export const createBadgeSchema = z.object({
           .optional(),
         description: z.string().min(1, "توضیحات شرط الزامی است."),
       })
-    ),
+    ).optional(),
     points: z.number().min(0, "امتیاز نشان نمی‌تواند منفی باشد.").optional(),
     isActive: z.boolean().optional(),
     isSecret: z.boolean().optional(),

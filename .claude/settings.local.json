@@ -32,7 +32,11 @@
       "Bash(npm run dev:*)",
       "Bash(git checkout:*)",
       "Bash(git commit:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(npm run build:*)",
+      "Bash(node -e:*)",
+      "Bash(Select-Object -Last 15)",
+      "Bash(taskkill //F //PID 3464)"
     ]
   }
 }

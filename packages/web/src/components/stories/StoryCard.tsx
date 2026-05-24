@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import type { IStory, IUser } from "@mehrebaran/common-types";
+import type { IStory, IUser } from "common-types";
 import storyService from "@/services/story.service";
 
 // ===========================
@@ -23,11 +23,7 @@ export interface StoryCardProps {
  * A story card component for displaying story previews
  * Shows user avatar, story preview, and unviewed indicator
  */
-const StoryCard: React.FC<StoryCardProps> = ({
-  story,
-  hasUnviewed = false,
-  onClick,
-}) => {
+const StoryCard: React.FC<StoryCardProps> = ({ story, hasUnviewed = false, onClick }) => {
   // ===========================
   // Helper Functions
   // ===========================
@@ -92,26 +88,16 @@ const StoryCard: React.FC<StoryCardProps> = ({
   const isExpired = storyService.isStoryExpired(story);
 
   return (
-    <button
-      onClick={handleClick}
-      className="flex-shrink-0 w-28 cursor-pointer group"
-      disabled={isExpired}
-    >
+    <button onClick={handleClick} className="flex-shrink-0 w-28 cursor-pointer group" disabled={isExpired}>
       <div className="relative">
         {/* Story Preview */}
         <div
           className={`w-28 h-36 rounded-2xl overflow-hidden border-4 transition-all ${
-            hasUnviewed
-              ? "border-morange shadow-lg shadow-morange/30"
-              : "border-gray-200"
+            hasUnviewed ? "border-morange shadow-lg shadow-morange/30" : "border-gray-200"
           } ${isExpired ? "opacity-50 grayscale" : "group-hover:scale-105"}`}
         >
           {storyPreview ? (
-            <img
-              src={storyPreview}
-              alt={`استوری ${userName}`}
-              className="w-full h-full object-cover"
-            />
+            <img src={storyPreview} alt={`استوری ${userName}`} className="w-full h-full object-cover" />
           ) : storyText ? (
             <div
               className={`w-full h-full flex items-center justify-center p-3 ${getStoryBackground()}`}
@@ -120,9 +106,7 @@ const StoryCard: React.FC<StoryCardProps> = ({
                 color: story.textColor || "#ffffff",
               }}
             >
-              <p className="text-sm text-center font-bold line-clamp-4">
-                {storyText}
-              </p>
+              <p className="text-sm text-center font-bold line-clamp-4">{storyText}</p>
             </div>
           ) : (
             <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
@@ -134,11 +118,7 @@ const StoryCard: React.FC<StoryCardProps> = ({
           {story.type === "video" && (
             <div className="absolute inset-0 flex items-center justify-center bg-black/20">
               <div className="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center">
-                <svg
-                  className="w-6 h-6 text-mblue mr-1"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
+                <svg className="w-6 h-6 text-mblue mr-1" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
                 </svg>
               </div>
@@ -175,9 +155,7 @@ const StoryCard: React.FC<StoryCardProps> = ({
       </div>
 
       {/* User Name */}
-      <p className="text-xs text-gray-700 mt-5 text-center truncate px-1 font-medium">
-        {userName}
-      </p>
+      <p className="text-xs text-gray-700 mt-5 text-center truncate px-1 font-medium">{userName}</p>
 
       {/* Time Ago */}
       <p className="text-xs text-gray-400 text-center mt-1">{timeAgo}</p>

@@ -85,10 +85,11 @@ app.use("/api/v1/bug-reports", bugReportRoutes);
 app.use("/api/v1/imageUploadCenter", imageUploadCenterRoutes);
 app.use("/api/v1/tasks", taskRoutes);
 
-app.use(globalErrorHandler);
-
 app.get("/", (req, res) => {
   res.send("API is running...");
 });
+
+// Error handler must be last
+app.use(globalErrorHandler);
 
 export default app;

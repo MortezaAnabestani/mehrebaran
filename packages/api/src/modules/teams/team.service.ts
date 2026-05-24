@@ -83,6 +83,7 @@ class TeamService {
   public async updateTeam(
     teamId: string,
     userId: string,
+    userRole: string,
     updateData: {
       name?: string;
       description?: string;
@@ -98,10 +99,14 @@ class TeamService {
       throw new ApiError(404, "تیم یافت نشد.");
     }
 
-    // Only leader or co-leader can update team
-    const member = team.members.find((m: any) => m.user.toString() === userId);
-    if (!member || !["leader", "co_leader"].includes(member.role)) {
-      throw new ApiError(403, "فقط رهبر یا همکار رهبر می‌تواند تیم را به‌روزرسانی کند.");
+    // Admins and super admins can update any team, otherwise only leader or co-leader
+    const isAdmin = userRole === "admin" || userRole === "super_admin";
+
+    if (!isAdmin) {
+      const member = team.members.find((m: any) => m.user.toString() === userId);
+      if (!member || !["leader", "co_leader"].includes(member.role)) {
+        throw new ApiError(403, "فقط رهبر یا همکار رهبر می‌تواند تیم را به‌روزرسانی کند.");
+      }
     }
 
     Object.assign(team, updateData);
@@ -111,16 +116,20 @@ class TeamService {
   }
 
   // Delete team
-  public async deleteTeam(teamId: string, userId: string): Promise<void> {
+  public async deleteTeam(teamId: string, userId: string, userRole: string): Promise<void> {
     const team = await TeamModel.findById(teamId);
     if (!team) {
       throw new ApiError(404, "تیم یافت نشد.");
     }
 
-    // Only leader can delete team
-    const member = team.members.find((m: any) => m.user.toString() === userId);
-    if (!member || member.role !== "leader") {
-      throw new ApiError(403, "فقط رهبر تیم می‌تواند آن را حذف کند.");
+    // Admins and super admins can delete any team, otherwise only leader
+    const isAdmin = userRole === "admin" || userRole === "super_admin";
+
+    if (!isAdmin) {
+      const member = team.members.find((m: any) => m.user.toString() === userId);
+      if (!member || member.role !== "leader") {
+        throw new ApiError(403, "فقط رهبر تیم می‌تواند آن را حذف کند.");
+      }
     }
 
     await TeamModel.findByIdAndDelete(teamId);
@@ -386,6 +395,54 @@ class TeamService {
       totalContribution,
       averageContribution: activeMembers > 0 ? Math.round(totalContribution / activeMembers) : 0,
     };
+  }
+
+  // Get all teams for admin dashboard (across all needs)
+  public async getAllTeamsForAdmin(filters: {
+    status?: TeamStatus;
+    focusArea?: TeamFocusArea;
+    search?: string;
+    page: number;
+    limit: number;
+  }): Promise<{ teams: ITeam[]; total: number }> {
+    const query: any = {};
+
+    // Filter by status
+    if (filters.status) {
+      query.status = filters.status;
+    }
+
+    // Filter by focus area
+    if (filters.focusArea) {
+      query.focusArea = filters.focusArea;
+    }
+
+    // Search by name or description
+    if (filters.search) {
+      query.$or = [
+        { name: { $regex: filters.search, $options: "i" } },
+        { description: { $regex: filters.search, $options: "i" } },
+        { tags: { $in: [new RegExp(filters.search, "i")] } },
+      ];
+    }
+
+    // Calculate pagination
+    const skip = (filters.page - 1) * filters.limit;
+
+    // Get total count
+    const total = await TeamModel.countDocuments(query);
+
+    // Get teams with pagination
+    const teams = await TeamModel.find(query)
+      .populate("need", "title slug status")
+      .populate("createdBy", "name email")
+      .populate("members.user", "name email avatar")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(filters.limit)
+      .lean();
+
+    return { teams: teams as ITeam[], total };
   }
 }
 

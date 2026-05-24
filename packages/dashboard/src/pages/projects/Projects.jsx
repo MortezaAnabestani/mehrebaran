@@ -11,12 +11,16 @@ import {
   UsersIcon,
   CalendarIcon,
   ChartBarIcon,
+  MagnifyingGlassIcon,
+  XMarkIcon,
+  ChevronRightIcon,
+  ChevronLeftIcon,
 } from "@heroicons/react/24/outline";
 import ConfirmDelete from "../../components/createContent/ConfirmDelete";
 
 const Projects = () => {
   const dispatch = useDispatch();
-  const { projects, loading } = useSelector((state) => state.projects);
+  const { projects, loading, totalPages, currentPage } = useSelector((state) => state.projects);
 
   const [deleteModal, setDeleteModal] = useState({
     isOpen: false,
@@ -24,9 +28,33 @@ const Projects = () => {
     projectTitle: "",
   });
 
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [page, setPage] = useState(1);
+
+  // Debounce search
   useEffect(() => {
-    dispatch(fetchProjects());
-  }, [dispatch]);
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+      setPage(1); // Reset to page 1 when search changes
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  // Fetch projects with search and pagination
+  useEffect(() => {
+    const params = {
+      page,
+      limit: 12,
+    };
+
+    if (debouncedSearch) {
+      params.search = debouncedSearch;
+    }
+
+    dispatch(fetchProjects(params));
+  }, [dispatch, page, debouncedSearch]);
 
   const handleDelete = (project) => {
     setDeleteModal({
@@ -105,6 +133,28 @@ const Projects = () => {
             ایجاد پروژه جدید
           </button>
         </Link>
+      </div>
+
+      {/* Search Bar */}
+      <div className="mb-4">
+        <div className="relative max-w-md">
+          <MagnifyingGlassIcon className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <input
+            type="text"
+            placeholder="جستجو در پروژه‌ها..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pr-10 pl-10 py-2 text-xs border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-[#007acc]/20 focus:border-[#007acc] transition-all"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery("")}
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+            >
+              <XMarkIcon className="w-4 h-4" />
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Content Area */}
@@ -249,18 +299,87 @@ const Projects = () => {
           ) : (
             <div className="flex flex-col items-center justify-center py-20 border-2 border-dashed border-slate-200 rounded-lg bg-slate-50">
               <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mb-3">
-                <PlusIcon className="w-6 h-6 text-slate-400" />
+                {debouncedSearch ? (
+                  <MagnifyingGlassIcon className="w-6 h-6 text-slate-400" />
+                ) : (
+                  <PlusIcon className="w-6 h-6 text-slate-400" />
+                )}
               </div>
-              <h3 className="text-sm font-medium text-slate-900">هنوز پروژه‌ای ایجاد نشده است</h3>
-              <p className="text-xs text-slate-500 mt-1 mb-4">برای شروع فعالیت، اولین پروژه خود را بسازید</p>
-              <Link to="/dashboard/projects/create">
-                <button className="bg-[#007acc] text-white text-xs px-4 py-2 rounded-md hover:bg-[#006bb3] transition-colors">
-                  ایجاد اولین پروژه
-                </button>
-              </Link>
+              <h3 className="text-sm font-medium text-slate-900">
+                {debouncedSearch ? "نتیجه‌ای یافت نشد" : "هنوز پروژه‌ای ایجاد نشده است"}
+              </h3>
+              <p className="text-xs text-slate-500 mt-1 mb-4">
+                {debouncedSearch
+                  ? "لطفاً عبارت جستجوی خود را تغییر دهید"
+                  : "برای شروع فعالیت، اولین پروژه خود را بسازید"}
+              </p>
+              {!debouncedSearch && (
+                <Link to="/dashboard/projects/create">
+                  <button className="bg-[#007acc] text-white text-xs px-4 py-2 rounded-md hover:bg-[#006bb3] transition-colors">
+                    ایجاد اولین پروژه
+                  </button>
+                </Link>
+              )}
             </div>
           )}
         </>
+      )}
+
+      {/* Pagination */}
+      {!loading && projects && projects.length > 0 && totalPages > 1 && (
+        <div className="mt-6 flex items-center justify-center gap-2">
+          <button
+            onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+            className="p-2 text-slate-600 bg-white border border-slate-200 rounded-md hover:border-[#007acc] hover:text-[#007acc] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:border-slate-200 disabled:hover:text-slate-600 transition-all"
+          >
+            <ChevronRightIcon className="w-4 h-4" />
+          </button>
+
+          <div className="flex items-center gap-1">
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => {
+              // Show first page, last page, current page, and pages around current
+              const showPage =
+                pageNum === 1 ||
+                pageNum === totalPages ||
+                (pageNum >= currentPage - 1 && pageNum <= currentPage + 1);
+
+              if (!showPage) {
+                // Show ellipsis
+                if (pageNum === currentPage - 2 || pageNum === currentPage + 2) {
+                  return (
+                    <span key={pageNum} className="px-2 text-slate-400 text-xs">
+                      ...
+                    </span>
+                  );
+                }
+                return null;
+              }
+
+              return (
+                <button
+                  key={pageNum}
+                  onClick={() => setPage(pageNum)}
+                  className={`min-w-[32px] px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
+                    currentPage === pageNum
+                      ? "bg-[#007acc] text-white border border-[#007acc]"
+                      : "bg-white text-slate-600 border border-slate-200 hover:border-[#007acc] hover:text-[#007acc]"
+                  }`}
+                >
+                  {pageNum}
+                </button>
+              );
+            })}
+          </div>
+
+          <button
+            onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
+            disabled={currentPage === totalPages}
+            className="p-2 text-slate-600 bg-white border border-slate-200 rounded-md hover:border-[#007acc] hover:text-[#007acc] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:border-slate-200 disabled:hover:text-slate-600 transition-all"
+          >
+            <ChevronLeftIcon className="w-4 h-4" />
+          </button>
+        </div>
       )}
 
       <ConfirmDelete

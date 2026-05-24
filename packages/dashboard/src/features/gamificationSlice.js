@@ -43,6 +43,16 @@ export const fetchBadgeById = createAsyncThunk("gamification/fetchBadgeById", as
   }
 });
 
+// دریافت نشان‌ها با آمار (برای ادمین)
+export const fetchBadgesWithStats = createAsyncThunk("gamification/fetchBadgesWithStats", async (_, { rejectWithValue }) => {
+  try {
+    const response = await api.get("/gamification/badges/admin/with-stats");
+    return response.data;
+  } catch (error) {
+    return rejectWithValue(error.response?.data?.message || "خطایی در دریافت نشان‌ها رخ داده است!");
+  }
+});
+
 // ایجاد نشان جدید (admin only)
 export const createBadge = createAsyncThunk("gamification/createBadge", async (badgeData, { rejectWithValue }) => {
   try {
@@ -114,6 +124,16 @@ export const fetchPointTransactions = createAsyncThunk("gamification/fetchPointT
     return response.data;
   } catch (error) {
     return rejectWithValue(error.response?.data?.message || "خطایی در دریافت تراکنش‌های امتیازات رخ داده است!");
+  }
+});
+
+// دریافت تمام تراکنش‌های شبکه (برای ادمین)
+export const fetchAllTransactions = createAsyncThunk("gamification/fetchAllTransactions", async (params = {}, { rejectWithValue }) => {
+  try {
+    const response = await api.get("/gamification/points/admin/all-transactions", { params });
+    return response.data;
+  } catch (error) {
+    return rejectWithValue(error.response?.data?.message || "خطایی در دریافت تراکنش‌ها رخ داده است!");
   }
 });
 
@@ -191,6 +211,7 @@ const gamificationSlice = createSlice({
     leaderboard: [],
     pointSummary: null,
     pointTransactions: [],
+    allTransactions: [], // All transactions for admin view
     pointsBreakdown: null,
     userStats: null,
     userActivity: [],
@@ -198,6 +219,13 @@ const gamificationSlice = createSlice({
     error: null,
     totalPages: 0,
     total: 0,
+    // Pagination for admin views
+    pagination: {
+      page: 1,
+      limit: 20,
+      total: 0,
+      totalPages: 0,
+    },
   },
   reducers: {
     clearError: (state) => {
@@ -218,6 +246,21 @@ const gamificationSlice = createSlice({
         state.total = action.payload.total || 0;
       })
       .addCase(fetchBadges.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
+
+    // Fetch Badges With Stats (Admin)
+    builder
+      .addCase(fetchBadgesWithStats.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchBadgesWithStats.fulfilled, (state, action) => {
+        state.loading = false;
+        state.badges = action.payload.data;
+      })
+      .addCase(fetchBadgesWithStats.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });
@@ -404,6 +447,27 @@ const gamificationSlice = createSlice({
         state.userActivity = action.payload.data;
       })
       .addCase(fetchUserActivity.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
+
+    // Fetch All Transactions (Admin)
+    builder
+      .addCase(fetchAllTransactions.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchAllTransactions.fulfilled, (state, action) => {
+        state.loading = false;
+        state.allTransactions = action.payload.data || [];
+        state.pagination = {
+          page: action.payload.page || 1,
+          limit: action.payload.limit || 20,
+          total: action.payload.total || 0,
+          totalPages: action.payload.totalPages || 0,
+        };
+      })
+      .addCase(fetchAllTransactions.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

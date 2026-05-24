@@ -22,6 +22,15 @@ interface StoryViewerProps {
   onStoryChange?: (index: number) => void;
 }
 
+interface SmartImageProps {
+  src: string;
+  alt: string;
+  width: number;
+  height: number;
+  className?: string;
+  onLoadingComplete?: () => void;
+}
+
 const StoryViewer: React.FC<StoryViewerProps> = ({ stories, initialIndex = 0, onClose, onStoryChange }) => {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [progress, setProgress] = useState(0);
@@ -187,7 +196,6 @@ const StoryViewer: React.FC<StoryViewerProps> = ({ stories, initialIndex = 0, on
               className={`w-full h-full object-contain transition-opacity duration-300 ${
                 isImageLoading ? "opacity-0" : "opacity-100"
               }`}
-              onLoadingComplete={() => setIsImageLoading(false)}
             />
           ) : (
             <video

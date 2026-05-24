@@ -270,6 +270,108 @@ class NotificationController {
       message: "توکن push notification حذف شد.",
     });
   });
+
+  // ==================== ADMIN ENDPOINTS ====================
+
+  /**
+   * GET /api/v1/notifications/admin/stats
+   * دریافت آمار کل نوتیفیکیشن‌های شبکه (Admin)
+   */
+  public getNetworkStats = asyncHandler(async (req: Request, res: Response) => {
+    const stats = await notificationService.getNetworkStats();
+
+    res.status(200).json({
+      success: true,
+      data: stats,
+    });
+  });
+
+  /**
+   * GET /api/v1/notifications/admin/all
+   * دریافت همه نوتیفیکیشن‌ها (Admin)
+   */
+  public getAllNotifications = asyncHandler(async (req: Request, res: Response) => {
+    const { type, priority, isRead, recipientId } = req.query;
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 20;
+
+    const result = await notificationService.getAllNotifications({
+      type: type as any,
+      priority: priority as any,
+      isRead: isRead === "true" ? true : isRead === "false" ? false : undefined,
+      recipientId: recipientId as string,
+      page,
+      limit,
+    });
+
+    const totalPages = Math.ceil(result.total / limit);
+
+    res.status(200).json({
+      success: true,
+      data: result.notifications,
+      page,
+      limit,
+      total: result.total,
+      totalPages,
+    });
+  });
+
+  /**
+   * GET /api/v1/notifications/admin/push-tokens/stats
+   * دریافت آمار Push Tokens شبکه (Admin)
+   */
+  public getPushTokenStats = asyncHandler(async (req: Request, res: Response) => {
+    const stats = await notificationService.getPushTokenStats();
+
+    res.status(200).json({
+      success: true,
+      data: stats,
+    });
+  });
+
+  /**
+   * GET /api/v1/notifications/admin/push-tokens
+   * دریافت همه Push Tokens (Admin)
+   */
+  public getAllPushTokens = asyncHandler(async (req: Request, res: Response) => {
+    const { platform, isActive, userId } = req.query;
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 20;
+
+    const result = await notificationService.getAllPushTokens({
+      platform: platform as string,
+      isActive: isActive === "true" ? true : isActive === "false" ? false : undefined,
+      userId: userId as string,
+      page,
+      limit,
+    });
+
+    const totalPages = Math.ceil(result.total / limit);
+
+    res.status(200).json({
+      success: true,
+      data: result.tokens,
+      page,
+      limit,
+      total: result.total,
+      totalPages,
+    });
+  });
+
+  /**
+   * DELETE /api/v1/notifications/admin/cleanup
+   * حذف نوتیفیکیشن‌های قدیمی (Admin)
+   */
+  public cleanupOldNotifications = asyncHandler(async (req: Request, res: Response) => {
+    const daysOld = parseInt(req.query.daysOld as string) || 90;
+    const deletedCount = await notificationService.deleteOldNotifications(daysOld);
+
+    res.status(200).json({
+      success: true,
+      message: `${deletedCount} نوتیفیکیشن قدیمی حذف شد.`,
+      data: { deletedCount },
+    });
+  });
 }
 
 export const notificationController = new NotificationController();

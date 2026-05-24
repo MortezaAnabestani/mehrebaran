@@ -11,7 +11,7 @@ import truncateText from "@/utils/truncateText";
 export default function RunningProjectsSection({ projects }: { projects: IProject[] }) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
-  const scrollContainerRef = useRef(null);
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
   const startXRef = useRef(0);
   const scrollLeftRef = useRef(0);
 
@@ -40,14 +40,14 @@ export default function RunningProjectsSection({ projects }: { projects: IProjec
       : projects;
 
   // هندلرهای درگ (Drag) برای لیست تامب‌نیل‌ها
-  const handleMouseDown = (e) => {
+  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!scrollContainerRef.current) return;
     setIsDragging(true);
     startXRef.current = e.pageY - scrollContainerRef.current.offsetTop;
     scrollLeftRef.current = scrollContainerRef.current.scrollTop;
   };
 
-  const handleMouseMove = (e) => {
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!isDragging || !scrollContainerRef.current) return;
     e.preventDefault();
     const y = e.pageY - scrollContainerRef.current.offsetTop;
@@ -118,7 +118,7 @@ export default function RunningProjectsSection({ projects }: { projects: IProjec
                   </div>
 
                   <p className="text-[13px] text-slate-600 leading-relaxed text-justify line-clamp-3 md:line-clamp-none">
-                    {truncateText(project?.excerpt, 180)}
+                    {truncateText(project?.excerpt ?? "", 180)}
                   </p>
 
                   <div className="mt-auto pt-4 border-t border-slate-100">

@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { socialController } from "./social.controller";
-import { protect, protectOptional } from "../auth/auth.middleware";
+import { protect, protectOptional, restrictTo } from "../auth/auth.middleware";
+import { UserRole } from "common-types";
 
 const router = Router();
 
@@ -45,5 +46,49 @@ router.get("/share/top", socialController.getTopSharedItems);
 router.get("/share/:itemId/stats", socialController.getItemShareStats);
 router.get("/share/:needId/og-metadata", socialController.getOGMetadata);
 router.get("/share/:needId/url", socialController.getShareUrl);
+
+// ==================== ADMIN ROUTES ====================
+
+// Follow statistics and management (admin only)
+router.get(
+  "/admin/follow/stats",
+  protect,
+  restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
+  socialController.getNetworkFollowStats
+);
+router.get(
+  "/admin/follows",
+  protect,
+  restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
+  socialController.getAllFollows
+);
+
+// Mention statistics and management (admin only)
+router.get(
+  "/admin/mention/stats",
+  protect,
+  restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
+  socialController.getNetworkMentionStats
+);
+router.get(
+  "/admin/mentions",
+  protect,
+  restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
+  socialController.getAllMentions
+);
+
+// Share statistics and management (admin only)
+router.get(
+  "/admin/share/stats",
+  protect,
+  restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
+  socialController.getNetworkShareStats
+);
+router.get(
+  "/admin/shares",
+  protect,
+  restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
+  socialController.getAllShares
+);
 
 export default router;

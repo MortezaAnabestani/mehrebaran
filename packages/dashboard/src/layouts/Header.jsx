@@ -35,7 +35,7 @@ const Header = ({ sidebarOpen, setSidebarOpen, role, me: initialMe }) => {
   const logoutHandler = async () => {
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_SERVER_PUBLIC_API_URL_WITHOUT_API}/api/admins/logout`,
+        `${import.meta.env.VITE_SERVER_PUBLIC_API_URL_WITHOUT_API}/api/admin/logout`,
         {
           withCredentials: true,
         }

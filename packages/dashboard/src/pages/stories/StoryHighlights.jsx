@@ -1,77 +1,64 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { fetchAllHighlights, deleteHighlight } from "../../features/storiesSlice";
 import {
-  fetchUserHighlights,
-  createHighlight,
-  updateHighlight,
-  deleteHighlight,
-} from "../../features/storiesSlice";
-import { Card, Button, Input, Typography, Chip, IconButton } from "@material-tailwind/react";
-import {
-  PlusIcon,
-  PencilIcon,
+  MagnifyingGlassIcon,
   TrashIcon,
   PhotoIcon,
   SparklesIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  UserIcon,
+  Squares2X2Icon,
+  ListBulletIcon,
+  ArrowPathIcon,
 } from "@heroicons/react/24/outline";
 import ConfirmDelete from "../../components/createContent/ConfirmDelete";
+import toast from "react-hot-toast";
 
 const StoryHighlights = () => {
   const dispatch = useDispatch();
-  const { userId } = useParams();
-  const { highlights, loading } = useSelector((state) => state.stories);
+  const { allHighlights, loading, pagination } = useSelector((state) => state.stories);
 
-  const [createModal, setCreateModal] = useState(false);
-  const [editModal, setEditModal] = useState({ isOpen: false, highlight: null });
-  const [deleteModal, setDeleteModal] = useState({ isOpen: false, highlightId: null, title: "" });
-  const [formData, setFormData] = useState({
-    title: "",
-    coverImage: "",
+  const [filters, setFilters] = useState({
+    search: "",
+    page: 1,
+    limit: 24, // افزایش تعداد آیتم در صفحه به دلیل طراحی فشرده‌تر
   });
 
-  // بارگذاری هایلایت‌ها
+  const [deleteModal, setDeleteModal] = useState({
+    isOpen: false,
+    highlightId: null,
+    title: "",
+  });
+
+  // بارگذاری اولیه
   useEffect(() => {
-    const loadHighlights = async () => {
-      try {
-        // اگر userId داده نشده، هایلایت‌های خود کاربر را می‌گیرد (باید از API کاربر جاری استفاده کند)
-        await dispatch(fetchUserHighlights(userId || "me")).unwrap();
-      } catch (error) {
-        console.error("خطا در بارگذاری هایلایت‌ها:", error);
-      }
-    };
+    loadData();
+  }, [filters.page, filters.search]);
 
-    loadHighlights();
-  }, [dispatch, userId]);
-
-  // ایجاد هایلایت
-  const handleCreate = async () => {
+  const loadData = async () => {
     try {
-      await dispatch(createHighlight(formData)).unwrap();
-      setCreateModal(false);
-      setFormData({ title: "", coverImage: "" });
+      await dispatch(fetchAllHighlights(filters)).unwrap();
     } catch (error) {
-      console.error("خطا در ایجاد هایلایت:", error);
+      console.error("Error loading highlights:", error);
     }
   };
 
-  // ویرایش هایلایت
-  const handleEdit = async () => {
-    try {
-      await dispatch(
-        updateHighlight({
-          highlightId: editModal.highlight._id,
-          highlightData: formData,
-        })
-      ).unwrap();
-      setEditModal({ isOpen: false, highlight: null });
-      setFormData({ title: "", coverImage: "" });
-    } catch (error) {
-      console.error("خطا در ویرایش هایلایت:", error);
-    }
-  };
+  // محاسبه آمار (Memoized)
+  const stats = useMemo(() => {
+    const total = pagination.total || allHighlights.length;
+    const stories = allHighlights.reduce((sum, h) => sum + (h.stories?.length || 0), 0);
+    const avg = total > 0 ? (stories / total).toFixed(1) : 0;
 
-  // حذف هایلایت
+    return [
+      { label: "TOTAL_HIGHLIGHTS", value: total },
+      { label: "TOTAL_STORIES", value: stories },
+      { label: "AVG_DENSITY", value: avg },
+    ];
+  }, [allHighlights, pagination.total]);
+
+  // هندلرها
   const handleDelete = (id, title) => {
     setDeleteModal({ isOpen: true, highlightId: id, title });
   };
@@ -80,225 +67,181 @@ const StoryHighlights = () => {
     try {
       await dispatch(deleteHighlight(deleteModal.highlightId)).unwrap();
       setDeleteModal({ isOpen: false, highlightId: null, title: "" });
+      toast.success("آیتم با موفقیت حذف شد");
+      loadData();
     } catch (error) {
-      console.error("خطا در حذف هایلایت:", error);
+      toast.error("خطا در عملیات حذف");
     }
   };
 
-  // باز کردن مودال ویرایش
-  const openEditModal = (highlight) => {
-    setFormData({
-      title: highlight.title,
-      coverImage: highlight.coverImage,
-    });
-    setEditModal({ isOpen: true, highlight });
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= pagination.totalPages) {
+      setFilters({ ...filters, page: newPage });
+    }
   };
 
   return (
-    <div className="p-6">
-      <Card className="p-6">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-2">
-            <SparklesIcon className="w-6 h-6 text-yellow-500" />
-            <Typography variant="h4" color="blue-gray">
-              هایلایت‌های استوری
-            </Typography>
+    <div className="min-h-screen bg-slate-50 text-slate-800 font-sans p-4">
+      {/* --- HEADER & METRICS BAR --- */}
+      <div className="bg-white border border-slate-200 rounded-md mb-4 shadow-sm">
+        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between p-3 gap-4">
+          {/* Title & Breadcrumb */}
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-[#007acc]/10 flex items-center justify-center rounded-md border border-[#007acc]/20">
+              <SparklesIcon className="w-4 h-4 text-[#007acc]" />
+            </div>
+            <div>
+              <h1 className="text-sm font-bold text-slate-800 uppercase tracking-wider">هایلایت‌ها</h1>
+              <div className="flex items-center gap-2 text-[11px] text-slate-500 font-mono">
+                <span>ادمین</span>
+                <span>/</span>
+                <span>مدیریت محتوای شبکه اجتماعی</span>
+              </div>
+            </div>
           </div>
-          <Button
-            color="blue"
-            className="flex items-center gap-2"
-            onClick={() => setCreateModal(true)}
-          >
-            <PlusIcon className="w-5 h-5" />
-            ایجاد هایلایت جدید
-          </Button>
+
+          {/* Metrics Strip */}
+          <div className="flex items-center gap-4 bg-slate-50 px-3 py-1.5 rounded border border-slate-100">
+            {stats.map((stat, index) => (
+              <div key={index} className="flex items-center gap-2">
+                <span className="text-[10px] font-bold text-slate-400 uppercase">{stat.label}:</span>
+                <span className="text-xs font-mono font-medium text-slate-700">{stat.value}</span>
+                {index < stats.length - 1 && <div className="h-3 w-[1px] bg-slate-200 mx-1" />}
+              </div>
+            ))}
+          </div>
         </div>
 
-        {/* Loading */}
-        {loading ? (
-          <div className="flex justify-center items-center py-10">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        {/* Toolbar: Search & Actions */}
+        <div className="border-t border-slate-100 p-2 flex flex-col sm:flex-row gap-2 bg-slate-50/50">
+          <div className="relative flex-1 max-w-md">
+            <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <input
+              type="text"
+              placeholder="Search by title or ID..."
+              className="w-full pl-9 pr-3 py-1.5 text-xs border border-slate-300 rounded-md focus:outline-none focus:border-[#007acc] focus:ring-1 focus:ring-[#007acc] transition-all bg-white"
+              value={filters.search}
+              onChange={(e) => setFilters({ ...filters, search: e.target.value, page: 1 })}
+            />
           </div>
-        ) : (
-          <>
-            {/* Highlights Grid */}
-            {highlights && Array.isArray(highlights) && highlights.length > 0 ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
-                {highlights.map((highlight) => (
-                  <Card
-                    key={highlight._id}
-                    className="overflow-hidden hover:shadow-lg transition-shadow"
+
+          <div className="flex items-center gap-2 ml-auto">
+            <button
+              onClick={() => loadData()}
+              className="p-1.5 text-slate-500 hover:text-[#007acc] hover:bg-[#007acc]/5 rounded border border-transparent hover:border-[#007acc]/20 transition-all"
+              title="Refresh Data"
+            >
+              <ArrowPathIcon className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
+            </button>
+            <div className="h-4 w-[1px] bg-slate-300 mx-1" />
+            <span className="text-[11px] text-slate-500 font-mono">
+              Page {pagination.page} of {pagination.totalPages || 1}
+            </span>
+            <div className="flex gap-1">
+              <button
+                onClick={() => handlePageChange(pagination.page - 1)}
+                disabled={pagination.page === 1}
+                className="p-1.5 border border-slate-200 rounded bg-white disabled:opacity-50 hover:border-[#007acc] hover:text-[#007acc] transition-colors"
+              >
+                <ChevronRightIcon className="w-3 h-3" />
+              </button>
+              <button
+                onClick={() => handlePageChange(pagination.page + 1)}
+                disabled={pagination.page === pagination.totalPages}
+                className="p-1.5 border border-slate-200 rounded bg-white disabled:opacity-50 hover:border-[#007acc] hover:text-[#007acc] transition-colors"
+              >
+                <ChevronLeftIcon className="w-3 h-3" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* --- MAIN CONTENT GRID --- */}
+      {loading && allHighlights.length === 0 ? (
+        <div className="flex justify-center items-center h-64 border border-dashed border-slate-300 rounded-md bg-slate-50/50">
+          <div className="flex flex-col items-center gap-2">
+            <div className="animate-spin w-6 h-6 border-2 border-slate-300 border-t-[#007acc] rounded-full"></div>
+            <span className="text-xs text-slate-500 font-mono">LOADING_DATA...</span>
+          </div>
+        </div>
+      ) : allHighlights.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-2">
+          {allHighlights.map((highlight) => (
+            <div
+              key={highlight._id}
+              className="group bg-white border border-slate-200 rounded-md p-2 hover:border-[#007acc] transition-all duration-200 flex gap-3 items-start"
+            >
+              {/* Thumbnail */}
+              <div className="relative w-16 h-16 shrink-0 rounded border border-slate-100 overflow-hidden bg-slate-100">
+                {highlight.coverImage ? (
+                  <img src={highlight.coverImage} alt="" className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-slate-300">
+                    <PhotoIcon className="w-6 h-6" />
+                  </div>
+                )}
+                <div className="absolute bottom-0 right-0 bg-slate-900/80 text-white text-[9px] px-1 font-mono">
+                  {highlight.stories?.length || 0}
+                </div>
+              </div>
+
+              {/* Data Content */}
+              <div className="flex-1 min-w-0 flex flex-col h-full justify-between">
+                <div>
+                  <h3 className="text-xs font-semibold text-slate-700 truncate mb-1" title={highlight.title}>
+                    {highlight.title || "Untitled Highlight"}
+                  </h3>
+
+                  {/* User Row */}
+                  <div className="flex items-center gap-1.5 mb-1.5">
+                    {highlight.user?.avatar ? (
+                      <img src={highlight.user.avatar} className="w-3.5 h-3.5 rounded-full" alt="" />
+                    ) : (
+                      <UserIcon className="w-3.5 h-3.5 text-slate-400" />
+                    )}
+                    <span className="text-[10px] text-slate-500 truncate max-w-[100px]">
+                      {highlight.user?.name || "Unknown User"}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Meta & Actions */}
+                <div className="flex items-end justify-between border-t border-slate-100 pt-1.5 mt-1">
+                  <div className="flex flex-col">
+                    <span className="text-[9px] text-slate-400 font-mono">UPDATED</span>
+                    <span className="text-[10px] text-slate-600 font-mono">
+                      {new Date(highlight.updatedAt).toLocaleDateString("fa-IR")}
+                    </span>
+                  </div>
+
+                  <button
+                    onClick={() => handleDelete(highlight._id, highlight.title)}
+                    className="opacity-0 group-hover:opacity-100 p-1 text-red-500 hover:bg-red-50 rounded transition-all"
+                    title="Delete Highlight"
                   >
-                    {/* Cover Image */}
-                    <div className="relative h-32 bg-gray-100">
-                      {highlight.coverImage ? (
-                        <img
-                          src={highlight.coverImage}
-                          alt={highlight.title}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <PhotoIcon className="w-12 h-12 text-gray-400" />
-                        </div>
-                      )}
-
-                      {/* Stories Count */}
-                      <div className="absolute bottom-2 right-2">
-                        <Chip
-                          value={`${highlight.stories?.length || 0} استوری`}
-                          color="white"
-                          size="sm"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Highlight Info */}
-                    <div className="p-3">
-                      <Typography variant="small" color="blue-gray" className="font-bold mb-2">
-                        {highlight.title}
-                      </Typography>
-
-                      {/* Actions */}
-                      <div className="flex gap-2">
-                        <IconButton
-                          color="green"
-                          size="sm"
-                          onClick={() => openEditModal(highlight)}
-                        >
-                          <PencilIcon className="w-4 h-4" />
-                        </IconButton>
-                        <IconButton
-                          color="red"
-                          size="sm"
-                          onClick={() => handleDelete(highlight._id, highlight.title)}
-                        >
-                          <TrashIcon className="w-4 h-4" />
-                        </IconButton>
-                      </div>
-                    </div>
-                  </Card>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-10">
-                <SparklesIcon className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-                <Typography variant="h6" color="gray">
-                  هنوز هایلایتی ایجاد نشده است
-                </Typography>
-                <Typography variant="small" color="gray" className="mb-4">
-                  استوری‌های مهم خود را در هایلایت‌ها ذخیره کنید
-                </Typography>
-                <Button
-                  color="blue"
-                  className="flex items-center gap-2 mx-auto"
-                  onClick={() => setCreateModal(true)}
-                >
-                  <PlusIcon className="w-5 h-5" />
-                  ایجاد اولین هایلایت
-                </Button>
-              </div>
-            )}
-          </>
-        )}
-      </Card>
-
-      {/* Create Modal */}
-      {createModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <Card className="p-6 w-full max-w-md">
-            <Typography variant="h5" color="blue-gray" className="mb-4">
-              ایجاد هایلایت جدید
-            </Typography>
-
-            <div className="space-y-4">
-              <Input
-                label="عنوان هایلایت *"
-                value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              />
-              <Input
-                label="URL تصویر کاور *"
-                value={formData.coverImage}
-                onChange={(e) => setFormData({ ...formData, coverImage: e.target.value })}
-              />
-
-              <div className="flex gap-2 justify-end pt-4">
-                <Button
-                  variant="outlined"
-                  color="gray"
-                  onClick={() => {
-                    setCreateModal(false);
-                    setFormData({ title: "", coverImage: "" });
-                  }}
-                >
-                  انصراف
-                </Button>
-                <Button
-                  color="blue"
-                  onClick={handleCreate}
-                  disabled={!formData.title || !formData.coverImage}
-                >
-                  ایجاد
-                </Button>
+                    <TrashIcon className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               </div>
             </div>
-          </Card>
+          ))}
+        </div>
+      ) : (
+        <div className="flex flex-col items-center justify-center h-64 border border-slate-200 rounded-md bg-white">
+          <Squares2X2Icon className="w-10 h-10 text-slate-300 mb-2" />
+          <p className="text-sm text-slate-500 font-medium">No Highlights Found</p>
+          <p className="text-xs text-slate-400 mt-1">Try adjusting your search filters</p>
         </div>
       )}
 
-      {/* Edit Modal */}
-      {editModal.isOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <Card className="p-6 w-full max-w-md">
-            <Typography variant="h5" color="blue-gray" className="mb-4">
-              ویرایش هایلایت
-            </Typography>
-
-            <div className="space-y-4">
-              <Input
-                label="عنوان هایلایت *"
-                value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              />
-              <Input
-                label="URL تصویر کاور *"
-                value={formData.coverImage}
-                onChange={(e) => setFormData({ ...formData, coverImage: e.target.value })}
-              />
-
-              <div className="flex gap-2 justify-end pt-4">
-                <Button
-                  variant="outlined"
-                  color="gray"
-                  onClick={() => {
-                    setEditModal({ isOpen: false, highlight: null });
-                    setFormData({ title: "", coverImage: "" });
-                  }}
-                >
-                  انصراف
-                </Button>
-                <Button
-                  color="blue"
-                  onClick={handleEdit}
-                  disabled={!formData.title || !formData.coverImage}
-                >
-                  ذخیره
-                </Button>
-              </div>
-            </div>
-          </Card>
-        </div>
-      )}
-
-      {/* Delete Confirmation Modal */}
+      {/* Delete Modal Wrapper */}
       <ConfirmDelete
         isOpen={deleteModal.isOpen}
         onClose={() => setDeleteModal({ isOpen: false, highlightId: null, title: "" })}
         onConfirm={confirmDelete}
-        title="حذف هایلایت"
-        message={`آیا از حذف هایلایت "${deleteModal.title}" اطمینان دارید؟`}
+        title="CONFIRM_DELETION"
+        message={`Are you sure you want to delete "${deleteModal.title}"? This action cannot be undone.`}
       />
     </div>
   );

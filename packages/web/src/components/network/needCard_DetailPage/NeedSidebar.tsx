@@ -40,7 +40,7 @@ const NeedSidebar: React.FC<NeedSidebarProps> = ({ need, likesCount, commentsCou
           <div className="absolute -inset-0.5 sm:-inset-1 bg-gradient-to-r from-[#007acc] to-blue-400 rounded-lg sm:rounded-xl blur opacity-20 group-hover:opacity-40 transition duration-500"></div>
 
           <SmartButton
-            variant="custom" // فرض بر این است که می‌توان کلاس‌های کاستوم داد یا از variant مناسب استفاده کرد
+            variant="mblue" // فرض بر این است که می‌توان کلاس‌های کاستوم داد یا از variant مناسب استفاده کرد
             size="lg"
             onClick={onFinancialSupport}
             className="relative w-full bg-[#007acc] text-white font-bold py-2 sm:py-2.5 md:py-3 rounded-lg sm:rounded-xl text-sm sm:text-base

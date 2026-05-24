@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { notificationController } from "./notification.controller";
-import { protect } from "../auth/auth.middleware";
+import { protect, restrictTo } from "../auth/auth.middleware";
+import { UserRole } from "../users/user.model";
 import { validate } from "../../core/middlewares/validate";
 import {
   getNotificationsSchema,
@@ -114,5 +115,57 @@ router.post("/push-token", validate(registerPushTokenSchema), notificationContro
  * حذف Push notification token
  */
 router.delete("/push-token/:token", validate(pushTokenParamSchema), notificationController.removePushToken);
+
+// ==================== ADMIN ROUTES ====================
+
+/**
+ * GET /api/v1/notifications/admin/stats
+ * دریافت آمار کل نوتیفیکیشن‌های شبکه (Admin)
+ */
+router.get(
+  "/admin/stats",
+  restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
+  notificationController.getNetworkStats
+);
+
+/**
+ * GET /api/v1/notifications/admin/all
+ * دریافت همه نوتیفیکیشن‌ها (Admin)
+ */
+router.get(
+  "/admin/all",
+  restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
+  notificationController.getAllNotifications
+);
+
+/**
+ * GET /api/v1/notifications/admin/push-tokens/stats
+ * دریافت آمار Push Tokens شبکه (Admin)
+ */
+router.get(
+  "/admin/push-tokens/stats",
+  restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
+  notificationController.getPushTokenStats
+);
+
+/**
+ * GET /api/v1/notifications/admin/push-tokens
+ * دریافت همه Push Tokens (Admin)
+ */
+router.get(
+  "/admin/push-tokens",
+  restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
+  notificationController.getAllPushTokens
+);
+
+/**
+ * DELETE /api/v1/notifications/admin/cleanup
+ * حذف نوتیفیکیشن‌های قدیمی (Admin Cleanup)
+ */
+router.delete(
+  "/admin/cleanup",
+  restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
+  notificationController.cleanupOldNotifications
+);
 
 export default router;

@@ -55,6 +55,19 @@ export const fetchMyTeams = createAsyncThunk("teams/fetchMyTeams", async (_, { r
   }
 });
 
+//   دریافت تمام تیم‌های شبکه (برای ادمین)
+export const fetchAllTeams = createAsyncThunk(
+  "teams/fetchAll",
+  async (params = {}, { rejectWithValue }) => {
+    try {
+      const response = await api.get("/teams/admin/all", { params });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "خطایی در دریافت تیم‌ها رخ داده است!");
+    }
+  }
+);
+
 //   دریافت جزئیات یک تیم
 export const fetchTeamById = createAsyncThunk(
   "teams/fetchById",
@@ -139,11 +152,19 @@ const teamsSlice = createSlice({
   initialState: {
     teams: [],
     myTeams: [],
+    allTeams: [], // All teams for admin view
     selectedTeam: null,
     teamStats: null,
     loading: false,
     error: null,
     success: false,
+    // Pagination and filtering for admin view
+    pagination: {
+      page: 1,
+      limit: 20,
+      total: 0,
+      totalPages: 0,
+    },
   },
   reducers: {
     resetStatus: (state) => {
@@ -251,6 +272,26 @@ const teamsSlice = createSlice({
         state.myTeams = action.payload.data || action.payload;
       })
       .addCase(fetchMyTeams.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || action.error.message;
+      })
+
+      //   مدیریت `GET` - دریافت تمام تیم‌ها (ادمین)
+      .addCase(fetchAllTeams.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchAllTeams.fulfilled, (state, action) => {
+        state.loading = false;
+        state.allTeams = action.payload.data || [];
+        state.pagination = {
+          page: action.payload.page || 1,
+          limit: action.payload.limit || 20,
+          total: action.payload.total || 0,
+          totalPages: action.payload.totalPages || 0,
+        };
+      })
+      .addCase(fetchAllTeams.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || action.error.message;
       })

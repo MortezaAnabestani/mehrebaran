@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useRef } from "react";
-import type { IStory, IUser } from "@mehrebaran/common-types";
+import type { IStory, IUser } from "common-types";
 import storyService from "@/services/story.service";
 import SmartButton from "@/components/ui/SmartButton";
 
@@ -24,12 +24,7 @@ export interface StoryViewerProps {
  * A fullscreen story viewer component
  * Supports image, video, and text stories with reactions
  */
-const StoryViewer: React.FC<StoryViewerProps> = ({
-  stories,
-  initialIndex = 0,
-  onClose,
-  onStoryChange,
-}) => {
+const StoryViewer: React.FC<StoryViewerProps> = ({ stories, initialIndex = 0, onClose, onStoryChange }) => {
   const [currentIndex, setCurrentIndex] = useState<number>(initialIndex);
   const [progress, setProgress] = useState<number>(0);
   const [isPaused, setIsPaused] = useState<boolean>(false);
@@ -40,9 +35,7 @@ const StoryViewer: React.FC<StoryViewerProps> = ({
   const viewedStories = useRef<Set<string>>(new Set());
 
   const currentStory = stories[currentIndex];
-  const storyDuration = currentStory?.type === "video"
-    ? (currentStory.media?.duration || 10) * 1000
-    : 5000; // 5 seconds for image/text
+  const storyDuration = currentStory?.type === "video" ? (currentStory.media?.duration || 10) * 1000 : 5000; // 5 seconds for image/text
 
   // ===========================
   // Story Navigation
@@ -176,19 +169,11 @@ const StoryViewer: React.FC<StoryViewerProps> = ({
       {/* Progress Bars */}
       <div className="absolute top-0 left-0 right-0 flex gap-1 p-4">
         {stories.map((_, index) => (
-          <div
-            key={index}
-            className="flex-1 h-1 bg-white/30 rounded-full overflow-hidden"
-          >
+          <div key={index} className="flex-1 h-1 bg-white/30 rounded-full overflow-hidden">
             <div
               className="h-full bg-white transition-all duration-100"
               style={{
-                width:
-                  index < currentIndex
-                    ? "100%"
-                    : index === currentIndex
-                    ? `${progress}%`
-                    : "0%",
+                width: index < currentIndex ? "100%" : index === currentIndex ? `${progress}%` : "0%",
               }}
             ></div>
           </div>
@@ -219,18 +204,8 @@ const StoryViewer: React.FC<StoryViewerProps> = ({
           onClick={onClose}
           className="w-10 h-10 rounded-full bg-black/30 hover:bg-black/50 flex items-center justify-center text-white transition-colors"
         >
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M6 18L18 6M6 6l12 12"
-            />
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
       </div>
@@ -276,9 +251,7 @@ const StoryViewer: React.FC<StoryViewerProps> = ({
         {/* Caption */}
         {currentStory.caption && (
           <div className="absolute bottom-20 left-0 right-0 px-6">
-            <p className="text-white text-center bg-black/50 rounded-lg p-3">
-              {currentStory.caption}
-            </p>
+            <p className="text-white text-center bg-black/50 rounded-lg p-3">{currentStory.caption}</p>
           </div>
         )}
       </div>
@@ -289,10 +262,7 @@ const StoryViewer: React.FC<StoryViewerProps> = ({
         className="absolute left-0 top-20 bottom-20 w-1/3 cursor-pointer"
         disabled={currentIndex === 0}
       />
-      <button
-        onClick={goToNext}
-        className="absolute right-0 top-20 bottom-20 w-1/3 cursor-pointer"
-      />
+      <button onClick={goToNext} className="absolute right-0 top-20 bottom-20 w-1/3 cursor-pointer" />
 
       {/* Controls */}
       <div className="absolute bottom-6 left-0 right-0 flex items-center justify-center gap-4 px-4">

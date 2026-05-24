@@ -86,12 +86,7 @@ const Login: React.FC = () => {
           disabled={isLoading}
         />
 
-        <SmartButton
-          type="submit"
-          variant="mblue"
-          className="cursor-pointer"
-          disabled={isLoading}
-        >
+        <SmartButton type="submit" variant="mblue" className="cursor-pointer" disabled={isLoading}>
           {isLoading ? "در حال ورود..." : "ورود"}
         </SmartButton>
 

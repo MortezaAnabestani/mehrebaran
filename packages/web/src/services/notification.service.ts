@@ -1,5 +1,5 @@
 import api from "@/lib/api";
-import type { IUser } from "@/types/user";
+import type { IUser } from "common-types";
 
 // ===========================
 // Types & Interfaces
@@ -117,7 +117,7 @@ class NotificationService {
    */
   public async getNotificationsByType(
     type: NotificationType,
-    limit: number = 20
+    limit: number = 20,
   ): Promise<GetNotificationsResponse> {
     const response = await api.get("/notifications", {
       params: { type, limit },
@@ -233,7 +233,7 @@ class NotificationService {
    */
   public async toggleChannel(
     channel: string,
-    enabled: boolean
+    enabled: boolean,
   ): Promise<{ success: boolean; data: any; message: string }> {
     const response = await api.post("/notifications/preferences/toggle-channel", {
       channel,
@@ -247,7 +247,7 @@ class NotificationService {
    */
   public async muteType(
     type: NotificationType,
-    mutedUntil?: Date
+    mutedUntil?: Date,
   ): Promise<{ success: boolean; data: any; message: string }> {
     const response = await api.post("/notifications/preferences/mute-type", {
       type,
@@ -275,7 +275,7 @@ class NotificationService {
    */
   public async registerPushToken(
     token: string,
-    platform: "web" | "ios" | "android"
+    platform: "web" | "ios" | "android",
   ): Promise<{ success: boolean; data: any; message: string }> {
     const response = await api.post("/notifications/push-token", {
       token,

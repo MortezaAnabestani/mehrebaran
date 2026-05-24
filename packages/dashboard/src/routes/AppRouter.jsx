@@ -137,8 +137,8 @@ const AppRouter = () => {
               <Route path="help-requests" element={<HelpRequests />} />
               <Route path="teams" element={<Teams />} />
               <Route path="teams/create/:needId" element={<CreateTeam />} />
-              <Route path="teams/edit/:teamId" element={<EditTeam />} />
-              <Route path="teams/:teamId" element={<TeamDetails />} />
+              <Route path="teams/:needId/:teamId" element={<TeamDetails />} />
+              <Route path="teams/:needId/:teamId/edit" element={<EditTeam />} />
               <Route path="gamification/badges" element={<Badges />} />
               <Route path="gamification/badges/create" element={<CreateBadge />} />
               <Route path="gamification/badges/edit/:badgeId" element={<EditBadge />} />

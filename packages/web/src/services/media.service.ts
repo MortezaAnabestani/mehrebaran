@@ -6,7 +6,7 @@ import type {
   MediaCategory,
   IMediaUploadOptions,
   IMediaUploadResult,
-} from "@mehrebaran/common-types";
+} from "common-types";
 
 // ===========================
 // Request Types
@@ -274,7 +274,7 @@ class MediaService {
    */
   public async addMediaToGallery(
     galleryId: string,
-    mediaIds: string[]
+    mediaIds: string[],
   ): Promise<GetMediaGalleryByIdResponse> {
     const response = await api.post(`/media/galleries/${galleryId}/media`, {
       mediaIds,
@@ -287,7 +287,7 @@ class MediaService {
    */
   public async removeMediaFromGallery(
     galleryId: string,
-    mediaId: string
+    mediaId: string,
   ): Promise<GetMediaGalleryByIdResponse> {
     const response = await api.delete(`/media/galleries/${galleryId}/media/${mediaId}`);
     return response.data;

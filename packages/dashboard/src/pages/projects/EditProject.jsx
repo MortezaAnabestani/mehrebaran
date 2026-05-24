@@ -6,9 +6,7 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { fetchProjectById, updateProject } from "../../features/projectsSlice";
-import Loading from "../../components/Loading";
 import SeoPart from "../../components/createContent/SeoPart";
-import styles from "../../styles/admin.module.css";
 import { Calendar } from "react-multi-date-picker";
 import persian from "react-date-object/calendars/persian";
 import persian_fa from "react-date-object/locales/persian_fa";
@@ -151,244 +149,338 @@ const EditProject = () => {
     }
   };
 
+  // --- UI Components ---
+  const Label = ({ children, htmlFor, required }) => (
+    <label htmlFor={htmlFor} className="block text-[11px] font-medium text-slate-500 mb-1.5">
+      {children} {required && <span className="text-red-500">*</span>}
+    </label>
+  );
+
+  const Input = ({ register, name, type = "text", placeholder, error, ...props }) => (
+    <div className="w-full">
+      <input
+        type={type}
+        id={name}
+        placeholder={placeholder}
+        className={`w-full h-9 px-3 text-[12px] bg-white border rounded-md outline-none transition-all duration-200
+          ${
+            error
+              ? "border-red-300 focus:border-red-500 focus:ring-1 focus:ring-red-500"
+              : "border-slate-300 focus:border-[#007acc] focus:ring-1 focus:ring-[#007acc]"
+          } placeholder:text-slate-400 text-slate-800`}
+        {...register(name)}
+        {...props}
+      />
+      {error && <p className="text-red-500 text-[10px] mt-1">{error.message}</p>}
+    </div>
+  );
+
+  const Select = ({ register, name, options, error }) => (
+    <div className="w-full">
+      <select
+        className={`w-full h-9 px-2 text-[12px] bg-white border rounded-md outline-none transition-all duration-200
+          ${
+            error
+              ? "border-red-300 focus:border-red-500"
+              : "border-slate-300 focus:border-[#007acc] focus:ring-1 focus:ring-[#007acc]"
+          } text-slate-800`}
+        {...register(name)}
+      >
+        {options.map((opt) => (
+          <option key={opt.value} value={opt.value}>
+            {opt.label}
+          </option>
+        ))}
+      </select>
+      {error && <p className="text-red-500 text-[10px] mt-1">{error.message}</p>}
+    </div>
+  );
+
+  const SectionHeader = ({ title }) => (
+    <div className="bg-slate-50 px-4 py-2.5 border-b border-slate-200 flex items-center">
+      <h3 className="text-[12px] font-bold text-slate-700 uppercase tracking-wide">{title}</h3>
+    </div>
+  );
+
   if (fetchLoading) {
     return (
-      <div className="flex justify-center items-center py-10">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-500"></div>
+      <div className="flex justify-center items-center min-h-[400px]">
+        <div className="animate-spin rounded-full h-8 w-8 border-2 border-slate-200 border-t-[#007acc]"></div>
       </div>
     );
   }
 
   if (!selectedProject) {
     return (
-      <div className="p-6 bg-white rounded-md">
-        <h3 className="text-lg font-bold text-red-500">پروژه یافت نشد</h3>
+      <div className="p-4 bg-red-50 border border-red-200 rounded-md text-red-600 text-sm">
+        پروژه یافت نشد
       </div>
     );
   }
 
   return (
-    <div>
-      <div className="bg-white rounded-md mb-6">
-        <div className="flex items-center justify-between p-4">
-          <h2 className="flex gap-3 text-xl font-medium">ویرایش پروژه</h2>
-          <Link
-            rel="preconnect"
-            to="/dashboard/projects"
-            className="px-3 py-[6px] bg-gray-600 rounded-md hover:bg-gray-700 text-white"
-          >
-            <span className="text-slate-50 w-1 animate-pulse">فهرست پروژه‌ها</span>
-          </Link>
+    <div className="w-full max-w-[1400px] mx-auto pb-20">
+      {/* Header Actions */}
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h2 className="text-lg font-bold text-slate-800">ویرایش پروژه</h2>
+          <p className="text-[11px] text-slate-500 mt-1">شناسه: {id}</p>
         </div>
+        <Link
+          to="/dashboard/projects"
+          className="px-4 py-2 bg-white border border-slate-300 text-slate-600 text-[12px] font-medium rounded-md hover:bg-slate-50 transition-colors"
+        >
+          بازگشت به لیست
+        </Link>
       </div>
 
+      {/* Alerts */}
       {submitSuccess && (
-        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4">
-          <strong className="font-bold ml-1">موفقیت!</strong>
-          <span>پروژه با موفقیت ویرایش شد. در حال انتقال...</span>
+        <div className="bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-3 rounded-md mb-4 text-xs flex items-center">
+          <span className="w-2 h-2 bg-emerald-500 rounded-full ml-2"></span>
+          پروژه با موفقیت ویرایش شد. در حال انتقال...
         </div>
       )}
 
       {submitError && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
-          <strong className="font-bold ml-1">خطا!</strong>
-          <span>{submitError}</span>
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md mb-4 text-xs flex items-center">
+          <span className="w-2 h-2 bg-red-500 rounded-full ml-2"></span>
+          {submitError}
         </div>
       )}
 
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div className={`${styles.createContent_title} mb-10`}>
-          <label className="text-[12px] mb-2 block" htmlFor="title">
-            عنوان پروژه *
-          </label>
-          <input
-            type="text"
-            id="title"
-            className="px-3 py-2 text-xs rounded-md outline-0 border border-gray-300 focus:border-gray-400 h-10 w-full"
-            {...register("title")}
-          />
-          {errors.title && <p className="text-red-500 text-xs mt-1">{errors.title.message}</p>}
-        </div>
-
-        <div className={`${styles.createContent_title} mb-10`}>
-          <label className="text-[12px] mb-2 block" htmlFor="subtitle">
-            زیرعنوان
-          </label>
-          <input
-            type="text"
-            id="subtitle"
-            className="px-3 py-2 text-xs rounded-md outline-0 border border-gray-300 focus:border-gray-400 h-10 w-full"
-            {...register("subtitle")}
-          />
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-          <div className={styles.createContent_title}>
-            <label className="text-[12px] mb-2 block">دسته‌بندی *</label>
-            <select
-              className="px-3 py-2 text-xs rounded-md outline-0 border border-gray-300 focus:border-gray-400 h-10 w-full"
-              {...register("category")}
-            >
-              <option value="">انتخاب دسته‌بندی</option>
-              <option value="health">بهداشت و سلامت</option>
-              <option value="education">آموزش</option>
-              <option value="housing">مسکن</option>
-              <option value="food">غذا</option>
-              <option value="clothing">پوشاک</option>
-              <option value="other">سایر</option>
-            </select>
-            {errors.category && <p className="text-red-500 text-xs mt-1">{errors.category.message}</p>}
-          </div>
-
-          <div className={styles.createContent_title}>
-            <label className="text-[12px] mb-2 block">وضعیت *</label>
-            <select
-              className="px-3 py-2 text-xs rounded-md outline-0 border border-gray-300 focus:border-gray-400 h-10 w-full"
-              {...register("status")}
-            >
-              <option value="draft">پیش‌نویس</option>
-              <option value="active">فعال</option>
-              <option value="completed">تکمیل شده</option>
-            </select>
-          </div>
-        </div>
-
-        <Suspense fallback={<Loading />}>
-          <div className={`${styles.createContent_title} mb-10`}>
-            <label className="text-[12px] mb-2 block">توضیحات کامل پروژه *</label>
-            <TextEditor value={editorContent} onChange={setEditorContent} />
-            {errors.description && <p className="text-red-500 text-xs mt-1">{errors.description.message}</p>}
-          </div>
-        </Suspense>
-
-        <div className={`${styles.createContent_title} mb-10`}>
-          <label className="text-[12px] mb-2 block">خلاصه (Excerpt)</label>
-          <textarea
-            rows="4"
-            className="px-3 py-2 text-xs rounded-md outline-0 border border-gray-300 focus:border-gray-400 w-full"
-            {...register("excerpt")}
-          />
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-          <div className="space-y-6">
-            <h3 className="text-sm font-bold text-gray-700">اهداف مالی</h3>
-            <div className={styles.createContent_title}>
-              <label className="text-[12px] mb-2 block">مبلغ هدف (تومان) *</label>
-              <input
-                type="number"
-                className="px-3 py-2 text-xs rounded-md outline-0 border border-gray-300 focus:border-gray-400 h-10 w-full"
-                {...register("targetAmount")}
-              />
-              {errors.targetAmount && (
-                <p className="text-red-500 text-xs mt-1">{errors.targetAmount.message}</p>
-              )}
-            </div>
-            <div className={styles.createContent_title}>
-              <label className="text-[12px] mb-2 block">مبلغ جمع‌آوری شده (تومان)</label>
-              <input
-                type="number"
-                className="px-3 py-2 text-xs rounded-md outline-0 border border-gray-300 focus:border-gray-400 h-10 w-full"
-                {...register("amountRaised")}
-              />
-            </div>
-          </div>
-
-          <div className="space-y-6">
-            <h3 className="text-sm font-bold text-gray-700">اهداف داوطلب</h3>
-            <div className={styles.createContent_title}>
-              <label className="text-[12px] mb-2 block">تعداد داوطلب هدف *</label>
-              <input
-                type="number"
-                className="px-3 py-2 text-xs rounded-md outline-0 border border-gray-300 focus:border-gray-400 h-10 w-full"
-                {...register("targetVolunteer")}
-              />
-              {errors.targetVolunteer && (
-                <p className="text-red-500 text-xs mt-1">{errors.targetVolunteer.message}</p>
-              )}
-            </div>
-            <div className={styles.createContent_title}>
-              <label className="text-[12px] mb-2 block">تعداد داوطلب جمع‌آوری شده</label>
-              <input
-                type="number"
-                className="px-3 py-2 text-xs rounded-md outline-0 border border-gray-300 focus:border-gray-400 h-10 w-full"
-                {...register("collectedVolunteer")}
-              />
-            </div>
-          </div>
-        </div>
-
-        <div className={`${styles.createContent_title} mb-10`}>
-          <label className="text-[12px] mb-2 block">تاریخ پایان پروژه *</label>
-          <div className="border border-gray-300 rounded-md p-4 inline-block">
-            <Calendar
-              className="red"
-              calendar={persian}
-              locale={persian_fa}
-              value={selectedDate}
-              onChange={setSelectedDate}
-              calendarPosition="bottom-right"
-            />
-          </div>
-          {selectedDate && (
-            <p className="text-xs text-gray-600 mt-2">
-              تاریخ انتخاب شده: {selectedDate.format("YYYY/MM/DD")}
-            </p>
-          )}
-        </div>
-
-        <div className="w-full lg:w-[300px] mb-10">
-          <label className="block text-xs font-medium text-gray-400 mb-2">
-            تصویر شاخص {!previewImage && "*"}
-          </label>
-          <div className="bg-slate-100 rounded-md p-2 border border-gray-400 border-dotted">
-            <label
-              htmlFor="coverImage"
-              className="flex flex-row items-center justify-between text-xs font-medium cursor-pointer"
-            >
-              <span>برای تغییر عکس کلیک کنید</span>
-              <img
-                className="w-8 h-8 animate-pulse"
-                src="/assets/images/dashboard/icons/portrait.svg"
-                alt="image"
-              />
-            </label>
-            <input
-              type="file"
-              accept="image/*"
-              className="hidden"
-              id="coverImage"
-              onChange={handleCoverImageChange}
-            />
-            {previewImage && (
-              <img
-                src={import.meta.env.VITE_SERVER_PUBLIC_UPLOADS + previewImage}
-                alt="پیش‌نمایش"
-                className="h-70 w-80 object-cover rounded-md mt-3 border border-red-300"
-              />
-            )}
-          </div>
-        </div>
-
-        <SeoPart register={register} errors={errors} />
-
-        <div className="mt-6 text-left">
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className={`px-3 w-full lg:w-[120px] py-[6px] ${
-              isSubmitting ? "bg-gray-400" : "bg-gray-600 hover:bg-gray-700"
-            } rounded-md text-white cursor-pointer`}
-          >
-            {isSubmitting ? (
-              <div className="flex items-center justify-center">
-                <div className="animate-spin h-4 w-4 border-2 border-white rounded-full border-t-transparent mr-2"></div>
-                <span>در حال ارسال...</span>
+      <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-12 gap-6">
+        {/* LEFT COLUMN: Main Content */}
+        <div className="col-span-12 lg:col-span-8 space-y-6">
+          {/* Basic Info Panel */}
+          <div className="bg-white border border-slate-200 rounded-md overflow-hidden">
+            <SectionHeader title="اطلاعات اصلی" />
+            <div className="p-5 grid grid-cols-1 gap-5">
+              <div>
+                <Label htmlFor="title" required>
+                  عنوان پروژه
+                </Label>
+                <Input
+                  register={register}
+                  name="title"
+                  error={errors.title}
+                  placeholder="عنوان کامل پروژه را وارد کنید"
+                />
               </div>
-            ) : (
-              "ذخیره تغییرات"
-            )}
-          </button>
+
+              <div>
+                <Label htmlFor="subtitle">زیرعنوان</Label>
+                <Input register={register} name="subtitle" placeholder="توضیح کوتاه زیر عنوان" />
+              </div>
+
+              <div>
+                <Label htmlFor="description" required>
+                  توضیحات کامل
+                </Label>
+                <div className="border border-slate-300 rounded-md overflow-hidden min-h-[300px]">
+                  <Suspense
+                    fallback={<div className="p-4 text-xs text-slate-400">در حال بارگذاری ادیتور...</div>}
+                  >
+                    <TextEditor value={editorContent} onChange={setEditorContent} />
+                  </Suspense>
+                </div>
+                {errors.description && (
+                  <p className="text-red-500 text-[10px] mt-1">{errors.description.message}</p>
+                )}
+              </div>
+
+              <div>
+                <Label htmlFor="excerpt">خلاصه (Excerpt)</Label>
+                <textarea
+                  rows="3"
+                  className="w-full p-3 text-[12px] bg-white border border-slate-300 rounded-md outline-none focus:border-[#007acc] focus:ring-1 focus:ring-[#007acc] text-slate-800 placeholder:text-slate-400"
+                  {...register("excerpt")}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Financial & Volunteer Stats Panel */}
+          <div className="bg-white border border-slate-200 rounded-md overflow-hidden">
+            <SectionHeader title="آمار و اهداف" />
+            <div className="p-5 grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Financials */}
+              <div className="space-y-4">
+                <h4 className="text-[11px] font-bold text-slate-400 uppercase border-b border-slate-100 pb-2">
+                  اهداف مالی
+                </h4>
+                <div>
+                  <Label htmlFor="targetAmount" required>
+                    مبلغ هدف (تومان)
+                  </Label>
+                  <Input type="number" register={register} name="targetAmount" error={errors.targetAmount} />
+                </div>
+                <div>
+                  <Label htmlFor="amountRaised">مبلغ جمع‌آوری شده</Label>
+                  <Input type="number" register={register} name="amountRaised" />
+                </div>
+              </div>
+
+              {/* Volunteers */}
+              <div className="space-y-4">
+                <h4 className="text-[11px] font-bold text-slate-400 uppercase border-b border-slate-100 pb-2">
+                  اهداف داوطلبانه
+                </h4>
+                <div>
+                  <Label htmlFor="targetVolunteer" required>
+                    تعداد داوطلب هدف
+                  </Label>
+                  <Input
+                    type="number"
+                    register={register}
+                    name="targetVolunteer"
+                    error={errors.targetVolunteer}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="collectedVolunteer">داوطلبان جذب شده</Label>
+                  <Input type="number" register={register} name="collectedVolunteer" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* SEO Panel */}
+          <div className="bg-white border border-slate-200 rounded-md overflow-hidden">
+            <SectionHeader title="تنظیمات سئو" />
+            <div className="p-5">
+              <SeoPart register={register} errors={errors} />
+            </div>
+          </div>
+        </div>
+
+        {/* RIGHT COLUMN: Sidebar Settings */}
+        <div className="col-span-12 lg:col-span-4 space-y-6">
+          {/* Publish Action Panel */}
+          <div className="bg-white border border-slate-200 rounded-md overflow-hidden shadow-sm">
+            <SectionHeader title="انتشار" />
+            <div className="p-4 space-y-4">
+              <div>
+                <Label htmlFor="status" required>
+                  وضعیت
+                </Label>
+                <Select
+                  register={register}
+                  name="status"
+                  options={[
+                    { value: "draft", label: "پیش‌نویس" },
+                    { value: "active", label: "فعال" },
+                    { value: "completed", label: "تکمیل شده" },
+                  ]}
+                />
+              </div>
+
+              <div>
+                <Label required>تاریخ پایان</Label>
+                <div className="border border-slate-300 rounded-md p-1 bg-slate-50 flex justify-center">
+                  <Calendar
+                    className="red"
+                    calendar={persian}
+                    locale={persian_fa}
+                    value={selectedDate}
+                    onChange={setSelectedDate}
+                    calendarPosition="bottom-right"
+                    style={{ width: "100%", fontSize: "12px", boxShadow: "none" }}
+                  />
+                </div>
+                {selectedDate && (
+                  <p className="text-[10px] text-slate-500 mt-2 text-center">
+                    {selectedDate.format("YYYY/MM/DD")}
+                  </p>
+                )}
+              </div>
+
+              <div className="pt-4 border-t border-slate-100">
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className={`w-full py-2.5 text-[12px] font-medium rounded-md text-white transition-all
+                    ${
+                      isSubmitting
+                        ? "bg-slate-400 cursor-not-allowed"
+                        : "bg-[#007acc] hover:bg-[#0062a3] shadow-sm hover:shadow"
+                    }`}
+                >
+                  {isSubmitting ? "در حال ذخیره..." : "ذخیره تغییرات"}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Category Panel */}
+          <div className="bg-white border border-slate-200 rounded-md overflow-hidden">
+            <SectionHeader title="دسته‌بندی" />
+            <div className="p-4">
+              <Select
+                register={register}
+                name="category"
+                error={errors.category}
+                options={[
+                  { value: "", label: "انتخاب کنید..." },
+                  { value: "health", label: "بهداشت و سلامت" },
+                  { value: "education", label: "آموزش" },
+                  { value: "housing", label: "مسکن" },
+                  { value: "food", label: "غذا" },
+                  { value: "clothing", label: "پوشاک" },
+                  { value: "other", label: "سایر" },
+                ]}
+              />
+            </div>
+          </div>
+
+          {/* Featured Image Panel */}
+          <div className="bg-white border border-slate-200 rounded-md overflow-hidden">
+            <SectionHeader title="تصویر شاخص" />
+            <div className="p-4">
+              <div className="border-2 border-dashed border-slate-300 rounded-md p-4 text-center hover:bg-slate-50 transition-colors relative group">
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                  onChange={handleCoverImageChange}
+                />
+
+                {!previewImage ? (
+                  <div className="flex flex-col items-center justify-center py-4">
+                    <svg
+                      className="w-8 h-8 text-slate-400 mb-2"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="1.5"
+                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                      />
+                    </svg>
+                    <span className="text-[11px] text-slate-500 font-medium">برای آپلود کلیک کنید</span>
+                  </div>
+                ) : (
+                  <div className="relative">
+                    <img
+                      src={
+                        previewImage.startsWith("data:")
+                          ? previewImage
+                          : import.meta.env.VITE_SERVER_PUBLIC_UPLOADS + previewImage
+                      }
+                      alt="Preview"
+                      className="w-full h-auto rounded-md object-cover max-h-[200px]"
+                    />
+                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-md">
+                      <span className="text-white text-xs">تغییر تصویر</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
       </form>
     </div>

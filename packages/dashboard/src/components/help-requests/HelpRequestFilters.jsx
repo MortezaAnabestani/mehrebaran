@@ -1,160 +1,115 @@
 import React from "react";
-import PropTypes from "prop-types";
-import { CardHeader, Input, Select, Option, Tooltip, IconButton, Typography } from "@material-tailwind/react";
-import { MagnifyingGlassIcon, FunnelIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import {
+  MagnifyingGlassIcon,
+  FunnelIcon,
+  XMarkIcon,
+  AdjustmentsHorizontalIcon,
+} from "@heroicons/react/24/outline";
+
+const STATUS_OPTIONS = [
+  { label: "همه درخواست‌ها", value: "" },
+  { label: "در انتظار بررسی", value: "pending" },
+  { label: "تایید شده", value: "approved" },
+  { label: "رد شده", value: "rejected" },
+];
 
 const HelpRequestFilters = ({ filters, onSearchChange, onStatusChange }) => {
-  const hasActiveFilters = filters.searchQuery || filters.status;
-
-  const handleClearFilters = () => {
-    if (onSearchChange) onSearchChange({ target: { value: "" } });
-    if (onStatusChange) onStatusChange("");
-  };
+  const activeStatus = STATUS_OPTIONS.find((opt) => opt.value === filters.status);
 
   return (
-    <CardHeader
-      floated={false}
-      shadow={false}
-      className="rounded-none p-4 md:p-6 border-b border-gray-100 bg-gradient-to-br from-white to-gray-50/30 relative z-50"
-    >
-      {/* Header با نمایش تعداد فیلترهای فعال */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <FunnelIcon className="w-5 h-5 text-[#007acc]" />
-          <Typography variant="h6" className="font-bold text-gray-800">
-            فیلترها
-          </Typography>
-          {hasActiveFilters && (
-            <span className="px-2 py-0.5 text-xs font-bold bg-[#007acc] text-white rounded-full">فعال</span>
-          )}
-        </div>
-        {hasActiveFilters && (
-          <button
-            onClick={handleClearFilters}
-            className="flex items-center gap-1 text-xs text-gray-500 hover:text-red-500 transition-colors"
-          >
-            <XMarkIcon className="w-4 h-4" />
-            پاک کردن همه
-          </button>
-        )}
-      </div>
-
-      {/* بخش فیلترها */}
-      <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3">
-        {/* بخش جستجو */}
-        <div className="flex-1 md:max-w-md">
-          <div className="relative">
-            <Input
-              placeholder="عنوان، نام کاربر، شرح..."
+    <div className="w-full border-b border-slate-200 bg-slate-50/50 p-2">
+      <div className="grid grid-cols-12 gap-2 items-center">
+        {/* SECTION 1: Search Input (Engineering Style) */}
+        <div className="col-span-12 md:col-span-4 lg:col-span-3">
+          <div className="relative group">
+            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400 group-focus-within:text-[#007acc]">
+              <MagnifyingGlassIcon className="h-4 w-4" />
+            </div>
+            <input
+              type="text"
               value={filters.searchQuery}
               onChange={onSearchChange}
-              className="!border-gray-300 bg-white text-gray-900 shadow-sm placeholder:text-gray-400 focus:!border-[#007acc] focus:!ring-2 focus:!ring-[#007acc]/20 pr-10"
-              labelProps={{
-                className: "text-gray-600 peer-focus:text-[#007acc] peer-placeholder-shown:text-gray-500",
-              }}
-              containerProps={{ className: "min-w-0" }}
+              placeholder="جستجو با شناسه، عنوان..."
+              className="block w-full rounded-md border border-slate-300 bg-white py-1.5 pr-9 pl-3 text-[12px] font-mono text-slate-700 placeholder:text-slate-400 focus:border-[#007acc] focus:ring-1 focus:ring-[#007acc] transition-all"
             />
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
-              <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
+            {/* Keyboard Shortcut Hint (Visual Only) */}
+            <div className="absolute inset-y-0 left-0 flex items-center pl-2 pointer-events-none">
+              <span className="text-[10px] font-mono text-slate-400 border border-slate-200 rounded px-1 bg-slate-50">
+                Ctrl+K
+              </span>
             </div>
           </div>
         </div>
 
-        {/* بخش انتخاب وضعیت */}
-        <div className="w-full md:w-72">
-          <Select
-            value={filters.status}
-            onChange={onStatusChange}
-            className="!border-gray-300 bg-white text-gray-900 shadow-sm focus:!border-[#007acc] focus:!ring-2 focus:!ring-[#007acc]/20"
-            labelProps={{
-              className: "text-gray-600 peer-focus:text-[#007acc]",
-            }}
-            menuProps={{
-              className: "p-1 rounded-xl shadow-2xl border border-gray-200 bg-white max-h-80 overflow-y-auto z-[9999]",
-            }}
-            containerProps={{
-              className: "min-w-0",
-            }}
-            animate={{
-              mount: { y: 0, opacity: 1, scale: 1 },
-              unmount: { y: -20, opacity: 0, scale: 0.95 },
-            }}
-            selected={(element) =>
-              element &&
-              React.cloneElement(element, {
-                disabled: true,
-                className: "flex items-center opacity-100 px-0 gap-2 pointer-events-none",
-              })
-            }
-          >
-            <Option
-              value=""
-              className="rounded-lg mb-1 font-semibold text-gray-700 hover:bg-gray-100 transition-colors"
-            >
-              <div className="flex items-center gap-2 py-1">
-                <span className="w-2 h-2 rounded-full bg-gray-400"></span>
-                همه وضعیت‌ها
-              </div>
-            </Option>
-            <Option value="pending" className="rounded-lg mb-1 hover:bg-orange-50 transition-colors">
-              <div className="flex items-center gap-2 text-orange-700 py-1">
-                <span className="w-2 h-2 rounded-full bg-orange-500 shadow-sm"></span>
-                در انتظار بررسی
-              </div>
-            </Option>
-            <Option value="approved" className="rounded-lg mb-1 hover:bg-blue-50 transition-colors">
-              <div className="flex items-center gap-2 text-blue-700 py-1">
-                <span className="w-2 h-2 rounded-full bg-blue-500 shadow-sm"></span>
-                تایید شده
-              </div>
-            </Option>
-            <Option value="in_progress" className="rounded-lg mb-1 hover:bg-cyan-50 transition-colors">
-              <div className="flex items-center gap-2 text-cyan-700 py-1">
-                <span className="w-2 h-2 rounded-full bg-cyan-500 shadow-sm"></span>
-                در حال پیگیری
-              </div>
-            </Option>
-            <Option value="completed" className="rounded-lg mb-1 hover:bg-green-50 transition-colors">
-              <div className="flex items-center gap-2 text-green-700 py-1">
-                <span className="w-2 h-2 rounded-full bg-green-500 shadow-sm"></span>
-                تکمیل شده
-              </div>
-            </Option>
-            <Option value="rejected" className="rounded-lg hover:bg-red-50 transition-colors">
-              <div className="flex items-center gap-2 text-red-700 py-1">
-                <span className="w-2 h-2 rounded-full bg-red-500 shadow-sm"></span>
-                رد شده
-              </div>
-            </Option>
-          </Select>
+        {/* SECTION 2: Segmented Status Control */}
+        <div className="col-span-12 md:col-span-8 lg:col-span-7">
+          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
+            <div className="flex items-center gap-1 p-1 bg-slate-200/40 rounded-md border border-slate-200/60">
+              {STATUS_OPTIONS.map((option) => {
+                const isActive = filters.status === option.value;
+                return (
+                  <button
+                    key={option.value}
+                    onClick={() => onStatusChange(option.value)}
+                    className={`
+                      relative px-3 py-1 text-[11px] font-medium rounded-[4px] transition-all duration-200 whitespace-nowrap
+                      ${
+                        isActive
+                          ? "bg-white text-[#007acc] shadow-sm ring-1 ring-slate-200"
+                          : "text-slate-500 hover:text-slate-700 hover:bg-slate-200/50"
+                      }
+                    `}
+                  >
+                    {isActive && (
+                      <span className="absolute -top-0.5 -right-0.5 flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#007acc] opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-[#007acc]"></span>
+                      </span>
+                    )}
+                    {option.label}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Divider */}
+            <div className="h-6 w-px bg-slate-300 mx-1 hidden md:block"></div>
+
+            {/* Active Filter Indicator */}
+            <div className="hidden md:flex items-center gap-2">
+              <span className="text-[11px] text-slate-400 font-mono">فیلتر فعال:</span>
+              <span className="inline-flex items-center gap-1 rounded-md bg-[#007acc]/5 px-2 py-1 text-[11px] font-medium text-[#007acc] ring-1 ring-inset ring-[#007acc]/20">
+                {activeStatus?.label || "همه"}
+              </span>
+              {(filters.status || filters.searchQuery) && (
+                <button
+                  onClick={() => {
+                    onStatusChange("");
+                    // Assuming parent handles clearing search via a separate prop or combined logic,
+                    // but here we just reset status for the visual demo
+                    const event = { target: { value: "" } };
+                    onSearchChange(event);
+                  }}
+                  className="text-slate-400 hover:text-red-500 transition-colors"
+                  title="پاک کردن فیلترها"
+                >
+                  <XMarkIcon className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+          </div>
         </div>
 
-        {/* دکمه فیلتر پیشرفته */}
-        <Tooltip
-          content="فیلترهای پیشرفته (به زودی)"
-          className="bg-gray-900 text-white px-3 py-1.5 rounded-lg text-xs shadow-xl"
-          placement="bottom"
-        >
-          <IconButton
-            variant="outlined"
-            dir="ltr"
-            className="rounded-xl border-2 border-gray-200 bg-white hover:bg-[#007acc] hover:border-[#007acc] hover:text-white text-gray-600 transition-all duration-200 shadow-sm hover:shadow-md h-11 w-11"
-          >
-            <FunnelIcon className="w-5 h-5" />
-          </IconButton>
-        </Tooltip>
+        {/* SECTION 3: Advanced Actions (Right Aligned) */}
+        <div className="col-span-12 lg:col-span-2 flex justify-end">
+          <button className="flex items-center gap-2 px-3 py-1.5 rounded-md border border-dashed border-slate-300 text-slate-500 hover:border-[#007acc] hover:text-[#007acc] transition-all bg-white">
+            <AdjustmentsHorizontalIcon className="w-4 h-4" />
+            <span className="text-[11px] font-medium">فیلتر پیشرفته</span>
+          </button>
+        </div>
       </div>
-    </CardHeader>
+    </div>
   );
-};
-
-HelpRequestFilters.propTypes = {
-  filters: PropTypes.shape({
-    searchQuery: PropTypes.string,
-    status: PropTypes.string,
-  }).isRequired,
-  onSearchChange: PropTypes.func.isRequired,
-  onStatusChange: PropTypes.func.isRequired,
 };
 
 export default HelpRequestFilters;

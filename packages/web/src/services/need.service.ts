@@ -1,5 +1,5 @@
 import api from "@/lib/api";
-import type { INeed, NeedCategory, NeedStatus, NeedPriority } from "common-types";
+import type { INeed, NeedTaskPriority } from "common-types";
 
 /**
  * Query parameters for getting needs list
@@ -10,7 +10,7 @@ export interface GetNeedsParams {
   skip?: number;
   category?: string; // Can be ObjectId, slug, or name
   status?: string; // NeedStatus or custom string
-  priority?: NeedPriority;
+  priority?: NeedTaskPriority;
   search?: string;
   sortBy?: string;
   tags?: string[];
@@ -45,7 +45,7 @@ export interface CreateNeedData {
   title: string;
   description: string;
   category?: string; // Optional: ObjectId, slug, or name
-  priority?: NeedPriority;
+  priority?: NeedTaskPriority;
   tags?: string[];
   targetAmount?: number;
   deadline?: Date;
@@ -116,6 +116,10 @@ class NeedService {
       console.error("Update need failed:", error);
       throw new Error(error.response?.data?.message || "خطا در ویرایش نیاز");
     }
+  }
+
+  public async upvoteNeed(id: string) {
+    return api.post(`/needs/${id}/upvote`);
   }
 
   /**
@@ -238,7 +242,7 @@ class NeedService {
    * دریافت نیازهای نزدیک
    */
   public async getNearbyNeeds(
-    params?: GetNeedsParams & { lat?: number; lng?: number; radius?: number }
+    params?: GetNeedsParams & { lat?: number; lng?: number; radius?: number },
   ): Promise<GetNeedsResponse> {
     try {
       const response = await api.get("/needs/nearby", { params });
@@ -271,7 +275,7 @@ class NeedService {
    */
   public async createUpdate(
     needId: string,
-    data: { title: string; content: string; images?: string[] }
+    data: { title: string; content: string; images?: string[] },
   ): Promise<{ success: boolean; data: any; message: string }> {
     try {
       const response = await api.post(`/needs/${needId}/updates`, data);
@@ -288,7 +292,7 @@ class NeedService {
   public async updateUpdate(
     needId: string,
     updateId: string,
-    data: { title?: string; content?: string; images?: string[] }
+    data: { title?: string; content?: string; images?: string[] },
   ): Promise<{ success: boolean; data: any; message: string }> {
     try {
       const response = await api.patch(`/needs/${needId}/updates/${updateId}`, data);
@@ -304,7 +308,7 @@ class NeedService {
    */
   public async deleteUpdate(
     needId: string,
-    updateId: string
+    updateId: string,
   ): Promise<{ success: boolean; message: string }> {
     try {
       const response = await api.delete(`/needs/${needId}/updates/${updateId}`);
@@ -337,7 +341,7 @@ class NeedService {
    */
   public async createMilestone(
     needId: string,
-    data: { title: string; description?: string; targetAmount?: number; deadline?: Date }
+    data: { title: string; description?: string; targetAmount?: number; deadline?: Date },
   ): Promise<{ success: boolean; data: any; message: string }> {
     try {
       const response = await api.post(`/needs/${needId}/milestones`, data);
@@ -354,7 +358,7 @@ class NeedService {
   public async updateMilestone(
     needId: string,
     milestoneId: string,
-    data: { title?: string; description?: string; targetAmount?: number; deadline?: Date }
+    data: { title?: string; description?: string; targetAmount?: number; deadline?: Date },
   ): Promise<{ success: boolean; data: any; message: string }> {
     try {
       const response = await api.patch(`/needs/${needId}/milestones/${milestoneId}`, data);
@@ -370,7 +374,7 @@ class NeedService {
    */
   public async deleteMilestone(
     needId: string,
-    milestoneId: string
+    milestoneId: string,
   ): Promise<{ success: boolean; message: string }> {
     try {
       const response = await api.delete(`/needs/${needId}/milestones/${milestoneId}`);
@@ -386,7 +390,7 @@ class NeedService {
    */
   public async completeMilestone(
     needId: string,
-    milestoneId: string
+    milestoneId: string,
   ): Promise<{ success: boolean; data: any; message: string }> {
     try {
       const response = await api.post(`/needs/${needId}/milestones/${milestoneId}/complete`);
@@ -419,7 +423,7 @@ class NeedService {
    */
   public async createBudgetItem(
     needId: string,
-    data: { category: string; description?: string; amount: number }
+    data: { category: string; description?: string; amount: number },
   ): Promise<{ success: boolean; data: any; message: string }> {
     try {
       const response = await api.post(`/needs/${needId}/budget`, data);
@@ -436,7 +440,7 @@ class NeedService {
   public async updateBudgetItem(
     needId: string,
     budgetItemId: string,
-    data: { category?: string; description?: string; amount?: number }
+    data: { category?: string; description?: string; amount?: number },
   ): Promise<{ success: boolean; data: any; message: string }> {
     try {
       const response = await api.patch(`/needs/${needId}/budget/${budgetItemId}`, data);
@@ -452,7 +456,7 @@ class NeedService {
    */
   public async deleteBudgetItem(
     needId: string,
-    budgetItemId: string
+    budgetItemId: string,
   ): Promise<{ success: boolean; message: string }> {
     try {
       const response = await api.delete(`/needs/${needId}/budget/${budgetItemId}`);
@@ -469,7 +473,7 @@ class NeedService {
   public async addFundsToBudgetItem(
     needId: string,
     budgetItemId: string,
-    amount: number
+    amount: number,
   ): Promise<{ success: boolean; data: any; message: string }> {
     try {
       const response = await api.post(`/needs/${needId}/budget/${budgetItemId}/add-funds`, { amount });
@@ -488,7 +492,7 @@ class NeedService {
    * دریافت جزئیات supporter‌ها
    */
   public async getSupporterDetails(
-    needId: string
+    needId: string,
   ): Promise<{ success: boolean; data: any[]; message: string }> {
     try {
       const response = await api.get(`/needs/${needId}/supporters/details`);
@@ -505,7 +509,7 @@ class NeedService {
   public async updateSupporterDetail(
     needId: string,
     userId: string,
-    data: { role?: string; permissions?: string[] }
+    data: { role?: string; permissions?: string[] },
   ): Promise<{ success: boolean; data: any; message: string }> {
     try {
       const response = await api.patch(`/needs/${needId}/supporters/${userId}`, data);
@@ -522,7 +526,7 @@ class NeedService {
   public async addContribution(
     needId: string,
     userId: string,
-    data: { type: string; amount?: number; description?: string }
+    data: { type: string; amount?: number; description?: string },
   ): Promise<{ success: boolean; data: any; message: string }> {
     try {
       const response = await api.post(`/needs/${needId}/supporters/${userId}/contributions`, data);
@@ -538,7 +542,7 @@ class NeedService {
    */
   public async removeSupporterDetail(
     needId: string,
-    userId: string
+    userId: string,
   ): Promise<{ success: boolean; message: string }> {
     try {
       const response = await api.delete(`/needs/${needId}/supporters/${userId}`);
@@ -557,7 +561,7 @@ class NeedService {
    * دریافت درخواست‌های verification
    */
   public async getVerificationRequests(
-    needId: string
+    needId: string,
   ): Promise<{ success: boolean; data: any[]; message: string }> {
     try {
       const response = await api.get(`/needs/${needId}/verifications`);
@@ -573,7 +577,7 @@ class NeedService {
    */
   public async createVerificationRequest(
     needId: string,
-    data: { type: string; documents?: string[]; notes?: string }
+    data: { type: string; documents?: string[]; notes?: string },
   ): Promise<{ success: boolean; data: any; message: string }> {
     try {
       const response = await api.post(`/needs/${needId}/verifications`, data);
@@ -590,7 +594,7 @@ class NeedService {
   public async reviewVerificationRequest(
     needId: string,
     verificationId: string,
-    data: { status: string; reviewNotes?: string }
+    data: { status: string; reviewNotes?: string },
   ): Promise<{ success: boolean; data: any; message: string }> {
     try {
       const response = await api.patch(`/needs/${needId}/verifications/${verificationId}/review`, data);
@@ -606,7 +610,7 @@ class NeedService {
    */
   public async deleteVerificationRequest(
     needId: string,
-    verificationId: string
+    verificationId: string,
   ): Promise<{ success: boolean; message: string }> {
     try {
       const response = await api.delete(`/needs/${needId}/verifications/${verificationId}`);
@@ -670,6 +674,10 @@ class NeedService {
       console.error("Delete comment failed:", error);
       throw new Error(error.response?.data?.message || "خطا در حذف نظر");
     }
+  }
+
+  public async supportNeed(id: string) {
+    return api.post(`/needs/${id}/support`);
   }
 }
 

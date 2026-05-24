@@ -12,6 +12,7 @@ export interface IUser {
   avatar?: string;
   username?: string;
   email?: string;
+  slug?: string;
 
   profile?: {
     major: string;

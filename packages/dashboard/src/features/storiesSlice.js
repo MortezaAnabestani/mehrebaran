@@ -175,6 +175,34 @@ export const deleteHighlight = createAsyncThunk("stories/deleteHighlight", async
   }
 });
 
+// ==================== ADMIN ====================
+
+// دریافت تمام استوری‌ها (برای ادمین)
+export const fetchAllStories = createAsyncThunk(
+  "stories/fetchAll",
+  async (params = {}, { rejectWithValue }) => {
+    try {
+      const response = await api.get("/stories/admin/all", { params });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "خطایی در دریافت استوری‌ها رخ داده است!");
+    }
+  }
+);
+
+// دریافت تمام highlights (برای ادمین)
+export const fetchAllHighlights = createAsyncThunk(
+  "stories/fetchAllHighlights",
+  async (params = {}, { rejectWithValue }) => {
+    try {
+      const response = await api.get("/stories/admin/highlights", { params });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "خطایی در دریافت هایلایت‌ها رخ داده است!");
+    }
+  }
+);
+
 // ==================== SLICE ====================
 
 const storiesSlice = createSlice({
@@ -182,14 +210,23 @@ const storiesSlice = createSlice({
   initialState: {
     storyFeed: [],
     myStories: [],
+    allStories: [], // All stories for admin view
     userStories: [],
     selectedStory: null,
     storyViewers: [],
     storyStats: null,
     highlights: [],
+    allHighlights: [], // All highlights for admin view
     selectedHighlight: null,
     loading: false,
     error: null,
+    // Pagination for admin view
+    pagination: {
+      page: 1,
+      limit: 20,
+      total: 0,
+      totalPages: 0,
+    },
   },
   reducers: {
     clearError: (state) => {
@@ -379,6 +416,48 @@ const storiesSlice = createSlice({
         state.highlights = state.highlights.filter((h) => h._id !== action.meta.arg);
       })
       .addCase(deleteHighlight.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
+
+    // Fetch All Stories (Admin)
+    builder
+      .addCase(fetchAllStories.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchAllStories.fulfilled, (state, action) => {
+        state.loading = false;
+        state.allStories = action.payload.data || [];
+        state.pagination = {
+          page: action.payload.page || 1,
+          limit: action.payload.limit || 20,
+          total: action.payload.total || 0,
+          totalPages: action.payload.totalPages || 0,
+        };
+      })
+      .addCase(fetchAllStories.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
+
+    // Fetch All Highlights (Admin)
+    builder
+      .addCase(fetchAllHighlights.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchAllHighlights.fulfilled, (state, action) => {
+        state.loading = false;
+        state.allHighlights = action.payload.data || [];
+        state.pagination = {
+          page: action.payload.page || 1,
+          limit: action.payload.limit || 20,
+          total: action.payload.total || 0,
+          totalPages: action.payload.totalPages || 0,
+        };
+      })
+      .addCase(fetchAllHighlights.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

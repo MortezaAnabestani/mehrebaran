@@ -152,6 +152,108 @@ class MentionService {
       context,
     }).populate(["mentionedUser", "mentionedBy"], "name email");
   }
+
+  // ==================== ADMIN METHODS ====================
+
+  // Get network-wide mention statistics
+  public async getNetworkMentionStats(): Promise<any> {
+    const totalMentions = await MentionModel.countDocuments();
+    const unreadMentions = await MentionModel.countDocuments({ isRead: false });
+    const readMentions = totalMentions - unreadMentions;
+
+    // Get mentions by context
+    const byContext = await MentionModel.aggregate([
+      {
+        $group: {
+          _id: "$context",
+          count: { $sum: 1 },
+        },
+      },
+      { $sort: { count: -1 } },
+    ]);
+
+    // Get most mentioned users
+    const mostMentioned = await MentionModel.aggregate([
+      {
+        $group: {
+          _id: "$mentionedUser",
+          mentionCount: { $sum: 1 },
+        },
+      },
+      { $sort: { mentionCount: -1 } },
+      { $limit: 10 },
+      {
+        $lookup: {
+          from: "users",
+          localField: "_id",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      { $unwind: "$user" },
+      {
+        $project: {
+          userId: "$_id",
+          mentionCount: 1,
+          name: "$user.name",
+          email: "$user.email",
+          avatar: "$user.avatar",
+        },
+      },
+    ]);
+
+    // Get recent mentions (last 30 days)
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    const recentMentions = await MentionModel.countDocuments({
+      createdAt: { $gte: thirtyDaysAgo },
+    });
+
+    return {
+      totalMentions,
+      unreadMentions,
+      readMentions,
+      recentMentions,
+      byContext,
+      mostMentioned,
+    };
+  }
+
+  // Get all mentions with pagination (admin only)
+  public async getAllMentions(filters: {
+    isRead?: boolean;
+    context?: MentionContext;
+    userId?: string;
+    page: number;
+    limit: number;
+  }): Promise<{ mentions: any[]; total: number }> {
+    const query: any = {};
+
+    if (filters.isRead !== undefined) {
+      query.isRead = filters.isRead;
+    }
+
+    if (filters.context) {
+      query.context = filters.context;
+    }
+
+    if (filters.userId) {
+      query.$or = [{ mentionedUser: filters.userId }, { mentionedBy: filters.userId }];
+    }
+
+    const skip = (filters.page - 1) * filters.limit;
+    const total = await MentionModel.countDocuments(query);
+
+    const mentions = await MentionModel.find(query)
+      .populate("mentionedUser", "name email avatar")
+      .populate("mentionedBy", "name email avatar")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(filters.limit)
+      .lean();
+
+    return { mentions, total };
+  }
 }
 
 export const mentionService = new MentionService();

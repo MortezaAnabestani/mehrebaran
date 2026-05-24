@@ -349,6 +349,20 @@ const socialSlice = createSlice({
     topSharedItems: [],
     shareStats: null,
 
+    // Admin stats
+    networkFollowStats: null,
+    allFollows: [],
+    networkMentionStats: null,
+    allMentions: [],
+    networkShareStats: null,
+    allShares: [],
+    pagination: {
+      page: 1,
+      limit: 20,
+      total: 0,
+      totalPages: 0,
+    },
+
     loading: false,
     error: null,
   },
@@ -522,8 +536,208 @@ const socialSlice = createSlice({
       .addCase(getItemShareStats.fulfilled, (state, action) => {
         state.shareStats = action.payload.data || action.payload;
       });
+
+    // Admin: Get network follow stats
+    builder
+      .addCase(getNetworkFollowStats.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getNetworkFollowStats.fulfilled, (state, action) => {
+        state.loading = false;
+        state.networkFollowStats = action.payload.data || action.payload;
+      })
+      .addCase(getNetworkFollowStats.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
+
+    // Admin: Get all follows
+    builder
+      .addCase(getAllFollows.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getAllFollows.fulfilled, (state, action) => {
+        state.loading = false;
+        state.allFollows = action.payload.data || [];
+        state.pagination = {
+          page: action.payload.page || 1,
+          limit: action.payload.limit || 20,
+          total: action.payload.total || 0,
+          totalPages: action.payload.totalPages || 0,
+        };
+      })
+      .addCase(getAllFollows.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
+
+    // Admin: Get network mention stats
+    builder
+      .addCase(getNetworkMentionStats.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getNetworkMentionStats.fulfilled, (state, action) => {
+        state.loading = false;
+        state.networkMentionStats = action.payload.data || action.payload;
+      })
+      .addCase(getNetworkMentionStats.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
+
+    // Admin: Get all mentions
+    builder
+      .addCase(getAllMentions.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getAllMentions.fulfilled, (state, action) => {
+        state.loading = false;
+        state.allMentions = action.payload.data || [];
+        state.pagination = {
+          page: action.payload.page || 1,
+          limit: action.payload.limit || 20,
+          total: action.payload.total || 0,
+          totalPages: action.payload.totalPages || 0,
+        };
+      })
+      .addCase(getAllMentions.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
+
+    // Admin: Get network share stats
+    builder
+      .addCase(getNetworkShareStats.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getNetworkShareStats.fulfilled, (state, action) => {
+        state.loading = false;
+        state.networkShareStats = action.payload.data || action.payload;
+      })
+      .addCase(getNetworkShareStats.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
+
+    // Admin: Get all shares
+    builder
+      .addCase(getAllShares.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getAllShares.fulfilled, (state, action) => {
+        state.loading = false;
+        state.allShares = action.payload.data || [];
+        state.pagination = {
+          page: action.payload.page || 1,
+          limit: action.payload.limit || 20,
+          total: action.payload.total || 0,
+          totalPages: action.payload.totalPages || 0,
+        };
+      })
+      .addCase(getAllShares.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
   },
 });
 
 export const { clearError } = socialSlice.actions;
 export default socialSlice.reducer;
+
+// ==================== ADMIN ACTIONS ====================
+
+// Get network-wide follow statistics
+export const getNetworkFollowStats = createAsyncThunk(
+  "social/getNetworkFollowStats",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await api.get("/social/admin/follow/stats");
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "خطایی در دریافت آمار دنبال‌کنندگان رخ داده است!"
+      );
+    }
+  }
+);
+
+// Get all follows (admin)
+export const getAllFollows = createAsyncThunk(
+  "social/getAllFollows",
+  async (params = {}, { rejectWithValue }) => {
+    try {
+      const response = await api.get("/social/admin/follows", { params });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "خطایی در دریافت لیست دنبال‌کنندگان رخ داده است!"
+      );
+    }
+  }
+);
+
+// Get network-wide mention statistics
+export const getNetworkMentionStats = createAsyncThunk(
+  "social/getNetworkMentionStats",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await api.get("/social/admin/mention/stats");
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "خطایی در دریافت آمار منشن‌ها رخ داده است!"
+      );
+    }
+  }
+);
+
+// Get all mentions (admin)
+export const getAllMentions = createAsyncThunk(
+  "social/getAllMentions",
+  async (params = {}, { rejectWithValue }) => {
+    try {
+      const response = await api.get("/social/admin/mentions", { params });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "خطایی در دریافت لیست منشن‌ها رخ داده است!"
+      );
+    }
+  }
+);
+
+// Get network-wide share statistics
+export const getNetworkShareStats = createAsyncThunk(
+  "social/getNetworkShareStats",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await api.get("/social/admin/share/stats");
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "خطایی در دریافت آمار اشتراک‌گذاری‌ها رخ داده است!"
+      );
+    }
+  }
+);
+
+// Get all shares (admin)
+export const getAllShares = createAsyncThunk(
+  "social/getAllShares",
+  async (params = {}, { rejectWithValue }) => {
+    try {
+      const response = await api.get("/social/admin/shares", { params });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "خطایی در دریافت لیست اشتراک‌گذاری‌ها رخ داده است!"
+      );
+    }
+  }
+);

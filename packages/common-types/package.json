@@ -4,6 +4,7 @@
   "main": "src/index.ts",
   "types": "src/index.ts",
   "devDependencies": {
+    "@types/mongoose": "^5.11.97",
     "mongoose": "^8.17.1"
   }
 }

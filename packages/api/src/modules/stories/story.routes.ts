@@ -1,7 +1,8 @@
 import { Router } from "express";
 import { storyController } from "./story.controller";
-import { protect } from "../auth/auth.middleware";
+import { protect, restrictTo } from "../auth/auth.middleware";
 import { validate } from "../../core/middlewares/validate";
+import { UserRole } from "common-types";
 import {
   createStorySchema,
   viewStorySchema,
@@ -16,6 +17,20 @@ import {
 } from "./story.validation";
 
 const router = Router();
+
+// ==================== ADMIN ROUTES (قبل از protect برای اینکه conflictنکنند) ====================
+
+/**
+ * GET /api/v1/stories/admin/all
+ * دریافت تمام استوری‌ها برای ادمین
+ */
+router.get("/admin/all", protect, restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN), storyController.getAllStoriesForAdmin);
+
+/**
+ * GET /api/v1/stories/admin/highlights
+ * دریافت تمام highlights برای ادمین
+ */
+router.get("/admin/highlights", protect, restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN), storyController.getAllHighlightsForAdmin);
 
 // All routes require authentication
 router.use(protect);

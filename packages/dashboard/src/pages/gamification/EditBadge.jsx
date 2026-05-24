@@ -1,17 +1,12 @@
 import { Link } from "react-router-dom";
 import {
-  Card,
-  Input,
-  Textarea,
-  Select,
-  Option,
-  Button,
-  Typography,
-  Alert,
-  Switch,
-} from "@material-tailwind/react";
-import { ArrowRightIcon, CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/outline";
+  ArrowLeftIcon,
+  CheckCircleIcon,
+  XCircleIcon,
+  TrophyIcon,
+} from "@heroicons/react/24/outline";
 import useBadgeForm from "../../hooks/useBadgeForm";
+import IconPicker from "../../components/IconPicker";
 
 const EditBadge = () => {
   const {
@@ -34,269 +29,286 @@ const EditBadge = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center py-10">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      <div className="min-h-screen bg-slate-50 flex justify-center items-center">
+        <div className="flex flex-col items-center gap-2">
+          <div className="animate-spin w-8 h-8 border-2 border-slate-300 border-t-[#007acc] rounded-full"></div>
+          <span className="text-sm text-slate-500 font-mono">LOADING_BADGE...</span>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="p-6">
-      <Card className="p-6">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-4">
-            <Link to="/dashboard/gamification/badges">
-              <Button variant="text" className="flex items-center gap-2">
-                <ArrowRightIcon className="w-5 h-5" />
-                بازگشت
-              </Button>
-            </Link>
-            <Typography variant="h4" color="blue-gray">
-              ویرایش نشان
-            </Typography>
+    <div className="min-h-screen bg-slate-50 text-slate-800 font-sans p-4">
+      {/* --- HEADER --- */}
+      <div className="bg-white border border-slate-200 rounded-md mb-4 shadow-sm">
+        <div className="flex items-center justify-between p-3">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-[#007acc]/10 flex items-center justify-center rounded-md border border-[#007acc]/20">
+              <TrophyIcon className="w-4 h-4 text-[#007acc]" />
+            </div>
+            <div>
+              <h1 className="text-sm font-bold text-slate-800 uppercase tracking-wider">ویرایش نشان</h1>
+              <div className="flex items-center gap-2 text-[11px] text-slate-500 font-mono">
+                <Link to="/dashboard/gamification/badges" className="hover:text-[#007acc]">
+                  نشان‌ها
+                </Link>
+                <span>/</span>
+                <span>ویرایش</span>
+                {selectedBadge && (
+                  <>
+                    <span>/</span>
+                    <span>{selectedBadge.name}</span>
+                  </>
+                )}
+              </div>
+            </div>
           </div>
+
+          <Link to="/dashboard/gamification/badges">
+            <button className="flex items-center gap-1 px-3 py-1.5 text-slate-600 hover:text-slate-800 text-xs font-medium rounded hover:bg-slate-100 transition-colors">
+              <ArrowLeftIcon className="w-4 h-4" />
+              بازگشت
+            </button>
+          </Link>
         </div>
+      </div>
 
-        {/* Success Alert */}
-        {submitSuccess && (
-          <Alert color="green" icon={<CheckCircleIcon className="w-6 h-6" />} className="mb-6">
-            نشان با موفقیت ویرایش شد!
-          </Alert>
-        )}
+      {/* Success Alert */}
+      {submitSuccess && (
+        <div className="bg-green-50 border border-green-200 rounded-md p-3 mb-4 flex items-center gap-2">
+          <CheckCircleIcon className="w-5 h-5 text-green-600" />
+          <span className="text-sm text-green-800">نشان با موفقیت ویرایش شد!</span>
+        </div>
+      )}
 
-        {/* Error Alert */}
-        {submitError && (
-          <Alert color="red" icon={<XCircleIcon className="w-6 h-6" />} className="mb-6">
-            {submitError}
-          </Alert>
-        )}
+      {/* Error Alert */}
+      {submitError && (
+        <div className="bg-red-50 border border-red-200 rounded-md p-3 mb-4 flex items-center gap-2">
+          <XCircleIcon className="w-5 h-5 text-red-600" />
+          <span className="text-sm text-red-800">{submitError}</span>
+        </div>
+      )}
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* نام فارسی و انگلیسی */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Input
-                label="نام فارسی نشان *"
-                {...register("name")}
-                error={!!errors.name}
-              />
-              {errors.name && (
-                <Typography variant="small" color="red" className="mt-1">
-                  {errors.name.message}
-                </Typography>
-              )}
-            </div>
-            <div>
-              <Input
-                label="نام انگلیسی نشان *"
-                {...register("nameEn")}
-                error={!!errors.nameEn}
-              />
-              {errors.nameEn && (
-                <Typography variant="small" color="red" className="mt-1">
-                  {errors.nameEn.message}
-                </Typography>
-              )}
-            </div>
-          </div>
-
-          {/* توضیحات */}
-          <div>
-            <Textarea
-              label="توضیحات نشان *"
-              {...register("description")}
-              rows={4}
-              error={!!errors.description}
-            />
-            {errors.description && (
-              <Typography variant="small" color="red" className="mt-1">
-                {errors.description.message}
-              </Typography>
-            )}
-          </div>
-
-          {/* دسته‌بندی، کمیابی و امتیاز */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* دسته‌بندی */}
-            <div>
-              <Select
-                label="دسته‌بندی *"
-                value={category}
-                onChange={(value) => setValue("category", value)}
-                error={!!errors.category}
-              >
-                <Option value="contributor">مشارکت‌کننده</Option>
-                <Option value="supporter">حمایت‌کننده</Option>
-                <Option value="creator">سازنده</Option>
-                <Option value="helper">کمک‌کننده</Option>
-                <Option value="communicator">ارتباط‌گیر</Option>
-                <Option value="leader">رهبر</Option>
-                <Option value="expert">متخصص</Option>
-                <Option value="milestone">نقطه عطف</Option>
-                <Option value="special">ویژه</Option>
-                <Option value="seasonal">فصلی</Option>
-              </Select>
-              {errors.category && (
-                <Typography variant="small" color="red" className="mt-1">
-                  {errors.category.message}
-                </Typography>
-              )}
-            </div>
-
-            {/* کمیابی */}
-            <div>
-              <Select
-                label="کمیابی"
-                value={rarity}
-                onChange={(value) => setValue("rarity", value)}
-              >
-                <Option value="common">معمولی</Option>
-                <Option value="rare">نادر</Option>
-                <Option value="epic">حماسی</Option>
-                <Option value="legendary">افسانه‌ای</Option>
-              </Select>
-            </div>
-
-            {/* امتیاز */}
-            <div>
-              <Input
-                type="number"
-                label="امتیاز"
-                {...register("points")}
-                error={!!errors.points}
-              />
-              {errors.points && (
-                <Typography variant="small" color="red" className="mt-1">
-                  {errors.points.message}
-                </Typography>
-              )}
-            </div>
-          </div>
-
-          {/* آیکون و رنگ */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* آیکون */}
-            <div>
-              <Input
-                label="آیکون (ایموجی) *"
-                {...register("icon")}
-                error={!!errors.icon}
-              />
-              {errors.icon && (
-                <Typography variant="small" color="red" className="mt-1">
-                  {errors.icon.message}
-                </Typography>
-              )}
-              <Typography variant="small" color="gray" className="mt-1">
-                می‌توانید از ایموجی‌ها استفاده کنید (مثال: 🏆 🎖️ ⭐ 💎)
-              </Typography>
-            </div>
-
-            {/* رنگ */}
-            <div>
-              <Input
-                type="color"
-                label="رنگ نشان"
-                {...register("color")}
-              />
-              <Typography variant="small" color="gray" className="mt-1">
-                رنگ پس‌زمینه نشان را انتخاب کنید
-              </Typography>
-            </div>
-          </div>
-
-          {/* ترتیب */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Input
-                type="number"
-                label="ترتیب نمایش"
-                {...register("order")}
-              />
-              <Typography variant="small" color="gray" className="mt-1">
-                ترتیب نمایش نشان در لیست (عدد کمتر = اولویت بیشتر)
-              </Typography>
-            </div>
-          </div>
-
-          {/* تنظیمات */}
-          <div className="bg-gray-50 p-4 rounded-lg space-y-4">
-            <Typography variant="h6" color="blue-gray">
-              تنظیمات
-            </Typography>
-
-            {/* فعال بودن */}
-            <div className="flex items-center justify-between">
+      {/* --- FORM --- */}
+      <form onSubmit={handleSubmit}>
+        <div className="bg-white border border-slate-200 rounded-md p-4">
+          <div className="space-y-4">
+            {/* نام فارسی و انگلیسی */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Typography variant="small" color="blue-gray" className="font-bold">
-                  وضعیت فعال
-                </Typography>
-                <Typography variant="small" color="gray">
-                  نشان فعال برای کاربران قابل دریافت است
-                </Typography>
+                <label className="block text-xs font-medium text-slate-700 mb-1">
+                  نام فارسی نشان <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  {...register("name")}
+                  className={`w-full px-3 py-2 text-sm border rounded-md focus:outline-none focus:ring-1 transition-all ${
+                    errors.name
+                      ? "border-red-300 focus:border-red-500 focus:ring-red-500"
+                      : "border-slate-300 focus:border-[#007acc] focus:ring-[#007acc]"
+                  }`}
+                  placeholder="مثال: قهرمان نیازها"
+                />
+                {errors.name && (
+                  <p className="text-xs text-red-600 mt-1">{errors.name.message}</p>
+                )}
               </div>
-              <Switch
-                checked={isActive}
-                onChange={(e) => setValue("isActive", e.target.checked)}
-                color="green"
-              />
+              <div>
+                <label className="block text-xs font-medium text-slate-700 mb-1">
+                  نام انگلیسی نشان <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  {...register("nameEn")}
+                  className={`w-full px-3 py-2 text-sm border rounded-md focus:outline-none focus:ring-1 transition-all ${
+                    errors.nameEn
+                      ? "border-red-300 focus:border-red-500 focus:ring-red-500"
+                      : "border-slate-300 focus:border-[#007acc] focus:ring-[#007acc]"
+                  }`}
+                  placeholder="Example: Needs Champion"
+                />
+                {errors.nameEn && (
+                  <p className="text-xs text-red-600 mt-1">{errors.nameEn.message}</p>
+                )}
+              </div>
             </div>
 
-            {/* مخفی بودن */}
-            <div className="flex items-center justify-between">
-              <div>
-                <Typography variant="small" color="blue-gray" className="font-bold">
-                  نشان مخفی
-                </Typography>
-                <Typography variant="small" color="gray">
-                  نشان‌های مخفی تا زمان دریافت برای کاربران نمایش داده نمی‌شوند
-                </Typography>
-              </div>
-              <Switch
-                checked={isSecret}
-                onChange={(e) => setValue("isSecret", e.target.checked)}
-                color="blue"
+            {/* توضیحات */}
+            <div>
+              <label className="block text-xs font-medium text-slate-700 mb-1">
+                توضیحات نشان <span className="text-red-500">*</span>
+              </label>
+              <textarea
+                {...register("description")}
+                rows={3}
+                className={`w-full px-3 py-2 text-sm border rounded-md focus:outline-none focus:ring-1 transition-all ${
+                  errors.description
+                    ? "border-red-300 focus:border-red-500 focus:ring-red-500"
+                    : "border-slate-300 focus:border-[#007acc] focus:ring-[#007acc]"
+                }`}
+                placeholder="توضیحات کامل درباره نشان و شرایط دریافت آن..."
               />
+              {errors.description && (
+                <p className="text-xs text-red-600 mt-1">{errors.description.message}</p>
+              )}
+            </div>
+
+            {/* دسته‌بندی، کمیابی و امتیاز */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-xs font-medium text-slate-700 mb-1">
+                  دسته‌بندی <span className="text-red-500">*</span>
+                </label>
+                <select
+                  {...register("category")}
+                  className={`w-full px-3 py-2 text-sm border rounded-md focus:outline-none focus:ring-1 transition-all ${
+                    errors.category
+                      ? "border-red-300 focus:border-red-500 focus:ring-red-500"
+                      : "border-slate-300 focus:border-[#007acc] focus:ring-[#007acc]"
+                  }`}
+                >
+                  <option value="">انتخاب کنید</option>
+                  <option value="contributor">مشارکت‌کننده</option>
+                  <option value="supporter">حمایت‌کننده</option>
+                  <option value="creator">سازنده</option>
+                  <option value="helper">کمک‌کننده</option>
+                  <option value="communicator">ارتباط‌گیر</option>
+                  <option value="leader">رهبر</option>
+                  <option value="expert">متخصص</option>
+                  <option value="milestone">نقطه عطف</option>
+                  <option value="special">ویژه</option>
+                  <option value="seasonal">فصلی</option>
+                </select>
+                {errors.category && (
+                  <p className="text-xs text-red-600 mt-1">{errors.category.message}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-slate-700 mb-1">کمیابی</label>
+                <select
+                  {...register("rarity")}
+                  className="w-full px-3 py-2 text-sm border border-slate-300 rounded-md focus:outline-none focus:border-[#007acc] focus:ring-1 focus:ring-[#007acc] transition-all"
+                >
+                  <option value="common">معمولی</option>
+                  <option value="rare">نادر</option>
+                  <option value="epic">حماسی</option>
+                  <option value="legendary">افسانه‌ای</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-slate-700 mb-1">امتیاز</label>
+                <input
+                  type="number"
+                  {...register("points")}
+                  className="w-full px-3 py-2 text-sm border border-slate-300 rounded-md focus:outline-none focus:border-[#007acc] focus:ring-1 focus:ring-[#007acc] transition-all"
+                />
+              </div>
+            </div>
+
+            {/* آیکون و رنگ */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <IconPicker
+                value={watch("icon")}
+                onChange={(iconName) => setValue("icon", iconName)}
+                error={errors.icon?.message}
+              />
+
+              <div>
+                <label className="block text-xs font-medium text-slate-700 mb-1">رنگ نشان</label>
+                <input
+                  type="color"
+                  {...register("color")}
+                  className="w-full h-10 px-2 py-1 border border-slate-300 rounded-md focus:outline-none focus:border-[#007acc] focus:ring-1 focus:ring-[#007acc] transition-all"
+                />
+                <p className="text-xs text-slate-500 mt-1">رنگ پس‌زمینه نشان را انتخاب کنید</p>
+              </div>
+            </div>
+
+            {/* ترتیب */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-medium text-slate-700 mb-1">ترتیب نمایش</label>
+                <input
+                  type="number"
+                  {...register("order")}
+                  className="w-full px-3 py-2 text-sm border border-slate-300 rounded-md focus:outline-none focus:border-[#007acc] focus:ring-1 focus:ring-[#007acc] transition-all"
+                />
+                <p className="text-xs text-slate-500 mt-1">
+                  ترتیب نمایش نشان در لیست (عدد کمتر = اولویت بیشتر)
+                </p>
+              </div>
+            </div>
+
+            {/* تنظیمات */}
+            <div className="bg-slate-50 border border-slate-200 rounded-md p-4 space-y-3">
+              <h3 className="text-sm font-bold text-slate-800 mb-3">تنظیمات</h3>
+
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-medium text-slate-700">وضعیت فعال</p>
+                  <p className="text-xs text-slate-500">نشان فعال برای کاربران قابل دریافت است</p>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={isActive}
+                    onChange={(e) => setValue("isActive", e.target.checked)}
+                    className="sr-only peer"
+                  />
+                  <div className="w-11 h-6 bg-slate-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[#007acc] rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
+                </label>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-medium text-slate-700">نشان مخفی</p>
+                  <p className="text-xs text-slate-500">
+                    نشان‌های مخفی تا زمان دریافت برای کاربران نمایش داده نمی‌شوند
+                  </p>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={isSecret}
+                    onChange={(e) => setValue("isSecret", e.target.checked)}
+                    className="sr-only peer"
+                  />
+                  <div className="w-11 h-6 bg-slate-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[#007acc] rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
+                </label>
+              </div>
+            </div>
+
+            {/* نکته */}
+            <div className="bg-blue-50 border border-blue-200 rounded-md p-3">
+              <p className="text-xs text-blue-800">
+                <strong>نکته:</strong> تغییرات شما بر روی نشان‌های قبلاً اعطا شده تأثیری ندارد و فقط برای نشان‌های جدید اعمال می‌شود.
+              </p>
             </div>
           </div>
-
-          {/* اطلاعات نشان */}
-          {selectedBadge && (
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <Typography variant="h6" color="blue-gray" className="mb-2">
-                اطلاعات نشان
-              </Typography>
-              <div className="grid grid-cols-2 gap-2">
-                <Typography variant="small" color="gray">
-                  تاریخ ایجاد: <strong>{new Date(selectedBadge.createdAt).toLocaleDateString("fa-IR")}</strong>
-                </Typography>
-                <Typography variant="small" color="gray">
-                  آخرین بروزرسانی: <strong>{new Date(selectedBadge.updatedAt).toLocaleDateString("fa-IR")}</strong>
-                </Typography>
-              </div>
-            </div>
-          )}
 
           {/* دکمه‌های عملیات */}
-          <div className="flex justify-end gap-4 pt-6 border-t">
+          <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-slate-200">
             <Link to="/dashboard/gamification/badges">
-              <Button variant="outlined" color="gray">
+              <button
+                type="button"
+                className="px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded hover:bg-slate-50 transition-colors"
+              >
                 انصراف
-              </Button>
+              </button>
             </Link>
-            <Button
+            <button
               type="submit"
-              color="blue"
               disabled={isSubmitting}
-              className="flex items-center gap-2"
+              className="px-4 py-2 text-sm font-medium text-white bg-[#007acc] rounded hover:bg-[#005a9e] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {isSubmitting ? "در حال ذخیره..." : "ذخیره تغییرات"}
-            </Button>
+            </button>
           </div>
-        </form>
-      </Card>
+        </div>
+      </form>
     </div>
   );
 };

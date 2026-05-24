@@ -3,13 +3,13 @@ import React from "react";
 import SmartButton from "@/components/ui/SmartButton";
 import { IBlogBackgroundSetting } from "common-types";
 import { ArrowLeft, Sparkles, ArrowUpRight } from "lucide-react";
-import { motion, useMotionValue, useTransform } from "framer-motion";
+import { motion, easeInOut, Variants } from "framer-motion";
 
 const BlogSection: React.FC<{ settings: IBlogBackgroundSetting | null }> = ({ settings }) => {
   const backgroundImage = settings?.image || "/images/blog_img.jpg";
 
   // --- Material Dynamic Animation Settings ---
-  const m3Ease = [0.2, 0.0, 0, 1.0]; // Emphasized Decelerate
+  const m3Ease = [0.2, 0.0, 0, 1.0] as const; // Emphasized Decelerate
   const springTransition = { type: "spring", stiffness: 300, damping: 30 };
 
   const containerVariants = {
@@ -37,7 +37,7 @@ const BlogSection: React.FC<{ settings: IBlogBackgroundSetting | null }> = ({ se
   };
 
   // Mesh Gradient Animation
-  const meshVariants = {
+  const meshVariants: Variants = {
     animate: {
       scale: [1, 1.2, 1],
       opacity: [0.3, 0.5, 0.3],
@@ -45,7 +45,7 @@ const BlogSection: React.FC<{ settings: IBlogBackgroundSetting | null }> = ({ se
       transition: {
         duration: 10,
         repeat: Infinity,
-        ease: "easeInOut",
+        ease: easeInOut,
       },
     },
   };
@@ -129,7 +129,7 @@ const BlogSection: React.FC<{ settings: IBlogBackgroundSetting | null }> = ({ se
                 {/* Primary Action: Extended FAB Style */}
                 <SmartButton
                   href="/blog"
-                  variant="custom"
+                  variant="mblue"
                   asLink={true}
                   className="group/fab relative overflow-hidden !rounded-[18px] !bg-[#007acc] !text-white !px-8 !py-4 !h-auto shadow-[0_8px_20px_rgba(0,122,204,0.4)] hover:shadow-[0_12px_28px_rgba(0,122,204,0.6)] transition-all duration-300"
                 >

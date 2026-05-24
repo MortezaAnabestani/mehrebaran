@@ -22,20 +22,22 @@ export const createTeamSchema = z.object({
 
 // Update team
 export const updateTeamSchema = z.object({
-  body: z.object({
-    name: z.string().min(3, "نام تیم باید حداقل ۳ حرف باشد.").max(50, "نام تیم نباید بیشتر از ۵۰ حرف باشد.").optional(),
-    description: z.string().max(500, "توضیحات نباید بیشتر از ۵۰۰ حرف باشد.").optional(),
-    focusArea: z
-      .enum(
-        ["fundraising", "logistics", "communication", "technical", "volunteer", "coordination", "documentation", "general"],
-        { message: "حوزه تمرکز معتبر نیست." }
-      )
-      .optional(),
-    status: z.enum(["active", "paused", "completed", "disbanded"], { message: "وضعیت معتبر نیست." }).optional(),
-    maxMembers: z.number().int().min(2, "حداقل تعداد اعضا باید ۲ نفر باشد.").optional(),
-    tags: z.array(z.string()).optional(),
-    isPrivate: z.boolean().optional(),
-  }),
+  body: z
+    .object({
+      name: z.string().min(3, "نام تیم باید حداقل ۳ حرف باشد.").max(50, "نام تیم نباید بیشتر از ۵۰ حرف باشد.").optional(),
+      description: z.string().max(500, "توضیحات نباید بیشتر از ۵۰۰ حرف باشد.").optional(),
+      focusArea: z
+        .enum(
+          ["fundraising", "logistics", "communication", "technical", "volunteer", "coordination", "documentation", "general"],
+          { message: "حوزه تمرکز معتبر نیست." }
+        )
+        .optional(),
+      status: z.enum(["active", "paused", "completed", "disbanded"], { message: "وضعیت معتبر نیست." }).optional(),
+      maxMembers: z.number().int().min(2, "حداقل تعداد اعضا باید ۲ نفر باشد.").optional(),
+      tags: z.array(z.string()).optional(),
+      isPrivate: z.boolean().optional(),
+    })
+    .passthrough(),
   params: z.object({
     teamId: z.string().regex(/^[0-9a-fA-F]{24}$/, "شناسه تیم معتبر نیست."),
   }),

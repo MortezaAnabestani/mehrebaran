@@ -309,7 +309,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, needId, onUpdate, isDraggable
           {task.status === "in_progress" && (
             <>
               <SmartButton
-                variant="outline"
+                variant="mblue"
                 size="sm"
                 className="flex-1 text-xs border-orange-200 text-orange-600 hover:bg-orange-50"
                 onClick={() => handleStatusChange("review")}

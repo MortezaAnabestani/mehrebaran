@@ -282,6 +282,75 @@ class SocialController {
 
     return ResponseFormatter.success(res, { shareUrl });
   });
+
+  // ==================== ADMIN ENDPOINTS ====================
+
+  // Get network-wide follow statistics
+  public getNetworkFollowStats = asyncHandler(async (req: Request, res: Response) => {
+    const stats = await followService.getNetworkFollowStats();
+    return ResponseFormatter.success(res, stats);
+  });
+
+  // Get all follows (admin only)
+  public getAllFollows = asyncHandler(async (req: Request, res: Response) => {
+    const { followType, userId } = req.query;
+    const { page, limit } = ResponseFormatter.extractPaginationParams(req.query);
+
+    const result = await followService.getAllFollows({
+      followType: followType as any,
+      userId: userId as string,
+      page,
+      limit,
+    });
+
+    const pagination = ResponseFormatter.getPaginationInfo(page, limit, result.total);
+    return ResponseFormatter.successWithPagination(res, result.follows, pagination);
+  });
+
+  // Get network-wide mention statistics
+  public getNetworkMentionStats = asyncHandler(async (req: Request, res: Response) => {
+    const stats = await mentionService.getNetworkMentionStats();
+    return ResponseFormatter.success(res, stats);
+  });
+
+  // Get all mentions (admin only)
+  public getAllMentions = asyncHandler(async (req: Request, res: Response) => {
+    const { isRead, context, userId } = req.query;
+    const { page, limit } = ResponseFormatter.extractPaginationParams(req.query);
+
+    const result = await mentionService.getAllMentions({
+      isRead: isRead === "true" ? true : isRead === "false" ? false : undefined,
+      context: context as any,
+      userId: userId as string,
+      page,
+      limit,
+    });
+
+    const pagination = ResponseFormatter.getPaginationInfo(page, limit, result.total);
+    return ResponseFormatter.successWithPagination(res, result.mentions, pagination);
+  });
+
+  // Get network-wide share statistics
+  public getNetworkShareStats = asyncHandler(async (req: Request, res: Response) => {
+    const stats = await shareService.getNetworkShareStats();
+    return ResponseFormatter.success(res, stats);
+  });
+
+  // Get all shares (admin only)
+  public getAllShares = asyncHandler(async (req: Request, res: Response) => {
+    const { platform, userId } = req.query;
+    const { page, limit } = ResponseFormatter.extractPaginationParams(req.query);
+
+    const result = await shareService.getAllShares({
+      platform: platform as any,
+      userId: userId as string,
+      page,
+      limit,
+    });
+
+    const pagination = ResponseFormatter.getPaginationInfo(page, limit, result.total);
+    return ResponseFormatter.successWithPagination(res, result.shares, pagination);
+  });
 }
 
 export const socialController = new SocialController();

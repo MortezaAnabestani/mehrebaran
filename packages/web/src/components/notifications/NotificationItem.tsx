@@ -2,10 +2,8 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import notificationService, {
-  type INotification,
-} from "@/services/notification.service";
-import type { IUser } from "@/types/user";
+import notificationService, { type INotification } from "@/services/notification.service";
+import type { IUser } from "common-types";
 
 // ===========================
 // Types & Interfaces
@@ -25,11 +23,7 @@ export interface NotificationItemProps {
  * A single notification item component
  * Displays notification icon, message, time, and actions
  */
-const NotificationItem: React.FC<NotificationItemProps> = ({
-  notification,
-  onRead,
-  onDelete,
-}) => {
+const NotificationItem: React.FC<NotificationItemProps> = ({ notification, onRead, onDelete }) => {
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
 
   // ===========================
@@ -96,24 +90,16 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
     <Link href={link} onClick={handleClick}>
       <div
         className={`relative flex items-start gap-4 p-4 rounded-lg border transition-all hover:shadow-md ${
-          notification.isRead
-            ? "bg-white border-gray-200"
-            : "bg-blue-50 border-blue-200"
+          notification.isRead ? "bg-white border-gray-200" : "bg-blue-50 border-blue-200"
         } ${isDeleting ? "opacity-50 pointer-events-none" : ""}`}
       >
         {/* Unread Indicator */}
-        {!notification.isRead && (
-          <div className="absolute top-4 right-4 w-2 h-2 bg-mblue rounded-full"></div>
-        )}
+        {!notification.isRead && <div className="absolute top-4 right-4 w-2 h-2 bg-mblue rounded-full"></div>}
 
         {/* Icon/Avatar */}
         <div className="flex-shrink-0">
           {senderAvatar ? (
-            <img
-              src={senderAvatar}
-              alt={senderName}
-              className="w-12 h-12 rounded-full object-cover"
-            />
+            <img src={senderAvatar} alt={senderName} className="w-12 h-12 rounded-full object-cover" />
           ) : notification.sender ? (
             <div className="w-12 h-12 rounded-full bg-gradient-to-br from-mblue to-cyan-500 flex items-center justify-center text-white font-bold">
               {senderName.charAt(0)}
@@ -132,20 +118,14 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
           {/* Title */}
           <div className="flex items-center gap-2 mb-1">
             <span className={`text-lg ${color}`}>{icon}</span>
-            <span className="font-semibold text-gray-900 text-sm">
-              {title}
-            </span>
+            <span className="font-semibold text-gray-900 text-sm">{title}</span>
           </div>
 
           {/* Message */}
-          <p className="text-gray-700 text-sm mb-2 line-clamp-2">
-            {notification.message}
-          </p>
+          <p className="text-gray-700 text-sm mb-2 line-clamp-2">{notification.message}</p>
 
           {/* Sender (if exists) */}
-          {notification.sender && (
-            <p className="text-xs text-gray-500 mb-1">از: {senderName}</p>
-          )}
+          {notification.sender && <p className="text-xs text-gray-500 mb-1">از: {senderName}</p>}
 
           {/* Time */}
           <p className="text-xs text-gray-400">{timeAgo}</p>
@@ -160,18 +140,8 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
           {isDeleting ? (
             <div className="w-5 h-5 border-2 border-gray-300 border-t-transparent rounded-full animate-spin"></div>
           ) : (
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           )}
         </button>

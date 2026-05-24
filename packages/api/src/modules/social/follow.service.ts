@@ -265,6 +265,124 @@ class FollowService {
 
     return suggestions;
   }
+
+  // ==================== ADMIN METHODS ====================
+
+  // Get network-wide follow statistics for admin dashboard
+  public async getNetworkFollowStats(): Promise<any> {
+    const totalFollows = await FollowModel.countDocuments();
+    const totalUserFollows = await FollowModel.countDocuments({ followType: "user" });
+    const totalNeedFollows = await FollowModel.countDocuments({ followType: "need" });
+
+    // Get growth (follows created in last 30 days)
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    const recentFollows = await FollowModel.countDocuments({
+      createdAt: { $gte: thirtyDaysAgo },
+    });
+
+    // Get top followed users
+    const topFollowedUsers = await FollowModel.aggregate([
+      { $match: { followType: "user" } },
+      {
+        $group: {
+          _id: "$following",
+          followerCount: { $sum: 1 },
+        },
+      },
+      { $sort: { followerCount: -1 } },
+      { $limit: 10 },
+      {
+        $lookup: {
+          from: "users",
+          localField: "_id",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      { $unwind: "$user" },
+      {
+        $project: {
+          userId: "$_id",
+          followerCount: 1,
+          name: "$user.name",
+          email: "$user.email",
+          avatar: "$user.avatar",
+        },
+      },
+    ]);
+
+    // Get top followed needs
+    const topFollowedNeeds = await FollowModel.aggregate([
+      { $match: { followType: "need" } },
+      {
+        $group: {
+          _id: "$followedNeed",
+          followerCount: { $sum: 1 },
+        },
+      },
+      { $sort: { followerCount: -1 } },
+      { $limit: 10 },
+      {
+        $lookup: {
+          from: "needs",
+          localField: "_id",
+          foreignField: "_id",
+          as: "need",
+        },
+      },
+      { $unwind: "$need" },
+      {
+        $project: {
+          needId: "$_id",
+          followerCount: 1,
+          title: "$need.title",
+          status: "$need.status",
+        },
+      },
+    ]);
+
+    return {
+      totalFollows,
+      totalUserFollows,
+      totalNeedFollows,
+      recentFollows,
+      topFollowedUsers,
+      topFollowedNeeds,
+    };
+  }
+
+  // Get all follows with pagination and filters (admin only)
+  public async getAllFollows(filters: {
+    followType?: FollowType;
+    userId?: string;
+    page: number;
+    limit: number;
+  }): Promise<{ follows: any[]; total: number }> {
+    const query: any = {};
+
+    if (filters.followType) {
+      query.followType = filters.followType;
+    }
+
+    if (filters.userId) {
+      query.$or = [{ follower: filters.userId }, { following: filters.userId }];
+    }
+
+    const skip = (filters.page - 1) * filters.limit;
+    const total = await FollowModel.countDocuments(query);
+
+    const follows = await FollowModel.find(query)
+      .populate("follower", "name email avatar")
+      .populate("following", "name email avatar")
+      .populate("followedNeed", "title status")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(filters.limit)
+      .lean();
+
+    return { follows, total };
+  }
 }
 
 export const followService = new FollowService();

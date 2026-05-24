@@ -33,11 +33,15 @@ const OptimizedImage: FC<SmartImageProps> = ({
 }) => {
   // CRITICAL: Prevent empty string from reaching Next.js Image
   // Check for undefined, null, empty string, and whitespace-only strings
-  const isValidSrc = src && typeof src === 'string' && src.trim().length > 0;
+  const isValidSrc = src && typeof src === "string" && src.trim().length > 0;
 
   // If src is completely invalid, return a placeholder instead of trying to render Image
   if (!isValidSrc) {
-    console.warn('OptimizedImage: Invalid src provided, rendering placeholder', { src, type: typeof src, alt });
+    console.warn("OptimizedImage: Invalid src provided, rendering placeholder", {
+      src,
+      type: typeof src,
+      alt,
+    });
 
     const placeholderClass = `${className} ${rounded ? "rounded-xl" : ""} bg-gray-200 flex items-center justify-center`;
 
@@ -56,7 +60,7 @@ const OptimizedImage: FC<SmartImageProps> = ({
   const safeSrc = src.trim() || "/images/default-avatar.png";
 
   // Auto-detect if image needs to be unoptimized (SVG files, local icons)
-  const shouldUnoptimize = unoptimized || safeSrc.endsWith('.svg') || safeSrc.startsWith('/icons/');
+  const shouldUnoptimize = unoptimized || safeSrc.endsWith(".svg") || safeSrc.startsWith("/icons/");
 
   const imageClass = `${className} ${rounded ? "rounded-xl" : ""}`;
   return fill ? (

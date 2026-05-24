@@ -1,5 +1,6 @@
 import { IUser } from "./user.types";
-import { Types } from "mongoose";
+
+export type ObjectId = string;
 
 export enum CommentStatus {
   PENDING = "pending",
@@ -10,13 +11,20 @@ export enum CommentStatus {
 export interface IComment {
   _id: string;
   content: string;
-  author?: IUser | Types.ObjectId | string;
+
+  author?: IUser | ObjectId;
+
   guestName?: string;
   guestEmail?: string;
-  post: Types.ObjectId | string;
+
+  post: ObjectId;
+
   postType: "News" | "Article" | "Video" | "Gallery" | "Project";
-  parent?: IComment | Types.ObjectId | string;
+
+  parent?: IComment | ObjectId;
+
   status: CommentStatus;
+
   createdAt: Date;
   updatedAt: Date;
 }

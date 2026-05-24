@@ -66,8 +66,9 @@ class TeamController {
     const validatedData = updateTeamSchema.parse({ body: req.body, params: req.params });
     const { teamId } = validatedData.params;
     const userId = req.user!._id.toString();
+    const userRole = req.user!.role;
 
-    const team = await teamService.updateTeam(teamId, userId, validatedData.body);
+    const team = await teamService.updateTeam(teamId, userId, userRole, validatedData.body);
 
     res.status(200).json({
       message: "تیم با موفقیت به‌روزرسانی شد.",
@@ -79,8 +80,9 @@ class TeamController {
   public deleteTeam = asyncHandler(async (req: Request, res: Response) => {
     const { teamId } = req.params;
     const userId = req.user!._id.toString();
+    const userRole = req.user!.role;
 
-    await teamService.deleteTeam(teamId, userId);
+    await teamService.deleteTeam(teamId, userId, userRole);
 
     res.status(200).json({
       message: "تیم با موفقیت حذف شد.",
@@ -193,6 +195,29 @@ class TeamController {
 
     res.status(200).json({
       data: stats,
+    });
+  });
+
+  // Get all teams for admin (across all needs)
+  public getAllTeamsForAdmin = asyncHandler(async (req: Request, res: Response) => {
+    const { status, focusArea, search, page = 1, limit = 20 } = req.query;
+
+    const filters = {
+      status: status as any,
+      focusArea: focusArea as any,
+      search: search as string,
+      page: parseInt(page as string),
+      limit: parseInt(limit as string),
+    };
+
+    const result = await teamService.getAllTeamsForAdmin(filters);
+
+    res.status(200).json({
+      results: result.teams.length,
+      total: result.total,
+      page: filters.page,
+      totalPages: Math.ceil(result.total / filters.limit),
+      data: result.teams,
     });
   });
 }

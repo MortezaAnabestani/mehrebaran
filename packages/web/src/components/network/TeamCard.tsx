@@ -118,9 +118,13 @@ const TeamCard: React.FC<TeamCardProps> = ({ team, variant = "card", onUpdate })
                 </h3>
               </Link>
               {team.isPrivate ? (
-                <Lock size={14} className="text-gray-400" title="تیم خصوصی" />
+                <Lock size={14} className="text-gray-400">
+                  <title>تیم خصوصی</title>
+                </Lock>
               ) : (
-                <Globe size={14} className="text-gray-400" title="تیم عمومی" />
+                <Globe size={14} className="text-gray-400">
+                  <title>تیم عمومی</title>
+                </Globe>
               )}
             </div>
             <p className="text-sm text-gray-500 font-medium">{getFocusAreaLabel(team.focusArea)}</p>
@@ -197,9 +201,11 @@ const TeamCard: React.FC<TeamCardProps> = ({ team, variant = "card", onUpdate })
                 <div
                   key={index}
                   className="w-8 h-8 rounded-full bg-gradient-to-br from-[#007acc] to-blue-600 text-white flex items-center justify-center text-xs font-bold border-2 border-white shadow-sm ring-1 ring-gray-100 relative z-10 hover:z-20 hover:scale-110 transition-transform cursor-help"
-                  title={typeof member.user === "object" ? member.user.name : "عضو"}
+                  // title={typeof member.user === "object" && "name" in member.user ? member.user.name : "عضو"}
                 >
-                  {typeof member.user === "object" && member.user.name ? member.user.name.charAt(0) : "U"}
+                  {typeof member.user === "object" && member.user && "name" in member.user
+                    ? member.user.name.charAt(0)
+                    : "U"}
                 </div>
               ))}
               {totalMembers > 4 && (
@@ -213,7 +219,7 @@ const TeamCard: React.FC<TeamCardProps> = ({ team, variant = "card", onUpdate })
           {/* Action Button */}
           <Link href={`/network/teams/${team._id}`}>
             <SmartButton
-              variant="outline"
+              variant="mgray"
               size="sm"
               className="rounded-full !px-4 hover:!bg-[#007acc] hover:!text-white hover:!border-[#007acc] group/btn"
             >

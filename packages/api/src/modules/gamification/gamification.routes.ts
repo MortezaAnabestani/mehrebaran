@@ -30,8 +30,22 @@ router.post(
   restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
   gamificationController.deductPoints
 );
+router.get(
+  "/points/admin/all-transactions",
+  protect,
+  restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
+  gamificationController.getAllTransactionsForAdmin
+);
 
 // ==================== BADGES ROUTES ====================
+
+// Admin badges with stats
+router.get(
+  "/badges/admin/with-stats",
+  protect,
+  restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
+  gamificationController.getAllBadgesWithStats
+);
 
 // Public badges
 router.get("/badges", gamificationController.getAllBadges);

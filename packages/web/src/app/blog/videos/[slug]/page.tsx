@@ -1,4 +1,4 @@
-import { getVideoByIdOrSlug } from "@/services/video.service"; // 👈 باید این سرویس را بسازید
+import { getVideoByIdOrSlug } from "@/services/video.service";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 

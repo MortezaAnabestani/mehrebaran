@@ -21,8 +21,7 @@ const RainEffect: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const raindrops = useRef<Raindrop[]>([]);
   const ripples = useRef<Ripple[]>([]);
-  const animationFrameId = useRef<number>();
-
+  const animationFrameId = useRef<number | null>(null);
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;

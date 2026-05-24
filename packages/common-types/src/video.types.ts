@@ -1,4 +1,4 @@
-import { IResponsiveImage, ITag, IAuthor, ICategory } from "./";
+import { IResponsiveImage, ITag, IAuthor, ICategory, IUser } from "./";
 
 export interface IVideoSeo {
   metaTitle: string;
@@ -14,7 +14,7 @@ export interface IVideo {
   description: string;
   videoUrl: string;
   coverImage: IResponsiveImage;
-  cameraman?: string;
+  cameraman?: IUser | string | null;
   tags?: (ITag | string)[];
   status: "draft" | "published";
   views: number;

@@ -14,15 +14,6 @@ interface InstagramNeedCardProps {
   onUpdate?: () => void;
 }
 
-/**
- * InstagramNeedCard - Modern Skeuomorphic Redesign
- *
- * Features:
- * - Semantic HTML Structure
- * - High-fidelity Skeuomorphic UI (Depth, Gloss, Shadows)
- * - Accessible Interactive Elements
- * - Optimized Performance
- */
 const InstagramNeedCard: React.FC<InstagramNeedCardProps> = ({ need, onUpdate }) => {
   const { user } = useAuth();
   const router = useRouter();
@@ -31,12 +22,12 @@ const InstagramNeedCard: React.FC<InstagramNeedCardProps> = ({ need, onUpdate })
   // --- Derived State & Logic ---
   const userHasLiked = useMemo(
     () => (user && need.upvotes ? need.upvotes.includes(user._id) : false),
-    [user, need.upvotes]
+    [user, need.upvotes],
   );
 
   const userIsFollowing = useMemo(
     () => (user && need.supporters ? need.supporters.includes(user._id) : false),
-    [user, need.supporters]
+    [user, need.supporters],
   );
 
   // --- Local State ---

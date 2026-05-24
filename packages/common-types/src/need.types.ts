@@ -63,7 +63,7 @@ export interface IMilestone {
   status: MilestoneStatus;
   progressPercentage: number;
   order: number;
-  evidence?: string[];  // URLs of images/documents
+  evidence?: string[]; // URLs of images/documents
 }
 
 export type BudgetItemStatus = "pending" | "partial" | "fully_funded" | "exceeded";
@@ -88,11 +88,7 @@ export type VerificationRequestType =
   | "need_completion"
   | "progress_update";
 
-export type VerificationStatus =
-  | "pending"
-  | "approved"
-  | "rejected"
-  | "needs_revision";
+export type VerificationStatus = "pending" | "approved" | "rejected" | "needs_revision";
 
 export interface IVerificationEvidence {
   type: "image" | "document" | "video";
@@ -219,12 +215,20 @@ export interface INeed {
   title: string;
   slug: string;
   description: string;
-
+  targetAmount: number;
+  currentAmount: number;
+  createdBy: IUser;
+  images: string[];
+  team: {
+    members: string[];
+  };
+  sharesCount: number;
+  isTrending?: boolean;
   category: INeedCategory | string;
   status: NeedStatus;
   statusHistory?: IStatusHistory[];
   urgencyLevel: UrgencyLevel;
-
+  commentsCount: number;
   submittedBy: {
     user?: IUser | string;
     guestName?: string;
@@ -250,7 +254,7 @@ export interface INeed {
   // Timeline
   updates?: INeedUpdate[];
   milestones?: IMilestone[];
-  overallProgress?: number;  // 0-100, محاسبه شده از milestones
+  overallProgress?: number; // 0-100, محاسبه شده از milestones
   deadline?: Date;
 
   // Budget

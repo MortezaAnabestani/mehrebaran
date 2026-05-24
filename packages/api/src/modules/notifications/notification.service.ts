@@ -487,6 +487,295 @@ class NotificationService {
       }, {}),
     };
   }
+
+  // ==================== ADMIN METHODS ====================
+
+  /**
+   * دریافت آمار کل نوتیفیکیشن‌های شبکه (Admin)
+   */
+  public async getNetworkStats(): Promise<any> {
+    const totalNotifications = await this.NotificationModel.countDocuments();
+    const unreadNotifications = await this.NotificationModel.countDocuments({ isRead: false });
+    const readNotifications = totalNotifications - unreadNotifications;
+
+    // نوتیفیکیشن‌های 30 روز اخیر
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    const recentNotifications = await this.NotificationModel.countDocuments({
+      createdAt: { $gte: thirtyDaysAgo },
+    });
+
+    // نوتیفیکیشن‌های امروز
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const todayNotifications = await this.NotificationModel.countDocuments({
+      createdAt: { $gte: today },
+    });
+
+    // توزیع بر اساس نوع
+    const byType = await this.NotificationModel.aggregate([
+      {
+        $group: {
+          _id: "$type",
+          count: { $sum: 1 },
+          unread: { $sum: { $cond: ["$isRead", 0, 1] } },
+        },
+      },
+      { $sort: { count: -1 } },
+    ]);
+
+    // توزیع بر اساس اولویت
+    const byPriority = await this.NotificationModel.aggregate([
+      {
+        $group: {
+          _id: "$priority",
+          count: { $sum: 1 },
+        },
+      },
+      { $sort: { count: -1 } },
+    ]);
+
+    // توزیع بر اساس کانال
+    const byChannel = await this.NotificationModel.aggregate([
+      { $unwind: "$channels" },
+      {
+        $group: {
+          _id: "$channels",
+          count: { $sum: 1 },
+        },
+      },
+      { $sort: { count: -1 } },
+    ]);
+
+    // کاربران با بیشترین نوتیفیکیشن دریافتی
+    const topRecipients = await this.NotificationModel.aggregate([
+      {
+        $group: {
+          _id: "$recipient",
+          notificationCount: { $sum: 1 },
+          unreadCount: { $sum: { $cond: ["$isRead", 0, 1] } },
+        },
+      },
+      { $sort: { notificationCount: -1 } },
+      { $limit: 10 },
+      {
+        $lookup: {
+          from: "users",
+          localField: "_id",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      { $unwind: "$user" },
+      {
+        $project: {
+          userId: "$_id",
+          notificationCount: 1,
+          unreadCount: 1,
+          name: "$user.name",
+          email: "$user.email",
+          avatar: "$user.avatar",
+        },
+      },
+    ]);
+
+    // نرخ تحویل به کانال‌های مختلف
+    const deliveryStats = await this.NotificationModel.aggregate([
+      {
+        $facet: {
+          email: [
+            { $match: { "deliveryStatus.email": { $exists: true } } },
+            {
+              $group: {
+                _id: null,
+                total: { $sum: 1 },
+                successful: {
+                  $sum: { $cond: ["$deliveryStatus.email.sent", 1, 0] },
+                },
+              },
+            },
+          ],
+          push: [
+            { $match: { "deliveryStatus.push": { $exists: true } } },
+            {
+              $group: {
+                _id: null,
+                total: { $sum: 1 },
+                successful: {
+                  $sum: { $cond: ["$deliveryStatus.push.sent", 1, 0] },
+                },
+              },
+            },
+          ],
+          sms: [
+            { $match: { "deliveryStatus.sms": { $exists: true } } },
+            {
+              $group: {
+                _id: null,
+                total: { $sum: 1 },
+                successful: {
+                  $sum: { $cond: ["$deliveryStatus.sms.sent", 1, 0] },
+                },
+              },
+            },
+          ],
+        },
+      },
+    ]);
+
+    return {
+      totalNotifications,
+      unreadNotifications,
+      readNotifications,
+      recentNotifications,
+      todayNotifications,
+      readRate: totalNotifications > 0 ? (readNotifications / totalNotifications) * 100 : 0,
+      byType,
+      byPriority,
+      byChannel,
+      topRecipients,
+      deliveryStats: {
+        email: deliveryStats[0].email[0] || { total: 0, successful: 0 },
+        push: deliveryStats[0].push[0] || { total: 0, successful: 0 },
+        sms: deliveryStats[0].sms[0] || { total: 0, successful: 0 },
+      },
+    };
+  }
+
+  /**
+   * دریافت همه نوتیفیکیشن‌ها با فیلتر و صفحه‌بندی (Admin)
+   */
+  public async getAllNotifications(filters: {
+    type?: NotificationType;
+    priority?: NotificationPriority;
+    isRead?: boolean;
+    recipientId?: string;
+    page: number;
+    limit: number;
+  }): Promise<{ notifications: any[]; total: number }> {
+    const query: any = {};
+
+    if (filters.type) query.type = filters.type;
+    if (filters.priority) query.priority = filters.priority;
+    if (filters.isRead !== undefined) query.isRead = filters.isRead;
+    if (filters.recipientId) query.recipient = filters.recipientId;
+
+    const skip = (filters.page - 1) * filters.limit;
+    const total = await this.NotificationModel.countDocuments(query);
+
+    const notifications = await this.NotificationModel.find(query)
+      .populate("recipient", "name email avatar")
+      .populate("actor", "name email avatar")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(filters.limit)
+      .lean();
+
+    return { notifications, total };
+  }
+
+  /**
+   * دریافت آمار Push Tokens شبکه (Admin)
+   */
+  public async getPushTokenStats(): Promise<any> {
+    const totalTokens = await this.PushTokenModel.countDocuments();
+    const activeTokens = await this.PushTokenModel.countDocuments({ isActive: true });
+
+    // توزیع بر اساس پلتفرم
+    const byPlatform = await this.PushTokenModel.aggregate([
+      {
+        $group: {
+          _id: "$platform",
+          count: { $sum: 1 },
+          active: { $sum: { $cond: ["$isActive", 1, 0] } },
+        },
+      },
+      { $sort: { count: -1 } },
+    ]);
+
+    // کاربران با بیشترین دستگاه
+    const usersWithMostDevices = await this.PushTokenModel.aggregate([
+      {
+        $group: {
+          _id: "$user",
+          deviceCount: { $sum: 1 },
+          activeDevices: { $sum: { $cond: ["$isActive", 1, 0] } },
+        },
+      },
+      { $sort: { deviceCount: -1 } },
+      { $limit: 10 },
+      {
+        $lookup: {
+          from: "users",
+          localField: "_id",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      { $unwind: "$user" },
+      {
+        $project: {
+          userId: "$_id",
+          deviceCount: 1,
+          activeDevices: 1,
+          name: "$user.name",
+          email: "$user.email",
+        },
+      },
+    ]);
+
+    return {
+      totalTokens,
+      activeTokens,
+      inactiveTokens: totalTokens - activeTokens,
+      byPlatform,
+      usersWithMostDevices,
+    };
+  }
+
+  /**
+   * دریافت همه Push Tokens با فیلتر (Admin)
+   */
+  public async getAllPushTokens(filters: {
+    platform?: string;
+    isActive?: boolean;
+    userId?: string;
+    page: number;
+    limit: number;
+  }): Promise<{ tokens: any[]; total: number }> {
+    const query: any = {};
+
+    if (filters.platform) query.platform = filters.platform;
+    if (filters.isActive !== undefined) query.isActive = filters.isActive;
+    if (filters.userId) query.user = filters.userId;
+
+    const skip = (filters.page - 1) * filters.limit;
+    const total = await this.PushTokenModel.countDocuments(query);
+
+    const tokens = await this.PushTokenModel.find(query)
+      .populate("user", "name email avatar")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(filters.limit)
+      .lean();
+
+    return { tokens, total };
+  }
+
+  /**
+   * حذف نوتیفیکیشن‌های قدیمی (Admin Cleanup)
+   */
+  public async deleteOldNotifications(daysOld: number = 90): Promise<number> {
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - daysOld);
+
+    const result = await this.NotificationModel.deleteMany({
+      createdAt: { $lt: cutoffDate },
+      isRead: true,
+    });
+
+    return result.deletedCount || 0;
+  }
 }
 
 export const notificationService = new NotificationService();

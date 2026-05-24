@@ -2,10 +2,10 @@
 
 import React, { useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import AreaItem from "./AreaItem";
-import HeadTitle from "../HeadTitle";
+import AreaItem from "@/components/features/home/areasOfActivity/AreaItem";
+import HeadTitle from "@/components/features/home/HeadTitle";
 import { AreasOfActivity } from "@/types/types";
-import Line from "./Line";
+import Line from "@/components/features/home/areasOfActivity/Line";
 
 const activities: AreasOfActivity[] = [
   {
@@ -103,7 +103,12 @@ const AreasOfActivitySection: React.FC = () => {
           const isNextBottom = next?.position === "bottom";
 
           return (
-            <motion.div key={index} variants={itemVariants} className="relative " whileHover={{ zIndex: 10 }}>
+            <motion.div
+              key={index}
+              variants={itemVariants as any}
+              className="relative "
+              whileHover={{ zIndex: 10 }}
+            >
               <AreaItem
                 title={activity.title}
                 icon={activity.icon}

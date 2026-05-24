@@ -35,12 +35,14 @@ export default function VideoPlayer({ video }: VideoPlayerProps) {
   return (
     <div className="relative pt-[56.25%]">
       <ReactPlayer
-        url={video.videoUrl}
-        className="absolute top-0 left-0"
-        width="100%"
-        height="100%"
-        controls
-        playing
+        {...({
+          url: video.videoUrl,
+          className: "absolute top-0 left-0",
+          width: "100%",
+          height: "100%",
+          controls: true,
+          playing: true,
+        } as any)}
       />
     </div>
   );

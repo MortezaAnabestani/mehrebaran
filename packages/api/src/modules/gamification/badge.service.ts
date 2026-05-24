@@ -28,6 +28,34 @@ class BadgeService {
     return badges;
   }
 
+  // Get all badges with recipient count (for admin)
+  public async getAllBadgesWithStats(filters?: {
+    category?: BadgeCategory;
+    rarity?: BadgeRarity;
+    isActive?: boolean;
+  }): Promise<any[]> {
+    const query: any = {};
+
+    if (filters?.category) query.category = filters.category;
+    if (filters?.rarity) query.rarity = filters.rarity;
+    if (filters?.isActive !== undefined) query.isActive = filters.isActive;
+
+    const badges = await BadgeModel.find(query).sort({ order: 1, rarity: -1 }).lean();
+
+    // Get recipient count for each badge
+    const badgesWithStats = await Promise.all(
+      badges.map(async (badge) => {
+        const recipientCount = await UserBadgeModel.countDocuments({ badge: badge._id });
+        return {
+          ...badge,
+          recipientCount,
+        };
+      })
+    );
+
+    return badgesWithStats;
+  }
+
   // Get badge by ID
   public async getBadgeById(badgeId: string): Promise<IBadge | null> {
     return BadgeModel.findById(badgeId);

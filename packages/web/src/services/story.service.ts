@@ -1,5 +1,5 @@
 import api from "@/lib/api";
-import type { IStory, IStoryFeed, IStoryStats, StoryType, StoryPrivacy } from "@mehrebaran/common-types";
+import type { IStory, IStoryFeed, IStoryStats, StoryType, StoryPrivacy } from "common-types";
 
 // ===========================
 // Request Types
@@ -229,7 +229,7 @@ class StoryService {
    * Get highlights for a user
    */
   public async getUserHighlights(
-    userId: string
+    userId: string,
   ): Promise<{ success: boolean; data: any[]; message: string }> {
     const response = await api.get(`/stories/highlights/user/${userId}`);
     return response.data;
@@ -240,7 +240,7 @@ class StoryService {
    */
   public async addStoryToHighlight(
     highlightId: string,
-    storyId: string
+    storyId: string,
   ): Promise<{ success: boolean; data: any; message: string }> {
     const response = await api.post(`/stories/highlights/${highlightId}/add-story`, {
       storyId,
@@ -253,7 +253,7 @@ class StoryService {
    */
   public async removeStoryFromHighlight(
     highlightId: string,
-    storyId: string
+    storyId: string,
   ): Promise<{ success: boolean; message: string }> {
     const response = await api.delete(`/stories/highlights/${highlightId}/remove-story/${storyId}`);
     return response.data;
@@ -267,7 +267,7 @@ class StoryService {
     data: {
       title?: string;
       coverImage?: string;
-    }
+    },
   ): Promise<{ success: boolean; data: any; message: string }> {
     const response = await api.put(`/stories/highlights/${highlightId}`, data);
     return response.data;

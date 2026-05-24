@@ -124,6 +124,22 @@ class GamificationController {
     });
   });
 
+  // Get all badges with stats (admin only)
+  public getAllBadgesWithStats = asyncHandler(async (req: Request, res: Response) => {
+    const { category, rarity, isActive } = req.query;
+
+    const badges = await badgeService.getAllBadgesWithStats({
+      category: category as any,
+      rarity: rarity as any,
+      isActive: isActive === "true" ? true : isActive === "false" ? false : undefined,
+    });
+
+    res.status(200).json({
+      results: badges.length,
+      data: badges,
+    });
+  });
+
   // Get badge by ID
   public getBadgeById = asyncHandler(async (req: Request, res: Response) => {
     const { badgeId } = req.params;
@@ -242,6 +258,29 @@ class GamificationController {
     res.status(200).json({
       results: leaderboard.length,
       data: leaderboard,
+    });
+  });
+
+  // Get all transactions for admin
+  public getAllTransactionsForAdmin = asyncHandler(async (req: Request, res: Response) => {
+    const { action, userId, search, page = 1, limit = 20 } = req.query;
+
+    const filters = {
+      action: action as string,
+      userId: userId as string,
+      search: search as string,
+      page: parseInt(page as string),
+      limit: parseInt(limit as string),
+    };
+
+    const result = await pointsService.getAllTransactionsForAdmin(filters);
+
+    res.status(200).json({
+      results: result.transactions.length,
+      total: result.total,
+      page: filters.page,
+      totalPages: Math.ceil(result.total / filters.limit),
+      data: result.transactions,
     });
   });
 }

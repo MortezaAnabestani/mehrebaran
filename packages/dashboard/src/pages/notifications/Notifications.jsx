@@ -1,119 +1,129 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { getNetworkNotificationStats, getAllNotifications } from "../../features/notificationsSlice";
 import {
-  getNotifications,
-  getUnreadCount,
-  getNotificationStats,
-  markAsRead,
-  markAllAsRead,
-  deleteNotification,
-  deleteAllRead,
-} from "../../features/notificationsSlice";
-import {
-  Card,
-  Button,
-  Typography,
-  Avatar,
-  Chip,
-  IconButton,
-  Tabs,
-  TabsHeader,
-  Tab,
-  TabsBody,
-  TabPanel,
-} from "@material-tailwind/react";
-import {
-  BellIcon,
-  CheckCircleIcon,
-  TrashIcon,
-  Cog6ToothIcon,
-} from "@heroicons/react/24/outline";
+  Bell,
+  TrendingUp,
+  Users,
+  BarChart3,
+  RefreshCw,
+  Filter,
+  ChevronLeft,
+  ChevronRight,
+  CheckCircle,
+  AlertCircle,
+  Info,
+  AlertTriangle,
+  Mail,
+  Smartphone,
+  MessageSquare,
+} from "lucide-react";
 
 const Notifications = () => {
   const dispatch = useDispatch();
-  const { notifications, unreadCount, stats, loading } = useSelector(
-    (state) => state.notifications
-  );
+  const { networkStats, allNotifications, loading, pagination } = useSelector((state) => state.notifications);
 
-  const [filter, setFilter] = useState("all"); // all, unread, read
-  const [typeFilter, setTypeFilter] = useState("all"); // all, mention, follow, etc.
-
-  // بارگذاری اعلانات
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        await Promise.all([
-          dispatch(getNotifications()).unwrap(),
-          dispatch(getUnreadCount()).unwrap(),
-          dispatch(getNotificationStats()).unwrap(),
-        ]);
-      } catch (error) {
-        console.error("خطا در بارگذاری اعلانات:", error);
-      }
-    };
-
-    loadData();
-  }, [dispatch]);
-
-  // علامت‌گذاری به عنوان خوانده شده
-  const handleMarkAsRead = async (notificationId) => {
-    try {
-      await dispatch(markAsRead(notificationId)).unwrap();
-    } catch (error) {
-      console.error("خطا در علامت‌گذاری اعلان:", error);
-      alert(error || "خطایی رخ داده است");
-    }
-  };
-
-  // علامت‌گذاری همه به عنوان خوانده شده
-  const handleMarkAllAsRead = async () => {
-    try {
-      await dispatch(markAllAsRead()).unwrap();
-    } catch (error) {
-      console.error("خطا در علامت‌گذاری همه اعلانات:", error);
-      alert(error || "خطایی رخ داده است");
-    }
-  };
-
-  // حذف اعلان
-  const handleDelete = async (notificationId) => {
-    if (!window.confirm("آیا از حذف این اعلان اطمینان دارید؟")) return;
-
-    try {
-      await dispatch(deleteNotification(notificationId)).unwrap();
-    } catch (error) {
-      console.error("خطا در حذف اعلان:", error);
-      alert(error || "خطایی رخ داده است");
-    }
-  };
-
-  // حذف همه اعلانات خوانده شده
-  const handleDeleteAllRead = async () => {
-    if (!window.confirm("آیا از حذف همه اعلانات خوانده شده اطمینان دارید؟")) return;
-
-    try {
-      await dispatch(deleteAllRead()).unwrap();
-    } catch (error) {
-      console.error("خطا در حذف اعلانات:", error);
-      alert(error || "خطایی رخ داده است");
-    }
-  };
-
-  // فیلتر اعلانات
-  const filteredNotifications = notifications.filter((notification) => {
-    // فیلتر خوانده/نخوانده
-    if (filter === "unread" && notification.isRead) return false;
-    if (filter === "read" && !notification.isRead) return false;
-
-    // فیلتر نوع
-    if (typeFilter !== "all" && notification.type !== typeFilter) return false;
-
-    return true;
+  const [filters, setFilters] = useState({
+    type: "",
+    priority: "",
+    isRead: "",
+    recipientId: "",
+    page: 1,
+    limit: 20,
   });
 
-  // تبدیل نوع به فارسی
-  const getTypeLabel = (type) => {
+  useEffect(() => {
+    loadStats();
+  }, []);
+
+  useEffect(() => {
+    loadNotifications();
+  }, [filters.page, filters.type, filters.priority, filters.isRead, filters.recipientId]);
+
+  const loadStats = async () => {
+    try {
+      await dispatch(getNetworkNotificationStats()).unwrap();
+    } catch (error) {
+      console.error("خطا در بارگذاری آمار:", error);
+    }
+  };
+
+  const loadNotifications = async () => {
+    try {
+      await dispatch(getAllNotifications(filters)).unwrap();
+    } catch (error) {
+      console.error("خطا در بارگذاری اعلانات:", error);
+    }
+  };
+
+  const stats = useMemo(() => {
+    if (!networkStats) return [];
+    return [
+      {
+        label: "کل اعلانات",
+        value: networkStats.totalNotifications || 0,
+        icon: Bell,
+        color: "text-blue-600",
+        bg: "bg-blue-50",
+      },
+      {
+        label: "خوانده نشده",
+        value: networkStats.unreadNotifications || 0,
+        icon: AlertCircle,
+        color: "text-emerald-600",
+        bg: "bg-emerald-50",
+      },
+      {
+        label: "رشد ۳۰ روز اخیر",
+        value: networkStats.recentNotifications || 0,
+        icon: TrendingUp,
+        color: "text-amber-600",
+        bg: "bg-amber-50",
+      },
+      {
+        label: "اعلانات امروز",
+        value: networkStats.todayNotifications || 0,
+        icon: Info,
+        color: "text-violet-600",
+        bg: "bg-violet-50",
+      },
+    ];
+  }, [networkStats]);
+
+  const typeDistribution = useMemo(() => {
+    return networkStats?.byType || [];
+  }, [networkStats]);
+
+  const priorityDistribution = useMemo(() => {
+    return networkStats?.byPriority || [];
+  }, [networkStats]);
+
+  const channelDistribution = useMemo(() => {
+    return networkStats?.byChannel || [];
+  }, [networkStats]);
+
+  const topRecipients = useMemo(() => {
+    return networkStats?.topRecipients || [];
+  }, [networkStats]);
+
+  const deliveryStats = useMemo(() => {
+    return networkStats?.deliveryStats || { email: {}, push: {}, sms: {} };
+  }, [networkStats]);
+
+  const handlePageChange = (newPage) => {
+    setFilters({ ...filters, page: newPage });
+  };
+
+  const handleFilterChange = (key, value) => {
+    setFilters({ ...filters, [key]: value, page: 1 });
+  };
+
+  const handleRefresh = () => {
+    loadStats();
+    loadNotifications();
+  };
+
+  function getTypeLabel(type) {
     const typeMap = {
       mention: "منشن",
       follow: "دنبال کردن",
@@ -138,297 +148,556 @@ const Notifications = () => {
       system_alert: "هشدار سیستم",
     };
     return typeMap[type] || type;
-  };
+  }
 
-  // رنگ نوع
-  const getTypeColor = (type) => {
-    const colorMap = {
-      mention: "blue",
-      follow: "green",
-      follow_need: "purple",
-      badge_earned: "yellow",
-      level_up: "orange",
-      need_update: "cyan",
-      need_completed: "green",
-      need_support: "pink",
-      task_assigned: "indigo",
-      task_completed: "green",
-      milestone_completed: "teal",
-      team_invitation: "purple",
-      team_joined: "green",
-      team_left: "red",
-      comment_posted: "blue",
-      comment_reply: "cyan",
-      direct_message: "purple",
-      verification_approved: "green",
-      verification_rejected: "red",
-      admin_announcement: "red",
-      system_alert: "red",
+  function getPriorityLabel(priority) {
+    const priorityMap = {
+      low: "کم",
+      normal: "عادی",
+      high: "بالا",
+      urgent: "فوری",
     };
-    return colorMap[type] || "gray";
-  };
+    return priorityMap[priority] || priority;
+  }
 
-  // رنگ اولویت
-  const getPriorityColor = (priority) => {
-    const colorMap = {
-      low: "gray",
-      normal: "blue",
-      high: "orange",
-      urgent: "red",
+  function getChannelLabel(channel) {
+    const channelMap = {
+      in_app: "درون برنامه",
+      email: "ایمیل",
+      push: "پوش",
+      sms: "پیامک",
     };
-    return colorMap[priority] || "gray";
-  };
+    return channelMap[channel] || channel;
+  }
+
+  function getTypeColor(type) {
+    const colorMap = {
+      mention: "#3b82f6",
+      follow: "#10b981",
+      badge_earned: "#f59e0b",
+      task_assigned: "#6366f1",
+      team_invitation: "#8b5cf6",
+      admin_announcement: "#ef4444",
+      system_alert: "#dc2626",
+    };
+    return colorMap[type] || "#64748b";
+  }
+
+  function getPriorityColor(priority) {
+    const colorMap = {
+      low: "#94a3b8",
+      normal: "#3b82f6",
+      high: "#f59e0b",
+      urgent: "#ef4444",
+    };
+    return colorMap[priority] || "#64748b";
+  }
+
+  function getChannelIcon(channel) {
+    const iconMap = {
+      in_app: Bell,
+      email: Mail,
+      push: Smartphone,
+      sms: MessageSquare,
+    };
+    return iconMap[channel] || Bell;
+  }
 
   return (
-    <div className="p-6">
-      {/* Stats Card */}
-      <Card className="p-6 mb-6">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <Typography variant="h5" color="blue-gray" className="mb-2">
-              اعلانات
-            </Typography>
-            <Typography variant="small" color="gray">
-              تعداد اعلانات خوانده نشده: {unreadCount}
-            </Typography>
-          </div>
+    <div className="min-h-screen bg-slate-50 p-6 font-sans text-slate-800" dir="rtl">
+      {/* Header */}
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-slate-900 tracking-tight">مدیریت اعلانات شبکه</h1>
+        <p className="mt-1 text-xs text-slate-500 font-medium">
+          مدیریت و نظارت بر اعلانات کل شبکه اجتماعی
+        </p>
+      </div>
 
-          <div className="flex gap-2">
-            {unreadCount > 0 && (
-              <Button
-                color="blue"
-                size="sm"
-                className="flex items-center gap-2"
-                onClick={handleMarkAllAsRead}
-              >
-                <CheckCircleIcon className="w-5 h-5" />
-                خواندن همه
-              </Button>
-            )}
-            <Button
-              color="red"
-              size="sm"
-              variant="outlined"
-              className="flex items-center gap-2"
-              onClick={handleDeleteAllRead}
+      {/* Metrics Bar */}
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 mb-6">
+        {stats.map((stat, index) => {
+          const Icon = stat.icon;
+          return (
+            <div
+              key={index}
+              className="bg-white rounded-md border border-slate-200 p-4 flex items-center justify-between hover:border-slate-300 transition-colors"
             >
-              <TrashIcon className="w-5 h-5" />
-              حذف خوانده شده‌ها
-            </Button>
-            <Link to="/dashboard/notifications/settings">
-              <Button size="sm" variant="outlined" className="flex items-center gap-2">
-                <Cog6ToothIcon className="w-5 h-5" />
-                تنظیمات
-              </Button>
-            </Link>
-          </div>
-        </div>
-
-        {/* Stats Grid */}
-        {stats && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="bg-blue-50 p-4 rounded-lg text-center">
-              <Typography variant="small" color="gray">
-                کل اعلانات
-              </Typography>
-              <Typography variant="h4" color="blue">
-                {stats.total || 0}
-              </Typography>
-            </div>
-            <div className="bg-green-50 p-4 rounded-lg text-center">
-              <Typography variant="small" color="gray">
-                خوانده نشده
-              </Typography>
-              <Typography variant="h4" color="green">
-                {stats.unread || 0}
-              </Typography>
-            </div>
-            <div className="bg-purple-50 p-4 rounded-lg text-center">
-              <Typography variant="small" color="gray">
-                امروز
-              </Typography>
-              <Typography variant="h4" color="purple">
-                {stats.today || 0}
-              </Typography>
-            </div>
-            <div className="bg-orange-50 p-4 rounded-lg text-center">
-              <Typography variant="small" color="gray">
-                این هفته
-              </Typography>
-              <Typography variant="h4" color="orange">
-                {stats.thisWeek || 0}
-              </Typography>
-            </div>
-          </div>
-        )}
-      </Card>
-
-      {/* Filters */}
-      <Card className="p-4 mb-6">
-        <div className="flex gap-4 items-center flex-wrap">
-          <div className="flex gap-2">
-            <Button
-              size="sm"
-              color={filter === "all" ? "blue" : "gray"}
-              variant={filter === "all" ? "filled" : "outlined"}
-              onClick={() => setFilter("all")}
-            >
-              همه ({notifications?.length || 0})
-            </Button>
-            <Button
-              size="sm"
-              color={filter === "unread" ? "blue" : "gray"}
-              variant={filter === "unread" ? "filled" : "outlined"}
-              onClick={() => setFilter("unread")}
-            >
-              خوانده نشده ({unreadCount})
-            </Button>
-            <Button
-              size="sm"
-              color={filter === "read" ? "blue" : "gray"}
-              variant={filter === "read" ? "filled" : "outlined"}
-              onClick={() => setFilter("read")}
-            >
-              خوانده شده ({(notifications?.length || 0) - unreadCount})
-            </Button>
-          </div>
-
-          <div className="flex-1" />
-
-          <select
-            value={typeFilter}
-            onChange={(e) => setTypeFilter(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
-          >
-            <option value="all">همه انواع</option>
-            <option value="mention">منشن</option>
-            <option value="follow">دنبال کردن</option>
-            <option value="badge_earned">دریافت نشان</option>
-            <option value="task_assigned">تخصیص تسک</option>
-            <option value="team_invitation">دعوت به تیم</option>
-            <option value="admin_announcement">اعلان مدیر</option>
-          </select>
-        </div>
-      </Card>
-
-      {/* Notifications List */}
-      <Card className="p-6">
-        {loading ? (
-          <div className="flex justify-center items-center py-10">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-          </div>
-        ) : filteredNotifications && filteredNotifications.length > 0 ? (
-          <div className="space-y-3">
-            {filteredNotifications.map((notification) => (
-              <div
-                key={notification._id}
-                className={`relative p-4 rounded-lg border ${
-                  notification.isRead
-                    ? "bg-white border-gray-200"
-                    : "bg-blue-50 border-blue-200"
-                }`}
-              >
-                {/* Unread Indicator */}
-                {!notification.isRead && (
-                  <div className="absolute top-4 right-4 w-3 h-3 bg-blue-500 rounded-full"></div>
-                )}
-
-                <div className="flex items-start gap-4">
-                  {/* Actor Avatar */}
-                  {notification.actor && (
-                    <Avatar
-                      src={notification.actor?.profilePicture || "/default-avatar.png"}
-                      alt={notification.actor?.name || "کاربر"}
-                      size="md"
-                    />
-                  )}
-
-                  {/* Content */}
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Chip
-                        value={getTypeLabel(notification.type)}
-                        color={getTypeColor(notification.type)}
-                        size="sm"
-                      />
-                      {notification.priority !== "normal" && (
-                        <Chip
-                          value={notification.priority}
-                          color={getPriorityColor(notification.priority)}
-                          size="sm"
-                        />
-                      )}
-                    </div>
-
-                    <Typography variant="h6" color="blue-gray" className="mb-1">
-                      {notification.title}
-                    </Typography>
-
-                    <Typography variant="paragraph" color="gray" className="mb-2">
-                      {notification.message}
-                    </Typography>
-
-                    <div className="flex items-center gap-4 mt-3">
-                      <Typography variant="small" color="gray">
-                        {new Date(notification.createdAt).toLocaleString("fa-IR")}
-                      </Typography>
-
-                      {notification.actionUrl && (
-                        <Link
-                          to={notification.actionUrl}
-                          className="text-blue-500 hover:underline text-sm"
-                        >
-                          {notification.actionLabel || "مشاهده"}
-                        </Link>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Actions */}
-                  <div className="flex gap-2">
-                    {!notification.isRead && (
-                      <IconButton
-                        size="sm"
-                        color="blue"
-                        variant="text"
-                        onClick={() => handleMarkAsRead(notification._id)}
-                        title="علامت‌گذاری به عنوان خوانده شده"
-                      >
-                        <CheckCircleIcon className="w-5 h-5" />
-                      </IconButton>
-                    )}
-                    <IconButton
-                      size="sm"
-                      color="red"
-                      variant="text"
-                      onClick={() => handleDelete(notification._id)}
-                      title="حذف"
-                    >
-                      <TrashIcon className="w-5 h-5" />
-                    </IconButton>
-                  </div>
+              <div>
+                <div className="text-[11px] font-medium text-slate-500 mb-1">{stat.label}</div>
+                <div className="font-bold text-2xl text-slate-900">
+                  {stat.value.toLocaleString("fa-IR")}
                 </div>
               </div>
-            ))}
+              <div className={`w-10 h-10 rounded-md flex items-center justify-center ${stat.bg}`}>
+                <Icon size={20} className={stat.color} />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Distribution Stats Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+        {/* Type Distribution */}
+        <div className="bg-white rounded-md border border-slate-200 flex flex-col">
+          <div className="px-4 py-3 border-b border-slate-100 flex items-center gap-2 bg-slate-50/50">
+            <BarChart3 size={16} className="text-[#007acc]" />
+            <h2 className="text-sm font-semibold text-slate-800">توزیع بر اساس نوع</h2>
           </div>
-        ) : (
-          <div className="text-center py-10">
-            <BellIcon className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-            <Typography variant="h6" color="gray">
-              {filter === "unread"
-                ? "اعلان خوانده نشده‌ای وجود ندارد"
-                : filter === "read"
-                ? "اعلان خوانده شده‌ای وجود ندارد"
-                : typeFilter !== "all"
-                ? "اعلانی با این نوع یافت نشد"
-                : "هنوز اعلانی دریافت نکرده‌اید"}
-            </Typography>
-            <Typography variant="small" color="gray" className="mt-2">
-              اعلانات شما در اینجا نمایش داده می‌شود
-            </Typography>
+          <div className="p-4 flex-1">
+            {typeDistribution.length > 0 ? (
+              <div className="space-y-2">
+                {typeDistribution.slice(0, 5).map((item) => (
+                  <div
+                    key={item._id}
+                    className="flex items-center justify-between p-2.5 bg-slate-50 rounded border border-slate-100 hover:border-slate-200 transition-colors"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div
+                        className="w-2 h-2 rounded-full"
+                        style={{ backgroundColor: getTypeColor(item._id) }}
+                      ></div>
+                      <span className="text-xs font-medium text-slate-700">{getTypeLabel(item._id)}</span>
+                    </div>
+                    <span
+                      className="px-2 py-0.5 rounded text-[11px] font-bold"
+                      style={{
+                        backgroundColor: `${getTypeColor(item._id)}15`,
+                        color: getTypeColor(item._id),
+                      }}
+                    >
+                      {item.count.toLocaleString("fa-IR")}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-10 text-xs text-slate-400">داده‌ای یافت نشد</div>
+            )}
+          </div>
+        </div>
+
+        {/* Priority Distribution */}
+        <div className="bg-white rounded-md border border-slate-200 flex flex-col">
+          <div className="px-4 py-3 border-b border-slate-100 flex items-center gap-2 bg-slate-50/50">
+            <AlertTriangle size={16} className="text-amber-600" />
+            <h2 className="text-sm font-semibold text-slate-800">توزیع بر اساس اولویت</h2>
+          </div>
+          <div className="p-4 flex-1">
+            {priorityDistribution.length > 0 ? (
+              <div className="space-y-2">
+                {priorityDistribution.map((item) => (
+                  <div
+                    key={item._id}
+                    className="flex items-center justify-between p-2.5 bg-slate-50 rounded border border-slate-100 hover:border-slate-200 transition-colors"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div
+                        className="w-2 h-2 rounded-full"
+                        style={{ backgroundColor: getPriorityColor(item._id) }}
+                      ></div>
+                      <span className="text-xs font-medium text-slate-700">{getPriorityLabel(item._id)}</span>
+                    </div>
+                    <span
+                      className="px-2 py-0.5 rounded text-[11px] font-bold"
+                      style={{
+                        backgroundColor: `${getPriorityColor(item._id)}15`,
+                        color: getPriorityColor(item._id),
+                      }}
+                    >
+                      {item.count.toLocaleString("fa-IR")}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-10 text-xs text-slate-400">داده‌ای یافت نشد</div>
+            )}
+          </div>
+        </div>
+
+        {/* Channel Distribution */}
+        <div className="bg-white rounded-md border border-slate-200 flex flex-col">
+          <div className="px-4 py-3 border-b border-slate-100 flex items-center gap-2 bg-slate-50/50">
+            <Bell size={16} className="text-violet-600" />
+            <h2 className="text-sm font-semibold text-slate-800">توزیع بر اساس کانال</h2>
+          </div>
+          <div className="p-4 flex-1">
+            {channelDistribution.length > 0 ? (
+              <div className="space-y-2">
+                {channelDistribution.map((item) => {
+                  const ChannelIcon = getChannelIcon(item._id);
+                  return (
+                    <div
+                      key={item._id}
+                      className="flex items-center justify-between p-2.5 bg-slate-50 rounded border border-slate-100 hover:border-slate-200 transition-colors"
+                    >
+                      <div className="flex items-center gap-3">
+                        <ChannelIcon size={14} className="text-slate-500" />
+                        <span className="text-xs font-medium text-slate-700">{getChannelLabel(item._id)}</span>
+                      </div>
+                      <span className="px-2 py-0.5 bg-violet-50 text-violet-600 rounded text-[11px] font-bold">
+                        {item.count.toLocaleString("fa-IR")}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="text-center py-10 text-xs text-slate-400">داده‌ای یافت نشد</div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Two Column Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+        {/* Top Recipients */}
+        <div className="bg-white rounded-md border border-slate-200 flex flex-col">
+          <div className="px-4 py-3 border-b border-slate-100 flex items-center gap-2 bg-slate-50/50">
+            <Users size={16} className="text-emerald-600" />
+            <h2 className="text-sm font-semibold text-slate-800">بیشترین دریافت‌کنندگان</h2>
+          </div>
+          <div className="p-4 flex-1">
+            {topRecipients.length > 0 ? (
+              <div className="space-y-2">
+                {topRecipients.slice(0, 5).map((user, index) => (
+                  <div
+                    key={user.userId}
+                    className="flex items-center justify-between p-2.5 bg-slate-50 rounded border border-slate-100 hover:border-slate-200 transition-colors"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span
+                        className={`w-6 h-6 rounded flex items-center justify-center text-[11px] font-bold text-white
+                          ${
+                            index === 0
+                              ? "bg-amber-400"
+                              : index === 1
+                              ? "bg-slate-400"
+                              : index === 2
+                              ? "bg-orange-400"
+                              : "bg-slate-300"
+                          }
+                        `}
+                      >
+                        {index + 1}
+                      </span>
+                      <div>
+                        <div className="text-xs font-semibold text-slate-800">{user.name}</div>
+                        <div className="text-[10px] text-slate-400">{user.email}</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="px-2 py-0.5 bg-emerald-50 text-emerald-600 rounded text-[11px] font-bold">
+                        {user.notificationCount.toLocaleString("fa-IR")}
+                      </span>
+                      {user.unreadCount > 0 && (
+                        <span className="px-1.5 py-0.5 bg-blue-100 text-blue-600 rounded text-[10px] font-medium">
+                          {user.unreadCount.toLocaleString("fa-IR")} خوانده نشده
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-10 text-xs text-slate-400">داده‌ای یافت نشد</div>
+            )}
+          </div>
+        </div>
+
+        {/* Delivery Success Rates */}
+        <div className="bg-white rounded-md border border-slate-200 flex flex-col">
+          <div className="px-4 py-3 border-b border-slate-100 flex items-center gap-2 bg-slate-50/50">
+            <CheckCircle size={16} className="text-green-600" />
+            <h2 className="text-sm font-semibold text-slate-800">نرخ موفقیت ارسال</h2>
+          </div>
+          <div className="p-4 flex-1">
+            <div className="space-y-3">
+              {/* Email */}
+              <div className="p-3 bg-slate-50 rounded border border-slate-100">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <Mail size={14} className="text-slate-600" />
+                    <span className="text-xs font-medium text-slate-700">ایمیل</span>
+                  </div>
+                  <span className="text-[11px] text-slate-500">
+                    {deliveryStats.email.total?.toLocaleString("fa-IR") || 0} کل
+                  </span>
+                </div>
+                <div className="w-full bg-slate-200 rounded-full h-2">
+                  <div
+                    className="bg-green-500 h-2 rounded-full transition-all"
+                    style={{
+                      width: `${
+                        deliveryStats.email.total > 0
+                          ? (deliveryStats.email.successful / deliveryStats.email.total) * 100
+                          : 0
+                      }%`,
+                    }}
+                  ></div>
+                </div>
+                <div className="text-[11px] text-slate-600 mt-1">
+                  {deliveryStats.email.successful?.toLocaleString("fa-IR") || 0} موفق (
+                  {deliveryStats.email.total > 0
+                    ? ((deliveryStats.email.successful / deliveryStats.email.total) * 100).toFixed(1)
+                    : 0}
+                  %)
+                </div>
+              </div>
+
+              {/* Push */}
+              <div className="p-3 bg-slate-50 rounded border border-slate-100">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <Smartphone size={14} className="text-slate-600" />
+                    <span className="text-xs font-medium text-slate-700">پوش نوتیفیکیشن</span>
+                  </div>
+                  <span className="text-[11px] text-slate-500">
+                    {deliveryStats.push.total?.toLocaleString("fa-IR") || 0} کل
+                  </span>
+                </div>
+                <div className="w-full bg-slate-200 rounded-full h-2">
+                  <div
+                    className="bg-blue-500 h-2 rounded-full transition-all"
+                    style={{
+                      width: `${
+                        deliveryStats.push.total > 0
+                          ? (deliveryStats.push.successful / deliveryStats.push.total) * 100
+                          : 0
+                      }%`,
+                    }}
+                  ></div>
+                </div>
+                <div className="text-[11px] text-slate-600 mt-1">
+                  {deliveryStats.push.successful?.toLocaleString("fa-IR") || 0} موفق (
+                  {deliveryStats.push.total > 0
+                    ? ((deliveryStats.push.successful / deliveryStats.push.total) * 100).toFixed(1)
+                    : 0}
+                  %)
+                </div>
+              </div>
+
+              {/* SMS */}
+              <div className="p-3 bg-slate-50 rounded border border-slate-100">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <MessageSquare size={14} className="text-slate-600" />
+                    <span className="text-xs font-medium text-slate-700">پیامک</span>
+                  </div>
+                  <span className="text-[11px] text-slate-500">
+                    {deliveryStats.sms.total?.toLocaleString("fa-IR") || 0} کل
+                  </span>
+                </div>
+                <div className="w-full bg-slate-200 rounded-full h-2">
+                  <div
+                    className="bg-amber-500 h-2 rounded-full transition-all"
+                    style={{
+                      width: `${
+                        deliveryStats.sms.total > 0
+                          ? (deliveryStats.sms.successful / deliveryStats.sms.total) * 100
+                          : 0
+                      }%`,
+                    }}
+                  ></div>
+                </div>
+                <div className="text-[11px] text-slate-600 mt-1">
+                  {deliveryStats.sms.successful?.toLocaleString("fa-IR") || 0} موفق (
+                  {deliveryStats.sms.total > 0
+                    ? ((deliveryStats.sms.successful / deliveryStats.sms.total) * 100).toFixed(1)
+                    : 0}
+                  %)
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* All Notifications Table */}
+      <div className="bg-white rounded-md border border-slate-200">
+        {/* Toolbar */}
+        <div className="px-4 py-3 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3 bg-slate-50/50">
+          <div className="flex items-center gap-3 flex-wrap">
+            <Filter size={16} className="text-slate-400" />
+            <select
+              value={filters.type}
+              onChange={(e) => handleFilterChange("type", e.target.value)}
+              className="pl-8 pr-3 py-1.5 bg-white border border-slate-300 rounded text-xs text-slate-700 focus:outline-none focus:border-[#007acc] focus:ring-1 focus:ring-[#007acc]"
+            >
+              <option value="">همه انواع</option>
+              <option value="mention">منشن</option>
+              <option value="follow">دنبال کردن</option>
+              <option value="badge_earned">دریافت نشان</option>
+              <option value="task_assigned">تخصیص تسک</option>
+              <option value="team_invitation">دعوت به تیم</option>
+              <option value="admin_announcement">اعلان مدیر</option>
+            </select>
+
+            <select
+              value={filters.priority}
+              onChange={(e) => handleFilterChange("priority", e.target.value)}
+              className="pl-8 pr-3 py-1.5 bg-white border border-slate-300 rounded text-xs text-slate-700 focus:outline-none focus:border-[#007acc] focus:ring-1 focus:ring-[#007acc]"
+            >
+              <option value="">همه اولویت‌ها</option>
+              <option value="low">کم</option>
+              <option value="normal">عادی</option>
+              <option value="high">بالا</option>
+              <option value="urgent">فوری</option>
+            </select>
+
+            <select
+              value={filters.isRead}
+              onChange={(e) => handleFilterChange("isRead", e.target.value)}
+              className="pl-8 pr-3 py-1.5 bg-white border border-slate-300 rounded text-xs text-slate-700 focus:outline-none focus:border-[#007acc] focus:ring-1 focus:ring-[#007acc]"
+            >
+              <option value="">همه وضعیت‌ها</option>
+              <option value="false">خوانده نشده</option>
+              <option value="true">خوانده شده</option>
+            </select>
+          </div>
+
+          <button
+            onClick={handleRefresh}
+            disabled={loading}
+            className={`flex items-center gap-2 px-3 py-1.5 bg-[#007acc] text-white rounded text-xs font-medium hover:bg-[#0062a3] transition-colors
+              ${loading ? "opacity-70 cursor-not-allowed" : ""}
+            `}
+          >
+            <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
+            بارگذاری مجدد
+          </button>
+        </div>
+
+        {/* Table */}
+        <div className="overflow-x-auto">
+          {loading ? (
+            <div className="flex justify-center py-12">
+              <div className="w-8 h-8 border-2 border-slate-200 border-t-[#007acc] rounded-full animate-spin"></div>
+            </div>
+          ) : allNotifications.length > 0 ? (
+            <table className="w-full border-collapse text-right">
+              <thead>
+                <tr className="bg-slate-50 border-b border-slate-200">
+                  <th className="px-4 py-3 text-[11px] font-medium text-slate-500">گیرنده</th>
+                  <th className="px-4 py-3 text-[11px] font-medium text-slate-500">عنوان</th>
+                  <th className="px-4 py-3 text-[11px] font-medium text-slate-500">نوع</th>
+                  <th className="px-4 py-3 text-[11px] font-medium text-slate-500">اولویت</th>
+                  <th className="px-4 py-3 text-[11px] font-medium text-slate-500">وضعیت</th>
+                  <th className="px-4 py-3 text-[11px] font-medium text-slate-500">تاریخ</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {allNotifications.map((notification) => (
+                  <tr key={notification._id} className="hover:bg-slate-50/80 transition-colors group">
+                    <td className="px-4 py-3">
+                      {notification.recipient ? (
+                        <div>
+                          <div className="text-xs font-medium text-slate-800 group-hover:text-[#007acc] transition-colors">
+                            {notification.recipient.name || "نامشخص"}
+                          </div>
+                          <div className="text-[10px] text-slate-400 mt-0.5">{notification.recipient.email || ""}</div>
+                        </div>
+                      ) : (
+                        <span className="text-xs text-slate-400 italic">حذف شده</span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="text-xs text-slate-700 truncate max-w-[250px]">
+                        {notification.title || "بدون عنوان"}
+                      </div>
+                      <div className="text-[10px] text-slate-400 truncate max-w-[250px] mt-0.5">
+                        {notification.message || ""}
+                      </div>
+                    </td>
+                    <td className="px-4 py-3">
+                      <span
+                        className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium border"
+                        style={{
+                          backgroundColor: `${getTypeColor(notification.type)}08`,
+                          color: getTypeColor(notification.type),
+                          borderColor: `${getTypeColor(notification.type)}20`,
+                        }}
+                      >
+                        {getTypeLabel(notification.type)}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <span
+                        className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium border"
+                        style={{
+                          backgroundColor: `${getPriorityColor(notification.priority)}08`,
+                          color: getPriorityColor(notification.priority),
+                          borderColor: `${getPriorityColor(notification.priority)}20`,
+                        }}
+                      >
+                        {getPriorityLabel(notification.priority)}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      {notification.isRead ? (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-100 text-slate-600 rounded text-[10px] font-medium">
+                          <CheckCircle size={10} />
+                          خوانده شده
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-50 text-blue-600 rounded text-[10px] font-medium">
+                          <AlertCircle size={10} />
+                          خوانده نشده
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3 text-[11px] text-slate-500">
+                      {new Date(notification.createdAt).toLocaleDateString("fa-IR")}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <div className="text-center py-12">
+              <Bell size={32} className="mx-auto text-slate-300 mb-3" />
+              <div className="text-sm text-slate-500">هیچ اعلانی یافت نشد</div>
+            </div>
+          )}
+        </div>
+
+        {/* Pagination */}
+        {pagination && pagination.totalPages > 1 && (
+          <div className="px-4 py-3 border-t border-slate-200 flex items-center justify-between bg-slate-50/50">
+            <div className="text-[11px] text-slate-500">
+              نمایش {((pagination.page - 1) * pagination.limit + 1).toLocaleString("fa-IR")} تا{" "}
+              {Math.min(pagination.page * pagination.limit, pagination.total).toLocaleString("fa-IR")} از{" "}
+              {pagination.total.toLocaleString("fa-IR")} مورد
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => handlePageChange(pagination.page - 1)}
+                disabled={pagination.page === 1}
+                className="flex items-center gap-1 px-2 py-1 bg-white border border-slate-300 rounded text-[11px] text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                <ChevronRight size={14} />
+                قبلی
+              </button>
+
+              <div className="text-[11px] font-medium text-slate-700">
+                صفحه {pagination.page.toLocaleString("fa-IR")} از{" "}
+                {pagination.totalPages.toLocaleString("fa-IR")}
+              </div>
+
+              <button
+                onClick={() => handlePageChange(pagination.page + 1)}
+                disabled={pagination.page === pagination.totalPages}
+                className="flex items-center gap-1 px-2 py-1 bg-white border border-slate-300 rounded text-[11px] text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                بعدی
+                <ChevronLeft size={14} />
+              </button>
+            </div>
           </div>
         )}
-      </Card>
+      </div>
     </div>
   );
 };

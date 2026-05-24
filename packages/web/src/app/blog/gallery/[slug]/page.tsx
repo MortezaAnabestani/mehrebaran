@@ -19,13 +19,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     return { title: "گالری یافت نشد" };
   }
 
+  const firstImage = gallery.images?.[0]?.desktop;
+
   return {
-    title: gallery.seo.metaTitle,
-    description: gallery.seo.metaDescription || gallery.description,
+    title: gallery.seo?.metaTitle || gallery.title,
+    description: gallery.seo?.metaDescription || gallery.description,
     openGraph: {
-      title: gallery.seo.metaTitle,
+      title: gallery.seo?.metaTitle || gallery.title,
       description: gallery.description,
-      images: gallery.images.length > 0 ? [{ url: gallery.images[0].desktop }] : [],
+      images: firstImage ? [{ url: firstImage }] : [],
     },
   };
 }
@@ -41,7 +43,7 @@ export default async function GalleryDetailPage({ params }: PageProps) {
   const photographer = typeof gallery.photographer !== "string" ? gallery.photographer : null;
 
   // استخراج تمام URL های تصاویر
-  const imageUrls = gallery.images.map((img) => {
+  const imageUrls = gallery.images?.map((img) => {
     return `${img.desktop}`;
   });
 
@@ -73,11 +75,13 @@ export default async function GalleryDetailPage({ params }: PageProps) {
 
       <div
         className="text-base/loose text-justify prose max-w-none my-5"
-        dangerouslySetInnerHTML={{ __html: gallery.description }}
+        dangerouslySetInnerHTML={{
+          __html: gallery.description ?? "",
+        }}
       />
 
       <div className="relative bg-gray-100 my-10">
-        <GallerySwiper images={imageUrls} />
+        <GallerySwiper images={imageUrls ?? []} />
       </div>
 
       <div className="mt-16">

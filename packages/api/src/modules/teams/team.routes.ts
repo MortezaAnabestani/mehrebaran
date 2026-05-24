@@ -1,11 +1,15 @@
 import { Router } from "express";
 import { teamController } from "./team.controller";
-import { protect } from "../auth/auth.middleware";
+import { protect, restrictTo } from "../auth/auth.middleware";
 import { isSupporter } from "../needs/need.middleware";
+import { UserRole } from "common-types";
 
 const router = Router({ mergeParams: true });
 
 // All routes require authentication
+
+// Admin routes
+router.get("/admin/all", protect, restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN), teamController.getAllTeamsForAdmin);
 
 // Team CRUD
 router.post("/", protect, isSupporter, teamController.createTeam);

@@ -200,6 +200,100 @@ class ShareService {
         return itemUrl;
     }
   }
+
+  // ==================== ADMIN METHODS ====================
+
+  // Get network-wide share statistics
+  public async getNetworkShareStats(): Promise<any> {
+    const totalShares = await ShareLogModel.countDocuments();
+
+    // Get shares by platform
+    const byPlatform = await ShareLogModel.aggregate([
+      {
+        $group: {
+          _id: "$platform",
+          count: { $sum: 1 },
+        },
+      },
+      { $sort: { count: -1 } },
+    ]);
+
+    // Get shares in last 30 days
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    const recentShares = await ShareLogModel.countDocuments({
+      createdAt: { $gte: thirtyDaysAgo },
+    });
+
+    // Get top sharers (users who share most)
+    const topSharers = await ShareLogModel.aggregate([
+      { $match: { user: { $exists: true } } },
+      {
+        $group: {
+          _id: "$user",
+          shareCount: { $sum: 1 },
+        },
+      },
+      { $sort: { shareCount: -1 } },
+      { $limit: 10 },
+      {
+        $lookup: {
+          from: "users",
+          localField: "_id",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      { $unwind: "$user" },
+      {
+        $project: {
+          userId: "$_id",
+          shareCount: 1,
+          name: "$user.name",
+          email: "$user.email",
+          avatar: "$user.avatar",
+        },
+      },
+    ]);
+
+    return {
+      totalShares,
+      recentShares,
+      byPlatform,
+      topSharers,
+    };
+  }
+
+  // Get all shares with pagination (admin only)
+  public async getAllShares(filters: {
+    platform?: SharePlatform;
+    userId?: string;
+    page: number;
+    limit: number;
+  }): Promise<{ shares: any[]; total: number }> {
+    const query: any = {};
+
+    if (filters.platform) {
+      query.platform = filters.platform;
+    }
+
+    if (filters.userId) {
+      query.user = filters.userId;
+    }
+
+    const skip = (filters.page - 1) * filters.limit;
+    const total = await ShareLogModel.countDocuments(query);
+
+    const shares = await ShareLogModel.find(query)
+      .populate("user", "name email avatar")
+      .populate("sharedItem", "title status")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(filters.limit)
+      .lean();
+
+    return { shares, total };
+  }
 }
 
 export const shareService = new ShareService();

@@ -197,6 +197,48 @@ class PointsService {
       description: "جایزه ورود روزانه",
     });
   }
+
+  // Get all transactions for admin (with filters and pagination)
+  public async getAllTransactionsForAdmin(filters: {
+    action?: string;
+    userId?: string;
+    search?: string;
+    page: number;
+    limit: number;
+  }): Promise<{ transactions: IPointTransaction[]; total: number }> {
+    const query: any = {};
+
+    // Filter by action
+    if (filters.action) {
+      query.action = filters.action;
+    }
+
+    // Filter by user
+    if (filters.userId) {
+      query.user = filters.userId;
+    }
+
+    // Search in description
+    if (filters.search) {
+      query.description = { $regex: filters.search, $options: "i" };
+    }
+
+    // Calculate pagination
+    const skip = (filters.page - 1) * filters.limit;
+
+    // Get total count
+    const total = await PointTransactionModel.countDocuments(query);
+
+    // Get transactions with pagination
+    const transactions = await PointTransactionModel.find(query)
+      .populate("user", "name email avatar")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(filters.limit)
+      .lean();
+
+    return { transactions: transactions as IPointTransaction[], total };
+  }
 }
 
 export const pointsService = new PointsService();

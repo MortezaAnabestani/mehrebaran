@@ -1,14 +1,30 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { fetchBadges, deleteBadge } from "../../features/gamificationSlice";
-import { Card, Button, Typography, Chip, IconButton, Switch } from "@material-tailwind/react";
-import { PencilIcon, TrashIcon, PlusIcon, TrophyIcon } from "@heroicons/react/24/outline";
+import { fetchBadgesWithStats, deleteBadge } from "../../features/gamificationSlice";
+import {
+  MagnifyingGlassIcon,
+  PlusIcon,
+  PencilIcon,
+  TrashIcon,
+  TrophyIcon,
+  ArrowPathIcon,
+  FunnelIcon,
+  UserGroupIcon,
+} from "@heroicons/react/24/outline";
 import ConfirmDelete from "../../components/createContent/ConfirmDelete";
+import BadgeIcon from "../../components/BadgeIcon";
 
 const Badges = () => {
   const dispatch = useDispatch();
   const { badges, loading } = useSelector((state) => state.gamification);
+
+  const [filters, setFilters] = useState({
+    search: "",
+    category: "",
+    rarity: "",
+    isActive: "",
+  });
 
   const [deleteModal, setDeleteModal] = useState({
     isOpen: false,
@@ -18,24 +34,65 @@ const Badges = () => {
 
   // بارگذاری نشان‌ها
   useEffect(() => {
-    const loadBadges = async () => {
-      try {
-        await dispatch(fetchBadges()).unwrap();
-      } catch (error) {
-        console.error("خطا در بارگذاری نشان‌ها:", error);
-      }
-    };
+    loadData();
+  }, []);
 
-    loadBadges();
-  }, [dispatch]);
+  const loadData = async () => {
+    try {
+      await dispatch(fetchBadgesWithStats()).unwrap();
+    } catch (error) {
+      console.error("Error loading badges:", error);
+    }
+  };
+
+  // فیلتر کردن نشان‌ها
+  const filteredBadges = useMemo(() => {
+    if (!badges || !Array.isArray(badges)) return [];
+
+    return badges.filter((badge) => {
+      // Search filter
+      if (filters.search) {
+        const searchLower = filters.search.toLowerCase();
+        const matchesName = badge.name?.toLowerCase().includes(searchLower);
+        const matchesNameEn = badge.nameEn?.toLowerCase().includes(searchLower);
+        const matchesDesc = badge.description?.toLowerCase().includes(searchLower);
+        if (!matchesName && !matchesNameEn && !matchesDesc) return false;
+      }
+
+      // Category filter
+      if (filters.category && badge.category !== filters.category) return false;
+
+      // Rarity filter
+      if (filters.rarity && badge.rarity !== filters.rarity) return false;
+
+      // Active status filter
+      if (filters.isActive !== "") {
+        const isActive = filters.isActive === "true";
+        if (badge.isActive !== isActive) return false;
+      }
+
+      return true;
+    });
+  }, [badges, filters]);
+
+  // آمار (Memoized)
+  const stats = useMemo(() => {
+    const total = badges?.length || 0;
+    const active = badges?.filter((b) => b.isActive)?.length || 0;
+    const inactive = total - active;
+    const totalRecipients = badges?.reduce((sum, b) => sum + (b.recipientCount || 0), 0) || 0;
+
+    return [
+      { label: "TOTAL_BADGES", value: total },
+      { label: "ACTIVE", value: active },
+      { label: "INACTIVE", value: inactive },
+      { label: "RECIPIENTS", value: totalRecipients },
+    ];
+  }, [badges]);
 
   // حذف نشان
   const handleDelete = (id, name) => {
-    setDeleteModal({
-      isOpen: true,
-      badgeId: id,
-      badgeName: name,
-    });
+    setDeleteModal({ isOpen: true, badgeId: id, badgeName: name });
   };
 
   const confirmDelete = async () => {
@@ -43,7 +100,7 @@ const Badges = () => {
       await dispatch(deleteBadge(deleteModal.badgeId)).unwrap();
       setDeleteModal({ isOpen: false, badgeId: null, badgeName: "" });
     } catch (error) {
-      console.error("خطا در حذف نشان:", error);
+      console.error("Error deleting badge:", error);
     }
   };
 
@@ -75,164 +132,246 @@ const Badges = () => {
     return rarityMap[rarity] || rarity;
   };
 
-  // رنگ chip برای rarity
-  const getRarityColor = (rarity) => {
-    const colorMap = {
-      common: "gray",
-      rare: "blue",
-      epic: "purple",
-      legendary: "orange",
-    };
-    return colorMap[rarity] || "gray";
-  };
-
   return (
-    <div className="p-6">
-      <Card className="p-6">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <Typography variant="h4" color="blue-gray">
-            مدیریت نشان‌ها
-          </Typography>
-          <Link to="/dashboard/gamification/badges/create">
-            <Button color="blue" className="flex items-center gap-2">
-              <PlusIcon className="w-5 h-5" />
-              ایجاد نشان جدید
-            </Button>
-          </Link>
+    <div className="min-h-screen bg-slate-50 text-slate-800 font-sans p-4">
+      {/* --- HEADER & METRICS BAR --- */}
+      <div className="bg-white border border-slate-200 rounded-md mb-4 shadow-sm">
+        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between p-3 gap-4">
+          {/* Title & Breadcrumb */}
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-[#007acc]/10 flex items-center justify-center rounded-md border border-[#007acc]/20">
+              <TrophyIcon className="w-4 h-4 text-[#007acc]" />
+            </div>
+            <div>
+              <h1 className="text-sm font-bold text-slate-800 uppercase tracking-wider">مدیریت نشان‌ها</h1>
+              <div className="flex items-center gap-2 text-[11px] text-slate-500 font-mono">
+                <span>ادمین</span>
+                <span>/</span>
+                <span>مدیریت گیمیفیکیشن شبکه</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Metrics Strip */}
+          <div className="flex items-center gap-4 bg-slate-50 px-3 py-1.5 rounded border border-slate-100">
+            {stats.map((stat, index) => (
+              <div key={index} className="flex items-center gap-2">
+                <span className="text-[10px] font-bold text-slate-400 uppercase">{stat.label}:</span>
+                <span className="text-xs font-mono font-medium text-slate-700">{stat.value}</span>
+                {index < stats.length - 1 && <div className="h-3 w-[1px] bg-slate-200 mx-1" />}
+              </div>
+            ))}
+          </div>
         </div>
 
-        {/* Loading */}
-        {loading ? (
-          <div className="flex justify-center items-center py-10">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        {/* Toolbar: Search & Filters */}
+        <div className="border-t border-slate-100 p-2 flex flex-col sm:flex-row gap-2 bg-slate-50/50">
+          <div className="relative flex-1 max-w-md">
+            <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <input
+              type="text"
+              placeholder="Search badges by name, description..."
+              className="w-full pl-9 pr-3 py-1.5 text-xs border border-slate-300 rounded-md focus:outline-none focus:border-[#007acc] focus:ring-1 focus:ring-[#007acc] transition-all bg-white"
+              value={filters.search}
+              onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+            />
           </div>
-        ) : (
-          <>
-            {/* Badges Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {badges && Array.isArray(badges) && badges.length > 0 ? (
-                badges.map((badge) => (
-                  <Card
-                    key={badge._id}
-                    className="p-4 hover:shadow-lg transition-shadow"
-                    style={{ borderTop: `4px solid ${badge.color || "#3B82F6"}` }}
+
+          {/* Category Filter */}
+          <div className="relative">
+            <FunnelIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+            <select
+              value={filters.category}
+              onChange={(e) => setFilters({ ...filters, category: e.target.value })}
+              className="pl-9 pr-3 py-1.5 text-xs border border-slate-300 rounded-md focus:outline-none focus:border-[#007acc] focus:ring-1 focus:ring-[#007acc] transition-all bg-white appearance-none"
+            >
+              <option value="">All Categories</option>
+              <option value="contributor">مشارکت‌کننده</option>
+              <option value="supporter">حمایت‌کننده</option>
+              <option value="creator">سازنده</option>
+              <option value="leader">رهبر</option>
+              <option value="milestone">نقطه عطف</option>
+              <option value="special">ویژه</option>
+            </select>
+          </div>
+
+          {/* Rarity Filter */}
+          <div className="relative">
+            <select
+              value={filters.rarity}
+              onChange={(e) => setFilters({ ...filters, rarity: e.target.value })}
+              className="pl-3 pr-3 py-1.5 text-xs border border-slate-300 rounded-md focus:outline-none focus:border-[#007acc] focus:ring-1 focus:ring-[#007acc] transition-all bg-white appearance-none"
+            >
+              <option value="">All Rarities</option>
+              <option value="common">معمولی</option>
+              <option value="rare">نادر</option>
+              <option value="epic">حماسی</option>
+              <option value="legendary">افسانه‌ای</option>
+            </select>
+          </div>
+
+          {/* Status Filter */}
+          <div className="relative">
+            <select
+              value={filters.isActive}
+              onChange={(e) => setFilters({ ...filters, isActive: e.target.value })}
+              className="pl-3 pr-3 py-1.5 text-xs border border-slate-300 rounded-md focus:outline-none focus:border-[#007acc] focus:ring-1 focus:ring-[#007acc] transition-all bg-white appearance-none"
+            >
+              <option value="">All Status</option>
+              <option value="true">فعال</option>
+              <option value="false">غیرفعال</option>
+            </select>
+          </div>
+
+          <div className="flex items-center gap-2 ml-auto">
+            <button
+              onClick={() => loadData()}
+              className="p-1.5 text-slate-500 hover:text-[#007acc] hover:bg-[#007acc]/5 rounded border border-transparent hover:border-[#007acc]/20 transition-all"
+              title="Refresh Data"
+            >
+              <ArrowPathIcon className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
+            </button>
+            <div className="h-4 w-[1px] bg-slate-300 mx-1" />
+            <Link to="/dashboard/gamification/badges/create">
+              <button className="flex items-center gap-1 px-3 py-1.5 bg-[#007acc] text-white text-xs font-medium rounded hover:bg-[#005a9e] transition-colors">
+                <PlusIcon className="w-4 h-4" />
+                New Badge
+              </button>
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* --- MAIN CONTENT GRID --- */}
+      {loading && badges.length === 0 ? (
+        <div className="flex justify-center items-center h-64 border border-dashed border-slate-300 rounded-md bg-slate-50/50">
+          <div className="flex flex-col items-center gap-2">
+            <div className="animate-spin w-6 h-6 border-2 border-slate-300 border-t-[#007acc] rounded-full"></div>
+            <span className="text-xs text-slate-500 font-mono">LOADING_BADGES...</span>
+          </div>
+        </div>
+      ) : filteredBadges.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {filteredBadges.map((badge) => (
+            <div
+              key={badge._id}
+              className="bg-white border border-slate-200 rounded-md overflow-hidden hover:shadow-md transition-shadow"
+            >
+              {/* Badge Header with Color */}
+              <div
+                className="h-1.5"
+                style={{ backgroundColor: badge.color || "#007acc" }}
+              />
+
+              <div className="p-3">
+                {/* Icon & Title */}
+                <div className="flex items-start gap-3 mb-3">
+                  <div
+                    className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
+                    style={{ backgroundColor: badge.color + "20" || "#007acc20" }}
                   >
-                    {/* Badge Header */}
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="flex items-center gap-3">
-                        <div
-                          className="w-12 h-12 rounded-full flex items-center justify-center text-2xl"
-                          style={{ backgroundColor: badge.color || "#3B82F6" }}
-                        >
-                          {badge.icon || "🏆"}
-                        </div>
-                        <div>
-                          <Typography variant="h6" color="blue-gray">
-                            {badge.name}
-                          </Typography>
-                          <Typography variant="small" color="gray">
-                            {badge.nameEn}
-                          </Typography>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Badge Description */}
-                    <Typography variant="small" color="gray" className="mb-3">
-                      {badge.description.substring(0, 80)}
-                      {badge.description.length > 80 ? "..." : ""}
-                    </Typography>
-
-                    {/* Badge Info */}
-                    <div className="flex flex-wrap gap-2 mb-3">
-                      <Chip
-                        value={getRarityLabel(badge.rarity)}
-                        color={getRarityColor(badge.rarity)}
-                        size="sm"
-                      />
-                      <Chip
-                        value={getCategoryLabel(badge.category)}
-                        color="blue"
-                        variant="outlined"
-                        size="sm"
-                      />
-                      {badge.isSecret && (
-                        <Chip value="مخفی" color="red" size="sm" />
-                      )}
-                    </div>
-
-                    {/* Badge Stats */}
-                    <div className="grid grid-cols-2 gap-2 mb-3 text-sm">
-                      <div className="bg-blue-50 p-2 rounded">
-                        <Typography variant="small" color="gray">
-                          امتیاز
-                        </Typography>
-                        <Typography variant="small" color="blue-gray" className="font-bold">
-                          {badge.points}
-                        </Typography>
-                      </div>
-                      <div className="bg-green-50 p-2 rounded">
-                        <Typography variant="small" color="gray">
-                          ترتیب
-                        </Typography>
-                        <Typography variant="small" color="blue-gray" className="font-bold">
-                          {badge.order}
-                        </Typography>
-                      </div>
-                    </div>
-
-                    {/* Badge Active Status */}
-                    <div className="flex items-center justify-between mb-3">
-                      <Typography variant="small" color="gray">
-                        وضعیت:
-                      </Typography>
-                      <Chip
-                        value={badge.isActive ? "فعال" : "غیرفعال"}
-                        color={badge.isActive ? "green" : "red"}
-                        size="sm"
-                      />
-                    </div>
-
-                    {/* Actions */}
-                    <div className="flex gap-2 border-t pt-3">
-                      <Link to={`/dashboard/gamification/badges/edit/${badge._id}`} className="flex-1">
-                        <Button color="green" size="sm" className="w-full flex items-center justify-center gap-2">
-                          <PencilIcon className="w-4 h-4" />
-                          ویرایش
-                        </Button>
-                      </Link>
-                      <IconButton
-                        color="red"
-                        size="sm"
-                        onClick={() => handleDelete(badge._id, badge.name)}
-                      >
-                        <TrashIcon className="w-4 h-4" />
-                      </IconButton>
-                    </div>
-                  </Card>
-                ))
-              ) : (
-                <div className="col-span-full text-center py-10">
-                  <TrophyIcon className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-                  <Typography variant="h6" color="gray">
-                    هنوز نشانی ایجاد نشده است
-                  </Typography>
-                  <Typography variant="small" color="gray" className="mb-4">
-                    با ایجاد نشان‌های جدید، کاربران را تشویق به فعالیت بیشتر کنید
-                  </Typography>
-                  <Link to="/dashboard/gamification/badges/create">
-                    <Button color="blue" className="flex items-center gap-2 mx-auto">
-                      <PlusIcon className="w-5 h-5" />
-                      ایجاد اولین نشان
-                    </Button>
-                  </Link>
+                    <BadgeIcon iconName={badge.icon} className="w-5 h-5" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <h3 className="text-sm font-bold text-slate-800 truncate">{badge.name}</h3>
+                    <p className="text-[10px] text-slate-500 font-mono truncate">{badge.nameEn}</p>
+                  </div>
                 </div>
-              )}
+
+                {/* Description */}
+                <p className="text-xs text-slate-600 mb-3 line-clamp-2 min-h-[2.5rem]">
+                  {badge.description}
+                </p>
+
+                {/* Badges & Tags */}
+                <div className="flex flex-wrap gap-1.5 mb-3">
+                  <span
+                    className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium ${
+                      badge.rarity === "legendary"
+                        ? "bg-orange-100 text-orange-700"
+                        : badge.rarity === "epic"
+                        ? "bg-purple-100 text-purple-700"
+                        : badge.rarity === "rare"
+                        ? "bg-blue-100 text-blue-700"
+                        : "bg-slate-100 text-slate-700"
+                    }`}
+                  >
+                    {getRarityLabel(badge.rarity)}
+                  </span>
+                  <span className="inline-flex items-center px-2 py-0.5 bg-slate-100 rounded text-[10px] font-medium text-slate-700">
+                    {getCategoryLabel(badge.category)}
+                  </span>
+                  {badge.isSecret && (
+                    <span className="inline-flex items-center px-2 py-0.5 bg-red-100 text-red-700 rounded text-[10px] font-medium">
+                      مخفی
+                    </span>
+                  )}
+                </div>
+
+                {/* Stats Grid */}
+                <div className="grid grid-cols-4 gap-2 mb-3">
+                  <div className="bg-slate-50 rounded p-1.5 text-center">
+                    <p className="text-[9px] text-slate-500 uppercase">Points</p>
+                    <p className="text-xs font-bold text-slate-700">{badge.points}</p>
+                  </div>
+                  <div className="bg-slate-50 rounded p-1.5 text-center">
+                    <p className="text-[9px] text-slate-500 uppercase">Order</p>
+                    <p className="text-xs font-bold text-slate-700">{badge.order}</p>
+                  </div>
+                  <div className="bg-blue-50 rounded p-1.5 text-center">
+                    <p className="text-[9px] text-slate-500 uppercase flex items-center justify-center gap-0.5">
+                      <UserGroupIcon className="w-2.5 h-2.5" />
+                      Users
+                    </p>
+                    <p className="text-xs font-bold text-blue-700">{badge.recipientCount || 0}</p>
+                  </div>
+                  <div className="bg-slate-50 rounded p-1.5 text-center">
+                    <p className="text-[9px] text-slate-500 uppercase">Status</p>
+                    <p
+                      className={`text-xs font-bold ${
+                        badge.isActive ? "text-green-600" : "text-red-600"
+                      }`}
+                    >
+                      {badge.isActive ? "فعال" : "خاموش"}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex gap-2 pt-3 border-t border-slate-100">
+                  <Link
+                    to={`/dashboard/gamification/badges/edit/${badge._id}`}
+                    className="flex-1"
+                  >
+                    <button className="w-full flex items-center justify-center gap-1 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium rounded transition-colors">
+                      <PencilIcon className="w-3.5 h-3.5" />
+                      Edit
+                    </button>
+                  </Link>
+                  <button
+                    onClick={() => handleDelete(badge._id, badge.name)}
+                    className="px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 rounded transition-colors"
+                  >
+                    <TrashIcon className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
             </div>
-          </>
-        )}
-      </Card>
+          ))}
+        </div>
+      ) : (
+        <div className="flex flex-col items-center justify-center h-64 border border-slate-200 rounded-md bg-white">
+          <TrophyIcon className="w-10 h-10 text-slate-300 mb-2" />
+          <p className="text-sm text-slate-500 font-medium">No Badges Found</p>
+          <p className="text-xs text-slate-400 mt-1 mb-4">Try adjusting your search filters</p>
+          <Link to="/dashboard/gamification/badges/create">
+            <button className="flex items-center gap-1 px-4 py-2 bg-[#007acc] text-white text-xs font-medium rounded hover:bg-[#005a9e] transition-colors">
+              <PlusIcon className="w-4 h-4" />
+              Create First Badge
+            </button>
+          </Link>
+        </div>
+      )}
 
       {/* Delete Confirmation Modal */}
       <ConfirmDelete

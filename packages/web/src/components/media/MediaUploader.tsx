@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef } from "react";
-import type { MediaType, MediaCategory } from "@mehrebaran/common-types";
+import type { MediaType, MediaCategory } from "common-types";
 import mediaService from "@/services/media.service";
 import SmartButton from "@/components/ui/SmartButton";
 
@@ -80,10 +80,8 @@ const MediaUploader: React.FC<MediaUploaderProps> = ({
       // Update status to uploading
       setUploadingFiles((prev) =>
         prev.map((f) =>
-          f.file === uploadingFile.file
-            ? { ...f, status: "uploading" as const, progress: 0 }
-            : f
-        )
+          f.file === uploadingFile.file ? { ...f, status: "uploading" as const, progress: 0 } : f,
+        ),
       );
 
       // Upload file
@@ -103,22 +101,19 @@ const MediaUploader: React.FC<MediaUploaderProps> = ({
                 progress: 100,
                 mediaId: response.data.media._id,
               }
-            : f
-        )
+            : f,
+        ),
       );
 
       return response.data.media._id;
     } catch (error: any) {
-      const errorMessage =
-        error.response?.data?.message || "خطا در آپلود فایل";
+      const errorMessage = error.response?.data?.message || "خطا در آپلود فایل";
 
       // Update status to error
       setUploadingFiles((prev) =>
         prev.map((f) =>
-          f.file === uploadingFile.file
-            ? { ...f, status: "error" as const, error: errorMessage }
-            : f
-        )
+          f.file === uploadingFile.file ? { ...f, status: "error" as const, error: errorMessage } : f,
+        ),
       );
 
       if (onUploadError) {
@@ -178,10 +173,7 @@ const MediaUploader: React.FC<MediaUploaderProps> = ({
     const mediaIds = await Promise.all(uploadPromises);
 
     // Filter out null values (failed uploads)
-    const successfulMediaIds = mediaIds.filter(
-      (id): id is string => id !== null
-    );
-
+    const successfulMediaIds = mediaIds.filter((id: string | null): id is string => id !== null);
     if (successfulMediaIds.length > 0 && onUploadComplete) {
       onUploadComplete(successfulMediaIds);
     }
@@ -256,9 +248,7 @@ const MediaUploader: React.FC<MediaUploaderProps> = ({
   // ===========================
 
   const hasFiles = uploadingFiles.length > 0;
-  const completedCount = uploadingFiles.filter(
-    (f) => f.status === "completed"
-  ).length;
+  const completedCount = uploadingFiles.filter((f) => f.status === "completed").length;
   const errorCount = uploadingFiles.filter((f) => f.status === "error").length;
 
   return (
@@ -269,9 +259,7 @@ const MediaUploader: React.FC<MediaUploaderProps> = ({
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
         className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors cursor-pointer ${
-          isDragging
-            ? "border-mblue bg-blue-50"
-            : "border-gray-300 hover:border-mblue hover:bg-gray-50"
+          isDragging ? "border-mblue bg-blue-50" : "border-gray-300 hover:border-mblue hover:bg-gray-50"
         }`}
         onClick={() => fileInputRef.current?.click()}
       >
@@ -286,8 +274,7 @@ const MediaUploader: React.FC<MediaUploaderProps> = ({
               if (type === "image") return "image/*";
               if (type === "video") return "video/*";
               if (type === "audio") return "audio/*";
-              if (type === "document")
-                return ".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx";
+              if (type === "document") return ".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx";
               return "*";
             })
             .join(",")}
@@ -298,14 +285,12 @@ const MediaUploader: React.FC<MediaUploaderProps> = ({
             📁
           </div>
           <div>
-            <p className="text-lg font-semibold text-gray-700 mb-1">
-              فایل‌ها را اینجا بکشید یا کلیک کنید
-            </p>
+            <p className="text-lg font-semibold text-gray-700 mb-1">فایل‌ها را اینجا بکشید یا کلیک کنید</p>
             <p className="text-sm text-gray-500">
               حداکثر {maxFiles} فایل با حجم {mediaService.formatFileSize(maxSize)}
             </p>
           </div>
-          <SmartButton variant="outline" size="sm">
+          <SmartButton variant="morange" size="sm">
             انتخاب فایل
           </SmartButton>
         </div>
@@ -315,12 +300,10 @@ const MediaUploader: React.FC<MediaUploaderProps> = ({
       {hasFiles && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="font-semibold text-gray-900">
-              فایل‌های انتخاب شده ({uploadingFiles.length})
-            </h3>
+            <h3 className="font-semibold text-gray-900">فایل‌های انتخاب شده ({uploadingFiles.length})</h3>
             <SmartButton
               onClick={handleClearAll}
-              variant="outline"
+              variant="mgray"
               size="sm"
               className="text-red-500 border-red-500 hover:bg-red-50"
             >
@@ -330,10 +313,7 @@ const MediaUploader: React.FC<MediaUploaderProps> = ({
 
           <div className="space-y-2">
             {uploadingFiles.map((uploadingFile, index) => (
-              <div
-                key={index}
-                className="bg-white rounded-lg border border-gray-200 p-4"
-              >
+              <div key={index} className="bg-white rounded-lg border border-gray-200 p-4">
                 <div className="flex items-center gap-4">
                   {/* Preview */}
                   {uploadingFile.previewUrl ? (
@@ -350,9 +330,7 @@ const MediaUploader: React.FC<MediaUploaderProps> = ({
 
                   {/* Info */}
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium text-gray-900 truncate">
-                      {uploadingFile.file.name}
-                    </p>
+                    <p className="font-medium text-gray-900 truncate">{uploadingFile.file.name}</p>
                     <p className="text-sm text-gray-500">
                       {mediaService.formatFileSize(uploadingFile.file.size)}
                     </p>
@@ -374,9 +352,7 @@ const MediaUploader: React.FC<MediaUploaderProps> = ({
                       <p className="text-sm text-green-600 mt-1">✓ آپلود موفق</p>
                     )}
                     {uploadingFile.status === "error" && (
-                      <p className="text-sm text-red-600 mt-1">
-                        ✗ {uploadingFile.error}
-                      </p>
+                      <p className="text-sm text-red-600 mt-1">✗ {uploadingFile.error}</p>
                     )}
                   </div>
 
@@ -386,12 +362,7 @@ const MediaUploader: React.FC<MediaUploaderProps> = ({
                     className="text-gray-400 hover:text-red-500 transition-colors"
                     disabled={uploadingFile.status === "uploading"}
                   >
-                    <svg
-                      className="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -408,9 +379,7 @@ const MediaUploader: React.FC<MediaUploaderProps> = ({
           {/* Summary */}
           <div className="flex items-center gap-4 text-sm">
             <div className="text-green-600">✓ {completedCount} موفق</div>
-            {errorCount > 0 && (
-              <div className="text-red-600">✗ {errorCount} ناموفق</div>
-            )}
+            {errorCount > 0 && <div className="text-red-600">✗ {errorCount} ناموفق</div>}
           </div>
         </div>
       )}

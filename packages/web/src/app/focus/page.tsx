@@ -14,7 +14,7 @@ const BG_COLOR = "#F5F5F7"; // Off-white Swiss standard
 
 const SWISS_TRANSITION = {
   duration: 0.6,
-  ease: "linear", // No bounce, strict digital movement
+  ease: "linear" as const, // No bounce, strict digital movement
 };
 
 const DEFAULT_HERO_SETTINGS: IFocusPageHeroSetting = {

@@ -224,8 +224,9 @@ class StoryController {
   public deleteStory = asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
     const userId = req.user!._id.toString();
+    const userRole = req.user!.role;
 
-    const success = await storyService.deleteStory(id, userId);
+    const success = await storyService.deleteStory(id, userId, userRole);
 
     if (!success) {
       throw new ApiError(404, "استوری یافت نشد یا شما صاحب این استوری نیستید.");
@@ -243,8 +244,9 @@ class StoryController {
   public getViewers = asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
     const userId = req.user!._id.toString();
+    const userRole = req.user!.role;
 
-    const viewers = await storyService.getStoryViewers(id, userId);
+    const viewers = await storyService.getStoryViewers(id, userId, userRole);
 
     res.status(200).json({
       message: "لیست بیننده‌ها با موفقیت دریافت شد.",
@@ -377,8 +379,9 @@ class StoryController {
   public deleteHighlight = asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
     const userId = req.user!._id.toString();
+    const userRole = req.user!.role;
 
-    const success = await storyService.deleteHighlight(id, userId);
+    const success = await storyService.deleteHighlight(id, userId, userRole);
 
     if (!success) {
       throw new ApiError(404, "هایلایت یافت نشد یا شما صاحب آن نیستید.");
@@ -386,6 +389,60 @@ class StoryController {
 
     res.status(200).json({
       message: "هایلایت حذف شد.",
+    });
+  });
+
+  // ==================== ADMIN ====================
+
+  /**
+   * GET /api/v1/stories/admin/all
+   * دریافت تمام استوری‌ها برای ادمین
+   */
+  public getAllStoriesForAdmin = asyncHandler(async (req: Request, res: Response) => {
+    const { type, privacy, search, userId, page = 1, limit = 20 } = req.query;
+
+    const filters = {
+      type: type as string,
+      privacy: privacy as string,
+      search: search as string,
+      userId: userId as string,
+      page: parseInt(page as string),
+      limit: parseInt(limit as string),
+    };
+
+    const result = await storyService.getAllStoriesForAdmin(filters);
+
+    res.status(200).json({
+      results: result.stories.length,
+      total: result.total,
+      page: filters.page,
+      totalPages: Math.ceil(result.total / filters.limit),
+      data: result.stories,
+    });
+  });
+
+  /**
+   * GET /api/v1/stories/admin/highlights
+   * دریافت تمام highlights برای ادمین
+   */
+  public getAllHighlightsForAdmin = asyncHandler(async (req: Request, res: Response) => {
+    const { search, userId, page = 1, limit = 20 } = req.query;
+
+    const filters = {
+      search: search as string,
+      userId: userId as string,
+      page: parseInt(page as string),
+      limit: parseInt(limit as string),
+    };
+
+    const result = await storyService.getAllHighlightsForAdmin(filters);
+
+    res.status(200).json({
+      results: result.highlights.length,
+      total: result.total,
+      page: filters.page,
+      totalPages: Math.ceil(result.total / filters.limit),
+      data: result.highlights,
     });
   });
 }

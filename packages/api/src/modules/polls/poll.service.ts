@@ -6,7 +6,7 @@ import { Types } from "mongoose";
 class PollService {
   public async create(
     needId: string,
-    data: { question: string; options: string[]; expiresAt?: Date }
+    data: { question: string; options: string[]; expiresAt?: Date },
   ): Promise<IPoll> {
     const options = data.options.map((text) => ({ text, votes: [] }));
     return PollModel.create({ ...data, options, need: needId });
@@ -25,9 +25,7 @@ class PollService {
     }
 
     // Check if user has already voted
-    const hasVoted = poll.options.some((opt) =>
-      opt.votes.some((voterId) => voterId.toString() === userId)
-    );
+    const hasVoted = poll.options.some((opt) => opt.votes.some((voterId) => voterId.toString() === userId));
     if (hasVoted) {
       throw new ApiError(409, "شما قبلاً در این نظرسنجی شرکت کرده‌اید.");
     }

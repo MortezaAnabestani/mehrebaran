@@ -22,7 +22,7 @@ const videoSchema = new Schema<IVideo>(
     timestamps: true,
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
-  }
+  },
 );
 
 videoSchema.virtual("comments", {

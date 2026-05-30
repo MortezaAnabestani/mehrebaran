@@ -24,7 +24,7 @@ const articleSchema = new Schema<IArticle>(
     timestamps: true,
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
-  }
+  },
 );
 
 articleSchema.virtual("comments", {

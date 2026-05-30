@@ -24,7 +24,7 @@ class AuthService {
   public async verifyAndRegister(
     mobile: string,
     code: string,
-    userData: Omit<TRegisterUserData, "mobile"> & { password?: string }
+    userData: Omit<TRegisterUserData, "mobile"> & { password?: string },
   ) {
     const otpEntry = await OtpModel.findOne({ mobile, code });
 

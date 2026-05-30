@@ -24,13 +24,23 @@ const router = Router();
  * GET /api/v1/stories/admin/all
  * دریافت تمام استوری‌ها برای ادمین
  */
-router.get("/admin/all", protect, restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN), storyController.getAllStoriesForAdmin);
+router.get(
+  "/admin/all",
+  protect,
+  restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
+  storyController.getAllStoriesForAdmin,
+);
 
 /**
  * GET /api/v1/stories/admin/highlights
  * دریافت تمام highlights برای ادمین
  */
-router.get("/admin/highlights", protect, restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN), storyController.getAllHighlightsForAdmin);
+router.get(
+  "/admin/highlights",
+  protect,
+  restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
+  storyController.getAllHighlightsForAdmin,
+);
 
 // All routes require authentication
 router.use(protect);
@@ -121,13 +131,21 @@ router.get("/highlights/user/:userId", validate(userIdParamSchema), storyControl
  * POST /api/v1/stories/highlights/:id/add-story
  * افزودن استوری به هایلایت
  */
-router.post("/highlights/:id/add-story", validate(addStoryToHighlightSchema), storyController.addStoryToHighlight);
+router.post(
+  "/highlights/:id/add-story",
+  validate(addStoryToHighlightSchema),
+  storyController.addStoryToHighlight,
+);
 
 /**
  * DELETE /api/v1/stories/highlights/:id/remove-story/:storyId
  * حذف استوری از هایلایت
  */
-router.delete("/highlights/:id/remove-story/:storyId", validate(removeStoryFromHighlightSchema), storyController.removeStoryFromHighlight);
+router.delete(
+  "/highlights/:id/remove-story/:storyId",
+  validate(removeStoryFromHighlightSchema),
+  storyController.removeStoryFromHighlight,
+);
 
 /**
  * PUT /api/v1/stories/highlights/:id

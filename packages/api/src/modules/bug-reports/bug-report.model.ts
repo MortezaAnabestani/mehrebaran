@@ -56,7 +56,7 @@ const bugReportSchema = new Schema<IBugReport, BugReportModelType>(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 export const BugReportModel = model<IBugReport, BugReportModelType>("BugReport", bugReportSchema);

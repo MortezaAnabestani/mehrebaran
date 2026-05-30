@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import asyncHandler from "../../core/utils/asyncHandler";
 import ApiError from "../../core/utils/apiError";
 import { storyService } from "./story.service";
-import type { StoryType, StoryPrivacy } from "common-types";
+import { StoryType, StoryPrivacy } from "common-types";
 
 class StoryController {
   // ==================== STORIES ====================

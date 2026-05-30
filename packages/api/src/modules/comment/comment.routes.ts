@@ -9,9 +9,24 @@ router.post("/", protect, commentController.create);
 router.get("/post/:postId", commentController.getByPost);
 
 // Admin routes
-router.get("/admin/pending", protect, restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN), commentController.getPending);
-router.patch("/admin/approve/:id", protect, restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN), commentController.approve);
-router.patch("/admin/reject/:id", protect, restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN), commentController.reject);
+router.get(
+  "/admin/pending",
+  protect,
+  restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
+  commentController.getPending,
+);
+router.patch(
+  "/admin/approve/:id",
+  protect,
+  restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
+  commentController.approve,
+);
+router.patch(
+  "/admin/reject/:id",
+  protect,
+  restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
+  commentController.reject,
+);
 
 router.get("/", protect, restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN), commentController.getAll);
 router.patch("/:id", protect, restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN), commentController.update);

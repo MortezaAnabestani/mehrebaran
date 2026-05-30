@@ -23,7 +23,7 @@ class ProjectService {
   public async findAll(queryString: Record<string, any>): Promise<IProject[]> {
     const features = new ApiFeatures(
       ProjectModel.find().populate({ path: "category", select: "name slug" }),
-      queryString
+      queryString,
     )
       .filter()
       .sort()

@@ -16,7 +16,7 @@ const mentionSchema = new Schema<IMention>(
     text: { type: String },
     isRead: { type: Boolean, default: false },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 // Indexes for efficient queries

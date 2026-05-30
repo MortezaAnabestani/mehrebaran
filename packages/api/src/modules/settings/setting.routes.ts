@@ -11,7 +11,7 @@ router.patch(
   "/:key",
   protect,
   restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
-  settingController.updateByKey
+  settingController.updateByKey,
 );
 
 export default router;

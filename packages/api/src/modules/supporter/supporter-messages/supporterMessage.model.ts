@@ -9,7 +9,7 @@ const supporterMessageSchema = new Schema<ISupporterMessage>(
     parentMessage: { type: Types.ObjectId, ref: "SupporterMessage" },
     likes: [{ type: Types.ObjectId, ref: "User" }],
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 export const SupporterMessageModel = model<ISupporterMessage>("SupporterMessage", supporterMessageSchema);

@@ -13,8 +13,8 @@ class NeedService {
         $or: [
           { slug: data.category },
           { name: data.category },
-          { name: { $regex: data.category, $options: "i" } }
-        ]
+          { name: { $regex: data.category, $options: "i" } },
+        ],
       });
       if (category) {
         data.category = category._id;
@@ -48,8 +48,23 @@ class NeedService {
     // Create a clean queryString without fields already handled in buildSearchQuery
     const cleanQueryString = { ...queryString };
     // Remove fields that are already processed in buildSearchQuery to avoid ApiFeatures re-applying them
-    const processedFields = ['search', 'q', 'category', 'status', 'urgencyLevel', 'tags', 'skills', 'city', 'province', 'minUpvotes', 'hasLocation', 'deadlineBefore', 'createdAfter', 'createdBefore'];
-    processedFields.forEach(field => delete cleanQueryString[field]);
+    const processedFields = [
+      "search",
+      "q",
+      "category",
+      "status",
+      "urgencyLevel",
+      "tags",
+      "skills",
+      "city",
+      "province",
+      "minUpvotes",
+      "hasLocation",
+      "deadlineBefore",
+      "createdAfter",
+      "createdBefore",
+    ];
+    processedFields.forEach((field) => delete cleanQueryString[field]);
 
     // Don't call .filter() since we already built the query
     const features = new ApiFeatures(NeedModel.find(baseQuery), cleanQueryString)
@@ -57,9 +72,7 @@ class NeedService {
       .limitFields()
       .paginate();
 
-    features.query
-      .populate("category", "name slug")
-      .populate("submittedBy.user", "name avatar");
+    features.query.populate("category", "name slug").populate("submittedBy.user", "name avatar");
     return features.query;
   }
 
@@ -88,8 +101,8 @@ class NeedService {
           $or: [
             { slug: params.category },
             { name: params.category },
-            { name: { $regex: params.category, $options: "i" } }
-          ]
+            { name: { $regex: params.category, $options: "i" } },
+          ],
         });
         if (category) {
           query.category = category._id;
@@ -169,7 +182,7 @@ class NeedService {
     longitude: number,
     latitude: number,
     radiusInKm: number = 50,
-    queryString: Record<string, any> = {}
+    queryString: Record<string, any> = {},
   ): Promise<INeed[]> {
     const baseQuery = await this.buildSearchQuery(queryString);
 
@@ -186,8 +199,23 @@ class NeedService {
 
     // Clean queryString to avoid re-applying processed fields
     const cleanQueryString = { ...queryString };
-    const processedFields = ['search', 'q', 'category', 'status', 'urgencyLevel', 'tags', 'skills', 'city', 'province', 'minUpvotes', 'hasLocation', 'deadlineBefore', 'createdAfter', 'createdBefore'];
-    processedFields.forEach(field => delete cleanQueryString[field]);
+    const processedFields = [
+      "search",
+      "q",
+      "category",
+      "status",
+      "urgencyLevel",
+      "tags",
+      "skills",
+      "city",
+      "province",
+      "minUpvotes",
+      "hasLocation",
+      "deadlineBefore",
+      "createdAfter",
+      "createdBefore",
+    ];
+    processedFields.forEach((field) => delete cleanQueryString[field]);
 
     const features = new ApiFeatures(NeedModel.find(baseQuery), cleanQueryString)
       .sort()
@@ -213,9 +241,7 @@ class NeedService {
 
   // Popular needs (most upvoted)
   public async findPopular(limit: number = 10): Promise<INeed[]> {
-    const needs = await NeedModel.find({ status: "approved" })
-      .populate("category", "name slug")
-      .lean();
+    const needs = await NeedModel.find({ status: "approved" }).populate("category", "name slug").lean();
 
     // Sort by upvotes count
     const sorted = needs.sort((a, b) => (b.upvotes?.length || 0) - (a.upvotes?.length || 0));
@@ -359,7 +385,10 @@ class NeedService {
   }
 
   // Need Updates CRUD
-  public async addUpdate(needId: string, updateData: { title: string; description: string }): Promise<INeed | null> {
+  public async addUpdate(
+    needId: string,
+    updateData: { title: string; description: string },
+  ): Promise<INeed | null> {
     const need = await NeedModel.findByIdAndUpdate(
       needId,
       {
@@ -371,7 +400,7 @@ class NeedService {
           },
         },
       },
-      { new: true, runValidators: true }
+      { new: true, runValidators: true },
     );
 
     if (!need) return null;
@@ -387,7 +416,7 @@ class NeedService {
   public async updateUpdate(
     needId: string,
     updateId: string,
-    updateData: { title?: string; description?: string }
+    updateData: { title?: string; description?: string },
   ): Promise<INeed | null> {
     const need = await NeedModel.findById(needId);
     if (!need || !need.updates) return null;
@@ -433,7 +462,7 @@ class NeedService {
       targetDate: Date;
       order: number;
       progressPercentage?: number;
-    }
+    },
   ): Promise<INeed | null> {
     const need = await NeedModel.findByIdAndUpdate(
       needId,
@@ -450,7 +479,7 @@ class NeedService {
           },
         },
       },
-      { new: true, runValidators: true }
+      { new: true, runValidators: true },
     );
 
     if (!need) return null;
@@ -469,7 +498,7 @@ class NeedService {
       progressPercentage?: number;
       order?: number;
       evidence?: string[];
-    }
+    },
   ): Promise<INeed | null> {
     const need = await NeedModel.findById(needId);
     if (!need || !need.milestones) return null;
@@ -483,9 +512,11 @@ class NeedService {
     if (updateData.title !== undefined) (milestone as any).title = updateData.title;
     if (updateData.description !== undefined) (milestone as any).description = updateData.description;
     if (updateData.targetDate !== undefined) (milestone as any).targetDate = updateData.targetDate;
-    if (updateData.completionDate !== undefined) (milestone as any).completionDate = updateData.completionDate;
+    if (updateData.completionDate !== undefined)
+      (milestone as any).completionDate = updateData.completionDate;
     if (updateData.status !== undefined) (milestone as any).status = updateData.status;
-    if (updateData.progressPercentage !== undefined) (milestone as any).progressPercentage = updateData.progressPercentage;
+    if (updateData.progressPercentage !== undefined)
+      (milestone as any).progressPercentage = updateData.progressPercentage;
     if (updateData.order !== undefined) (milestone as any).order = updateData.order;
     if (updateData.evidence !== undefined) (milestone as any).evidence = updateData.evidence;
 
@@ -513,7 +544,11 @@ class NeedService {
     return this.populateNeed(need);
   }
 
-  public async completeMilestone(needId: string, milestoneId: string, evidence?: string[]): Promise<INeed | null> {
+  public async completeMilestone(
+    needId: string,
+    milestoneId: string,
+    evidence?: string[],
+  ): Promise<INeed | null> {
     return this.updateMilestone(needId, milestoneId, {
       status: "completed",
       progressPercentage: 100,
@@ -540,7 +575,7 @@ class NeedService {
       currency?: string;
       priority?: number;
       notes?: string;
-    }
+    },
   ): Promise<INeed | null> {
     const need = await NeedModel.findByIdAndUpdate(
       needId,
@@ -560,7 +595,7 @@ class NeedService {
           },
         },
       },
-      { new: true, runValidators: true }
+      { new: true, runValidators: true },
     );
 
     if (!need) return null;
@@ -580,7 +615,7 @@ class NeedService {
       currency?: string;
       priority?: number;
       notes?: string;
-    }
+    },
   ): Promise<INeed | null> {
     const need = await NeedModel.findById(needId);
     if (!need || !need.budgetItems) return null;
@@ -623,7 +658,7 @@ class NeedService {
   public async addFundsToBudgetItem(
     needId: string,
     budgetItemId: string,
-    amount: number
+    amount: number,
   ): Promise<INeed | null> {
     const need = await NeedModel.findById(needId);
     if (!need || !need.budgetItems) return null;
@@ -642,7 +677,10 @@ class NeedService {
 
   // Verification Requests CRUD
   public async getVerificationRequests(needId: string, status?: string): Promise<any[] | null> {
-    const need = await NeedModel.findById(needId).select("verificationRequests").populate("verificationRequests.submittedBy", "name").populate("verificationRequests.reviewedBy", "name");
+    const need = await NeedModel.findById(needId)
+      .select("verificationRequests")
+      .populate("verificationRequests.submittedBy", "name")
+      .populate("verificationRequests.reviewedBy", "name");
     if (!need) return null;
 
     let requests = need.verificationRequests || [];
@@ -664,7 +702,7 @@ class NeedService {
       evidence: Array<{ type: "image" | "document" | "video"; url: string; description?: string }>;
       relatedItemId?: string;
       relatedItemType?: string;
-    }
+    },
   ): Promise<INeed | null> {
     const need = await NeedModel.findByIdAndUpdate(
       needId,
@@ -682,7 +720,7 @@ class NeedService {
           },
         },
       },
-      { new: true, runValidators: true }
+      { new: true, runValidators: true },
     );
 
     if (!need) return null;
@@ -698,7 +736,7 @@ class NeedService {
       adminComments?: string;
       rejectionReason?: string;
       revisionNotes?: string;
-    }
+    },
   ): Promise<INeed | null> {
     const need = await NeedModel.findById(needId);
     if (!need || !need.verificationRequests) return null;
@@ -767,7 +805,9 @@ class NeedService {
     const need = await NeedModel.findById(needId);
     if (!need || !need.verificationRequests) return null;
 
-    const verificationIndex = need.verificationRequests.findIndex((req: any) => req._id.toString() === verificationId);
+    const verificationIndex = need.verificationRequests.findIndex(
+      (req: any) => req._id.toString() === verificationId,
+    );
     if (verificationIndex === -1) {
       throw new ApiError(404, "درخواست تایید یافت نشد.");
     }
@@ -778,7 +818,10 @@ class NeedService {
   }
 
   // Task Management CRUD
-  public async getTasks(needId: string, filters?: { status?: string; assignedTo?: string; priority?: string }): Promise<any[] | null> {
+  public async getTasks(
+    needId: string,
+    filters?: { status?: string; assignedTo?: string; priority?: string },
+  ): Promise<any[] | null> {
     const need = await NeedModel.findById(needId)
       .select("tasks")
       .populate("tasks.assignedTo", "name")
@@ -814,7 +857,7 @@ class NeedService {
       deadline?: Date;
       estimatedHours?: number;
       dependencies?: string[];
-    }
+    },
   ): Promise<INeed | null> {
     const need = await NeedModel.findByIdAndUpdate(
       needId,
@@ -835,7 +878,7 @@ class NeedService {
           },
         },
       },
-      { new: true, runValidators: true }
+      { new: true, runValidators: true },
     );
 
     if (!need) return null;
@@ -858,7 +901,7 @@ class NeedService {
       blockedBy?: string;
       blockingReason?: string;
       dependencies?: string[];
-    }
+    },
   ): Promise<INeed | null> {
     const need = await NeedModel.findById(needId);
     if (!need || !need.tasks) return null;
@@ -880,7 +923,8 @@ class NeedService {
     if (updateData.deadline !== undefined) (task as any).deadline = updateData.deadline;
     if (updateData.estimatedHours !== undefined) (task as any).estimatedHours = updateData.estimatedHours;
     if (updateData.actualHours !== undefined) (task as any).actualHours = updateData.actualHours;
-    if (updateData.progressPercentage !== undefined) (task as any).progressPercentage = updateData.progressPercentage;
+    if (updateData.progressPercentage !== undefined)
+      (task as any).progressPercentage = updateData.progressPercentage;
     if (updateData.blockedBy !== undefined) (task as any).blockedBy = updateData.blockedBy;
     if (updateData.blockingReason !== undefined) (task as any).blockingReason = updateData.blockingReason;
     if (updateData.dependencies !== undefined) (task as any).dependencies = updateData.dependencies;
@@ -912,7 +956,7 @@ class NeedService {
   public async updateTaskChecklist(
     needId: string,
     taskId: string,
-    checklist: Array<{ title: string; completed: boolean }>
+    checklist: Array<{ title: string; completed: boolean }>,
   ): Promise<INeed | null> {
     const need = await NeedModel.findById(needId);
     if (!need || !need.tasks) return null;
@@ -926,7 +970,7 @@ class NeedService {
 
     // Auto-update progress based on checklist
     const totalItems = checklist.length;
-    const completedItems = checklist.filter(item => item.completed).length;
+    const completedItems = checklist.filter((item) => item.completed).length;
     if (totalItems > 0) {
       (task as any).progressPercentage = Math.round((completedItems / totalItems) * 100);
     }
@@ -970,7 +1014,7 @@ class NeedService {
       notes?: string;
       isActive?: boolean;
       leaveReason?: string;
-    }
+    },
   ): Promise<INeed | null> {
     const need = await NeedModel.findById(needId);
     if (!need || !need.supporterDetails) return null;
@@ -1004,7 +1048,7 @@ class NeedService {
       description: string;
       amount?: number;
       hours?: number;
-    }
+    },
   ): Promise<INeed | null> {
     const need = await NeedModel.findById(needId);
     if (!need || !need.supporterDetails) return null;
@@ -1076,7 +1120,7 @@ class NeedService {
           .sort({ createdAt: 1 })
           .lean();
         return { ...comment, replies };
-      })
+      }),
     );
 
     return commentsWithReplies;
@@ -1086,7 +1130,7 @@ class NeedService {
     needId: string,
     userId: string,
     content: string,
-    parentId?: string
+    parentId?: string,
   ): Promise<any> {
     const { NeedComment } = await import("./needComment.model");
 

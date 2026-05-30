@@ -1,7 +1,5 @@
-import { Types } from "mongoose";
+import { ObjectId } from "./object-id.type";
 import { IUser } from "./user.types";
-import { INeed } from "./need.types";
-import { ITeam } from "./team.types";
 
 // ============= Notification Types =============
 
@@ -34,7 +32,7 @@ export type NotificationPriority = "low" | "normal" | "high" | "urgent";
 
 export interface INotification {
   _id: string;
-  recipient: IUser | string | Types.ObjectId;
+  recipient: IUser | string | ObjectId;
   type: NotificationType;
   title: string;
   titleEn?: string;
@@ -43,7 +41,7 @@ export interface INotification {
   priority: NotificationPriority;
 
   // Related entities
-  actor?: IUser | string | Types.ObjectId; // کاربری که این اکشن را انجام داده
+  actor?: IUser | string | ObjectId; // کاربری که این اکشن را انجام داده
   relatedModel?: string; // Need, Task, Team, Comment, etc.
   relatedId?: string;
   relatedEntity?: any; // Populated entity
@@ -104,7 +102,7 @@ export interface INotificationChannelPreference {
 
 export interface INotificationPreferences {
   _id: string;
-  user: IUser | string | Types.ObjectId;
+  user: IUser | string | ObjectId;
 
   // Channel preferences
   in_app: INotificationChannelPreference;
@@ -215,15 +213,21 @@ export interface INotificationStats {
   totalRead: number;
   totalUnread: number;
   readRate: number; // درصد خوانده شده
-  byType: Record<NotificationType, {
-    total: number;
-    read: number;
-    unread: number;
-  }>;
-  byChannel: Record<NotificationChannel, {
-    delivered: number;
-    failed: number;
-  }>;
+  byType: Record<
+    NotificationType,
+    {
+      total: number;
+      read: number;
+      unread: number;
+    }
+  >;
+  byChannel: Record<
+    NotificationChannel,
+    {
+      delivered: number;
+      failed: number;
+    }
+  >;
   lastReceivedAt?: Date;
   lastReadAt?: Date;
 }
@@ -257,7 +261,7 @@ export interface INotificationBatch {
   failedCount: number;
 
   // Metadata
-  createdBy: IUser | string | Types.ObjectId;
+  createdBy: IUser | string | ObjectId;
   createdAt: Date;
   sentAt?: Date;
 }
@@ -266,7 +270,7 @@ export interface INotificationBatch {
 
 export interface IPushNotificationToken {
   _id: string;
-  user: IUser | string | Types.ObjectId;
+  user: IUser | string | ObjectId;
   token: string; // FCM/APNS token
   platform: "ios" | "android" | "web";
   deviceId?: string;
@@ -297,7 +301,7 @@ export interface IEmailNotification {
   variables?: Record<string, any>;
   attachments?: Array<{
     filename: string;
-    content: string | Buffer;
+    content: string;
     contentType: string;
   }>;
 }

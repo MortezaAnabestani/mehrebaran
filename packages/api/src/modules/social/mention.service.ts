@@ -36,7 +36,7 @@ class MentionService {
     context: MentionContext,
     contextId: string,
     relatedModel: string,
-    relatedId: string
+    relatedId: string,
   ): Promise<IMention[]> {
     // Match @username or @userId patterns
     const mentionRegex = /@(\w+)/g;
@@ -87,7 +87,7 @@ class MentionService {
       context?: MentionContext;
     },
     limit: number = 50,
-    skip: number = 0
+    skip: number = 0,
   ): Promise<IMention[]> {
     const query: any = { mentionedUser: userId };
 

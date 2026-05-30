@@ -26,7 +26,7 @@ const shareLogSchema = new Schema<IShareLog>(
     referrer: { type: String },
     metadata: { type: Schema.Types.Mixed },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 // Indexes for analytics

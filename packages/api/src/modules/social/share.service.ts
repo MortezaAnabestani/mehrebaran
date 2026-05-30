@@ -106,7 +106,11 @@ class ShareService {
   }
 
   // Get user's share history
-  public async getUserShareHistory(userId: string, limit: number = 50, skip: number = 0): Promise<IShareLog[]> {
+  public async getUserShareHistory(
+    userId: string,
+    limit: number = 50,
+    skip: number = 0,
+  ): Promise<IShareLog[]> {
     return ShareLogModel.find({ user: userId })
       .populate("sharedItem")
       .sort({ createdAt: -1 })
@@ -117,7 +121,7 @@ class ShareService {
   // Get share analytics by platform
   public async getShareAnalyticsByPlatform(
     startDate?: Date,
-    endDate?: Date
+    endDate?: Date,
   ): Promise<Record<SharePlatform, number>> {
     const query: any = {};
 

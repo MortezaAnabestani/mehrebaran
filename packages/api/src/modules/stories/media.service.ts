@@ -1,5 +1,5 @@
 import { MediaModel } from "./media.model";
-import type {
+import {
   IMedia,
   MediaType,
   MediaCategory,

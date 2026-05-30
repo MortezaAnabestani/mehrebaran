@@ -23,7 +23,7 @@ const gallerySchema = new Schema<IGallery>(
     timestamps: true,
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
-  }
+  },
 );
 
 gallerySchema.virtual("comments", {

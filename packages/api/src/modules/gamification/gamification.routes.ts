@@ -22,19 +22,19 @@ router.post(
   "/points/award",
   protect,
   restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
-  gamificationController.awardPoints
+  gamificationController.awardPoints,
 );
 router.post(
   "/points/deduct",
   protect,
   restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
-  gamificationController.deductPoints
+  gamificationController.deductPoints,
 );
 router.get(
   "/points/admin/all-transactions",
   protect,
   restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
-  gamificationController.getAllTransactionsForAdmin
+  gamificationController.getAllTransactionsForAdmin,
 );
 
 // ==================== BADGES ROUTES ====================
@@ -44,7 +44,7 @@ router.get(
   "/badges/admin/with-stats",
   protect,
   restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
-  gamificationController.getAllBadgesWithStats
+  gamificationController.getAllBadgesWithStats,
 );
 
 // Public badges
@@ -66,19 +66,19 @@ router.post(
   "/badges",
   protect,
   restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
-  gamificationController.createBadge
+  gamificationController.createBadge,
 );
 router.patch(
   "/badges/:badgeId",
   protect,
   restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
-  gamificationController.updateBadge
+  gamificationController.updateBadge,
 );
 router.delete(
   "/badges/:badgeId",
   protect,
   restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
-  gamificationController.deleteBadge
+  gamificationController.deleteBadge,
 );
 
 // ==================== USER STATS & PROFILE ROUTES ====================

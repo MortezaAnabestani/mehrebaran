@@ -50,9 +50,7 @@ class TagService {
 
   // Get popular tags
   public async getPopularTags(limit: number = 20): Promise<ITagUsage[]> {
-    return TagUsageModel.find()
-      .sort({ usageCount: -1, lastUsedAt: -1 })
-      .limit(limit);
+    return TagUsageModel.find().sort({ usageCount: -1, lastUsedAt: -1 }).limit(limit);
   }
 
   // Get trending tags (recently used)

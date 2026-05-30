@@ -18,7 +18,7 @@ router.patch(
   "/:id",
   uploadService.uploadSingleImage("avatar", "users"),
   uploadService.resizeAndProcessImages,
-  userController.updateUser
+  userController.updateUser,
 );
 
 router.delete("/:id", restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN), userController.deleteUser);

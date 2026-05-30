@@ -8,7 +8,7 @@ const donorInfoSchema = new Schema(
     mobile: { type: String },
     isAnonymous: { type: Boolean, default: false },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const receiptInfoSchema = new Schema(
@@ -20,7 +20,7 @@ const receiptInfoSchema = new Schema(
     verifiedAt: { type: Date },
     rejectionReason: { type: String },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const donationSchema = new Schema<IDonation>(
@@ -77,7 +77,7 @@ const donationSchema = new Schema<IDonation>(
     timestamps: true,
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
-  }
+  },
 );
 
 // Indexes for performance
@@ -106,9 +106,7 @@ donationSchema.pre("save", async function (next) {
 donationSchema.statics.getByProject = function (projectId: string, status?: string) {
   const query: any = { project: projectId };
   if (status) query.status = status;
-  return this.find(query)
-    .populate("donor", "name email avatar")
-    .sort({ createdAt: -1 });
+  return this.find(query).populate("donor", "name email avatar").sort({ createdAt: -1 });
 };
 
 // Static method to get total raised amount for project

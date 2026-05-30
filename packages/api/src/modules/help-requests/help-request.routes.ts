@@ -11,7 +11,7 @@ router.post(
   "/",
   uploadService.uploadMultipleImages("media", 5, "needs"),
   uploadService.resizeAndProcessMultipleImages,
-  helpRequestController.create
+  helpRequestController.create,
 );
 
 // Protected routes - admin only

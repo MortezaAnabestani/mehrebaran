@@ -15,10 +15,7 @@ class BugReportService {
     return BugReportModel.findById(id).populate("reportedBy", "name email");
   }
 
-  public async updateBugReportStatus(
-    id: string,
-    status: string
-  ): Promise<IBugReport | null> {
+  public async updateBugReportStatus(id: string, status: string): Promise<IBugReport | null> {
     return BugReportModel.findByIdAndUpdate(id, { status }, { new: true });
   }
 

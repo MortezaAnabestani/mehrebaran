@@ -12,14 +12,14 @@ router.post(
   "/single",
   uploadService.uploadSingleImage("image", "general"),
   uploadService.resizeAndProcessImages,
-  uploadController.uploadSingle
+  uploadController.uploadSingle,
 );
 
 router.post(
   "/multiple",
   uploadService.uploadMultipleImages("gallery", 10, "general"),
   uploadService.resizeAndProcessMultipleImages,
-  uploadController.uploadMultiple
+  uploadController.uploadMultiple,
 );
 
 export default router;

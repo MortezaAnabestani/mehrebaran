@@ -16,7 +16,7 @@ const focusAreaSchema = new Schema<IFocusArea>(
     timestamps: true,
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
-  }
+  },
 );
 
 focusAreaSchema.pre("save", function (next) {

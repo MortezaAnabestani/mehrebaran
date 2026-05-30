@@ -17,7 +17,7 @@ const authorSchema = new Schema<IAuthor>(
     instagramId: { type: String },
     favoriteTemplate: { type: String, enum: ["poetic", "scientific"] },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 authorSchema.pre("save", function (next) {

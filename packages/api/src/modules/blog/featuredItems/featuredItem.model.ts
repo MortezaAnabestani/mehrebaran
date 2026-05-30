@@ -11,7 +11,7 @@ const featuredItemSchema = new Schema<IFeaturedItem>(
       enum: ["Article", "Video", "Gallery"],
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 featuredItemSchema.index({ order: 1 }, { unique: true });

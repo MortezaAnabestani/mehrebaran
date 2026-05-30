@@ -2,7 +2,7 @@ import { Model, Types } from "mongoose";
 import { NotificationModel } from "./notification.model";
 import { NotificationPreferencesModel } from "./notificationPreferences.model";
 import { PushTokenModel } from "./pushToken.model";
-import type {
+import {
   INotification,
   NotificationType,
   NotificationChannel,

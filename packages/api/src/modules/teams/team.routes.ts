@@ -9,7 +9,12 @@ const router = Router({ mergeParams: true });
 // All routes require authentication
 
 // Admin routes
-router.get("/admin/all", protect, restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN), teamController.getAllTeamsForAdmin);
+router.get(
+  "/admin/all",
+  protect,
+  restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
+  teamController.getAllTeamsForAdmin,
+);
 
 // Team CRUD
 router.post("/", protect, isSupporter, teamController.createTeam);

@@ -28,7 +28,7 @@ const newsSchema = new Schema<INews>(
     timestamps: true,
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
-  }
+  },
 );
 
 newsSchema.virtual("comments", {

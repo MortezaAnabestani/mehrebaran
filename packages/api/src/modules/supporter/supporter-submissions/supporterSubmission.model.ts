@@ -14,10 +14,10 @@ const supporterSubmissionSchema = new Schema<ISupporterSubmission>(
       default: "pending",
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 export const SupporterSubmissionModel = model<ISupporterSubmission>(
   "SupporterSubmission",
-  supporterSubmissionSchema
+  supporterSubmissionSchema,
 );

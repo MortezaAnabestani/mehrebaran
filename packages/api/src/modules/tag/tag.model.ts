@@ -7,7 +7,7 @@ const tagSchema = new Schema<ITag>(
     name: { type: String, required: true, unique: true },
     slug: { type: String, unique: true },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 tagSchema.pre("save", function (next) {

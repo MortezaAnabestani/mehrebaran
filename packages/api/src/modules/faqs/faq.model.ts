@@ -8,7 +8,7 @@ const faqSchema = new Schema<IFaq>(
     order: { type: Number, default: 0 },
     isActive: { type: Boolean, default: true },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 export const FaqModel = model<IFaq>("Faq", faqSchema);

@@ -1,5 +1,5 @@
 import { Schema, model, Types } from "mongoose";
-import type { IStoryHighlight } from "common-types";
+import { IStoryHighlight } from "common-types";
 
 const storyHighlightSchema = new Schema<IStoryHighlight>(
   {

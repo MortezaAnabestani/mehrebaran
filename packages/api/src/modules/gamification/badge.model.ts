@@ -12,7 +12,7 @@ const badgeConditionSchema = new Schema(
     action: { type: String },
     description: { type: String, required: true },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const badgeSchema = new Schema<IBadge>(
@@ -49,7 +49,7 @@ const badgeSchema = new Schema<IBadge>(
     isSecret: { type: Boolean, default: false },
     order: { type: Number, default: 0 },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 // Indexes

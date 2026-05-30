@@ -1,5 +1,5 @@
 import { model, Model } from "mongoose";
-import type {
+import {
   ILeaderboardEntry,
   ILeaderboardResponse,
   LeaderboardCategory,

@@ -1,7 +1,7 @@
-import { Types } from "mongoose";
 import { IUser } from "./user.types";
 import { INeed } from "./need.types";
 import { ITeam } from "./team.types";
+import { ObjectId } from "./object-id.type";
 
 // ============= Leaderboard Types =============
 
@@ -18,7 +18,7 @@ export type LeaderboardCategory =
   | "teams_created"; // بر اساس تیم‌های ایجاد شده
 
 export interface ILeaderboardEntry {
-  user: IUser | string | Types.ObjectId;
+  user: IUser | string | ObjectId;
   rank: number; // رتبه (1, 2, 3, ...)
   score: number; // امتیاز (بر اساس category)
   previousRank?: number; // رتبه قبلی (برای نمایش تغییرات)
@@ -58,7 +58,7 @@ export interface ITrendingNeed extends INeed {
 }
 
 export interface ITrendingUser {
-  user: IUser | string | Types.ObjectId;
+  user: IUser | string | ObjectId;
   trendingScore: ITrendingScore;
   rank: number;
   recentActivity: {

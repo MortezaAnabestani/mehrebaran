@@ -16,7 +16,7 @@ router.post(
   restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
   uploadService.uploadMultipleImages("images", 20, "articles"),
   uploadService.resizeAndProcessMultipleImages,
-  galleryController.create
+  galleryController.create,
 );
 router.patch(
   "/:id",
@@ -24,7 +24,7 @@ router.patch(
   restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
   uploadService.uploadMultipleImages("images", 20, "articles"),
   uploadService.resizeAndProcessMultipleImages,
-  galleryController.update
+  galleryController.update,
 );
 router.delete("/:id", protect, restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN), galleryController.delete);
 

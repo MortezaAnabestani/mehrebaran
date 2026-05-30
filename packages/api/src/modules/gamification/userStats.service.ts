@@ -16,8 +16,7 @@ class UserStatsService {
 
     // Get badge counts
     const badgeCounts = await badgeService.getUserBadgeCountByRarity(userId);
-    const totalBadges =
-      badgeCounts.common + badgeCounts.rare + badgeCounts.epic + badgeCounts.legendary;
+    const totalBadges = badgeCounts.common + badgeCounts.rare + badgeCounts.epic + badgeCounts.legendary;
 
     // Get needs statistics
     const NeedModel = model("Need");
@@ -190,15 +189,14 @@ class UserStatsService {
     const enhanced = await Promise.all(
       leaderboard.map(async (entry) => {
         const badgeCounts = await badgeService.getUserBadgeCountByRarity(entry.userId.toString());
-        const totalBadges =
-          badgeCounts.common + badgeCounts.rare + badgeCounts.epic + badgeCounts.legendary;
+        const totalBadges = badgeCounts.common + badgeCounts.rare + badgeCounts.epic + badgeCounts.legendary;
 
         return {
           ...entry,
           badges: totalBadges,
           level: getLevelByPoints(entry.totalPoints),
         };
-      })
+      }),
     );
 
     return enhanced;
@@ -230,7 +228,7 @@ class UserStatsService {
       actionCounts,
       actionPoints,
       mostActiveAction: Object.keys(actionCounts).reduce((a, b) =>
-        actionCounts[a] > actionCounts[b] ? a : b
+        actionCounts[a] > actionCounts[b] ? a : b,
       ),
     };
   }

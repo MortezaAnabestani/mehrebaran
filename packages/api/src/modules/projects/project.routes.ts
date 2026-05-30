@@ -16,13 +16,13 @@ router.post(
   "/",
   uploadService.uploadSingleImage("featuredImage", "projects"),
   uploadService.resizeAndProcessImages,
-  projectController.create
+  projectController.create,
 );
 router.patch(
   "/:id",
   uploadService.uploadSingleImage("featuredImage", "projects"),
   uploadService.resizeAndProcessImages,
-  projectController.update
+  projectController.update,
 );
 router.delete("/:id", projectController.delete);
 

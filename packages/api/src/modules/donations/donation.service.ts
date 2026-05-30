@@ -64,7 +64,9 @@ class DonationService {
   }
 
   // Get all donations with pagination
-  async findAll(filters?: any): Promise<{ donations: IDonation[]; total: number; page: number; totalPages: number }> {
+  async findAll(
+    filters?: any,
+  ): Promise<{ donations: IDonation[]; total: number; page: number; totalPages: number }> {
     const page = parseInt(filters?.page) || 1;
     const limit = parseInt(filters?.limit) || 10;
     const skip = (page - 1) * limit;
@@ -135,7 +137,7 @@ class DonationService {
   async updateStatus(
     id: string,
     status: "completed" | "failed" | "refunded",
-    refId?: string
+    refId?: string,
   ): Promise<IDonation | null> {
     const donation = await DonationModel.findById(id);
     if (!donation) {
@@ -193,7 +195,7 @@ class DonationService {
     donationId: string,
     adminId: string,
     approve: boolean,
-    rejectionReason?: string
+    rejectionReason?: string,
   ): Promise<IDonation | null> {
     const donation = await DonationModel.findById(donationId);
     if (!donation) {
@@ -220,7 +222,7 @@ class DonationService {
             donorCount: 1,
           },
         },
-        { new: true }
+        { new: true },
       );
 
       // Generate certificate
@@ -228,7 +230,7 @@ class DonationService {
         try {
           const certificateUrl = await certificateService.generateDonationCertificate(
             donation as any,
-            project as any
+            project as any,
           );
           donation.certificateUrl = certificateUrl;
           donation.certificateGenerated = true;
@@ -266,11 +268,13 @@ class DonationService {
       },
     ]);
 
-    return stats[0] || {
-      totalAmount: 0,
-      donorCount: 0,
-      averageDonation: 0,
-    };
+    return (
+      stats[0] || {
+        totalAmount: 0,
+        donorCount: 0,
+        averageDonation: 0,
+      }
+    );
   }
 
   // Get recent donors for project (public list)

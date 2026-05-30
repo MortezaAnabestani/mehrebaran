@@ -11,7 +11,7 @@ router.post(
   "/",
   uploadService.uploadMultipleImages("screenshots", 5, "bug-reports"),
   uploadService.resizeAndProcessMultipleImages,
-  bugReportController.createBugReport
+  bugReportController.createBugReport,
 );
 
 // مسیرهای مدیریتی (نیاز به احراز هویت دارد)

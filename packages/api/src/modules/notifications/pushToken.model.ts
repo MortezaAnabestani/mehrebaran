@@ -1,5 +1,5 @@
 import { Schema, model, Types } from "mongoose";
-import type { IPushNotificationToken } from "common-types";
+import { IPushNotificationToken } from "common-types";
 
 const pushTokenSchema = new Schema<IPushNotificationToken>(
   {

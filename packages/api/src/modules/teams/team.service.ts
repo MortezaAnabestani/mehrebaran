@@ -16,7 +16,7 @@ class TeamService {
       maxMembers?: number;
       tags?: string[];
       isPrivate?: boolean;
-    }
+    },
   ): Promise<ITeam> {
     // Creator is automatically the leader
     const team = await TeamModel.create({
@@ -42,7 +42,10 @@ class TeamService {
   }
 
   // Get all teams (optionally filtered by needId)
-  public async getTeams(needId?: string, filters?: { status?: TeamStatus; focusArea?: TeamFocusArea }): Promise<ITeam[]> {
+  public async getTeams(
+    needId?: string,
+    filters?: { status?: TeamStatus; focusArea?: TeamFocusArea },
+  ): Promise<ITeam[]> {
     const query: any = {};
 
     // Only filter by needId if provided
@@ -92,7 +95,7 @@ class TeamService {
       maxMembers?: number;
       tags?: string[];
       isPrivate?: boolean;
-    }
+    },
   ): Promise<ITeam | null> {
     const team = await TeamModel.findById(teamId);
     if (!team) {
@@ -140,7 +143,7 @@ class TeamService {
     teamId: string,
     addedBy: string,
     newMemberId: string,
-    role: TeamMemberRole = "member"
+    role: TeamMemberRole = "member",
   ): Promise<ITeam | null> {
     const team = await TeamModel.findById(teamId);
     if (!team) {
@@ -177,7 +180,11 @@ class TeamService {
   }
 
   // Remove member from team
-  public async removeMember(teamId: string, removedBy: string, memberIdToRemove: string): Promise<ITeam | null> {
+  public async removeMember(
+    teamId: string,
+    removedBy: string,
+    memberIdToRemove: string,
+  ): Promise<ITeam | null> {
     const team = await TeamModel.findById(teamId);
     if (!team) {
       throw new ApiError(404, "تیم یافت نشد.");
@@ -220,7 +227,7 @@ class TeamService {
     teamId: string,
     updatedBy: string,
     memberIdToUpdate: string,
-    newRole: TeamMemberRole
+    newRole: TeamMemberRole,
   ): Promise<ITeam | null> {
     const team = await TeamModel.findById(teamId);
     if (!team) {
@@ -250,7 +257,7 @@ class TeamService {
     teamId: string,
     invitedBy: string,
     invitedUserId: string,
-    message?: string
+    message?: string,
   ): Promise<ITeamInvitation> {
     const team = await TeamModel.findById(teamId);
     if (!team) {
@@ -298,7 +305,7 @@ class TeamService {
   public async respondToInvitation(
     invitationId: string,
     userId: string,
-    accept: boolean
+    accept: boolean,
   ): Promise<{ invitation: ITeamInvitation; team?: ITeam }> {
     const invitation = await TeamInvitationModel.findById(invitationId);
     if (!invitation) {
@@ -330,12 +337,13 @@ class TeamService {
 
     if (accept) {
       // Add user to team
-      team = (await this.addMember(
-        invitation.team.toString(),
-        invitation.invitedBy.toString(),
-        userId,
-        "member"
-      )) || undefined;
+      team =
+        (await this.addMember(
+          invitation.team.toString(),
+          invitation.invitedBy.toString(),
+          userId,
+          "member",
+        )) || undefined;
     }
 
     return {
@@ -386,7 +394,10 @@ class TeamService {
     const totalMembers = team.members.length;
     const activeMembers = team.members.filter((m: any) => m.isActive).length;
     const tasksCompleted = team.members.reduce((sum: number, m: any) => sum + (m.tasksCompleted || 0), 0);
-    const totalContribution = team.members.reduce((sum: number, m: any) => sum + (m.contributionScore || 0), 0);
+    const totalContribution = team.members.reduce(
+      (sum: number, m: any) => sum + (m.contributionScore || 0),
+      0,
+    );
 
     return {
       totalMembers,

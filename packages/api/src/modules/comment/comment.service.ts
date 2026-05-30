@@ -23,7 +23,10 @@ class CommentService {
       .sort({ createdAt: -1 });
   }
 
-  public async findPending(page: number = 1, limit: number = 10): Promise<{ comments: IComment[]; totalPages: number }> {
+  public async findPending(
+    page: number = 1,
+    limit: number = 10,
+  ): Promise<{ comments: IComment[]; totalPages: number }> {
     const skip = (page - 1) * limit;
     const [comments, total] = await Promise.all([
       CommentModel.find({ status: "pending" })

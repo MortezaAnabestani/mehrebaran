@@ -10,7 +10,6 @@ import {
 } from "./gamification.validation";
 import asyncHandler from "../../core/utils/asyncHandler";
 import ApiError from "../../core/utils/apiError";
-import { PointAction } from "common-types";
 
 class GamificationController {
   // ==================== POINTS ====================

@@ -15,7 +15,7 @@ class PointsService {
       relatedModel?: string;
       relatedId?: string;
       metadata?: Record<string, any>;
-    }
+    },
   ): Promise<IPointTransaction> {
     const points = options?.points ?? POINT_VALUES[action] ?? 0;
 
@@ -54,7 +54,7 @@ class PointsService {
     points: number,
     reason: string,
     relatedModel?: string,
-    relatedId?: string
+    relatedId?: string,
   ): Promise<IPointTransaction> {
     return this.awardPoints(userId, "penalty", {
       points: -Math.abs(points),
@@ -92,7 +92,7 @@ class PointsService {
   public async getUserTransactions(
     userId: string,
     limit: number = 50,
-    skip: number = 0
+    skip: number = 0,
   ): Promise<IPointTransaction[]> {
     const transactions = await PointTransactionModel.find({
       user: userId,
@@ -105,10 +105,7 @@ class PointsService {
   }
 
   // Get transactions by action type
-  public async getTransactionsByAction(
-    userId: string,
-    action: PointAction
-  ): Promise<IPointTransaction[]> {
+  public async getTransactionsByAction(userId: string, action: PointAction): Promise<IPointTransaction[]> {
     return PointTransactionModel.find({
       user: userId,
       action,

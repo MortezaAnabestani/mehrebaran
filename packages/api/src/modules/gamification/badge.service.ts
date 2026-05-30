@@ -50,7 +50,7 @@ class BadgeService {
           ...badge,
           recipientCount,
         };
-      })
+      }),
     );
 
     return badgesWithStats;
@@ -73,7 +73,11 @@ class BadgeService {
   }
 
   // Award badge to user
-  public async awardBadge(userId: string, badgeId: string, metadata?: Record<string, any>): Promise<IUserBadge> {
+  public async awardBadge(
+    userId: string,
+    badgeId: string,
+    metadata?: Record<string, any>,
+  ): Promise<IUserBadge> {
     // Check if user already has this badge
     const existing = await UserBadgeModel.findOne({
       user: userId,
@@ -105,9 +109,7 @@ class BadgeService {
 
   // Get user's badges
   public async getUserBadges(userId: string): Promise<IUserBadge[]> {
-    const userBadges = await UserBadgeModel.find({ user: userId })
-      .populate("badge")
-      .sort({ earnedAt: -1 });
+    const userBadges = await UserBadgeModel.find({ user: userId }).populate("badge").sort({ earnedAt: -1 });
 
     return userBadges;
   }
@@ -181,7 +183,7 @@ class BadgeService {
   // Check single condition
   private async checkSingleCondition(
     userId: string,
-    condition: { type: string; target?: number; action?: string; description: string }
+    condition: { type: string; target?: number; action?: string; description: string },
   ): Promise<boolean> {
     switch (condition.type) {
       case "points": {
@@ -272,7 +274,7 @@ class BadgeService {
   // Get condition progress
   private async getConditionProgress(
     userId: string,
-    condition: { type: string; target?: number; action?: string; description: string }
+    condition: { type: string; target?: number; action?: string; description: string },
   ): Promise<any> {
     const result: any = {
       type: condition.type,

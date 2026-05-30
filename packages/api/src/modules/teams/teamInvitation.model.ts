@@ -19,7 +19,7 @@ const teamInvitationSchema = new Schema<ITeamInvitation>(
     },
     respondedAt: { type: Date },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 // Indexes for efficient querying

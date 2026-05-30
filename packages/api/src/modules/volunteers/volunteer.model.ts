@@ -11,7 +11,7 @@ const availabilitySchema = new Schema(
     ],
     timeSlots: [{ type: String, enum: ["morning", "afternoon", "evening"] }],
   },
-  { _id: false }
+  { _id: false },
 );
 
 const emergencyContactSchema = new Schema(
@@ -20,7 +20,7 @@ const emergencyContactSchema = new Schema(
     phone: { type: String, required: true },
     relationship: { type: String, required: true },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const volunteerRegistrationSchema = new Schema<IVolunteerRegistration>(
@@ -71,7 +71,7 @@ const volunteerRegistrationSchema = new Schema<IVolunteerRegistration>(
     timestamps: true,
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
-  }
+  },
 );
 
 // Indexes for performance
@@ -144,9 +144,7 @@ volunteerRegistrationSchema.post("save", async function (doc) {
 volunteerRegistrationSchema.statics.getByProject = function (projectId: string, status?: string) {
   const query: any = { project: projectId };
   if (status) query.status = status;
-  return this.find(query)
-    .populate("volunteer", "name email avatar")
-    .sort({ createdAt: -1 });
+  return this.find(query).populate("volunteer", "name email avatar").sort({ createdAt: -1 });
 };
 
 volunteerRegistrationSchema.statics.getByUser = function (userId: string) {
@@ -157,5 +155,5 @@ volunteerRegistrationSchema.statics.getByUser = function (userId: string) {
 
 export const VolunteerRegistrationModel = model<IVolunteerRegistration>(
   "VolunteerRegistration",
-  volunteerRegistrationSchema
+  volunteerRegistrationSchema,
 );

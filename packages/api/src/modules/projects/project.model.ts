@@ -11,7 +11,7 @@ const bankInfoSchema = new Schema(
     iban: { type: String, required: true },
     accountHolderName: { type: String, required: true },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const donationSettingsSchema = new Schema(
@@ -21,7 +21,7 @@ const donationSettingsSchema = new Schema(
     allowAnonymous: { type: Boolean, default: true },
     showDonors: { type: Boolean, default: true },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const volunteerSettingsSchema = new Schema(
@@ -31,7 +31,7 @@ const volunteerSettingsSchema = new Schema(
     maxVolunteers: { type: Number },
     autoApprove: { type: Boolean, default: false },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const certificateSettingsSchema = new Schema(
@@ -40,7 +40,7 @@ const certificateSettingsSchema = new Schema(
     volunteerTemplate: { type: String },
     customMessage: { type: String },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const projectSchema = new Schema<IProject>(
@@ -80,7 +80,7 @@ const projectSchema = new Schema<IProject>(
     // Certificate Settings
     certificateSettings: { type: certificateSettingsSchema },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 projectSchema.pre("save", function (next) {

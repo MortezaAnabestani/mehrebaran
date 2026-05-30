@@ -1,6 +1,6 @@
 import { useRef, useMemo, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls, Html, MeshDistortMaterial, Float, Environment } from "@react-three/drei";
+import { OrbitControls, MeshDistortMaterial, Float, useTexture } from "@react-three/drei";
 import * as THREE from "three";
 import { STATS } from "./AboutUs_Constants";
 
@@ -51,62 +51,33 @@ const Rain = ({ count = 1000 }) => {
 
 // --- کامپوننت قطره آب مرکزی و محتوا ---
 const WaterDroplet = () => {
+  const envTexture = useTexture("/images/2.png");
+  envTexture.mapping = THREE.EquirectangularReflectionMapping;
+
   const [hovered, setHover] = useState(false);
 
   return (
     <Float speed={2} rotationIntensity={0.5} floatIntensity={0.5}>
       <mesh onPointerOver={() => setHover(true)} onPointerOut={() => setHover(false)}>
-        {/* هندسه قطره (کره) */}
         <sphereGeometry args={[1.7, 64, 64]} />
-
-        {/* متریال شیشه‌ای/آبی برای شبیه‌سازی آب */}
         <MeshDistortMaterial
           color="#8ecae6"
+          envMap={envTexture}
           envMapIntensity={1}
           clearcoat={1}
           clearcoatRoughness={0}
           metalness={0.1}
           roughness={0}
-          transmission={0.9} // شفافیت شیشه‌ای
-          thickness={2} // ضخامت شکست نور
-          distort={0.3} // اعوجاج برای طبیعی‌تر شدن قطره
+          transmission={0.9}
+          thickness={2}
+          distort={0.3}
           speed={4}
         />
-
-        {/* --- محتوای متنی روی قطره (چرخش با قطره) --- */}
-
-        {/* عنوان اصلی (روبرو) */}
-        <Html position={[0, 0.5, 2.5]} center transform sprite>
-          <div className="text-center pointer-events-none select-none w-64">
-            <h2 className="text-3xl font-bold text-white drop-shadow-md mb-2">کانون مهرباران</h2>
-            <p className="text-sm text-white/90 bg-black/20 p-2 rounded-lg backdrop-blur-sm">
-              برای دیدن آمار، قطره را بچرخانید
-            </p>
-          </div>
-        </Html>
-
-        {/* گزینه‌ها/آمار در اطراف قطره پخش شده‌اند */}
-        {STATS.map((stat, idx) => {
-          // محاسبه موقعیت دایره‌ای برای هر آیتم
-          const angle = (idx / STATS.length) * Math.PI * 2;
-          const radius = 2.6;
-          const x = Math.sin(angle) * radius;
-          const z = Math.cos(angle) * radius;
-
-          return (
-            <Html key={idx} position={[x, 0, z]} transform sprite>
-              <div className="bg-white/90 backdrop-blur-md p-4 rounded-xl shadow-xl border-2 border-blue-300 w-40 text-center transform transition-transform hover:scale-110 cursor-pointer">
-                <div className="text-3xl font-bold text-[#007acc] mb-1">{stat.value}</div>
-                <div className="text-xs font-bold text-gray-600">{stat.label}</div>
-              </div>
-            </Html>
-          );
-        })}
+        {/* بقیه Html ها... */}
       </mesh>
     </Float>
   );
 };
-
 const AboutSection = () => {
   return (
     <div>
@@ -116,9 +87,6 @@ const AboutSection = () => {
           <ambientLight intensity={0.5} />
           <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={1} />
           <pointLight position={[-10, -10, -10]} intensity={0.5} color="#007acc" />
-
-          {/* محیط برای بازتاب روی قطره */}
-          <Environment preset="night" />
 
           {/* افکت باران پس‌زمینه */}
           <Rain count={1500} />

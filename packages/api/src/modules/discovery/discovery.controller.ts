@@ -4,7 +4,7 @@ import ApiError from "../../core/utils/apiError";
 import { leaderboardService } from "./leaderboard.service";
 import { trendingService } from "./trending.service";
 import { recommendationsService } from "./recommendations.service";
-import type {
+import {
   LeaderboardCategory,
   LeaderboardPeriod,
   TrendingPeriod,

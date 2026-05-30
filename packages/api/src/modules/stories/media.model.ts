@@ -1,5 +1,5 @@
 import { Schema, model, Types } from "mongoose";
-import type { IMedia, MediaType, MediaCategory, IMediaMetadata } from "common-types";
+import { IMedia, MediaType, MediaCategory, IMediaMetadata } from "common-types";
 
 const mediaDimensionsSchema = new Schema(
   {

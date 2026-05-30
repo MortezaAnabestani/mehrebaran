@@ -1,5 +1,5 @@
 import { IUser, INeed } from "./";
-import { Types } from "mongoose";
+import { ObjectId } from "./object-id.type";
 
 // ==================== FOLLOW SYSTEM ====================
 
@@ -9,10 +9,10 @@ export type FollowType = "user" | "need";
 // Follow relationship
 export interface IFollow {
   _id: string;
-  follower: IUser | string | Types.ObjectId; // کسی که follow می‌کند
-  following: IUser | string | Types.ObjectId; // کسی که follow می‌شود
+  follower: IUser | string | ObjectId; // کسی که follow می‌کند
+  following: IUser | string | ObjectId; // کسی که follow می‌شود
   followType: FollowType;
-  followedNeed?: INeed | string | Types.ObjectId; // اگر need follow شده
+  followedNeed?: INeed | string | ObjectId; // اگر need follow شده
   createdAt: Date;
 }
 
@@ -37,8 +37,8 @@ export type MentionContext =
 // Mention
 export interface IMention {
   _id: string;
-  mentionedUser: IUser | string | Types.ObjectId;
-  mentionedBy: IUser | string | Types.ObjectId;
+  mentionedUser: IUser | string | ObjectId;
+  mentionedBy: IUser | string | ObjectId;
   context: MentionContext;
   contextId: string; // ID of comment, message, etc.
   relatedModel: string; // "Comment", "Message", "Need", etc.
@@ -56,7 +56,7 @@ export interface ITagUsage {
   tag: string; // e.g., "education", "health", "emergency"
   normalizedTag: string; // lowercase version for matching
   usageCount: number;
-  relatedNeeds: (INeed | string | Types.ObjectId)[];
+  relatedNeeds: (INeed | string | ObjectId)[];
   lastUsedAt: Date;
   createdAt: Date;
 }
@@ -78,8 +78,8 @@ export type SharePlatform =
 // Share log (analytics)
 export interface IShareLog {
   _id: string;
-  user?: IUser | string | Types.ObjectId; // Optional: anonymous shares allowed
-  sharedItem: INeed | string | Types.ObjectId;
+  user?: IUser | string | ObjectId; // Optional: anonymous shares allowed
+  sharedItem: INeed | string | ObjectId;
   sharedItemType: "need"; // Can be extended to other types
   platform: SharePlatform;
   ipAddress?: string;

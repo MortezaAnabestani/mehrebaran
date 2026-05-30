@@ -1,5 +1,5 @@
 import { Schema, model, Types } from "mongoose";
-import type { IUserStats } from "common-types";
+import { IUserStats } from "common-types";
 
 const userStatsSchema = new Schema<IUserStats>(
   {

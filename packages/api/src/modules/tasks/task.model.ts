@@ -32,7 +32,7 @@ const taskSchema = new Schema<ITodoTask>(
     completedAt: { type: Date },
     createdBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 // Index for efficient queries

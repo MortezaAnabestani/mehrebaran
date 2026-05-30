@@ -21,7 +21,7 @@ const geoLocationSchema = new Schema(
     country: { type: String, default: "ایران" },
     isLocationApproximate: { type: Boolean, default: false },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const attachmentSchema = new Schema(
@@ -42,7 +42,7 @@ const attachmentSchema = new Schema(
       type: Number,
     },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const needUpdateSchema = new Schema(
@@ -51,7 +51,7 @@ const needUpdateSchema = new Schema(
     description: { type: String, required: true },
     date: { type: Date, default: Date.now },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const milestoneSchema = new Schema(
@@ -69,7 +69,7 @@ const milestoneSchema = new Schema(
     order: { type: Number, required: true },
     evidence: [{ type: String }],
   },
-  { _id: true, timestamps: true }
+  { _id: true, timestamps: true },
 );
 
 const budgetItemSchema = new Schema(
@@ -89,7 +89,7 @@ const budgetItemSchema = new Schema(
     priority: { type: Number, default: 3, min: 1, max: 5 },
     notes: { type: String },
   },
-  { _id: true, timestamps: true }
+  { _id: true, timestamps: true },
 );
 
 const verificationEvidenceSchema = new Schema(
@@ -102,7 +102,7 @@ const verificationEvidenceSchema = new Schema(
     url: { type: String, required: true },
     description: { type: String },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const verificationRequestSchema = new Schema(
@@ -140,7 +140,7 @@ const verificationRequestSchema = new Schema(
     revisionRequested: { type: Boolean, default: false },
     revisionNotes: { type: String },
   },
-  { _id: true, timestamps: true }
+  { _id: true, timestamps: true },
 );
 
 const taskChecklistSchema = new Schema(
@@ -148,7 +148,7 @@ const taskChecklistSchema = new Schema(
     title: { type: String, required: true },
     completed: { type: Boolean, default: false },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const taskSchema = new Schema(
@@ -190,7 +190,7 @@ const taskSchema = new Schema(
     // Checklist
     checklist: [taskChecklistSchema],
   },
-  { _id: true, timestamps: true }
+  { _id: true, timestamps: true },
 );
 
 const contributionSchema = new Schema(
@@ -206,7 +206,7 @@ const contributionSchema = new Schema(
     date: { type: Date, default: Date.now },
     verifiedByAdmin: { type: Boolean, default: false },
   },
-  { _id: true, timestamps: true }
+  { _id: true, timestamps: true },
 );
 
 const supporterDetailSchema = new Schema(
@@ -240,21 +240,31 @@ const supporterDetailSchema = new Schema(
     // Notes
     notes: { type: String },
   },
-  { _id: true, timestamps: true }
+  { _id: true, timestamps: true },
 );
 
 const statusHistorySchema = new Schema(
   {
     status: {
       type: String,
-      enum: ["draft", "pending", "under_review", "approved", "in_progress", "completed", "rejected", "archived", "cancelled"],
+      enum: [
+        "draft",
+        "pending",
+        "under_review",
+        "approved",
+        "in_progress",
+        "completed",
+        "rejected",
+        "archived",
+        "cancelled",
+      ],
       required: true,
     },
     changedBy: { type: Types.ObjectId, ref: "User" },
     changedAt: { type: Date, default: Date.now },
     reason: { type: String },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const needSchema = new Schema<INeed>(
@@ -267,7 +277,17 @@ const needSchema = new Schema<INeed>(
     // Status
     status: {
       type: String,
-      enum: ["draft", "pending", "under_review", "approved", "in_progress", "completed", "rejected", "archived", "cancelled"],
+      enum: [
+        "draft",
+        "pending",
+        "under_review",
+        "approved",
+        "in_progress",
+        "completed",
+        "rejected",
+        "archived",
+        "cancelled",
+      ],
       default: "draft",
       index: true,
     },
@@ -324,7 +344,7 @@ const needSchema = new Schema<INeed>(
     timestamps: true,
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
-  }
+  },
 );
 
 needSchema.virtual("upvotesCount", {
@@ -494,10 +514,12 @@ needSchema.pre("save", function (next) {
 
   // Initialize statusHistory for new documents
   if (this.isNew && (!this.statusHistory || this.statusHistory.length === 0)) {
-    this.statusHistory = [{
-      status: this.status,
-      changedAt: new Date(),
-    } as any];
+    this.statusHistory = [
+      {
+        status: this.status,
+        changedAt: new Date(),
+      } as any,
+    ];
   }
 
   next();

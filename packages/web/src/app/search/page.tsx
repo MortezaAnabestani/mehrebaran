@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { globalSearch, SearchResult } from "@/services/search.service";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -38,6 +38,14 @@ const getResultTypeLabel = (type: SearchResult["type"]): string => {
 };
 
 export default function SearchPage() {
+  return (
+    <Suspense fallback={<div>باران که می‌بارد تو در راهی...</div>}>
+      <SearchContent />
+    </Suspense>
+  );
+}
+
+function SearchContent() {
   const searchParams = useSearchParams();
   const query = searchParams.get("query") || "";
   const [results, setResults] = useState<SearchResult[]>([]);
@@ -71,13 +79,9 @@ export default function SearchPage() {
       <div className="mb-8">
         <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-2">نتایج جستجو</h1>
         <p className="text-gray-600">
-          جستجو برای: <span className="font-bold text-blue-600">"{query}"</span>
+          جستجو برای: <span className="font-bold text-blue-600">{query}</span>
         </p>
-        {!loading && (
-          <p className="text-sm text-gray-500 mt-2">
-            {totalResults} نتیجه یافت شد
-          </p>
-        )}
+        {!loading && <p className="text-sm text-gray-500 mt-2">{totalResults} نتیجه یافت شد</p>}
       </div>
 
       {loading ? (
@@ -103,7 +107,7 @@ export default function SearchPage() {
                     <div className="flex-shrink-0">
                       <div className="w-24 h-24 md:w-32 md:h-32 rounded-lg overflow-hidden bg-gray-100">
                         <img
-                          src={`${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '')}/${result.coverImage.desktop || result.coverImage}`}
+                          src={`${process.env.NEXT_PUBLIC_API_URL?.replace("/api", "")}/${result.coverImage.desktop || result.coverImage}`}
                           alt={result.title}
                           className="w-full h-full object-cover"
                         />
@@ -124,7 +128,7 @@ export default function SearchPage() {
                     </h2>
                     {result.description && (
                       <p className="text-gray-600 line-clamp-2">
-                        {result.description.replace(/<[^>]*>/g, '').substring(0, 200)}...
+                        {result.description.replace(/<[^>]*>/g, "").substring(0, 200)}...
                       </p>
                     )}
                   </div>
@@ -137,9 +141,7 @@ export default function SearchPage() {
         <div className="text-center py-20">
           <div className="text-6xl mb-4">🔍</div>
           <h2 className="text-2xl font-bold text-gray-800 mb-2">نتیجه‌ای یافت نشد</h2>
-          <p className="text-gray-600 mb-6">
-            متأسفانه نتیجه‌ای برای عبارت "{query}" یافت نشد.
-          </p>
+          <p className="text-gray-600 mb-6">متأسفانه نتیجه‌ای برای عبارت {query} یافت نشد.</p>
           <p className="text-gray-500 text-sm">
             پیشنهاد می‌کنیم:
             <br />

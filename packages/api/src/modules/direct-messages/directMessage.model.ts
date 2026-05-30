@@ -13,7 +13,7 @@ const messageAttachmentSchema = new Schema(
     fileSize: { type: Number },
     mimeType: { type: String },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const readBySchema = new Schema(
@@ -21,7 +21,7 @@ const readBySchema = new Schema(
     user: { type: Types.ObjectId, ref: "User", required: true },
     readAt: { type: Date, default: Date.now },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const directMessageSchema = new Schema<IDirectMessage>(
@@ -37,7 +37,7 @@ const directMessageSchema = new Schema<IDirectMessage>(
     isDeleted: { type: Boolean, default: false },
     deletedAt: { type: Date },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 // Index for efficient querying

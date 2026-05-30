@@ -21,7 +21,7 @@ const pollSchema = new Schema<IPoll>(
     timestamps: true,
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
-  }
+  },
 );
 
 export const PollModel = model<IPoll>("Poll", pollSchema);

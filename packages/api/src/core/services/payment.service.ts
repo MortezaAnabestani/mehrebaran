@@ -1,6 +1,5 @@
 import axios from "axios";
 import config from "../config";
-import ApiError from "../utils/apiError";
 
 /**
  * Zarinpal Payment Gateway Integration
@@ -98,7 +97,7 @@ class PaymentService {
             "Content-Type": "application/json",
             Accept: "application/json",
           },
-        }
+        },
       );
 
       const result = response.data;
@@ -145,7 +144,7 @@ class PaymentService {
             "Content-Type": "application/json",
             Accept: "application/json",
           },
-        }
+        },
       );
 
       const result = response.data;
@@ -218,7 +217,7 @@ class PaymentService {
     amount: number, // In Toman
     projectTitle: string,
     donorMobile?: string,
-    donorEmail?: string
+    donorEmail?: string,
   ): Promise<PaymentRequestResponse> {
     const amountInRials = this.tomanToRial(amount);
     const callbackUrl = `${config.frontendUrl}/donations/${donationId}/verify`;
@@ -239,7 +238,7 @@ class PaymentService {
    */
   async verifyDonationPayment(
     authority: string,
-    amount: number // In Toman
+    amount: number, // In Toman
   ): Promise<PaymentVerificationResponse> {
     const amountInRials = this.tomanToRial(amount);
 

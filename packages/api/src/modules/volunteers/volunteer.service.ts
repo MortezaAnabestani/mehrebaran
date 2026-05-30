@@ -7,7 +7,16 @@ import { certificateService } from "../../core/services/certificate.service";
 class VolunteerService {
   // Register as volunteer
   async register(data: IRegisterVolunteerDTO, userId: string): Promise<IVolunteerRegistration> {
-    const { projectId, skills, availableHours, preferredRole, experience, motivation, availability, emergencyContact } = data;
+    const {
+      projectId,
+      skills,
+      availableHours,
+      preferredRole,
+      experience,
+      motivation,
+      availability,
+      emergencyContact,
+    } = data;
 
     // Verify project exists
     const project = await ProjectModel.findById(projectId);
@@ -62,7 +71,9 @@ class VolunteerService {
   }
 
   // Get all volunteer registrations with pagination
-  async findAll(filters?: any): Promise<{ volunteers: IVolunteerRegistration[]; total: number; page: number; totalPages: number }> {
+  async findAll(
+    filters?: any,
+  ): Promise<{ volunteers: IVolunteerRegistration[]; total: number; page: number; totalPages: number }> {
     const page = parseInt(filters?.page) || 1;
     const limit = parseInt(filters?.limit) || 10;
     const skip = (page - 1) * limit;
@@ -131,7 +142,11 @@ class VolunteerService {
   }
 
   // Admin: Update volunteer registration
-  async update(id: string, data: IUpdateVolunteerDTO, adminId?: string): Promise<IVolunteerRegistration | null> {
+  async update(
+    id: string,
+    data: IUpdateVolunteerDTO,
+    adminId?: string,
+  ): Promise<IVolunteerRegistration | null> {
     const registration = await VolunteerRegistrationModel.findById(id);
     if (!registration) {
       throw new ApiError(404, "ثبت‌نام داوطلب یافت نشد.");
@@ -171,7 +186,7 @@ class VolunteerService {
         if (project) {
           const certificateUrl = await certificateService.generateVolunteerCertificate(
             registration as any,
-            project as any
+            project as any,
           );
           registration.certificateUrl = certificateUrl;
           await registration.save();
@@ -193,7 +208,7 @@ class VolunteerService {
         status: "approved",
         reviewNotes: notes,
       },
-      adminId
+      adminId,
     );
   }
 
@@ -205,7 +220,7 @@ class VolunteerService {
         status: "rejected",
         rejectionReason: reason,
       },
-      adminId
+      adminId,
     );
   }
 

@@ -1,5 +1,5 @@
 import { NotificationPreferencesModel } from "./notificationPreferences.model";
-import type { INotificationPreferences, NotificationType, NotificationChannel } from "common-types";
+import { INotificationPreferences, NotificationType, NotificationChannel } from "common-types";
 
 class NotificationPreferencesService {
   private NotificationPreferencesModel: typeof NotificationPreferencesModel;

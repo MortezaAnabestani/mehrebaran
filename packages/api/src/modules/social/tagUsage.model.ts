@@ -9,7 +9,7 @@ const tagUsageSchema = new Schema<ITagUsage>(
     relatedNeeds: [{ type: Types.ObjectId, ref: "Need" }],
     lastUsedAt: { type: Date, default: Date.now },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 // Index for searching and sorting

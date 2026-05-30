@@ -1,5 +1,5 @@
-import { Types } from "mongoose";
 import { IUser, INeed, IResponsiveImage } from "./";
+import { ObjectId } from "./object-id.type";
 
 export enum SubmissionStatus {
   PENDING = "pending",
@@ -11,8 +11,8 @@ export type SubmissionStatusType = "pending" | "approved" | "rejected";
 
 export interface ISupporterSubmission {
   _id: string;
-  submitter: IUser | Types.ObjectId | string;
-  need: INeed | Types.ObjectId | string;
+  submitter: IUser | ObjectId | string;
+  need: INeed | ObjectId | string;
   image: IResponsiveImage;
   caption?: string;
   status: SubmissionStatusType;

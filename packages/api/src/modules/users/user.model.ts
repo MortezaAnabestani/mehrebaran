@@ -29,7 +29,7 @@ const userSchema = new Schema<IUser, UserModelType, IUserMethods>(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 userSchema.pre("save", async function (next) {

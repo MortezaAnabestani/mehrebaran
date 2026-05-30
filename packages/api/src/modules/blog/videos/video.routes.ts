@@ -16,7 +16,7 @@ router.post(
   restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
   uploadService.uploadSingleImage("coverImage", "articles"),
   uploadService.resizeAndProcessImages,
-  videoController.create
+  videoController.create,
 );
 router.patch(
   "/:id",
@@ -24,7 +24,7 @@ router.patch(
   restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
   uploadService.uploadSingleImage("coverImage", "articles"),
   uploadService.resizeAndProcessImages,
-  videoController.update
+  videoController.update,
 );
 router.delete("/:id", protect, restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN), videoController.delete);
 

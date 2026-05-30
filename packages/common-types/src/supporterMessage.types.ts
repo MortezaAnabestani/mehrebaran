@@ -1,13 +1,13 @@
 import { IUser, INeed } from "./";
-import { Types } from "mongoose";
+import { ObjectId } from "./object-id.type";
 
 export interface ISupporterMessage {
   _id: string;
   content: string;
-  author: IUser | string | Types.ObjectId;
-  need: INeed | string | Types.ObjectId;
-  parentMessage?: ISupporterMessage | string | Types.ObjectId;
-  likes: (IUser | string | Types.ObjectId)[];
+  author: IUser | string | ObjectId;
+  need: INeed | string | ObjectId;
+  parentMessage?: ISupporterMessage | string | ObjectId;
+  likes: (IUser | string | ObjectId)[];
   createdAt: Date;
   updatedAt: Date;
 }

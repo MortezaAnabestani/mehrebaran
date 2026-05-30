@@ -1,5 +1,5 @@
 import { Schema, model, Types } from "mongoose";
-import type { IStory, StoryPrivacy, StoryType, IStoryMedia, IStoryView, IStoryReaction } from "common-types";
+import { IStory, StoryPrivacy, StoryType, IStoryMedia, IStoryView, IStoryReaction } from "common-types";
 
 const storyMediaSchema = new Schema<IStoryMedia>(
   {

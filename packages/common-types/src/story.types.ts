@@ -1,6 +1,6 @@
-import { Types } from "mongoose";
 import { IUser } from "./user.types";
 import { INeed } from "./need.types";
+import { ObjectId } from "./object-id.type";
 
 // ============= Media Types =============
 
@@ -55,7 +55,7 @@ export interface IMedia {
   _id: string;
 
   // Owner
-  uploadedBy: IUser | string | Types.ObjectId;
+  uploadedBy: IUser | string | ObjectId;
 
   // File info
   type: MediaType;
@@ -106,13 +106,13 @@ export interface IStoryMedia {
 }
 
 export interface IStoryView {
-  user: IUser | string | Types.ObjectId;
+  user: IUser | string | ObjectId;
   viewedAt: Date;
   viewDuration?: number; // چند ثانیه استوری را دید
 }
 
 export interface IStoryReaction {
-  user: IUser | string | Types.ObjectId;
+  user: IUser | string | ObjectId;
   emoji: string; // 😍, 👍, 😂, etc.
   reactedAt: Date;
 }
@@ -121,7 +121,7 @@ export interface IStory {
   _id: string;
 
   // Owner
-  user: IUser | string | Types.ObjectId;
+  user: IUser | string | ObjectId;
 
   // Content
   type: StoryType;
@@ -139,7 +139,7 @@ export interface IStory {
   allowedUsers?: string[]; // برای custom privacy
 
   // Linked content
-  linkedNeed?: INeed | string | Types.ObjectId;
+  linkedNeed?: INeed | string | ObjectId;
   linkedUrl?: string;
 
   // Interactions
@@ -168,10 +168,10 @@ export interface IStory {
 
 export interface IStoryHighlight {
   _id: string;
-  user: IUser | string | Types.ObjectId;
+  user: IUser | string | ObjectId;
   title: string;
   coverImage: string;
-  stories: (IStory | string | Types.ObjectId)[];
+  stories: (IStory | string | ObjectId)[];
   order: number;
   isActive: boolean;
   createdAt: Date;
@@ -182,10 +182,10 @@ export interface IStoryHighlight {
 
 export interface IMediaGallery {
   _id: string;
-  owner: IUser | string | Types.ObjectId;
+  owner: IUser | string | ObjectId;
   title: string;
   description?: string;
-  media: (IMedia | string | Types.ObjectId)[];
+  media: (IMedia | string | ObjectId)[];
   coverImage?: string;
   isPublic: boolean;
   category?: string;
@@ -199,7 +199,7 @@ export interface IMediaGallery {
 
 export interface IMediaProcessingJob {
   _id: string;
-  media: IMedia | string | Types.ObjectId;
+  media: IMedia | string | ObjectId;
   type: "thumbnail" | "compress" | "convert" | "resize";
   status: "pending" | "processing" | "completed" | "failed";
   progress: number; // 0-100

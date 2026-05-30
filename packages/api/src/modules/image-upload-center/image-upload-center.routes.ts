@@ -14,7 +14,7 @@ router.post(
   restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
   uploadService.uploadSingleImage("imageUrl", "general"),
   uploadService.resizeAndProcessImages,
-  imageUploadCenterController.createImage
+  imageUploadCenterController.createImage,
 );
 
 router.get("/", imageUploadCenterController.getAllImages);
@@ -24,7 +24,7 @@ router.get("/:id", imageUploadCenterController.getImageById);
 router.delete(
   "/:id",
   restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
-  imageUploadCenterController.deleteImage
+  imageUploadCenterController.deleteImage,
 );
 
 export default router;

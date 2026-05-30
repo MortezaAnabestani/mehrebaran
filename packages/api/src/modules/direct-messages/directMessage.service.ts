@@ -11,7 +11,7 @@ class DirectMessageService {
     createdBy: string,
     participants: string[],
     type: ConversationType = "one_to_one",
-    title?: string
+    title?: string,
   ): Promise<IConversation> {
     // Ensure creator is in participants
     const allParticipants = Array.from(new Set([createdBy, ...participants]));
@@ -68,7 +68,7 @@ class DirectMessageService {
           ...conv.toObject(),
           unreadCount,
         };
-      })
+      }),
     );
 
     return conversationsWithUnread;
@@ -80,7 +80,7 @@ class DirectMessageService {
     senderId: string,
     content: string,
     attachments?: any[],
-    replyTo?: string
+    replyTo?: string,
   ): Promise<IDirectMessage> {
     // Verify sender is participant
     const conversation = await ConversationModel.findById(conversationId);
@@ -111,7 +111,7 @@ class DirectMessageService {
     conversationId: string,
     userId: string,
     limit: number = 50,
-    skip: number = 0
+    skip: number = 0,
   ): Promise<IDirectMessage[]> {
     // Verify user is participant
     const conversation = await ConversationModel.findById(conversationId);
@@ -163,12 +163,16 @@ class DirectMessageService {
             readAt: new Date(),
           },
         },
-      }
+      },
     );
   }
 
   // Edit message
-  public async editMessage(messageId: string, userId: string, newContent: string): Promise<IDirectMessage | null> {
+  public async editMessage(
+    messageId: string,
+    userId: string,
+    newContent: string,
+  ): Promise<IDirectMessage | null> {
     const message = await DirectMessageModel.findById(messageId);
     if (!message) {
       throw new ApiError(404, "پیام یافت نشد.");

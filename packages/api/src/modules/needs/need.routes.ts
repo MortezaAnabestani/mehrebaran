@@ -17,7 +17,7 @@ router.post(
   protectOptional,
   uploadService.uploadMultipleImages("attachments", 20, "needs"),
   uploadService.resizeAndProcessMultipleImages,
-  needController.create
+  needController.create,
 );
 router.get("/", needController.getAll);
 
@@ -36,7 +36,12 @@ router.post("/:id/view", needController.incrementView);
 
 // Supporter Details
 router.get("/:id/supporters/details", needController.getSupporterDetails);
-router.patch("/:id/supporters/:userId", protect, restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN), needController.updateSupporterDetail);
+router.patch(
+  "/:id/supporters/:userId",
+  protect,
+  restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
+  needController.updateSupporterDetail,
+);
 router.post("/:id/supporters/:userId/contributions", protect, needController.addContribution);
 router.delete("/:id/supporters/:userId", protect, needController.removeSupporterDetail);
 
@@ -63,7 +68,12 @@ router.post("/:id/budget/:budgetItemId/add-funds", protect, needController.addFu
 // Verification Requests
 router.get("/:id/verifications", needController.getVerificationRequests);
 router.post("/:id/verifications", protect, needController.createVerificationRequest);
-router.patch("/:id/verifications/:verificationId/review", protect, restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN), needController.reviewVerificationRequest);
+router.patch(
+  "/:id/verifications/:verificationId/review",
+  protect,
+  restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
+  needController.reviewVerificationRequest,
+);
 router.delete("/:id/verifications/:verificationId", protect, needController.deleteVerificationRequest);
 
 // Task Management
@@ -85,7 +95,7 @@ router.get(
   "/admin/all",
   protect,
   restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
-  needController.getAllForAdmin
+  needController.getAllForAdmin,
 );
 router.patch(
   "/:id",
@@ -93,7 +103,7 @@ router.patch(
   restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
   uploadService.uploadMultipleImages("attachments", 20, "needs"),
   uploadService.resizeAndProcessMultipleImages,
-  needController.update
+  needController.update,
 );
 router.delete("/:id", protect, restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN), needController.delete);
 

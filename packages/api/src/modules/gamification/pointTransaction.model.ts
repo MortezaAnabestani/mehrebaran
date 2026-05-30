@@ -37,7 +37,7 @@ const pointTransactionSchema = new Schema<IPointTransaction>(
     relatedId: { type: String },
     metadata: { type: Schema.Types.Mixed },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 // Indexes for efficient querying

@@ -429,18 +429,13 @@ class CertificateService {
   /**
    * Generate donation certificate
    */
-  async generateDonationCertificate(
-    donation: IDonation,
-    project: IProject
-  ): Promise<string> {
+  async generateDonationCertificate(donation: IDonation, project: IProject): Promise<string> {
     try {
       await this.ensureOutputDir();
 
       // Prepare certificate data
       const donorName =
-        (donation.donor as any)?.profile?.fullName ||
-        donation.donorInfo?.fullName ||
-        "حامی گرامی";
+        (donation.donor as any)?.profile?.fullName || donation.donorInfo?.fullName || "حامی گرامی";
 
       const certificateData: CertificateData = {
         recipientName: donorName,
@@ -454,7 +449,7 @@ class CertificateService {
       // Generate HTML
       const html = this.generateDonationCertificateHTML(
         certificateData,
-        project.certificateSettings?.donationTemplate
+        project.certificateSettings?.donationTemplate,
       );
 
       // Generate filename
@@ -475,10 +470,7 @@ class CertificateService {
   /**
    * Generate volunteer certificate
    */
-  async generateVolunteerCertificate(
-    volunteer: IVolunteerRegistration,
-    project: IProject
-  ): Promise<string> {
+  async generateVolunteerCertificate(volunteer: IVolunteerRegistration, project: IProject): Promise<string> {
     try {
       await this.ensureOutputDir();
 
@@ -497,7 +489,7 @@ class CertificateService {
       // Generate HTML
       const html = this.generateVolunteerCertificateHTML(
         certificateData,
-        project.certificateSettings?.volunteerTemplate
+        project.certificateSettings?.volunteerTemplate,
       );
 
       // Generate filename

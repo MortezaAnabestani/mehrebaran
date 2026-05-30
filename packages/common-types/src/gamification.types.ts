@@ -1,36 +1,36 @@
 import { IUser, INeed } from "./";
-import { Types } from "mongoose";
+import { ObjectId } from "./object-id.type";
 
 // ==================== POINTS SYSTEM ====================
 
 // Point action types
 export type PointAction =
-  | "need_created"           // +100: ایجاد نیاز
-  | "need_upvote"            // +5: رأی به نیاز
-  | "need_support"           // +50: حمایت از نیاز
+  | "need_created" // +100: ایجاد نیاز
+  | "need_upvote" // +5: رأی به نیاز
+  | "need_support" // +50: حمایت از نیاز
   | "supporter_contribution" // +variable: کمک مالی/زمانی
-  | "task_completed"         // +30: تکمیل تسک
-  | "task_assigned"          // +10: واگذاری تسک
-  | "milestone_completed"    // +100: تکمیل مایلستون
-  | "verification_approved"  // +50: تایید verification
-  | "comment_posted"         // +5: کامنت
-  | "message_sent"           // +2: پیام
-  | "team_created"           // +75: ایجاد تیم
-  | "team_joined"            // +25: پیوستن به تیم
-  | "need_completed"         // +500: تکمیل نیاز
-  | "daily_login"            // +10: ورود روزانه
-  | "profile_completed"      // +50: تکمیل پروفایل
-  | "first_contribution"     // +100: اولین کمک
-  | "invite_accepted"        // +30: دعوت پذیرفته شده
-  | "badge_earned"           // +variable: دریافت badge
-  | "level_up"               // +variable: ارتقای سطح
-  | "admin_bonus"            // +variable: جایزه ادمین
-  | "penalty";               // -variable: جریمه
+  | "task_completed" // +30: تکمیل تسک
+  | "task_assigned" // +10: واگذاری تسک
+  | "milestone_completed" // +100: تکمیل مایلستون
+  | "verification_approved" // +50: تایید verification
+  | "comment_posted" // +5: کامنت
+  | "message_sent" // +2: پیام
+  | "team_created" // +75: ایجاد تیم
+  | "team_joined" // +25: پیوستن به تیم
+  | "need_completed" // +500: تکمیل نیاز
+  | "daily_login" // +10: ورود روزانه
+  | "profile_completed" // +50: تکمیل پروفایل
+  | "first_contribution" // +100: اولین کمک
+  | "invite_accepted" // +30: دعوت پذیرفته شده
+  | "badge_earned" // +variable: دریافت badge
+  | "level_up" // +variable: ارتقای سطح
+  | "admin_bonus" // +variable: جایزه ادمین
+  | "penalty"; // -variable: جریمه
 
 // Point transaction
 export interface IPointTransaction {
   _id: string;
-  user: IUser | string | Types.ObjectId;
+  user: IUser | string | ObjectId;
   action: PointAction;
   points: number; // می‌تواند مثبت یا منفی باشد
   description?: string;
@@ -53,16 +53,16 @@ export interface IUserPointSummary {
 
 // Badge category
 export type BadgeCategory =
-  | "contributor"    // مشارکت‌کننده
-  | "supporter"      // حامی
-  | "creator"        // سازنده
-  | "helper"         // یاور
-  | "communicator"   // ارتباط‌گر
-  | "leader"         // رهبر
-  | "expert"         // متخصص
-  | "milestone"      // نقطه عطف
-  | "special"        // ویژه
-  | "seasonal";      // فصلی
+  | "contributor" // مشارکت‌کننده
+  | "supporter" // حامی
+  | "creator" // سازنده
+  | "helper" // یاور
+  | "communicator" // ارتباط‌گر
+  | "leader" // رهبر
+  | "expert" // متخصص
+  | "milestone" // نقطه عطف
+  | "special" // ویژه
+  | "seasonal"; // فصلی
 
 // Badge rarity
 export type BadgeRarity = "common" | "rare" | "epic" | "legendary";
@@ -97,8 +97,8 @@ export interface IBadge {
 // User badge (earned)
 export interface IUserBadge {
   _id: string;
-  user: IUser | string | Types.ObjectId;
-  badge: IBadge | string | Types.ObjectId;
+  user: IUser | string | ObjectId;
+  badge: IBadge | string | ObjectId;
   earnedAt: Date;
   progress?: number; // برای badge های در حال پیشرفت
   metadata?: Record<string, any>;

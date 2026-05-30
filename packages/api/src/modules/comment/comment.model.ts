@@ -7,7 +7,7 @@ const commentSchema = new Schema<IComment>(
     author: { type: Schema.Types.ObjectId, ref: "User" },
     guestName: { type: String },
     guestEmail: { type: String },
-    post: { type: Schema.Types.ObjectId, required: true, refPath: "postType" },
+    post: { type: Schema.Types.ObjectId as any, required: true, refPath: "postType" },
     postType: { type: String, required: true, enum: ["News", "Article", "Project"] },
     parent: { type: Schema.Types.ObjectId, ref: "Comment" },
     status: {
@@ -16,7 +16,7 @@ const commentSchema = new Schema<IComment>(
       default: CommentStatus.PENDING,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 commentSchema.index({ post: 1, author: 1, content: 1 }, { unique: true });

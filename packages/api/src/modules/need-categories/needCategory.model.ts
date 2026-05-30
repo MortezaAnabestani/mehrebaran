@@ -8,7 +8,7 @@ const needCategorySchema = new Schema<INeedCategory>(
     slug: { type: String, unique: true, index: true },
     description: { type: String },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 needCategorySchema.pre("save", function (next) {

@@ -1,5 +1,5 @@
 import { IUser, INeed } from "./";
-import { Types } from "mongoose";
+import { ObjectId } from "./object-id.type";
 
 // Message read status
 export type MessageReadStatus = "sent" | "delivered" | "read";
@@ -7,15 +7,15 @@ export type MessageReadStatus = "sent" | "delivered" | "read";
 // Direct message between supporters
 export interface IDirectMessage {
   _id: string;
-  conversation: IConversation | string | Types.ObjectId;
-  sender: IUser | string | Types.ObjectId;
+  conversation: IConversation | string | ObjectId;
+  sender: IUser | string | ObjectId;
   content: string;
   readBy: Array<{
-    user: IUser | string | Types.ObjectId;
+    user: IUser | string | ObjectId;
     readAt: Date;
   }>;
   attachments?: IMessageAttachment[];
-  replyTo?: IDirectMessage | string | Types.ObjectId;
+  replyTo?: IDirectMessage | string | ObjectId;
   isEdited?: boolean;
   editedAt?: Date;
   isDeleted?: boolean;
@@ -36,16 +36,16 @@ export interface IMessageAttachment {
 // Conversation between supporters in a need context
 export interface IConversation {
   _id: string;
-  need: INeed | string | Types.ObjectId;
-  participants: (IUser | string | Types.ObjectId)[];
+  need: INeed | string | ObjectId;
+  participants: (IUser | string | ObjectId)[];
   type: ConversationType;
   title?: string; // For group conversations
-  lastMessage?: IDirectMessage | string | Types.ObjectId;
+  lastMessage?: IDirectMessage | string | ObjectId;
   lastMessageAt?: Date;
   unreadCount?: number;
-  createdBy: IUser | string | Types.ObjectId;
+  createdBy: IUser | string | ObjectId;
   isArchived?: boolean;
-  archivedBy?: (IUser | string | Types.ObjectId)[];
+  archivedBy?: (IUser | string | ObjectId)[];
   createdAt: Date;
   updatedAt: Date;
 }

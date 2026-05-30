@@ -13,7 +13,7 @@ class UserService {
   public async updateUser(id: string, updates: Partial<IUser>): Promise<IUser | null> {
     // اگر پسورد وجود داشت، هش کن
     if (updates.password) {
-      const bcrypt = require('bcryptjs');
+      const bcrypt = require("bcryptjs");
       updates.password = await bcrypt.hash(updates.password, 12);
     }
 

@@ -17,7 +17,7 @@ const teamMemberSchema = new Schema(
     leftAt: { type: Date },
     leaveReason: { type: String },
   },
-  { _id: false, timestamps: false }
+  { _id: false, timestamps: false },
 );
 
 const teamSchema = new Schema<ITeam>(
@@ -50,7 +50,7 @@ const teamSchema = new Schema<ITeam>(
     createdBy: { type: Types.ObjectId, ref: "User", required: true },
     isPrivate: { type: Boolean, default: false },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 // Indexes for efficient querying

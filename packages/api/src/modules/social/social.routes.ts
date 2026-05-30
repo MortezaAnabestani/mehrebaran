@@ -54,13 +54,13 @@ router.get(
   "/admin/follow/stats",
   protect,
   restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
-  socialController.getNetworkFollowStats
+  socialController.getNetworkFollowStats,
 );
 router.get(
   "/admin/follows",
   protect,
   restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
-  socialController.getAllFollows
+  socialController.getAllFollows,
 );
 
 // Mention statistics and management (admin only)
@@ -68,13 +68,13 @@ router.get(
   "/admin/mention/stats",
   protect,
   restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
-  socialController.getNetworkMentionStats
+  socialController.getNetworkMentionStats,
 );
 router.get(
   "/admin/mentions",
   protect,
   restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
-  socialController.getAllMentions
+  socialController.getAllMentions,
 );
 
 // Share statistics and management (admin only)
@@ -82,13 +82,13 @@ router.get(
   "/admin/share/stats",
   protect,
   restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
-  socialController.getNetworkShareStats
+  socialController.getNetworkShareStats,
 );
 router.get(
   "/admin/shares",
   protect,
   restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
-  socialController.getAllShares
+  socialController.getAllShares,
 );
 
 export default router;

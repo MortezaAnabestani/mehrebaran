@@ -12,13 +12,13 @@ router.patch(
   "/:id",
   protect,
   restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
-  needCategoryController.update
+  needCategoryController.update,
 );
 router.delete(
   "/:id",
   protect,
   restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
-  needCategoryController.delete
+  needCategoryController.delete,
 );
 
 export default router;

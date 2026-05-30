@@ -14,14 +14,14 @@ router.get(
   "/admin",
   protect,
   restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
-  supporterSubmissionController.getAllForAdmin
+  supporterSubmissionController.getAllForAdmin,
 );
 
 router.patch(
   "/:submissionId/status",
   protect,
   restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
-  supporterSubmissionController.updateStatus
+  supporterSubmissionController.updateStatus,
 );
 
 export default router;

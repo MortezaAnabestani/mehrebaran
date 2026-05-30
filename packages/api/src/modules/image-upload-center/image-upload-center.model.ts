@@ -20,10 +20,10 @@ const imageUploadCenterSchema = new Schema<IImageUploadCenter, ImageUploadCenter
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 export const ImageUploadCenterModel = model<IImageUploadCenter, ImageUploadCenterModelType>(
   "ImageUploadCenter",
-  imageUploadCenterSchema
+  imageUploadCenterSchema,
 );

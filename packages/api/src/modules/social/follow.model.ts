@@ -12,20 +12,20 @@ const followSchema = new Schema<IFollow>(
     },
     followedNeed: { type: Types.ObjectId, ref: "Need", index: true },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 // ======================= تغییرات اصلی در این بخش است =======================
 // ایندکس ترکیبی برای دنبال کردن کاربر، فقط زمانی که فیلد `following` وجود دارد
 followSchema.index(
   { follower: 1, following: 1 },
-  { unique: true, partialFilterExpression: { following: { $exists: true } } }
+  { unique: true, partialFilterExpression: { following: { $exists: true } } },
 );
 
 // ایندکس ترکیبی برای دنبال کردن نیاز، فقط زمانی که فیلد `followedNeed` وجود دارد
 followSchema.index(
   { follower: 1, followedNeed: 1 },
-  { unique: true, partialFilterExpression: { followedNeed: { $exists: true } } }
+  { unique: true, partialFilterExpression: { followedNeed: { $exists: true } } },
 );
 // ========================================================================
 

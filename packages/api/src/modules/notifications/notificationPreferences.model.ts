@@ -1,5 +1,5 @@
 import { Schema, model, Types } from "mongoose";
-import type {
+import {
   INotificationPreferences,
   INotificationChannelPreference,
   NotificationType,

@@ -1,7 +1,7 @@
 import { StoryModel } from "./story.model";
 import { StoryHighlightModel } from "./storyHighlight.model";
 import { MediaModel } from "./media.model";
-import type {
+import {
   IStory,
   StoryType,
   StoryPrivacy,

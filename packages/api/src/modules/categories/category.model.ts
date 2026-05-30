@@ -7,7 +7,7 @@ const categorySchema = new Schema<ICategory>(
     slug: { type: String, required: true, unique: true },
     description: { type: String },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 export const CategoryModel = model<ICategory>("Category", categorySchema);

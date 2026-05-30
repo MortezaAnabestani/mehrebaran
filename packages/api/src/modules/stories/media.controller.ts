@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import asyncHandler from "../../core/utils/asyncHandler";
 import ApiError from "../../core/utils/apiError";
 import { mediaService } from "./media.service";
-import type { MediaCategory } from "common-types";
+import { MediaCategory } from "common-types";
 
 class MediaController {
   /**

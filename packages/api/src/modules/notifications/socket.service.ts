@@ -1,6 +1,6 @@
 // import { Server as SocketIOServer, Socket } from "socket.io";
 import { Server as HTTPServer } from "http";
-import type { IRealTimeEvent, ISocketUser, ITypingIndicator } from "common-types";
+import { IRealTimeEvent, ISocketUser, ITypingIndicator } from "common-types";
 
 type Socket = any;
 type SocketIOServer = any;

@@ -9,7 +9,7 @@ const userBadgeSchema = new Schema<IUserBadge>(
     progress: { type: Number, min: 0, max: 100 },
     metadata: { type: Schema.Types.Mixed },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 // Compound index to prevent duplicate badges

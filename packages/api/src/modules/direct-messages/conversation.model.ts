@@ -17,7 +17,7 @@ const conversationSchema = new Schema<IConversation>(
     isArchived: { type: Boolean, default: false },
     archivedBy: [{ type: Types.ObjectId, ref: "User" }],
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 // Index for efficient querying

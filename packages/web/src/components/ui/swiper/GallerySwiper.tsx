@@ -27,7 +27,7 @@ const GallerySwiper: React.FC<GallerySwiperProps> = ({ images }) => {
             "--swiper-pagination-color": "#fff",
           } as React.CSSProperties
         }
-        loop={true}
+        loop={images.length > 4}
         spaceBetween={10}
         navigation={true}
         thumbs={{ swiper: thumbsSwiper }}
@@ -35,11 +35,11 @@ const GallerySwiper: React.FC<GallerySwiperProps> = ({ images }) => {
         className="mySwiper2"
       >
         {images.map((image, index) => (
-          <SwiperSlide key={index} className="mb-2">
+          <SwiperSlide key={image} className="mb-2">
             <div className="relative w-full h-[200px] md:h-[420px]">
               <OptimizedImage
                 src={image}
-                alt="عکس گالری"
+                alt={`عکس گالری ${index + 1}`}
                 fill
                 className="object-cover"
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -51,7 +51,7 @@ const GallerySwiper: React.FC<GallerySwiperProps> = ({ images }) => {
 
       <Swiper
         onSwiper={setThumbsSwiper}
-        loop={true}
+        loop={images.length > 4}
         spaceBetween={10}
         slidesPerView={4}
         freeMode={true}
@@ -60,11 +60,11 @@ const GallerySwiper: React.FC<GallerySwiperProps> = ({ images }) => {
         className="mySwiper"
       >
         {images.map((image, index) => (
-          <SwiperSlide key={index}>
+          <SwiperSlide key={image}>
             <div className="relative w-full h-[60px] md:h-[80px] cursor-pointer">
               <OptimizedImage
                 src={image}
-                alt="عکس گالری"
+                alt={`تصویر کوچک ${index + 1}`}
                 fill
                 className="object-cover"
                 sizes="(max-width: 768px) 25vw, 150px"

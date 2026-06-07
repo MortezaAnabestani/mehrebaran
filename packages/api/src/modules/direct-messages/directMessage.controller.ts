@@ -1,12 +1,9 @@
 import { Request, Response } from "express";
 import { directMessageService } from "./directMessage.service";
-import {
-  createConversationSchema,
-  sendMessageSchema,
-  editMessageSchema,
-} from "./directMessage.validation";
+import { createConversationSchema, sendMessageSchema, editMessageSchema } from "./directMessage.validation";
 import asyncHandler from "../../core/utils/asyncHandler";
 import ApiError from "../../core/utils/apiError";
+import { getParam } from "../../core/utils/getParam";
 
 class DirectMessageController {
   // Create or get conversation
@@ -21,7 +18,7 @@ class DirectMessageController {
       createdBy,
       participants,
       type,
-      title
+      title,
     );
 
     res.status(201).json({
@@ -35,7 +32,7 @@ class DirectMessageController {
     const { needId } = req.params;
     const userId = req.user!._id.toString();
 
-    const conversations = await directMessageService.getUserConversations(needId, userId);
+    const conversations = await directMessageService.getUserConversations(getParam(needId), userId);
 
     res.status(200).json({
       results: conversations.length,
@@ -50,7 +47,13 @@ class DirectMessageController {
     const { content, attachments, replyTo } = validatedData.body;
     const senderId = req.user!._id.toString();
 
-    const message = await directMessageService.sendMessage(conversationId, senderId, content, attachments, replyTo);
+    const message = await directMessageService.sendMessage(
+      conversationId,
+      senderId,
+      content,
+      attachments,
+      replyTo,
+    );
 
     res.status(201).json({
       message: "پیام با موفقیت ارسال شد.",
@@ -65,7 +68,7 @@ class DirectMessageController {
     const limit = req.query.limit ? parseInt(req.query.limit as string) : 50;
     const skip = req.query.skip ? parseInt(req.query.skip as string) : 0;
 
-    const messages = await directMessageService.getMessages(conversationId, userId, limit, skip);
+    const messages = await directMessageService.getMessages(getParam(conversationId), userId, limit, skip);
 
     res.status(200).json({
       results: messages.length,
@@ -78,7 +81,7 @@ class DirectMessageController {
     const { conversationId } = req.params;
     const userId = req.user!._id.toString();
 
-    await directMessageService.markAsRead(conversationId, userId);
+    await directMessageService.markAsRead(getParam(conversationId), userId);
 
     res.status(200).json({
       message: "پیام‌ها به عنوان خوانده شده علامت‌گذاری شدند.",
@@ -105,7 +108,7 @@ class DirectMessageController {
     const { messageId } = req.params;
     const userId = req.user!._id.toString();
 
-    const message = await directMessageService.deleteMessage(messageId, userId);
+    const message = await directMessageService.deleteMessage(getParam(messageId), userId);
 
     res.status(200).json({
       message: "پیام با موفقیت حذف شد.",
@@ -118,7 +121,7 @@ class DirectMessageController {
     const { conversationId } = req.params;
     const userId = req.user!._id.toString();
 
-    const conversation = await directMessageService.archiveConversation(conversationId, userId);
+    const conversation = await directMessageService.archiveConversation(getParam(conversationId), userId);
 
     res.status(200).json({
       message: "گفتگو با موفقیت بایگانی شد.",
@@ -131,7 +134,7 @@ class DirectMessageController {
     const { needId } = req.params;
     const userId = req.user!._id.toString();
 
-    const unreadCount = await directMessageService.getUnreadCount(needId, userId);
+    const unreadCount = await directMessageService.getUnreadCount(getParam(needId), userId);
 
     res.status(200).json({
       data: { unreadCount },

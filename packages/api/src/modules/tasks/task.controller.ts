@@ -3,6 +3,7 @@ import { taskService } from "./task.service";
 import { createTaskSchema, updateTaskSchema, getTasksQuerySchema } from "./task.validation";
 import asyncHandler from "../../core/utils/asyncHandler";
 import ApiError from "../../core/utils/apiError";
+import { getParam } from "../../core/utils/getParam";
 
 class TaskController {
   /**
@@ -57,7 +58,7 @@ class TaskController {
     const tasks = await taskService.findByDateRange(
       userId.toString(),
       new Date(startDate as string),
-      new Date(endDate as string)
+      new Date(endDate as string),
     );
 
     res.status(200).json({ data: tasks });
@@ -96,7 +97,7 @@ class TaskController {
    */
   public getById = asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
-    const task = await taskService.findById(id);
+    const task = await taskService.findById(getParam(id));
 
     if (!task) {
       throw new ApiError(404, "وظیفه یافت نشد.");
@@ -124,13 +125,13 @@ class TaskController {
    */
   public delete = asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
-    const task = await taskService.findById(id);
+    const task = await taskService.findById(getParam(id));
 
     if (!task) {
       throw new ApiError(404, "وظیفه یافت نشد.");
     }
 
-    await taskService.delete(id);
+    await taskService.delete(getParam(id));
     res.status(200).json({ message: "وظیفه با موفقیت حذف شد." });
   });
 

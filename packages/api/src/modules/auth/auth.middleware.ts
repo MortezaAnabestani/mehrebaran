@@ -65,7 +65,8 @@ export const protectOptional = async (req: Request, res: Response, next: NextFun
       const user = await UserModel.findById(decoded.id).select("-password");
 
       if (user) {
-        req.user = user;
+        const userObject = user.toObject ? user.toObject() : { ...user };
+        req.user = userObject as unknown as AuthenticatedUser;
       }
 
       return next();

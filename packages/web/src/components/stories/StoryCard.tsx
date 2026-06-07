@@ -1,9 +1,9 @@
 "use client";
 
 import React from "react";
-import Link from "next/link";
 import type { IStory, IUser } from "common-types";
 import storyService from "@/services/story.service";
+import OptimizedImage from "@/components/ui/OptimizedImage";
 
 // ===========================
 // Types & Interfaces
@@ -89,15 +89,21 @@ const StoryCard: React.FC<StoryCardProps> = ({ story, hasUnviewed = false, onCli
 
   return (
     <button onClick={handleClick} className="flex-shrink-0 w-28 cursor-pointer group" disabled={isExpired}>
-      <div className="relative">
+      <div className="relative w-full pb-3">
         {/* Story Preview */}
         <div
-          className={`w-28 h-36 rounded-2xl overflow-hidden border-4 transition-all ${
+          className={`w-28 h-36 rounded-2xl overflow-hidden border-4 transition-all relative ${
             hasUnviewed ? "border-morange shadow-lg shadow-morange/30" : "border-gray-200"
           } ${isExpired ? "opacity-50 grayscale" : "group-hover:scale-105"}`}
         >
           {storyPreview ? (
-            <img src={storyPreview} alt={`استوری ${userName}`} className="w-full h-full object-cover" />
+            <OptimizedImage
+              src={storyPreview}
+              alt={`استوری ${userName}`}
+              fill
+              sizes="(max-width: 640px) 112px, 112px"
+              className="object-cover"
+            />
           ) : storyText ? (
             <div
               className={`w-full h-full flex items-center justify-center p-3 ${getStoryBackground()}`}
@@ -116,7 +122,7 @@ const StoryCard: React.FC<StoryCardProps> = ({ story, hasUnviewed = false, onCli
 
           {/* Video Indicator */}
           {story.type === "video" && (
-            <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+            <div className="absolute inset-0 flex items-center justify-center bg-black/20 z-10">
               <div className="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center">
                 <svg className="w-6 h-6 text-mblue mr-1" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
@@ -127,22 +133,26 @@ const StoryCard: React.FC<StoryCardProps> = ({ story, hasUnviewed = false, onCli
 
           {/* Expired Overlay */}
           {isExpired && (
-            <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+            <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-10">
               <span className="text-white text-xs font-bold">منقضی شده</span>
             </div>
           )}
         </div>
 
         {/* User Avatar */}
-        <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2">
+        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-12 h-12 z-20">
           {userAvatar ? (
-            <img
-              src={userAvatar}
-              alt={userName}
-              className="w-12 h-12 rounded-full border-4 border-white object-cover shadow-lg"
-            />
+            <div className="relative w-full h-full rounded-full overflow-hidden border-4 border-white shadow-lg">
+              <OptimizedImage
+                src={userAvatar}
+                alt={userName}
+                fill
+                sizes="48px"
+                className="object-cover"
+              />
+            </div>
           ) : (
-            <div className="w-12 h-12 rounded-full border-4 border-white bg-gradient-to-br from-mblue to-cyan-500 flex items-center justify-center text-white font-bold shadow-lg">
+            <div className="w-full h-full rounded-full border-4 border-white bg-gradient-to-br from-mblue to-cyan-500 flex items-center justify-center text-white font-bold shadow-lg">
               {userName.charAt(0)}
             </div>
           )}
@@ -155,7 +165,7 @@ const StoryCard: React.FC<StoryCardProps> = ({ story, hasUnviewed = false, onCli
       </div>
 
       {/* User Name */}
-      <p className="text-xs text-gray-700 mt-5 text-center truncate px-1 font-medium">{userName}</p>
+      <p className="text-xs text-gray-700 mt-2 text-center truncate px-1 font-medium">{userName}</p>
 
       {/* Time Ago */}
       <p className="text-xs text-gray-400 text-center mt-1">{timeAgo}</p>

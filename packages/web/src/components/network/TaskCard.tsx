@@ -13,6 +13,11 @@ interface TaskCardProps {
 
 const TaskCard: React.FC<TaskCardProps> = ({ task, needId, onUpdate, isDraggable = false }) => {
   const [isUpdating, setIsUpdating] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  React.useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   // --- Helper Functions ---
 
@@ -119,7 +124,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, needId, onUpdate, isDraggable
       setIsUpdating(true);
       await taskService.updateTaskStatus(needId, task._id, newStatus);
       if (onUpdate) onUpdate();
-    } catch (error: any) {
+    } catch (error) {
       console.error(error);
     } finally {
       setIsUpdating(false);
@@ -131,7 +136,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, needId, onUpdate, isDraggable
       setIsUpdating(true);
       await taskService.completeTask(needId, task._id);
       if (onUpdate) onUpdate();
-    } catch (error: any) {
+    } catch (error) {
       console.error(error);
     } finally {
       setIsUpdating(false);
@@ -267,7 +272,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, needId, onUpdate, isDraggable
         </div>
 
         {/* Right: Deadline */}
-        {deadlineInfo && (
+        {isMounted && deadlineInfo && (
           <div
             className={`flex items-center gap-1 text-[10px] ${deadlineInfo.colorClass} bg-white/50 px-2 py-1 rounded-md`}
           >

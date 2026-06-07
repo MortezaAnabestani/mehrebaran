@@ -12,15 +12,16 @@ const ProjectCard: React.FC<Props> = ({ project, baseUrl = "/projects" }) => {
   const projectUrl = `${baseUrl}/${project.slug}`;
 
   return (
-    <div
-      className={`flex flex-col bg-white rounded-xl shadow-md border border-mgray/65 overflow-hidden h-full w-full`}
+    <article
+      className="flex flex-col bg-white rounded-xl shadow-md border border-mgray/65 overflow-hidden h-full w-full"
     >
-      <div className={`w-full h-100 relative`}>
+      <div className="w-full h-100 relative">
         <OptimizedImage
           src={project.featuredImage.desktop}
           alt={project.title}
           fill={true}
-          className={`w-full h-50 object-cover`}
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          className="object-cover"
         />
         {/* Status Badge */}
         {project.status === "completed" && (
@@ -47,14 +48,15 @@ const ProjectCard: React.FC<Props> = ({ project, baseUrl = "/projects" }) => {
             variant="mblue"
             asLink={true}
             fullWidth={true}
-            className="h-8 max-w-30 text-xs p-2 rounded-xs text-center mt-3 my-6 md:my-0"
+            className="h-8 max-w-30 text-xs p-2 rounded-xs text-center my-3 md:my-0"
             size="sm"
+            aria-label={`اطلاعات بیش‌تر درباره ${project.title}`}
           >
             اطلاعات بیش‌تر
           </SmartButton>
         </div>
       </div>
-    </div>
+    </article>
   );
 };
 

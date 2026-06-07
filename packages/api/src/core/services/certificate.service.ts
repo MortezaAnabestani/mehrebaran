@@ -414,7 +414,7 @@ class CertificateService {
     try {
       const page = await browser.newPage();
       await page.setViewport({ width: 1200, height: 800 });
-      await page.setContent(html, { waitUntil: "networkidle0" });
+      await page.setContent(html, { waitUntil: "load" });
 
       await page.screenshot({
         path: outputPath as `${string}.png`,

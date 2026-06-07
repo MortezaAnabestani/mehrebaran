@@ -3,6 +3,7 @@ import { bugReportService } from "./bug-report.service";
 import { emailService } from "./email.service";
 import asyncHandler from "../../core/utils/asyncHandler";
 import ApiError from "../../core/utils/apiError";
+import { getParam } from "../../core/utils/getParam";
 
 class BugReportController {
   public createBugReport = asyncHandler(async (req: Request, res: Response) => {
@@ -35,7 +36,7 @@ class BugReportController {
   });
 
   public getBugReportById = asyncHandler(async (req: Request, res: Response) => {
-    const bugReport = await bugReportService.findBugReportById(req.params.id);
+    const bugReport = await bugReportService.findBugReportById(getParam(req.params.id));
     if (!bugReport) {
       throw new ApiError(404, "گزارش یافت نشد.");
     }
@@ -47,7 +48,7 @@ class BugReportController {
 
   public updateBugReportStatus = asyncHandler(async (req: Request, res: Response) => {
     const { status } = req.body;
-    const bugReport = await bugReportService.updateBugReportStatus(req.params.id, status);
+    const bugReport = await bugReportService.updateBugReportStatus(getParam(req.params.id), status);
     if (!bugReport) {
       throw new ApiError(404, "گزارش یافت نشد.");
     }
@@ -58,7 +59,7 @@ class BugReportController {
   });
 
   public deleteBugReport = asyncHandler(async (req: Request, res: Response) => {
-    const bugReport = await bugReportService.deleteBugReport(req.params.id);
+    const bugReport = await bugReportService.deleteBugReport(getParam(req.params.id));
     if (!bugReport) {
       throw new ApiError(404, "گزارش یافت نشد.");
     }

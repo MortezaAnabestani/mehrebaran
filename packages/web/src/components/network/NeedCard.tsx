@@ -117,23 +117,22 @@ const Icons = {
 /**
  * NeedCard - کارت نمایش نیاز با طراحی Skeuomorphic مدرن و ریسپانسیو
  */
-const NeedCard: React.FC<NeedCardProps> = ({ need, variant = "feed", onUpdate }) => {
+const NeedCard: React.FC<NeedCardProps> = ({ need, variant = "feed" }) => {
   const { user } = useAuth();
   const router = useRouter();
 
   // State Logic
   const userHasLiked = user && need.upvotes ? need.upvotes.includes(user._id) : false;
-  const userIsFollowing = user && need.supporters ? need.supporters.includes(user._id) : false;
 
   const [isLiked, setIsLiked] = useState(userHasLiked);
   const [likesCount, setLikesCount] = useState(need.upvotes?.length || 0);
-  const [isFollowing, setIsFollowing] = useState(userIsFollowing);
+
+  const isLikingRef = React.useRef(false);
 
   React.useEffect(() => {
     setIsLiked(userHasLiked);
     setLikesCount(need.upvotes?.length || 0);
-    setIsFollowing(userIsFollowing);
-  }, [need, userHasLiked, userIsFollowing]);
+  }, [need, userHasLiked]);
 
   // Helpers
   const progressPercentage = need.targetAmount
@@ -173,6 +172,9 @@ const NeedCard: React.FC<NeedCardProps> = ({ need, variant = "feed", onUpdate })
     e.preventDefault();
     e.stopPropagation();
     if (!user) return alert("لطفاً ابتدا وارد حساب کاربری خود شوید");
+    if (isLikingRef.current) return;
+    
+    isLikingRef.current = true;
 
     const previousLiked = isLiked;
     const previousCount = likesCount;
@@ -181,23 +183,11 @@ const NeedCard: React.FC<NeedCardProps> = ({ need, variant = "feed", onUpdate })
       setIsLiked(!isLiked);
       setLikesCount((prev) => (isLiked ? prev - 1 : prev + 1));
       await needService.upvoteNeed(need._id);
-    } catch (error) {
+    } catch {
       setIsLiked(previousLiked);
       setLikesCount(previousCount);
-    }
-  };
-
-  const handleFollow = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (!user) return alert("لطفاً ابتدا وارد حساب کاربری خود شوید");
-
-    const previousFollowing = isFollowing;
-    try {
-      setIsFollowing(!isFollowing);
-      await needService.supportNeed(need._id);
-    } catch (error) {
-      setIsFollowing(previousFollowing);
+    } finally {
+      isLikingRef.current = false;
     }
   };
 
@@ -218,7 +208,7 @@ const NeedCard: React.FC<NeedCardProps> = ({ need, variant = "feed", onUpdate })
   // --- COMPACT VARIANT ---
   if (variant === "compact") {
     return (
-      <Link href={`/network/needs/${need._id}`}>
+      <Link href={`/network/needs/${need._id}`} className="outline-none focus-visible:ring-2 focus-visible:ring-[#007acc] rounded-xl block">
         <div className="group bg-white rounded-lg md:rounded-xl p-3 md:p-4 border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_16px_rgba(0,122,204,0.1)] transition-all duration-300 transform hover:-translate-y-1">
           <h3 className="font-bold text-gray-800 text-xs sm:text-sm line-clamp-2 group-hover:text-[#007acc] transition-colors">
             {need.title}
@@ -267,14 +257,14 @@ const NeedCard: React.FC<NeedCardProps> = ({ need, variant = "feed", onUpdate })
             </div>
           </div>
         </div>
-        <button className="text-gray-400 hover:text-[#007acc] p-1.5 sm:p-2 rounded-full hover:bg-blue-50 transition-all">
+        <button className="text-gray-400 hover:text-[#007acc] p-1.5 sm:p-2 rounded-full hover:bg-blue-50 transition-all outline-none focus-visible:ring-2 focus-visible:ring-[#007acc]">
           <Icons.More />
         </button>
       </div>
 
       {/* Content Body */}
       <div className="px-3 sm:px-4 md:px-5 py-1 sm:py-2">
-        <Link href={`/network/needs/${need._id}`}>
+        <Link href={`/network/needs/${need._id}`} className="outline-none focus-visible:ring-2 focus-visible:ring-[#007acc] rounded-lg block">
           <h2 className="font-extrabold text-sm sm:text-base md:text-lg text-gray-800 mb-1.5 sm:mb-2 leading-snug hover:text-[#007acc] transition-colors cursor-pointer">
             {need.title}
           </h2>
@@ -377,7 +367,7 @@ const NeedCard: React.FC<NeedCardProps> = ({ need, variant = "feed", onUpdate })
           <div className="flex items-center gap-0.5 sm:gap-1">
             <button
               onClick={handleLike}
-              className={`flex items-center gap-1 sm:gap-1.5 px-2 py-1.5 sm:px-3 sm:py-2 rounded-lg transition-all active:scale-95 ${
+              className={`flex items-center gap-1 sm:gap-1.5 px-2 py-1.5 sm:px-3 sm:py-2 rounded-lg transition-all active:scale-95 outline-none focus-visible:ring-2 focus-visible:ring-[#007acc] ${
                 isLiked
                   ? "text-red-500 bg-red-50 shadow-inner"
                   : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
@@ -387,14 +377,14 @@ const NeedCard: React.FC<NeedCardProps> = ({ need, variant = "feed", onUpdate })
               <span className="text-[10px] sm:text-xs font-bold">{formatNumber(likesCount)}</span>
             </button>
 
-            <button className="flex items-center gap-1 sm:gap-1.5 px-2 py-1.5 sm:px-3 sm:py-2 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-[#007acc] transition-all active:scale-95">
+            <button className="flex items-center gap-1 sm:gap-1.5 px-2 py-1.5 sm:px-3 sm:py-2 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-[#007acc] transition-all active:scale-95 outline-none focus-visible:ring-2 focus-visible:ring-[#007acc]">
               <Icons.Message />
               <span className="text-[10px] sm:text-xs font-bold">
                 {formatNumber(need.commentsCount || 0)}
               </span>
             </button>
 
-            <button className="p-1.5 sm:p-2 rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-all active:scale-95">
+            <button className="p-1.5 sm:p-2 rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-all active:scale-95 outline-none focus-visible:ring-2 focus-visible:ring-[#007acc]">
               <Icons.Share />
             </button>
           </div>
@@ -402,7 +392,7 @@ const NeedCard: React.FC<NeedCardProps> = ({ need, variant = "feed", onUpdate })
           <div className="flex items-center gap-1.5 sm:gap-2 flex-1 justify-end sm:justify-center">
             <button
               onClick={handleViewDetails}
-              className="hidden sm:block px-3 py-2 md:px-4 md:py-2.5 rounded-xl text-xs font-bold text-gray-600 bg-white border border-gray-200 shadow-sm hover:shadow-md hover:border-gray-300 active:shadow-inner active:translate-y-[1px] transition-all"
+              className="hidden sm:block px-3 py-2 md:px-4 md:py-2.5 rounded-xl text-xs font-bold text-gray-600 bg-white border border-gray-200 shadow-sm hover:shadow-md hover:border-gray-300 active:shadow-inner active:translate-y-[1px] transition-all outline-none focus-visible:ring-2 focus-visible:ring-[#007acc] focus-visible:ring-offset-2"
             >
               جزئیات
             </button>

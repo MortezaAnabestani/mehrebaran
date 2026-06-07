@@ -17,28 +17,24 @@ const NeedInfo: React.FC<NeedInfoProps> = ({ need }) => {
   const urgency = getUrgencyInfo(need.urgencyLevel);
 
   return (
-    <div className="relative overflow-hidden rounded-xl sm:rounded-2xl md:rounded-3xl border border-white/50 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),0_4px_20px_rgba(0,0,0,0.05)] p-3 sm:p-4 md:p-6 lg:p-8">
-      {/* Background Texture Effect */}
-      <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent pointer-events-none" />
-
+    <div className="relative">
       <div className="relative z-10">
         {/* Header Section */}
-        <div className="mb-4 sm:mb-5 md:mb-6 lg:mb-8 border-b border-gray-200/60 pb-3 sm:pb-4 md:pb-5 lg:pb-6">
-          <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-extrabold text-gray-800 mb-3 sm:mb-4 md:mb-5 tracking-tight drop-shadow-sm">
+        <div className="mb-4 sm:mb-6 md:mb-8 border-b border-[#c5c5c5]/40 pb-4 sm:pb-6 md:pb-8">
+          <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold text-slate-700 mb-4 sm:mb-5 md:mb-6 tracking-tight drop-shadow-sm">
             {need.title}
           </h1>
 
-          {/* Skeuomorphic Badges */}
-          <div className="flex flex-wrap gap-1.5 sm:gap-2 md:gap-3">
-            {/* Status Badge - Raised Look */}
-            <span className="inline-flex items-center px-2 py-1 sm:px-3 sm:py-1.5 md:px-4 rounded-full text-[10px] sm:text-xs font-bold text-gray-600 bg-gradient-to-b from-gray-50 to-gray-200 border border-gray-300 shadow-[inset_0_1px_0_rgba(255,255,255,1),0_1px_2px_rgba(0,0,0,0.1)]">
+          {/* Neumorphic Badges */}
+          <div className="flex flex-wrap gap-2 sm:gap-3">
+            {/* Status Badge */}
+            <span className="inline-flex items-center px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-600 bg-[#f0f2f5] shadow-[4px_4px_8px_#c5c5c5,-4px_-4px_8px_#ffffff]">
               {getStatusLabel(need.status)}
             </span>
 
-            {/* Urgency Badge - Colored Glass Look */}
+            {/* Urgency Badge */}
             <span
-              className={`inline-flex items-center gap-1 sm:gap-1.5 px-2 py-1 sm:px-3 sm:py-1.5 md:px-4 rounded-full text-[10px] sm:text-xs font-bold border shadow-sm backdrop-blur-sm ${urgency.color}`}
-              style={{ boxShadow: "inset 0 1px 0 rgba(255,255,255,0.4)" }}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm font-bold bg-[#f0f2f5] shadow-[4px_4px_8px_#c5c5c5,-4px_-4px_8px_#ffffff] ${urgency.color}`}
             >
               <OptimizedImage
                 src={urgency.icon}
@@ -50,12 +46,12 @@ const NeedInfo: React.FC<NeedInfoProps> = ({ need }) => {
               {urgency.label}
             </span>
 
-            {/* Deadline Badge - Inset/Pressed Look */}
+            {/* Deadline Badge */}
             {need.deadline && (
-              <span className="inline-flex items-center gap-1 sm:gap-1.5 px-2 py-1 sm:px-3 sm:py-1.5 md:px-4 rounded-full text-[10px] sm:text-xs font-bold text-[#007acc] bg-[#007acc]/5 border border-[#007acc]/20 shadow-[inset_0_1px_3px_rgba(0,0,0,0.05)]">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm font-bold text-[#007acc] bg-[#f0f2f5] shadow-[4px_4px_8px_#c5c5c5,-4px_-4px_8px_#ffffff]">
                 <OptimizedImage
                   src="/icons/time_machine.svg"
-                  alt="download icon"
+                  alt="deadline icon"
                   width={18}
                   height={18}
                   className="inline-block"
@@ -66,20 +62,20 @@ const NeedInfo: React.FC<NeedInfoProps> = ({ need }) => {
           </div>
         </div>
 
-        {/* Description - Paper Texture Feel */}
-        <div className="bg-white rounded-lg sm:rounded-xl md:rounded-2xl p-3 sm:p-4 md:p-5 lg:p-6 shadow-[0_2px_4px_rgba(0,0,0,0.02),0_1px_0_rgba(255,255,255,1)_inset] border border-gray-100 mb-4 sm:mb-5 md:mb-6 lg:mb-8">
-          <p className="text-gray-700 leading-6 sm:leading-7 md:leading-8 text-justify text-sm sm:text-base font-medium">
+        {/* Description - Neumorphic Inset */}
+        <div className="bg-[#f0f2f5] rounded-xl sm:rounded-2xl p-3 sm:p-5 md:p-6 lg:p-8 shadow-[inset_3px_3px_6px_#c5c5c5,inset_-3px_-3px_6px_#ffffff] sm:shadow-[inset_4px_4px_8px_#c5c5c5,inset_-4px_-4px_8px_#ffffff] mb-5 sm:mb-8 md:mb-10">
+          <p className="text-slate-600 leading-relaxed text-justify text-sm sm:text-base font-medium">
             {need.description}
           </p>
         </div>
 
-        {/* Tags - Etched Slots */}
+        {/* Tags */}
         {need.tags && need.tags.length > 0 && (
-          <div className="flex flex-wrap gap-1.5 sm:gap-2 md:gap-3 mb-4 sm:mb-5 md:mb-6 lg:mb-8">
-            {need.tags.map((tag, index) => (
+          <div className="flex flex-wrap gap-2 sm:gap-3 mb-5 sm:mb-8 md:mb-10">
+            {need.tags.map((tag) => (
               <span
-                key={index}
-                className="text-[10px] sm:text-xs font-semibold text-[#007acc] px-2 py-1 sm:px-3 sm:py-1.5 md:px-4 rounded-md sm:rounded-lg bg-[#f0f7ff] border border-[#007acc]/10 shadow-[inset_0_1px_2px_rgba(0,0,0,0.03),0_1px_0_rgba(255,255,255,1)]"
+                key={tag}
+                className="text-[10px] sm:text-xs font-semibold text-[#007acc] px-2.5 py-1 sm:px-4 sm:py-2 rounded-lg bg-[#f0f2f5] shadow-[2px_2px_5px_#c5c5c5,-2px_-2px_5px_#ffffff] sm:shadow-[3px_3px_6px_#c5c5c5,-3px_-3px_6px_#ffffff]"
               >
                 #{tag}
               </span>
@@ -87,24 +83,26 @@ const NeedInfo: React.FC<NeedInfoProps> = ({ need }) => {
           </div>
         )}
 
-        {/* Info Grid - Raised Panels */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 md:gap-5 lg:gap-6 mb-4 sm:mb-5 md:mb-6 lg:mb-8">
+        {/* Info Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-5 md:gap-6 lg:gap-8 mb-5 sm:mb-8 md:mb-10">
           {need.location && (
-            <div className="group bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg sm:rounded-xl md:rounded-2xl p-3 sm:p-4 md:p-5 border border-gray-200 shadow-[inset_0_1px_0_rgba(255,255,255,1),0_2px_5px_rgba(0,0,0,0.05)] transition-all hover:shadow-md">
-              <OptimizedImage
-                src="/icons/placeLocation.svg"
-                alt="download icon"
-                width={18}
-                height={18}
-                className="inline-block"
-              />
-              <h4 className="font-bold text-xs sm:text-sm mb-2 sm:mb-3 text-gray-800 inline-block mr-1.5">
-                موقعیت مکانی
-              </h4>
-              <div className="text-xs sm:text-sm text-gray-600 pr-8 sm:pr-9 md:pr-10">
+            <div className="bg-[#f0f2f5] rounded-xl sm:rounded-2xl p-3 sm:p-5 shadow-[inset_3px_3px_6px_#c5c5c5,inset_-3px_-3px_6px_#ffffff] sm:shadow-[inset_4px_4px_8px_#c5c5c5,inset_-4px_-4px_8px_#ffffff]">
+              <div className="flex items-center gap-2 mb-2 sm:mb-3">
+                <OptimizedImage
+                  src="/icons/placeLocation.svg"
+                  alt="location icon"
+                  width={20}
+                  height={20}
+                  className="inline-block"
+                />
+                <h4 className="font-bold text-sm sm:text-base text-slate-700">
+                  موقعیت مکانی
+                </h4>
+              </div>
+              <div className="text-sm text-slate-500 pr-7">
                 {need.location.address && <p className="mb-1">{need.location.address}</p>}
                 {(need.location.city || need.location.province) && (
-                  <p className="font-medium text-gray-800">
+                  <p className="font-medium text-slate-600">
                     {need.location.city}، {need.location.province}
                   </p>
                 )}
@@ -112,18 +110,20 @@ const NeedInfo: React.FC<NeedInfoProps> = ({ need }) => {
             </div>
           )}
           {need.estimatedDuration && (
-            <div className="group bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg sm:rounded-xl md:rounded-2xl p-3 sm:p-4 md:p-5 border border-gray-200 shadow-[inset_0_1px_0_rgba(255,255,255,1),0_2px_5px_rgba(0,0,0,0.05)] transition-all hover:shadow-md">
-              <OptimizedImage
-                src="/icons/time_machine.svg"
-                alt="download icon"
-                width={18}
-                height={18}
-                className="inline-block"
-              />
-              <h4 className="font-bold text-xs sm:text-sm mb-2 sm:mb-3 text-gray-800 inline-block mr-1.5">
-                مدت زمان
-              </h4>
-              <p className="text-xs sm:text-sm text-gray-600 pr-8 sm:pr-9 md:pr-10 font-medium">
+            <div className="bg-[#f0f2f5] rounded-xl sm:rounded-2xl p-3 sm:p-5 shadow-[inset_3px_3px_6px_#c5c5c5,inset_-3px_-3px_6px_#ffffff] sm:shadow-[inset_4px_4px_8px_#c5c5c5,inset_-4px_-4px_8px_#ffffff]">
+              <div className="flex items-center gap-2 mb-2 sm:mb-3">
+                <OptimizedImage
+                  src="/icons/time_machine.svg"
+                  alt="time icon"
+                  width={20}
+                  height={20}
+                  className="inline-block"
+                />
+                <h4 className="font-bold text-sm sm:text-base text-slate-700">
+                  مدت زمان
+                </h4>
+              </div>
+              <p className="text-sm text-slate-500 pr-7 font-medium">
                 {need.estimatedDuration}
               </p>
             </div>
@@ -132,76 +132,77 @@ const NeedInfo: React.FC<NeedInfoProps> = ({ need }) => {
 
         {/* Attachments Section */}
         {need.attachments && need.attachments.length > 0 && (
-          <div className="bg-gray-50/50 rounded-lg sm:rounded-xl md:rounded-2xl p-3 sm:p-4 md:p-5 lg:p-6 border border-gray-200/60 shadow-inner">
-            <OptimizedImage
-              src="/icons/attach.svg"
-              alt="download icon"
-              width={18}
-              height={18}
-              className="inline-block"
-            />
-            <h4 className="font-bold text-sm sm:text-base mb-3 sm:mb-4 text-gray-800 inline-block mr-1.5">
-              فایل‌های پیوست
-            </h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 md:gap-5">
+          <div className="bg-[#f0f2f5] rounded-xl sm:rounded-2xl p-3 sm:p-5 md:p-6 shadow-[inset_3px_3px_6px_#c5c5c5,inset_-3px_-3px_6px_#ffffff] sm:shadow-[inset_4px_4px_8px_#c5c5c5,inset_-4px_-4px_8px_#ffffff]">
+            <div className="flex items-center gap-2 mb-3 sm:mb-4 md:mb-6">
+              <OptimizedImage
+                src="/icons/attach.svg"
+                alt="attachment icon"
+                width={20}
+                height={20}
+                className="inline-block"
+              />
+              <h4 className="font-bold text-base sm:text-lg text-slate-700">
+                فایل‌های پیوست
+              </h4>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 sm:gap-5">
               {need.attachments
-                .filter((a: any) => a?.url)
-                .map((attachment: any, index: number) => {
+                ?.filter((a: { url?: string }) => a?.url)
+                ?.map((attachment: { url: string; fileName?: string; fileType?: string; fileSize?: number }, index: number) => {
                   const fileInfo = getFileInfo(attachment.url, attachment.fileName);
 
                   if (attachment.fileType === "image") {
                     return (
                       <div
-                        key={index}
-                        className="relative w-full h-32 sm:h-40 md:h-48 lg:h-52 rounded-lg sm:rounded-xl overflow-hidden border-2 sm:border-3 md:border-4 border-white shadow-md group"
+                        key={attachment.url || index}
+                        className="relative w-full h-40 sm:h-48 md:h-56 lg:h-64 rounded-xl sm:rounded-2xl overflow-hidden bg-[#f0f2f5] shadow-[4px_4px_8px_#c5c5c5,-4px_-4px_8px_#ffffff] sm:shadow-[6px_6px_12px_#c5c5c5,-6px_-6px_12px_#ffffff] p-1.5 sm:p-2 group"
                       >
-                        <OptimizedImage
-                          src={attachment.url}
-                          alt={fileInfo.name}
-                          fill
-                          className="object-cover transition-transform duration-500 group-hover:scale-105"
-                        />
-                        {/* Glossy Overlay */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <div className="relative w-full h-full rounded-lg sm:rounded-xl overflow-hidden border border-white/60">
+                          <OptimizedImage
+                            src={attachment.url}
+                            alt={fileInfo.name}
+                            fill
+                            className="object-cover transition-transform duration-500 group-hover:scale-105"
+                          />
+                        </div>
                       </div>
                     );
                   }
 
                   return (
                     <a
-                      key={index}
+                      key={attachment.url || index}
                       href={attachment.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-2 sm:gap-3 md:gap-4 bg-white rounded-lg sm:rounded-xl p-2.5  border border-gray-200 shadow-[0_2px_5px_rgba(0,0,0,0.03),0_1px_0_rgba(255,255,255,1)_inset] hover:-translate-y-0.5 hover:shadow-lg hover:border-[#007acc]/30 transition-all duration-300 group"
+                      className="flex items-center gap-3 sm:gap-4 bg-[#f0f2f5] rounded-2xl p-3 sm:p-4 shadow-[4px_4px_8px_#c5c5c5,-4px_-4px_8px_#ffffff] hover:shadow-[6px_6px_12px_#c5c5c5,-6px_-6px_12px_#ffffff] active:shadow-[inset_4px_4px_8px_#c5c5c5,inset_-4px_-4px_8px_#ffffff] transition-all duration-300 group"
                     >
                       <div
-                        className={`w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12 rounded-lg sm:rounded-xl flex items-center justify-center text-lg sm:text-xl md:text-2xl shadow-inner border border-black/5 ${fileInfo.color} bg-opacity-10`}
+                        className={`w-12 h-12 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center shadow-[inset_2px_2px_5px_#c5c5c5,inset_-2px_-2px_5px_#ffffff] ${fileInfo.color} bg-opacity-10`}
                       >
                         <OptimizedImage
                           src={fileInfo.icon}
                           alt={fileInfo.name}
-                          width={18}
-                          height={18}
-                          className="inline-block mr-1.5"
-                        />{" "}
+                          width={24}
+                          height={24}
+                          className="inline-block"
+                        />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs sm:text-sm font-bold truncate text-gray-800 group-hover:text-[#007acc] transition-colors">
+                        <p className="text-sm font-bold truncate text-slate-700 group-hover:text-[#007acc] transition-colors">
                           {fileInfo.name}
                         </p>
-                        <p className="text-[10px] sm:text-xs text-gray-500 mt-0.5 sm:mt-1 font-mono">
+                        <p className="text-xs text-slate-500 mt-1 font-mono">
                           {formatFileSize(attachment.fileSize)}
                         </p>
                       </div>
-                      <div className="text-gray-300 group-hover:text-[#007acc] transition-colors text-base sm:text-lg">
+                      <div className="text-slate-400 group-hover:text-[#007acc] transition-colors pr-2">
                         <OptimizedImage
                           src="/icons/download.svg"
                           alt="download icon"
-                          width={18}
-                          height={18}
-                          className="inline-block mr-1.5"
-                        />{" "}
+                          width={20}
+                          height={20}
+                        />
                       </div>
                     </a>
                   );

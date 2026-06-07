@@ -3,6 +3,7 @@ import { newsService } from "./news.service";
 import { createNewsSchema, updateNewsSchema } from "./news.validation";
 import asyncHandler from "../../core/utils/asyncHandler";
 import ApiError from "../../core/utils/apiError";
+import { getParam } from "../../core/utils/getParam";
 
 class NewsController {
   public create = asyncHandler(async (req: Request, res: Response) => {
@@ -28,7 +29,7 @@ class NewsController {
 
   public getOne = asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
-    const newsItem = await newsService.findOne(id);
+    const newsItem = await newsService.findOne(getParam(id));
     if (!newsItem) {
       throw new ApiError(404, "خبر مورد نظر یافت نشد.");
     }
@@ -54,16 +55,16 @@ class NewsController {
 
   public delete = asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
-    const newsItem = await newsService.findOne(id);
+    const newsItem = await newsService.findOne(getParam(id));
     if (!newsItem) {
       throw new ApiError(404, "خبر مورد نظر یافت نشد.");
     }
-    await newsService.delete(id);
+    await newsService.delete(getParam(id));
     res.status(200).json({ message: "خبر با موفقیت حذف شد." });
   });
 
   public incrementView = asyncHandler(async (req: Request, res: Response) => {
-    await newsService.incrementViews(req.params.id);
+    await newsService.incrementViews(getParam(req.params.id));
     res.status(200).json({ message: "View count incremented." });
   });
 }

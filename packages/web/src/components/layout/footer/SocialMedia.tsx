@@ -3,9 +3,9 @@ import Link from "next/link";
 import React from "react";
 import Sdjdm from "./Sdjdm";
 
-interface Props {
+interface SocialMediaProps {
   setWave: (wave: boolean) => void;
-  sdjdm: boolean;
+  sdjdm?: boolean;
 }
 
 interface SocialMedia {
@@ -21,13 +21,13 @@ const socialMediaItems: SocialMedia[] = [
   { src: "/icons/email.svg", alt: "لوگو ایمیل مهر باران", href: "/" },
 ];
 
-const SocialMedia: React.FC<Props> = ({ setWave, sdjdm = true }) => {
+const SocialMedia: React.FC<SocialMediaProps> = ({ setWave, sdjdm = true }) => {
   return (
     <div className="flex flex-col gap-2">
       {sdjdm && <Sdjdm setWave={setWave} />}
       <div className="flex items-center justify-between mx-2">
         {socialMediaItems.map((item: SocialMedia) => (
-          <Link href={item.href} key={item.src}>
+          <Link href={item.href} key={item.src} aria-label={item.alt}>
             <OptimizedImage
               src={item.src}
               alt={item.alt}

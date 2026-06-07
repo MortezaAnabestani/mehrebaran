@@ -1,15 +1,20 @@
 import OptimizedImage from "@/components/ui/OptimizedImage";
 import React from "react";
-interface Props {
+
+interface SdjdmProps {
   setWave: (wave: boolean) => void;
 }
 
-const Sdjdm: React.FC<Props> = ({ setWave }) => {
+const Sdjdm: React.FC<SdjdmProps> = ({ setWave }) => {
   return (
     <div
       className="relative group hover:bg-mblue hover:-translate-y-7 duration-600 hover:group-last:z-30 cursor-grab"
       onMouseEnter={() => setWave(true)}
       onMouseLeave={() => setWave(false)}
+      onFocus={() => setWave(true)}
+      onBlur={() => setWave(false)}
+      role="presentation"
+      tabIndex={0}
     >
       <OptimizedImage
         src={"/icons/logo.svg"}

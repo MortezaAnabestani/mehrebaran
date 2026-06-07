@@ -186,7 +186,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
             <AnimatePresence>
               {value.map((fileWithPreview, index) => (
                 <motion.div
-                  key={index}
+                  key={fileWithPreview.preview}
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.8 }}
@@ -198,9 +198,9 @@ const FileUploader: React.FC<FileUploaderProps> = ({
                       <OptimizedImage
                         src={fileWithPreview.preview}
                         alt={fileWithPreview.file.name}
-                        width={18}
-                        height={18}
-                        className="w-full h-full object-cover"
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 50vw, 33vw"
                       />
                     )}
 
@@ -233,7 +233,10 @@ const FileUploader: React.FC<FileUploaderProps> = ({
 
                     {/* File Type Badge */}
                     <div className="absolute top-2 left-2 px-2 py-1 bg-white/90 rounded text-xs font-bold">
-                      {getFileIcon(fileWithPreview.type)}
+                      {fileWithPreview.type === "image" && "تصویر"}
+                      {fileWithPreview.type === "video" && "ویدیو"}
+                      {fileWithPreview.type === "audio" && "صدا"}
+                      {fileWithPreview.type === "document" && "سند"}
                     </div>
                   </div>
 

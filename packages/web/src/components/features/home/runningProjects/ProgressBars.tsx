@@ -10,16 +10,7 @@ import { formatNumberHumanReadable } from "@/utils/formatNumberHumanReadable";
 import { IProject } from "common-types";
 
 type Props = {
-  project: Pick<
-    IProject,
-    | "amountRaised"
-    | "targetAmount"
-    | "collectedVolunteer"
-    | "targetVolunteer"
-    | "slug"
-    | "donationSettings"
-    | "volunteerSettings"
-  >;
+  project: IProject;
   detailpage?: boolean;
 };
 
@@ -145,7 +136,7 @@ const ProgressBars: React.FC<Props> = ({ project, detailpage }) => {
         title="کمک مالی به پروژه"
         maxWidth="xl"
       >
-        <DonationForm project={project as any} onSuccess={() => setShowDonationModal(false)} />
+        <DonationForm project={project} onSuccess={() => setShowDonationModal(false)} />
       </Modal>
 
       <Modal
@@ -155,7 +146,7 @@ const ProgressBars: React.FC<Props> = ({ project, detailpage }) => {
         maxWidth="xl"
       >
         <VolunteerForm
-          project={project as any}
+          project={project}
           isAuthenticated={isAuthenticated}
           onSuccess={() => setShowVolunteerModal(false)}
         />

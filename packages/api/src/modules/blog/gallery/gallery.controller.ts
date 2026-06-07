@@ -3,6 +3,7 @@ import { galleryService } from "./gallery.service";
 import { createGallerySchema, updateGallerySchema } from "./gallery.validation";
 import asyncHandler from "../../../core/utils/asyncHandler";
 import ApiError from "../../../core/utils/apiError";
+import { getParam } from "../../../core/utils/getParam";
 
 class GalleryController {
   public create = asyncHandler(async (req: Request, res: Response) => {
@@ -13,7 +14,7 @@ class GalleryController {
     if (galleryData.metaTitle || galleryData.metaDescription) {
       galleryData.seo = {
         metaTitle: galleryData.metaTitle || galleryData.title,
-        metaDescription: galleryData.metaDescription || '',
+        metaDescription: galleryData.metaDescription || "",
       };
       delete galleryData.metaTitle;
       delete galleryData.metaDescription;
@@ -38,7 +39,7 @@ class GalleryController {
   });
 
   public getOne = asyncHandler(async (req: Request, res: Response) => {
-    const gallery = await galleryService.findOne(req.params.identifier);
+    const gallery = await galleryService.findOne(getParam(req.params.identifier));
     if (!gallery) throw new ApiError(404, "گالری مورد نظر یافت نشد.");
     res.status(200).json({ data: gallery });
   });
@@ -52,20 +53,22 @@ class GalleryController {
     if (updateData.metaTitle || updateData.metaDescription) {
       updateData.seo = {
         metaTitle: updateData.metaTitle || updateData.title,
-        metaDescription: updateData.metaDescription || '',
+        metaDescription: updateData.metaDescription || "",
       };
       delete updateData.metaTitle;
       delete updateData.metaDescription;
     }
 
     // Handle images: combine existing and new uploaded images
-    let existingImages = req.body.existingImages ?
-      (Array.isArray(req.body.existingImages) ? req.body.existingImages : [req.body.existingImages]) :
-      [];
+    let existingImages = req.body.existingImages
+      ? Array.isArray(req.body.existingImages)
+        ? req.body.existingImages
+        : [req.body.existingImages]
+      : [];
 
     // Parse JSON strings if needed
     existingImages = existingImages.map((img: any) => {
-      if (typeof img === 'string') {
+      if (typeof img === "string") {
         try {
           return JSON.parse(img);
         } catch {
@@ -75,9 +78,11 @@ class GalleryController {
       return img;
     });
 
-    const newImages = req.processedFiles ?
-      (Array.isArray(req.processedFiles) ? req.processedFiles : [req.processedFiles]) :
-      [];
+    const newImages = req.processedFiles
+      ? Array.isArray(req.processedFiles)
+        ? req.processedFiles
+        : [req.processedFiles]
+      : [];
 
     // Combine existing and new images
     if (existingImages.length > 0 || newImages.length > 0) {
@@ -91,14 +96,14 @@ class GalleryController {
 
   public delete = asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
-    const gallery = await galleryService.findOne(id);
+    const gallery = await galleryService.findOne(getParam(id));
     if (!gallery) throw new ApiError(404, "گالری مورد نظر یافت نشد.");
-    await galleryService.delete(id);
+    await galleryService.delete(getParam(id));
     res.status(200).json({ message: "گالری با موفقیت حذف شد." });
   });
 
   public incrementView = asyncHandler(async (req: Request, res: Response) => {
-    await galleryService.incrementViews(req.params.id);
+    await galleryService.incrementViews(getParam(req.params.id));
     res.status(200).json({ message: "View count incremented." });
   });
 }

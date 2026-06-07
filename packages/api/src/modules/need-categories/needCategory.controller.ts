@@ -3,6 +3,7 @@ import { needCategoryService } from "./needCategory.service";
 import { createNeedCategorySchema, updateNeedCategorySchema } from "./needCategory.validation";
 import asyncHandler from "../../core/utils/asyncHandler";
 import ApiError from "../../core/utils/apiError";
+import { getParam } from "../../core/utils/getParam";
 
 class NeedCategoryController {
   public create = asyncHandler(async (req: Request, res: Response) => {
@@ -26,7 +27,7 @@ class NeedCategoryController {
   });
 
   public delete = asyncHandler(async (req: Request, res: Response) => {
-    const deletedCategory = await needCategoryService.delete(req.params.id);
+    const deletedCategory = await needCategoryService.delete(getParam(req.params.id));
     if (!deletedCategory) {
       throw new ApiError(404, "حوزه نیاز یافت نشد.");
     }

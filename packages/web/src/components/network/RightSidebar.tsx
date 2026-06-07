@@ -35,7 +35,7 @@ const RightSidebar: React.FC = () => {
           <div className="absolute top-0 left-0 w-full h-16 bg-gradient-to-r from-[#007acc] to-[#005fa3] opacity-90"></div>
 
           <div className="relative z-10 flex flex-col items-center pt-8 pb-4 px-4 bg-white/40 backdrop-blur-sm rounded-xl mt-[1px] mx-[1px] shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1)]">
-            <Link href="/network/profile" className="group flex flex-col items-center">
+            <Link href="/network/profile" className="group flex flex-col items-center outline-none focus-visible:ring-2 focus-visible:ring-[#007acc] rounded-xl p-1">
               {/* Avatar Container with Ring */}
               <div className="relative p-1 rounded-full bg-white shadow-[0_4px_10px_rgba(0,0,0,0.15)] transition-transform duration-300 group-hover:scale-105">
                 <div className="w-16 h-16 rounded-full bg-gradient-to-br from-gray-100 to-gray-300 flex items-center justify-center text-[#007acc] font-bold text-2xl border-2 border-white shadow-inner">
@@ -77,7 +77,7 @@ const RightSidebar: React.FC = () => {
           </h3>
           <Link
             href="/network/users"
-            className="text-xs text-[#007acc] hover:text-[#005fa3] font-bold transition-colors"
+            className="text-xs text-[#007acc] hover:text-[#005fa3] font-bold transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[#007acc] rounded"
           >
             مشاهده همه
           </Link>
@@ -103,7 +103,10 @@ const RightSidebar: React.FC = () => {
               </div>
 
               {/* Action Button (Skeuomorphic) */}
-              <button className="w-8 h-8 rounded-full bg-[#f0f2f5] text-[#007acc] shadow-[3px_3px_6px_#d1d5db,-3px_-3px_6px_#ffffff] hover:shadow-[inset_2px_2px_5px_#d1d5db,inset_-2px_-2px_5px_#ffffff] active:scale-95 transition-all flex items-center justify-center">
+              <button 
+                aria-label="دنبال کردن"
+                className="w-8 h-8 rounded-full bg-[#f0f2f5] text-[#007acc] shadow-[3px_3px_6px_#d1d5db,-3px_-3px_6px_#ffffff] hover:shadow-[inset_2px_2px_5px_#d1d5db,inset_-2px_-2px_5px_#ffffff] active:scale-95 transition-all flex items-center justify-center outline-none focus-visible:ring-2 focus-visible:ring-[#007acc]"
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="16"
@@ -142,7 +145,7 @@ const RightSidebar: React.FC = () => {
             <Link
               key={index}
               href={`/network/tags/${item.tag}`}
-              className="flex items-center justify-between p-3 rounded-xl bg-gray-50 border border-gray-100 hover:bg-white hover:shadow-[0_4px_12px_rgba(0,0,0,0.05)] hover:-translate-y-0.5 transition-all duration-300 group"
+              className="flex items-center justify-between p-3 rounded-xl bg-gray-50 border border-gray-100 hover:bg-white hover:shadow-[0_4px_12px_rgba(0,0,0,0.05)] hover:-translate-y-0.5 transition-all duration-300 group outline-none focus-visible:ring-2 focus-visible:ring-[#007acc]"
             >
               <div className="flex flex-col">
                 <span className="font-bold text-sm text-gray-700 group-hover:text-[#007acc] transition-colors">
@@ -177,16 +180,16 @@ const RightSidebar: React.FC = () => {
       {/* --- Footer --- */}
       <div className="px-2">
         <div className="flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-gray-400 font-medium">
-          <Link href="/about" className="hover:text-[#007acc] transition-colors">
+          <Link href="/about" className="hover:text-[#007acc] transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[#007acc] rounded-sm">
             درباره ما
           </Link>
-          <Link href="/help" className="hover:text-[#007acc] transition-colors">
+          <Link href="/help" className="hover:text-[#007acc] transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[#007acc] rounded-sm">
             راهنما
           </Link>
-          <Link href="/privacy" className="hover:text-[#007acc] transition-colors">
+          <Link href="/privacy" className="hover:text-[#007acc] transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[#007acc] rounded-sm">
             حریم خصوصی
           </Link>
-          <Link href="/terms" className="hover:text-[#007acc] transition-colors">
+          <Link href="/terms" className="hover:text-[#007acc] transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[#007acc] rounded-sm">
             قوانین
           </Link>
         </div>

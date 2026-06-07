@@ -47,7 +47,7 @@ class ProjectService {
       if (currentProject) {
         if (data.gallery) {
           const newImageUrls = new Set(data.gallery.map((img) => img.desktop));
-          currentProject.gallery.forEach((oldImage) => {
+          currentProject.gallery.forEach((oldImage: IResponsiveImage) => {
             if (!newImageUrls.has(oldImage.desktop)) {
               this.deleteImageFiles(oldImage);
             }
@@ -70,7 +70,7 @@ class ProjectService {
     if (projectToDelete) {
       this.deleteImageFiles(projectToDelete.featuredImage);
 
-      projectToDelete.gallery.forEach((image) => {
+      projectToDelete.gallery.forEach((image: IResponsiveImage) => {
         this.deleteImageFiles(image);
       });
 

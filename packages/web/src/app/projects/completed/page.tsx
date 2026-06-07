@@ -2,40 +2,69 @@ import { getProjects } from "@/services/project.service";
 import ProjectCard from "@/components/shared/ProjectCard";
 import Pagination from "@/components/ui/Pagination";
 import { Metadata } from "next";
+import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "پروژه‌های تکمیل شده | کانون مسئولیت اجتماعی مهر باران",
-  description: "مشاهده پروژه‌های خیریه تکمیل شده کانون مهر باران",
+  title: "پروژه‌های پایان‌یافته | کانون مهرباران",
+  description: "مشاهده پروژه‌های خیریه پایان‌یافته کانون مهرباران",
+  alternates: {
+    canonical: "/projects/completed",
+  },
+  openGraph: {
+    title: "پروژه‌های پایان‌یافته | کانون مهرباران",
+    description: "مشاهده پروژه‌های خیریه پایان‌یافته کانون مهرباران",
+    url: "/projects/completed",
+    siteName: "کانون مهرباران",
+    locale: "fa_IR",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "پروژه‌های پایان‌یافته | کانون مهرباران",
+    description: "مشاهده پروژه‌های خیریه پایان‌یافته کانون مهرباران",
+  },
 };
 
 export default async function CompletedProjectsPage({
   searchParams,
 }: {
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const page = typeof searchParams.page === "string" ? Number(searchParams.page) : 1;
-  const limit = typeof searchParams.limit === "string" ? Number(searchParams.limit) : 9;
+  const params = await searchParams;
+  const page = typeof params.page === "string" ? Number(params.page) : 1;
+  const limit = typeof params.limit === "string" ? Number(params.limit) : 9;
 
-  // Get total count for pagination
-  const allProjectsResponse = await getProjects({ status: "completed" });
-  const totalResults = allProjectsResponse.results;
-
-  // Get paginated projects
-  const { data: projects } = await getProjects({
+  const response = await getProjects({
     status: "completed",
     page,
     limit,
     sort: "-createdAt",
   });
+  const projects = response.data;
+  const totalResults = response.results;
 
   const totalPages = Math.ceil(totalResults / limit);
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: "پروژه‌های پایان‌یافته | کانون مهرباران",
+    description: "مشاهده پروژه‌های خیریه پایان‌یافته کانون مهرباران",
+    url: "https://mehrbaran.com/projects/completed",
+    inLanguage: "fa-IR",
+  };
+
   return (
-    <div className="md:w-8/10 w-9/10 mx-auto py-12">
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <div className="md:w-8/10 w-9/10 mx-auto py-12">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-4 text-green-600">پروژه‌های تکمیل شده</h1>
+        <h1 className="text-3xl font-bold mb-4 text-green-600">پروژه‌های پایان‌یافته</h1>
         <p className="text-gray-600">
-          مشاهده پروژه‌های خیریه‌ای که با موفقیت به اتمام رسیده‌اند و تاثیرات مثبتی در جامعه گذاشته‌اند.
+          مشاهده پروژه‌های خیریه‌ای که با موفقیت به پایان رسیده‌اند و تاثیرات مثبتی در جامعه گذاشته‌اند.
         </p>
       </div>
 
@@ -55,12 +84,13 @@ export default async function CompletedProjectsPage({
         </>
       ) : (
         <div className="text-center py-16">
-          <p className="text-gray-600 mb-4">در حال حاضر هیچ پروژه تکمیل شده‌ای برای نمایش وجود ندارد.</p>
-          <a href="/projects/active" className="text-mblue hover:underline">
+          <p className="text-gray-600 mb-4">در حال حاضر هیچ پروژه پایان‌یافته‌ای برای نمایش وجود ندارد.</p>
+          <Link href="/projects/active" className="text-mblue hover:underline">
             مشاهده پروژه‌های در حال اجرا →
-          </a>
+          </Link>
         </div>
       )}
     </div>
+    </>
   );
 }

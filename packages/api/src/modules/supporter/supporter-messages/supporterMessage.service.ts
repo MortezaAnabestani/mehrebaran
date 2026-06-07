@@ -7,7 +7,7 @@ class SupporterMessageService {
   public async create(data: {
     content: string;
     author: string;
-    need: string;
+    need: string | string[];
     parentMessage?: string;
   }): Promise<ISupporterMessage> {
     const message = await SupporterMessageModel.create(data);

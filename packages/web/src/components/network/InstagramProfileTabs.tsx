@@ -1,5 +1,3 @@
-"use client";
-
 import React from "react";
 
 export type TabType = "posts" | "tagged" | "saved";
@@ -82,7 +80,7 @@ const InstagramProfileTabs: React.FC<InstagramProfileTabsProps> = ({
                   className={`
                     relative group flex items-center justify-center gap-3 
                     py-3 px-6 rounded-2xl transition-all duration-300 ease-out
-                    outline-none focus:outline-none
+                    outline-none focus-visible:ring-2 focus-visible:ring-[#007acc]
                     ${
                       isActive
                         ? "shadow-[inset_6px_6px_12px_#b8b9be,inset_-6px_-6px_12px_#ffffff] text-[#007acc]"

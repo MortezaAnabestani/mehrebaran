@@ -3,6 +3,7 @@ import asyncHandler from "../../core/utils/asyncHandler";
 import ApiError from "../../core/utils/apiError";
 import { mediaService } from "./media.service";
 import { MediaCategory } from "common-types";
+import { getParam } from "../../core/utils/getParam";
 
 class MediaController {
   /**
@@ -17,15 +18,7 @@ class MediaController {
       throw new ApiError(400, "فایل الزامی است.");
     }
 
-    const {
-      category,
-      relatedModel,
-      relatedId,
-      isPublic,
-      altText,
-      caption,
-      generateThumbnails,
-    } = req.body;
+    const { category, relatedModel, relatedId, isPublic, altText, caption, generateThumbnails } = req.body;
 
     if (!category) {
       throw new ApiError(400, "دسته‌بندی media الزامی است.");
@@ -54,14 +47,14 @@ class MediaController {
   public getMediaById = asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
 
-    const media = await mediaService.getMediaById(id);
+    const media = await mediaService.getMediaById(getParam(id));
 
     if (!media) {
       throw new ApiError(404, "فایل یافت نشد.");
     }
 
     // افزایش شمارنده views
-    await mediaService.incrementViews(id);
+    await mediaService.incrementViews(getParam(id));
 
     res.status(200).json({
       message: "فایل با موفقیت دریافت شد.",
@@ -78,10 +71,10 @@ class MediaController {
     const { category, limit, skip } = req.query;
 
     const media = await mediaService.getUserMedia(
-      userId,
+      getParam(userId),
       category as MediaCategory,
       parseInt(limit as string) || 50,
-      parseInt(skip as string) || 0
+      parseInt(skip as string) || 0,
     );
 
     res.status(200).json({
@@ -97,7 +90,7 @@ class MediaController {
   public getRelatedMedia = asyncHandler(async (req: Request, res: Response) => {
     const { model, id } = req.params;
 
-    const media = await mediaService.getRelatedMedia(model, id);
+    const media = await mediaService.getRelatedMedia(getParam(model), getParam(id));
 
     res.status(200).json({
       message: "فایل‌های مرتبط با موفقیت دریافت شد.",
@@ -113,7 +106,7 @@ class MediaController {
     const { id } = req.params;
     const userId = req.user!._id.toString();
 
-    const success = await mediaService.deleteMedia(id, userId);
+    const success = await mediaService.deleteMedia(getParam(id), userId);
 
     if (!success) {
       throw new ApiError(404, "فایل یافت نشد یا شما صاحب آن نیستید.");
@@ -164,7 +157,7 @@ class MediaController {
   public incrementDownloads = asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
 
-    await mediaService.incrementDownloads(id);
+    await mediaService.incrementDownloads(getParam(id));
 
     res.status(200).json({
       message: "شمارنده دانلود به‌روز شد.",

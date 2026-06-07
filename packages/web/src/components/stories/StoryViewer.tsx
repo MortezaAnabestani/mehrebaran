@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import type { IStory, IUser } from "common-types";
 import storyService from "@/services/story.service";
-import SmartButton from "@/components/ui/SmartButton";
+import OptimizedImage from "@/components/ui/OptimizedImage";
+import Image from "next/image";
 
 // ===========================
 // Types & Interfaces
@@ -41,21 +42,21 @@ const StoryViewer: React.FC<StoryViewerProps> = ({ stories, initialIndex = 0, on
   // Story Navigation
   // ===========================
 
-  const goToNext = () => {
+  const goToNext = useCallback(() => {
     if (currentIndex < stories.length - 1) {
       setCurrentIndex(currentIndex + 1);
       setProgress(0);
     } else {
       onClose();
     }
-  };
+  }, [currentIndex, stories.length, onClose]);
 
-  const goToPrevious = () => {
+  const goToPrevious = useCallback(() => {
     if (currentIndex > 0) {
       setCurrentIndex(currentIndex - 1);
       setProgress(0);
     }
-  };
+  }, [currentIndex]);
 
   // ===========================
   // Progress Management
@@ -100,7 +101,7 @@ const StoryViewer: React.FC<StoryViewerProps> = ({ stories, initialIndex = 0, on
         clearInterval(progressInterval.current);
       }
     };
-  }, [currentIndex, currentStory, isPaused]);
+  }, [currentIndex, currentStory, isPaused, goToNext, onStoryChange, storyDuration]);
 
   // ===========================
   // Event Handlers
@@ -115,7 +116,7 @@ const StoryViewer: React.FC<StoryViewerProps> = ({ stories, initialIndex = 0, on
     }
   };
 
-  const handleKeyDown = (e: KeyboardEvent) => {
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
     if (e.key === "Escape") {
       onClose();
     } else if (e.key === "ArrowRight") {
@@ -124,14 +125,14 @@ const StoryViewer: React.FC<StoryViewerProps> = ({ stories, initialIndex = 0, on
       goToNext();
     } else if (e.key === " ") {
       e.preventDefault();
-      setIsPaused(!isPaused);
+      setIsPaused((prev) => !prev);
     }
-  };
+  }, [onClose, goToPrevious, goToNext]);
 
   useEffect(() => {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isPaused, currentIndex]);
+  }, [handleKeyDown]);
 
   // ===========================
   // Helper Functions
@@ -184,11 +185,15 @@ const StoryViewer: React.FC<StoryViewerProps> = ({ stories, initialIndex = 0, on
       <div className="absolute top-6 left-0 right-0 flex items-center justify-between px-4 z-10">
         <div className="flex items-center gap-3">
           {userAvatar ? (
-            <img
-              src={userAvatar}
-              alt={userName}
-              className="w-10 h-10 rounded-full border-2 border-white object-cover"
-            />
+            <div className="relative w-10 h-10 rounded-full border-2 border-white overflow-hidden">
+              <OptimizedImage
+                src={userAvatar}
+                alt={userName}
+                fill
+                sizes="40px"
+                className="object-cover"
+              />
+            </div>
           ) : (
             <div className="w-10 h-10 rounded-full border-2 border-white bg-gradient-to-br from-mblue to-cyan-500 flex items-center justify-center text-white font-bold">
               {userName.charAt(0)}
@@ -211,12 +216,13 @@ const StoryViewer: React.FC<StoryViewerProps> = ({ stories, initialIndex = 0, on
       </div>
 
       {/* Story Content */}
-      <div className="w-full h-full flex items-center justify-center">
+      <div className="w-full h-full flex items-center justify-center relative">
         {currentStory.type === "image" && currentStory.media?.url && (
-          <img
+          <Image
             src={currentStory.media.url}
             alt="استوری"
-            className="max-w-full max-h-full object-contain"
+            fill
+            className="object-contain"
             onLoad={() => setProgress(0)}
           />
         )}

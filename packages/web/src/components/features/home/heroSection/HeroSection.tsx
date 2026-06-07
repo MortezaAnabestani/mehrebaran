@@ -9,7 +9,10 @@ export default function HeroSection({ settings }: { settings: IHomePageHeroSetti
   const image = settings?.image.desktop || "/images/hero_img.jpg";
 
   return (
-    <section className="relative w-full h-[600px] md:h-screen md:min-h-[600px] overflow-hidden bg-neutral-900">
+    <section
+      aria-labelledby="hero-title"
+      className="relative w-full h-[600px] md:h-screen md:min-h-[600px] overflow-hidden bg-neutral-900"
+    >
       {/* Background Image with Overlay */}
       <div className="absolute inset-0 w-full h-full">
         <OptimizedImage
@@ -19,49 +22,54 @@ export default function HeroSection({ settings }: { settings: IHomePageHeroSetti
           className="object-cover object-center"
           priority="up"
         />
-        <div className="absolute inset-0 bg-linear-to-l from-black/30 via-black/60 to-black/80" />
+        <div className="absolute inset-0 bg-black/40 sm:bg-transparent sm:bg-linear-to-r sm:from-black/80 sm:via-black/50 sm:to-transparent" />
       </div>
 
       {/* Content Container */}
       <div
-        className="relative z-10 md:w-7/10 mx-auto h-full flex flex-col justify-center px-6 md:px-12"
-        dir="ltr"
+        className="relative z-10 container mx-auto h-full flex flex-col justify-center px-4 sm:px-6 lg:px-12"
+        dir="rtl"
       >
-        {/* Wrapper بیرونی - موقعیت‌دهی */}
-        <div className="absolute bottom-4 mx-5 left-0 right-0 md:static md:w-6/10">
+        {/* Wrapper بیرونی - موقعیت‌دهی سمت چپ */}
+        <div className="w-full mt-10 md:mt-0 sm:w-11/12 md:w-8/12 lg:w-[55%] xl:w-[45%] mr-auto">
           {/* این div قطرات و باکس رو روی هم نگه میداره */}
           <div className="relative">
             {/* canvas پشت باکس شیشه‌ای */}
-            <RainGlass className="rounded-3xl" />
+            <RainGlass className="rounded-2xl sm:rounded-3xl xl:rounded-[2rem]" />
 
             {/* باکس شیشه‌ای روی canvas */}
             <div
               className="relative z-10
-                h-fit rounded-3xl
-                text-center md:text-left space-y-6 p-8 md:p-10
-                bg-black/10
+                h-fit rounded-2xl sm:rounded-3xl xl:rounded-[2rem]
+                text-right space-y-3 sm:space-y-5 md:space-y-6 
+                p-5 sm:p-8 lg:p-12
+                bg-black/15
                 backdrop-filter backdrop-blur-md
                 border border-white/20
                 shadow-[0_8px_32px_0_rgba(0,0,0,0.3)]
-                hover:bg-white/15 hover:shadow-[0_8px_32px_0_rgba(0,122,204,0.25)]
+                hover:bg-white/10 hover:shadow-[0_8px_32px_0_rgba(0,122,204,0.25)]
                 transition-all duration-500 ease-in-out
               "
             >
-              <h1 className="text-xl md:text-3xl font-extrabold text-white leading-tight drop-shadow-md tracking-wide">
+              <h1
+                id="hero-title"
+                className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-extrabold text-white leading-tight drop-shadow-lg tracking-normal"
+              >
                 {title}
               </h1>
 
-              <p className="text-base md:text-lg text-white/90 font-medium leading-relaxed text-justify drop-shadow-sm">
+              <p className="text-sm sm:text-base lg:text-lg text-white/90 font-medium leading-relaxed sm:leading-loose drop-shadow-md">
                 {description}
               </p>
 
-              <div className="pt-4">
+              <div className="pt-2 sm:pt-4">
                 <SmartButton
                   variant="mblue"
                   className="
-                    px-8 py-3.5
+                    w-full sm:w-auto
+                    justify-center
+                    px-6 py-3 sm:px-8 sm:py-3.5
                     text-sm md:text-base font-bold
-                    rounded-2xl
                     shadow-lg hover:shadow-[#007acc]/50
                     border border-white/10
                     backdrop-blur-md

@@ -64,6 +64,7 @@ export function Item({ row, col, planeX, planeY, images }: ItemProps) {
           src={imagesList[imageIndex]}
           width={icon.size} // استفاده از سایز واقعی آیکون برای کیفیت بهتر
           height={icon.size}
+          priority="down"
           alt={`icon-${row}-${col}`}
           className="w-full h-full object-cover"
         />
@@ -74,17 +75,8 @@ export function Item({ row, col, planeX, planeY, images }: ItemProps) {
           - در حالت هاور رنگ برند با شفافیت کم نمایش داده می‌شود
         */}
         <div
-          className="absolute inset-0 transition-colors duration-300 ease-in-out"
-          style={{
-            backgroundColor: primaryColor,
-            opacity: 0, // حالت عادی
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.opacity = "0.12"; // State Layer Opacity (M3 Standard)
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.opacity = "0";
-          }}
+          className="absolute inset-0 transition-opacity duration-300 ease-in-out opacity-0 hover:opacity-[0.12]"
+          style={{ backgroundColor: primaryColor }}
         />
       </div>
     </motion.div>

@@ -23,7 +23,7 @@ class FaqController {
 
   public getById = asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
-    const faq = await faqService.findById(id);
+    const faq = await faqService.findById(id as any);
     if (!faq) {
       throw new ApiError(404, "سوال یافت نشد.");
     }
@@ -41,12 +41,12 @@ class FaqController {
 
   public async delete(req: Request, res: Response): Promise<void> {
     const { id } = req.params;
-    const faq = await faqService.findById(id);
+    const faq = await faqService.findById(id as any);
     if (!faq) {
       res.status(404).json({ message: "سوال یافت نشد." });
       return;
     }
-    await faqService.delete(id);
+    await faqService.delete(id as any);
     res.status(200).json({ message: "سوال با موفقیت حذف شد." });
   }
 }

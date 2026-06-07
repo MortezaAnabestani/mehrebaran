@@ -1,10 +1,8 @@
-"use client";
-
 import React from "react";
 import Link from "next/link";
 import { ITeam } from "common-types";
 import SmartButton from "@/components/ui/SmartButton";
-import { Users, CheckCircle2, TrendingUp, Lock, Globe, MoreHorizontal, ArrowRight } from "lucide-react";
+import { Users, CheckCircle2, TrendingUp, Lock, Globe, ArrowRight } from "lucide-react";
 
 interface TeamCardProps {
   team: ITeam;
@@ -12,7 +10,7 @@ interface TeamCardProps {
   onUpdate?: () => void;
 }
 
-const TeamCard: React.FC<TeamCardProps> = ({ team, variant = "card", onUpdate }) => {
+const TeamCard: React.FC<TeamCardProps> = ({ team, variant = "card" }) => {
   // --- محاسبات و منطق ---
   const activeMembers = team.members?.filter((m) => m.isActive).length || 0;
   const totalMembers = team.members?.length || 0;

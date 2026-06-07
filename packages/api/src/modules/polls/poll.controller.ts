@@ -2,17 +2,18 @@ import asyncHandler from "../../core/utils/asyncHandler";
 import { Request, Response } from "express";
 import { pollService } from "./poll.service";
 import { createPollSchema, voteOnPollSchema } from "./poll.validation";
+import { getParam } from "../../core/utils/getParam";
 
 class PollController {
   create = asyncHandler(async (req: Request, res: Response) => {
     const { needId } = req.params;
     const { body } = createPollSchema.parse({ body: req.body, params: req.params });
-    const poll = await pollService.create(needId, body);
+    const poll = await pollService.create(getParam(needId), body);
     res.status(201).json({ message: "نظرسنجی با موفقیت ایجاد شد.", data: poll });
   });
 
   getAllForNeed = asyncHandler(async (req: Request, res: Response) => {
-    const polls = await pollService.findByNeed(req.params.needId);
+    const polls = await pollService.findByNeed(getParam(req.params.needId));
     res.status(200).json({ data: polls });
   });
 

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import SmartButton from "./SmartButton";
+import { ChevronRight, ChevronLeft } from "lucide-react";
 
 interface PaginationProps {
   currentPage: number;
@@ -44,44 +44,61 @@ export default function Pagination({ currentPage, totalPages }: PaginationProps)
   const pageNumbers = getPageNumbers();
 
   return (
-    <nav className="flex items-center justify-center space-x-2" dir="ltr">
-      <Link
-        href={createPageURL(currentPage - 1)}
-        className={`px-3 py-1 rounded-md ${
-          currentPage === 1 ? "pointer-events-none text-gray-400" : "hover:bg-gray-200"
-        }`}
-        aria-disabled={currentPage === 1}
-      >
-        <SmartButton rightIcon className="h-5 w-5" />
-      </Link>
+    <nav className="flex items-center justify-center space-x-2 space-x-reverse" aria-label="پیمایش صفحات">
+      {currentPage <= 1 ? (
+        <span
+          className="px-2 py-2 rounded-md flex items-center justify-center pointer-events-none text-gray-400"
+          aria-disabled="true"
+          aria-label="صفحه قبلی"
+        >
+          <ChevronRight className="h-5 w-5" aria-hidden="true" />
+        </span>
+      ) : (
+        <Link
+          href={createPageURL(currentPage - 1)}
+          className="px-2 py-2 rounded-md flex items-center justify-center hover:bg-gray-200 text-gray-700"
+          aria-label="صفحه قبلی"
+        >
+          <ChevronRight className="h-5 w-5" aria-hidden="true" />
+        </Link>
+      )}
 
       {pageNumbers.map((page, index) =>
         typeof page === "number" ? (
           <Link
-            key={index}
+            key={`page-${page}`}
             href={createPageURL(page)}
-            className={`px-3 py-1 rounded-md ${
-              currentPage === page ? "bg-mblue text-white" : "hover:bg-gray-200"
+            className={`px-3 py-1 rounded-md transition-colors ${
+              currentPage === page ? "bg-mblue text-white font-bold" : "hover:bg-gray-200 text-gray-700"
             }`}
+            aria-current={currentPage === page ? "page" : undefined}
           >
             {page}
           </Link>
         ) : (
-          <span key={index} className="px-3 py-1">
+          <span key={`ellipsis-${index}`} className="px-3 py-1 text-gray-500">
             {page}
           </span>
         )
       )}
 
-      <Link
-        href={createPageURL(currentPage + 1)}
-        className={`px-3 py-1 rounded-md ${
-          currentPage === totalPages ? "pointer-events-none text-gray-400" : "hover:bg-gray-200"
-        }`}
-        aria-disabled={currentPage === totalPages}
-      >
-        <SmartButton leftIcon className="h-5 w-5" />
-      </Link>
+      {currentPage >= totalPages ? (
+        <span
+          className="px-2 py-2 rounded-md flex items-center justify-center pointer-events-none text-gray-400"
+          aria-disabled="true"
+          aria-label="صفحه بعدی"
+        >
+          <ChevronLeft className="h-5 w-5" aria-hidden="true" />
+        </span>
+      ) : (
+        <Link
+          href={createPageURL(currentPage + 1)}
+          className="px-2 py-2 rounded-md flex items-center justify-center hover:bg-gray-200 text-gray-700"
+          aria-label="صفحه بعدی"
+        >
+          <ChevronLeft className="h-5 w-5" aria-hidden="true" />
+        </Link>
+      )}
     </nav>
   );
 }

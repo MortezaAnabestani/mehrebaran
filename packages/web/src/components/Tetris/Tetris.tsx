@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useEffect, useCallback } from "react";
 import { useTetris } from "./useTetris";
 import TetrisBoard from "./TetrisBoard";
@@ -127,24 +129,28 @@ const Tetris: React.FC<TetrisProps> = ({ topText, bottomText }) => {
             <div className="relative w-24 h-24">
               <button
                 onClick={rotate}
+                aria-label="Rotate piece"
                 className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-8 bg-slate-800 rounded button-retro flex items-center justify-center text-slate-600 hover:text-cyan-500 active:text-cyan-300"
               >
                 <ArrowUp size={16} />
               </button>
               <button
                 onClick={() => move(Direction.LEFT)}
+                aria-label="Move left"
                 className="absolute left-0 top-1/2 -translate-y-1/2 w-8 h-8 bg-slate-800 rounded button-retro flex items-center justify-center text-slate-600 hover:text-cyan-500 active:text-cyan-300"
               >
                 <ChevronLeft size={16} />
               </button>
               <button
                 onClick={() => move(Direction.RIGHT)}
+                aria-label="Move right"
                 className="absolute right-0 top-1/2 -translate-y-1/2 w-8 h-8 bg-slate-800 rounded button-retro flex items-center justify-center text-slate-600 hover:text-cyan-500 active:text-cyan-300"
               >
                 <ChevronRight size={16} />
               </button>
               <button
                 onClick={drop}
+                aria-label="Soft drop"
                 className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-8 bg-slate-800 rounded button-retro flex items-center justify-center text-slate-600 hover:text-cyan-500 active:text-cyan-300"
               >
                 <ChevronDown size={16} />
@@ -158,12 +164,14 @@ const Tetris: React.FC<TetrisProps> = ({ topText, bottomText }) => {
             <div className="flex gap-4">
               <button
                 onClick={hardDrop}
+                aria-label="Hard drop"
                 className="w-12 h-12 bg-cyan-600 rounded-full button-retro border-2 border-cyan-800 flex items-center justify-center text-cyan-100"
               >
                 <Zap size={20} />
               </button>
               <button
                 onClick={rotate}
+                aria-label="Rotate piece"
                 className="w-12 h-12 bg-sky-700 rounded-full button-retro border-2 border-sky-900 flex items-center justify-center text-sky-100"
               >
                 <RotateCcw size={20} />
@@ -173,6 +181,7 @@ const Tetris: React.FC<TetrisProps> = ({ topText, bottomText }) => {
               <div className="flex flex-col items-center">
                 <button
                   onClick={togglePause}
+                  aria-label="Toggle pause"
                   className="w-8 h-3 bg-slate-800 rounded-full button-retro border border-slate-700 mb-1"
                 />
                 <span className="text-[6px] font-retro text-slate-600 uppercase">Start</span>
@@ -180,6 +189,7 @@ const Tetris: React.FC<TetrisProps> = ({ topText, bottomText }) => {
               <div className="flex flex-col items-center">
                 <button
                   onClick={resetGame}
+                  aria-label="Reset game"
                   className="w-8 h-3 bg-slate-800 rounded-full button-retro border border-slate-700 mb-1"
                 />
                 <span className="text-[6px] font-retro text-slate-600 uppercase">Reset</span>

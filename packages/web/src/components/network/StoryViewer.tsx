@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import OptimizedImage from "@/components/ui/OptimizedImage";
-import { X, ChevronLeft, ChevronRight, Play, Pause } from "lucide-react"; // فرض بر استفاده از lucide-react برای آیکون‌های مدرن
+import { X, ChevronLeft, ChevronRight, Pause } from "lucide-react"; // فرض بر استفاده از lucide-react برای آیکون‌های مدرن
 
 interface Story {
   id: string;
@@ -22,15 +22,6 @@ interface StoryViewerProps {
   onStoryChange?: (index: number) => void;
 }
 
-interface SmartImageProps {
-  src: string;
-  alt: string;
-  width: number;
-  height: number;
-  className?: string;
-  onLoadingComplete?: () => void;
-}
-
 const StoryViewer: React.FC<StoryViewerProps> = ({ stories, initialIndex = 0, onClose, onStoryChange }) => {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [progress, setProgress] = useState(0);
@@ -38,7 +29,7 @@ const StoryViewer: React.FC<StoryViewerProps> = ({ stories, initialIndex = 0, on
   const [isImageLoading, setIsImageLoading] = useState(true);
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const startTimeRef = useRef<number>(Date.now());
+  const startTimeRef = useRef<number>(0);
 
   const currentStory = stories[currentIndex];
   const duration = currentStory?.duration || 5;
@@ -70,7 +61,36 @@ const StoryViewer: React.FC<StoryViewerProps> = ({ stories, initialIndex = 0, on
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentIndex, isPaused, currentStory, duration, isImageLoading]);
+
+  useEffect(() => {
+    const handlePrevious = () => {
+      if (currentIndex > 0) {
+        setCurrentIndex((prev) => prev - 1);
+        onStoryChange?.(currentIndex - 1);
+      }
+    };
+
+    const handleNext = () => {
+      if (currentIndex < stories.length - 1) {
+        setCurrentIndex((prev) => prev + 1);
+        onStoryChange?.(currentIndex + 1);
+      } else {
+        onClose();
+      }
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "ArrowRight") handleNext();
+      if (e.key === "ArrowLeft") handlePrevious();
+      if (e.key === "Escape") onClose();
+      if (e.key === " ") setIsPaused((prev) => !prev); // Space to toggle pause
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [currentIndex, stories.length, onClose, onStoryChange]);
 
   const handleNext = () => {
     if (currentIndex < stories.length - 1) {
@@ -87,18 +107,6 @@ const StoryViewer: React.FC<StoryViewerProps> = ({ stories, initialIndex = 0, on
       onStoryChange?.(currentIndex - 1);
     }
   };
-
-  const handleKeyDown = (e: KeyboardEvent) => {
-    if (e.key === "ArrowRight") handleNext();
-    if (e.key === "ArrowLeft") handlePrevious();
-    if (e.key === "Escape") onClose();
-    if (e.key === " ") setIsPaused((prev) => !prev); // Space to toggle pause
-  };
-
-  useEffect(() => {
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [currentIndex]);
 
   if (!currentStory) return null;
 
@@ -196,6 +204,7 @@ const StoryViewer: React.FC<StoryViewerProps> = ({ stories, initialIndex = 0, on
               className={`w-full h-full object-contain transition-opacity duration-300 ${
                 isImageLoading ? "opacity-0" : "opacity-100"
               }`}
+              onLoad={() => setIsImageLoading(false)}
             />
           ) : (
             <video

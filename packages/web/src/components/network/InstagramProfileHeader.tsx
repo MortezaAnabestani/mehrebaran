@@ -1,5 +1,3 @@
-"use client";
-
 import React from "react";
 import OptimizedImage from "@/components/ui/OptimizedImage";
 
@@ -165,7 +163,7 @@ const InstagramProfileHeader: React.FC<InstagramProfileHeaderProps> = ({
                   </p>
                   {/* Decorative quote mark */}
                   <div className="absolute -top-1.5 sm:-top-2 -right-1.5 sm:-right-2 text-2xl sm:text-3xl md:text-4xl text-gray-100 font-serif">
-                    "
+                    &quot;
                   </div>
                 </div>
               )}

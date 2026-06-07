@@ -173,7 +173,7 @@ export const useTetris = () => {
   const hardDrop = useCallback(() => {
     setGameState((prev) => {
       if (!prev.activePiece || prev.isPaused || prev.isGameOver) return prev;
-      let currPos = { ...prev.activePiece.pos };
+      const currPos = { ...prev.activePiece.pos };
       while (
         !checkCollision({ ...currPos, y: currPos.y + 1 }, prev.activePiece.tetromino.shape, prev.board)
       ) {

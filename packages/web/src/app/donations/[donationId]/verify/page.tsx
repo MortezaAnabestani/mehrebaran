@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import { useParams, useSearchParams, useRouter } from "next/navigation";
 import { verifyPayment } from "@/services/donation.service";
 import SmartButton from "@/components/ui/SmartButton";
 import Loading from "@/components/ui/Loading";
 
-export default function PaymentVerificationPage() {
+function VerificationContent() {
   const params = useParams();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -22,50 +22,66 @@ export default function PaymentVerificationPage() {
   const [certificateUrl, setCertificateUrl] = useState("");
 
   useEffect(() => {
+    let active = true;
+
     const verify = async () => {
       if (!authority || !status || !donationId) {
-        setError("اطلاعات تراکنش ناقص است");
-        setVerifying(false);
+        if (active) {
+          setError("اطلاعات تراکنش ناقص است");
+          setVerifying(false);
+        }
         return;
       }
 
       if (status !== "OK") {
-        setError("پرداخت توسط کاربر لغو شد یا با خطا مواجه شد");
-        setVerifying(false);
+        if (active) {
+          setError("پرداخت توسط کاربر لغو شد یا با خطا مواجه شد");
+          setVerifying(false);
+        }
         return;
       }
 
       try {
         const result = await verifyPayment(donationId, authority, status);
-        setSuccess(true);
-        setRefId(result.refId);
-        if (result.certificateUrl) {
-          setCertificateUrl(result.certificateUrl);
+        if (active) {
+          setSuccess(true);
+          setRefId(result.refId);
+          if (result.certificateUrl) {
+            setCertificateUrl(result.certificateUrl);
+          }
         }
-      } catch (err: any) {
-        setError(err.message || "خطا در تایید پرداخت");
+      } catch (err) {
+        if (active) {
+          setError(err instanceof Error ? err.message : "خطا در تایید پرداخت");
+        }
       } finally {
-        setVerifying(false);
+        if (active) {
+          setVerifying(false);
+        }
       }
     };
 
     verify();
+
+    return () => {
+      active = false; // Prevent race conditions & state updates on unmounted component
+    };
   }, [authority, status, donationId]);
 
   if (verifying) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <main className="min-h-screen flex items-center justify-center p-4">
         <div className="text-center">
           <Loading />
           <p className="mt-4 text-gray-600">در حال تایید پرداخت...</p>
         </div>
-      </div>
+      </main>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4">
+      <main className="min-h-screen flex items-center justify-center p-4">
         <div className="bg-white p-8 rounded-xl shadow-lg max-w-md w-full text-center">
           <svg
             className="w-16 h-16 text-red-500 mx-auto mb-4"
@@ -91,13 +107,13 @@ export default function PaymentVerificationPage() {
             </SmartButton>
           </div>
         </div>
-      </div>
+      </main>
     );
   }
 
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4">
+      <main className="min-h-screen flex items-center justify-center p-4">
         <div className="bg-white p-8 rounded-xl shadow-lg max-w-md w-full text-center">
           <svg
             className="w-20 h-20 text-green-500 mx-auto mb-4"
@@ -115,8 +131,7 @@ export default function PaymentVerificationPage() {
 
           <h2 className="text-2xl font-bold text-gray-800 mb-2">پرداخت موفق!</h2>
           <p className="text-gray-600 mb-6">
-            از حمایت ارزشمند شما سپاسگزاریم. کمک شما در تحقق اهداف خیرخواهانه ما بسیار
-            مؤثر است.
+            از حمایت ارزشمند شما سپاسگزاریم. کمک شما در تحقق اهداف خیرخواهانه ما بسیار مؤثر است.
           </p>
 
           {refId && (
@@ -131,8 +146,7 @@ export default function PaymentVerificationPage() {
           {certificateUrl && (
             <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg mb-4">
               <p className="text-sm text-blue-800 mb-3">
-                گواهی‌نامه شما آماده است! می‌توانید آن را دانلود کرده و در شبکه‌های اجتماعی
-                به اشتراک بگذارید.
+                گواهی‌نامه شما آماده است! می‌توانید آن را دانلود کرده و در شبکه‌های اجتماعی به اشتراک بگذارید.
               </p>
               <SmartButton
                 variant="mblue"
@@ -153,9 +167,26 @@ export default function PaymentVerificationPage() {
             </SmartButton>
           </div>
         </div>
-      </div>
+      </main>
     );
   }
 
   return null;
+}
+
+export default function PaymentVerificationPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="min-h-screen flex items-center justify-center p-4">
+          <div className="text-center">
+            <Loading />
+            <p className="mt-4 text-gray-600">در حال لود اطلاعات پرداخت...</p>
+          </div>
+        </main>
+      }
+    >
+      <VerificationContent />
+    </Suspense>
+  );
 }

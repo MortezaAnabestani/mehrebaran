@@ -4,10 +4,17 @@
   "private": true,
   "description": "Monorepo for the Mehre-Baran application",
   "scripts": {
-    "dev:api": "pnpm --filter api dev",
-    "dev:web": "pnpm --filter web dev",
-    "dev:dashboard": "pnpm --filter dashboard dev"
+    "dev:api": "npm run dev -w packages/api",
+    "dev:dashboard": "npm run dev -w packages/dashboard",
+    "start:dashboard": "npm run start -w packages/dashboard",
+    "build:dashboard": "npm run build -w packages/dashboard",
+    "dev:web": "npm run dev -w packages/web",
+    "start:web": "npm run start -w packages/web",
+    "build:web": "npm run build -w packages/web"
   },
+  "workspaces": [
+    "packages/*"
+  ],
   "keywords": [],
   "author": "Morteza Anabestani",
   "license": "ISC",

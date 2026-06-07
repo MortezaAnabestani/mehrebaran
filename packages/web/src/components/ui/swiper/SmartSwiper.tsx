@@ -7,7 +7,7 @@ import type { Swiper as SwiperType } from "swiper";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import SwiperButton from "./SwiperButton";
 
 interface SmartSwiperProps {
@@ -26,8 +26,8 @@ interface SmartSwiperProps {
       spaceBetween?: number;
     };
   };
-  onSlideChange?: (swiper: any) => void;
-  onSwiper?: (swiper: any) => void;
+  onSlideChange?: (swiper: SwiperType) => void;
+  onSwiper?: (swiper: SwiperType) => void;
   outsideBtn?: boolean;
 }
 
@@ -48,10 +48,8 @@ const SmartSwiper: React.FC<SmartSwiperProps> = ({
 }) => {
   const prevRef = useRef<HTMLButtonElement>(null);
   const nextRef = useRef<HTMLButtonElement>(null);
-  const [swiperInstance, setSwiperInstance] = useState<SwiperType | null>(null);
 
   const handleSwiper = (swiper: SwiperType) => {
-    setSwiperInstance(swiper);
     if (onSwiper) {
       onSwiper(swiper);
     }

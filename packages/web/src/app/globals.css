@@ -63,61 +63,13 @@
   --color-mblue: #3b80c3;
   --color-mgray: #cfcfcf;
   --color-morange: #f7891b;
-}
-
-@font-face {
-  font-family: "Noora";
-  src: url("/fonts/Noora-ExtraLight.woff2") format("woff2"),
-    url("/fonts/Noora-ExtraLight.woff") format("woff");
-  font-weight: 200;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Noora";
-  src: url("/fonts/Noora-Light.woff2") format("woff2"), url("/fonts/Noora-Light.woff") format("woff");
-  font-weight: 300;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Noora";
-  src: url("/fonts/Noora-Regular.woff2") format("woff2"), url("/fonts/Noora-Regular.woff") format("woff");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Noora";
-  src: url("/fonts/Noora-Bold.woff2") format("woff2"), url("/fonts/Noora-Bold.woff") format("woff");
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Noora";
-  src: url("/fonts/Noora-ExtraBold.woff2") format("woff2"), url("/fonts/Noora-ExtraBold.woff") format("woff");
-  font-weight: 800;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Noora";
-  src: url("/fonts/Noora-Black.woff2") format("woff2"), url("/fonts/Noora-Black.woff") format("woff");
-  font-weight: 900;
-  font-style: normal;
-  font-display: swap;
+  --font-noora: var(--font-noora);
+  --font-sans: var(--font-noora), ui-sans-serif, system-ui, sans-serif;
 }
 
 body {
   color: rgb(var(--foreground-rgb));
   background: rgb(var(--background-start-rgb));
-  font-family: "Noora", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   box-sizing: border-box;

@@ -3,6 +3,7 @@
 import React, { useState, useRef } from "react";
 import type { MediaType, MediaCategory } from "common-types";
 import mediaService from "@/services/media.service";
+import Image from "next/image";
 import SmartButton from "@/components/ui/SmartButton";
 
 // ===========================
@@ -106,8 +107,9 @@ const MediaUploader: React.FC<MediaUploaderProps> = ({
       );
 
       return response.data.media._id;
-    } catch (error: any) {
-      const errorMessage = error.response?.data?.message || "خطا در آپلود فایل";
+    } catch (error) {
+      const err = error as { response?: { data?: { message?: string } } };
+      const errorMessage = err.response?.data?.message || "خطا در آپلود فایل";
 
       // Update status to error
       setUploadingFiles((prev) =>
@@ -232,10 +234,15 @@ const MediaUploader: React.FC<MediaUploaderProps> = ({
   // Cleanup
   // ===========================
 
+  const uploadingFilesRef = useRef(uploadingFiles);
+  React.useEffect(() => {
+    uploadingFilesRef.current = uploadingFiles;
+  }, [uploadingFiles]);
+
   React.useEffect(() => {
     return () => {
       // Cleanup preview URLs on unmount
-      uploadingFiles.forEach((f) => {
+      uploadingFilesRef.current.forEach((f) => {
         if (f.previewUrl) {
           URL.revokeObjectURL(f.previewUrl);
         }
@@ -317,9 +324,12 @@ const MediaUploader: React.FC<MediaUploaderProps> = ({
                 <div className="flex items-center gap-4">
                   {/* Preview */}
                   {uploadingFile.previewUrl ? (
-                    <img
+                    <Image
                       src={uploadingFile.previewUrl}
                       alt={uploadingFile.file.name}
+                      width={64}
+                      height={64}
+                      unoptimized
                       className="w-16 h-16 rounded object-cover"
                     />
                   ) : (

@@ -1,6 +1,5 @@
-import { IResponsiveImage } from "common-types";
 import Image from "next/image";
-import type { FC } from "react";
+import type { FC, SyntheticEvent } from "react";
 
 type SmartImageProps = {
   src: string;
@@ -15,6 +14,7 @@ type SmartImageProps = {
   placeholder?: "blur" | "empty";
   blurDataURL?: string;
   unoptimized?: boolean;
+  onLoad?: (e: SyntheticEvent<HTMLImageElement, Event>) => void;
 };
 
 const OptimizedImage: FC<SmartImageProps> = ({
@@ -30,6 +30,7 @@ const OptimizedImage: FC<SmartImageProps> = ({
   placeholder = "empty",
   blurDataURL,
   unoptimized = false,
+  onLoad,
 }) => {
   // CRITICAL: Prevent empty string from reaching Next.js Image
   // Check for undefined, null, empty string, and whitespace-only strings
@@ -56,25 +57,36 @@ const OptimizedImage: FC<SmartImageProps> = ({
     );
   }
 
-  // Double-check one more time before passing to Image
-  const safeSrc = src.trim() || "/images/default-avatar.png";
+  // Ensure domain is prefixed if path starts with /uploads
+  let safeSrc = src.trim() || "/images/default-avatar.png";
+  if (safeSrc.startsWith("/uploads/")) {
+    const uploadDomain = process.env.NEXT_PUBLIC_UPLOADS || "http://localhost:5001";
+    safeSrc = `${uploadDomain}${safeSrc}`;
+  }
 
-  // Auto-detect if image needs to be unoptimized (SVG files, local icons)
-  const shouldUnoptimize = unoptimized || safeSrc.endsWith(".svg") || safeSrc.startsWith("/icons/");
+  // Bypass ngrok browser warning by routing through our proxy
+  if (safeSrc.includes("ngrok") || safeSrc.includes("ngrok-free")) {
+    safeSrc = `/api/proxy-image?url=${encodeURIComponent(safeSrc)}`;
+  }
+
+  // Auto-detect if image needs to be unoptimized (SVG files, local icons or proxy routes)
+  const shouldUnoptimize = unoptimized || safeSrc.endsWith(".svg") || safeSrc.startsWith("/icons/") || safeSrc.startsWith("/api/proxy-image");
 
   const imageClass = `${className} ${rounded ? "rounded-xl" : ""}`;
   return fill ? (
-    <div className="relative w-full h-full">
+    <div className={`relative w-full h-full overflow-hidden ${imageClass}`}>
       <Image
         src={safeSrc}
         alt={alt}
         fill
-        className={`${imageClass} object-top-center object-cover`}
+        className="object-cover"
         priority={priority === "up" ? true : false}
         placeholder={placeholder}
         blurDataURL={placeholder === "blur" ? blurDataURL : undefined}
         sizes={sizes}
         unoptimized={shouldUnoptimize}
+        referrerPolicy="no-referrer"
+        onLoad={onLoad}
       />
     </div>
   ) : (
@@ -83,12 +95,18 @@ const OptimizedImage: FC<SmartImageProps> = ({
       alt={alt}
       width={width}
       height={height}
-      className={`${imageClass} object-cover`}
+      className={imageClass}
       priority={priority === "up"}
       placeholder={placeholder}
       blurDataURL={placeholder === "blur" ? blurDataURL : undefined}
       sizes={sizes}
       unoptimized={shouldUnoptimize}
+      referrerPolicy="no-referrer"
+      onLoad={onLoad}
+      style={{
+        maxWidth: "100%",
+        height: "auto",
+      }}
     />
   );
 };

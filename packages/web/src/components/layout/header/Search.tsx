@@ -1,5 +1,5 @@
 "use client";
-import { useState, KeyboardEvent, FC, FocusEvent } from "react";
+import { useState, KeyboardEvent, FC } from "react";
 import { handleSearch } from "@/utils/handleSearch";
 import { useRouter } from "next/navigation";
 import OptimizedImage from "@/components/ui/OptimizedImage";
@@ -15,8 +15,8 @@ const Search: FC<SearchInputProps> = ({ placeholder = "جست‌وجو...", onSe
   const router = useRouter();
   const [focused, setFocused] = useState(false);
 
-  const handleFocus = (e: FocusEvent<HTMLInputElement>) => setFocused(true);
-  const handleBlur = (e: FocusEvent<HTMLInputElement>) => setFocused(false);
+  const handleFocus = () => setFocused(true);
+  const handleBlur = () => setFocused(false);
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
@@ -27,7 +27,7 @@ const Search: FC<SearchInputProps> = ({ placeholder = "جست‌وجو...", onSe
 
   return (
     <div
-      className={`w-[200px] h-10 flex items-center text-white max-w-md bg-tansparent rounded-xs border-2 border-white px-2 py-1.5 focus-within:border-amber-200 focus-within:animate-pulse transition-all ${className}`}
+      className={`w-[200px] h-10 flex items-center text-white max-w-md bg-transparent rounded-xs border-2 border-white px-2 py-1.5 focus-within:border-amber-200 focus-within:animate-pulse transition-all ${className}`}
     >
       <input
         type="text"
@@ -38,13 +38,13 @@ const Search: FC<SearchInputProps> = ({ placeholder = "جست‌وجو...", onSe
         onBlur={handleBlur}
         className="flex-grow text-xs text-white outline-none bg-transparent"
         placeholder={placeholder}
-        aria-label="[جست‌وجو]"
+        aria-label="جست‌وجو"
       />
       <button
         type="button"
         onClick={() => handleSearch(router, term, onSearch)}
         className={`cursor-pointer opacity-20 ${
-          focused && "-translate-x-5/3 opacity-100"
+          focused && "md:-translate-x-5/3 opacity-100"
         } duration-300 transition-all`}
         aria-label="شروع جستجو"
       >

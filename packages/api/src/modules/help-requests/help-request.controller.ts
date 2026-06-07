@@ -8,6 +8,7 @@ import {
 import asyncHandler from "../../core/utils/asyncHandler";
 import ApiError from "../../core/utils/apiError";
 import { uploadService } from "../upload/upload.service";
+import { getParam } from "../../core/utils/getParam";
 
 class HelpRequestController {
   public create = asyncHandler(async (req: Request, res: Response) => {
@@ -54,7 +55,7 @@ class HelpRequestController {
   });
 
   public getOne = asyncHandler(async (req: Request, res: Response) => {
-    const helpRequest = await helpRequestService.findOne(req.params.id);
+    const helpRequest = await helpRequestService.findOne(getParam(req.params.id));
 
     if (!helpRequest) {
       throw new ApiError(404, "درخواست کمک یافت نشد");
@@ -75,7 +76,7 @@ class HelpRequestController {
       validatedData.params.id,
       validatedData.body.status,
       validatedData.body.adminNotes,
-      userId
+      userId,
     );
 
     res.status(200).json({

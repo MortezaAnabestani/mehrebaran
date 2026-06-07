@@ -1,8 +1,8 @@
 "use client";
 
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
-import { useLayoutEffect, useRef } from "react";
-import { useScroll, useMotionValue, useSpring } from "framer-motion";
+import { useLayoutEffect, useMemo, useRef } from "react";
+import { useScroll, useMotionValue, useSpring, MotionValue } from "framer-motion";
 import { useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 
@@ -44,6 +44,7 @@ function Rain({ count = 1000 }: RainProps) {
   const meshRef = useRef<THREE.InstancedMesh>(null!);
   const positions = useRef<Float32Array>(new Float32Array(count * 3));
   const speeds = useRef<Float32Array>(new Float32Array(count));
+  const dummy = useMemo(() => new THREE.Object3D(), []);
 
   useLayoutEffect(() => {
     for (let i = 0; i < count; i++) {
@@ -55,7 +56,6 @@ function Rain({ count = 1000 }: RainProps) {
   }, [count]);
 
   useFrame(() => {
-    const dummy = new THREE.Object3D();
     for (let i = 0; i < count; i++) {
       positions.current[i * 3 + 1] -= speeds.current[i];
 
@@ -86,8 +86,8 @@ function Rain({ count = 1000 }: RainProps) {
 
 interface SceneProps {
   rainCount?: number;
-  mouseX: any;
-  mouseY: any;
+  mouseX: MotionValue<number>;
+  mouseY: MotionValue<number>;
 }
 
 function Scene({ rainCount = 1000, mouseX, mouseY }: SceneProps) {
@@ -125,7 +125,7 @@ function Scene({ rainCount = 1000, mouseX, mouseY }: SceneProps) {
       <Rain count={rainCount} />
 
       {/* مه برای عمق */}
-      <fog attach="fog" args={["##ffffff", 4, 15]} />
+      <fog attach="fog" args={["#ffffff", 4, 15]} />
     </>
   );
 }

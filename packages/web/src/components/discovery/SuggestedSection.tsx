@@ -1,5 +1,3 @@
-"use client";
-
 import React from "react";
 import Link from "next/link";
 import SmartButton from "@/components/ui/SmartButton";
@@ -50,12 +48,12 @@ const SuggestedSection: React.FC<SuggestedSectionProps> = ({
         return "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4";
       case "horizontal":
       default:
-        return "flex gap-4 overflow-x-auto pb-4 scrollbar-hide";
+        return "flex gap-4 overflow-x-auto pb-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]";
     }
   };
 
   return (
-    <div className="bg-white rounded-lg md:p-6 shadow-sm border border-gray-100">
+    <section className="bg-white rounded-lg md:p-6 shadow-sm border border-gray-100">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
@@ -96,19 +94,7 @@ const SuggestedSection: React.FC<SuggestedSectionProps> = ({
         )}
       </div>
 
-      {/* Horizontal scroll indicator */}
-      {variant === "horizontal" && hasContent && !isLoading && (
-        <style jsx>{`
-          .scrollbar-hide::-webkit-scrollbar {
-            display: none;
-          }
-          .scrollbar-hide {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-          }
-        `}</style>
-      )}
-    </div>
+    </section>
   );
 };
 

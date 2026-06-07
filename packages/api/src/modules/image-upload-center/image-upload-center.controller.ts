@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { imageUploadCenterService } from "./image-upload-center.service";
 import asyncHandler from "../../core/utils/asyncHandler";
 import ApiError from "../../core/utils/apiError";
+import { getParam } from "../../core/utils/getParam";
 
 class ImageUploadCenterController {
   public createImage = asyncHandler(async (req: Request, res: Response) => {
@@ -28,7 +29,7 @@ class ImageUploadCenterController {
   });
 
   public getImageById = asyncHandler(async (req: Request, res: Response) => {
-    const image = await imageUploadCenterService.findImageById(req.params.id);
+    const image = await imageUploadCenterService.findImageById(getParam(req.params.id));
     if (!image) {
       throw new ApiError(404, "تصویر یافت نشد.");
     }
@@ -39,7 +40,7 @@ class ImageUploadCenterController {
   });
 
   public deleteImage = asyncHandler(async (req: Request, res: Response) => {
-    const image = await imageUploadCenterService.deleteImage(req.params.id);
+    const image = await imageUploadCenterService.deleteImage(getParam(req.params.id));
     if (!image) {
       throw new ApiError(404, "تصویر یافت نشد.");
     }

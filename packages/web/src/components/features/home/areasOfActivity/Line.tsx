@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useMemo, useId } from "react";
 import { motion } from "framer-motion";
 
 interface Props {
@@ -28,7 +28,8 @@ const Line: React.FC<Props> = ({ isCurrentTop, isNextBottom }) => {
   }, [isCurrentTop, isNextBottom]);
 
   // تولید ID یکتا برای جلوگیری از تداخل در رندرهای متعدد
-  const uniqueId = `organic-line-${isCurrentTop ? "t" : "b"}-${isNextBottom ? "b" : "t"}`;
+  const baseId = useId().replace(/:/g, "");
+  const uniqueId = `organic-line-${baseId}`;
   const gradientId = `flow-gradient-${uniqueId}`;
   const filterId = `glow-filter-${uniqueId}`;
 
@@ -40,7 +41,7 @@ const Line: React.FC<Props> = ({ isCurrentTop, isNextBottom }) => {
     <div
       className={`absolute left-1/2 -z-10 top-1/5 ${containerClass} w-[250px] h-[100px] pointer-events-none overflow-visible`}
     >
-      <svg width="100%" height="100%" className="overflow-visible">
+      <svg width="100%" height="100%" className="overflow-visible" aria-hidden="true">
         <defs>
           {/* گرادینت متحرک برای شبیه‌سازی جریان مایع/انرژی */}
           <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="0%">

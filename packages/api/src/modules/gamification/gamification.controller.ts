@@ -10,6 +10,7 @@ import {
 } from "./gamification.validation";
 import asyncHandler from "../../core/utils/asyncHandler";
 import ApiError from "../../core/utils/apiError";
+import { getParam } from "../../core/utils/getParam";
 
 class GamificationController {
   // ==================== POINTS ====================
@@ -142,7 +143,7 @@ class GamificationController {
   // Get badge by ID
   public getBadgeById = asyncHandler(async (req: Request, res: Response) => {
     const { badgeId } = req.params;
-    const badge = await badgeService.getBadgeById(badgeId);
+    const badge = await badgeService.getBadgeById(getParam(badgeId));
 
     if (!badge) {
       throw new ApiError(404, "نشان یافت نشد.");
@@ -184,7 +185,7 @@ class GamificationController {
   // Delete badge (admin only)
   public deleteBadge = asyncHandler(async (req: Request, res: Response) => {
     const { badgeId } = req.params;
-    await badgeService.deleteBadge(badgeId);
+    await badgeService.deleteBadge(getParam(badgeId));
 
     res.status(200).json({
       message: "نشان با موفقیت حذف شد.",
@@ -194,7 +195,7 @@ class GamificationController {
   // Get user's badges
   public getUserBadges = asyncHandler(async (req: Request, res: Response) => {
     const userId = req.params.userId || req.user!._id.toString();
-    const badges = await badgeService.getUserBadges(userId);
+    const badges = await badgeService.getUserBadges(getParam(userId));
 
     res.status(200).json({
       results: badges.length,
@@ -207,7 +208,7 @@ class GamificationController {
     const userId = req.user!._id.toString();
     const { badgeId } = req.params;
 
-    const progress = await badgeService.getBadgeProgress(userId, badgeId);
+    const progress = await badgeService.getBadgeProgress(userId, getParam(badgeId));
 
     res.status(200).json({
       data: progress,
@@ -230,7 +231,7 @@ class GamificationController {
   // Get user's comprehensive stats
   public getUserStats = asyncHandler(async (req: Request, res: Response) => {
     const userId = req.params.userId || req.user!._id.toString();
-    const stats = await userStatsService.getUserStats(userId);
+    const stats = await userStatsService.getUserStats(getParam(userId));
 
     res.status(200).json({
       data: stats,

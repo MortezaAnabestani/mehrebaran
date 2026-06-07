@@ -82,23 +82,24 @@ const Signup: React.FC = () => {
 
       // Redirect به شبکه نیازسنجی
       router.push("/network");
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Signup error:", err);
-      setError(err.message || "خطا در ثبت‌نام. لطفاً دوباره تلاش کنید.");
+      const errorMessage = err instanceof Error ? err.message : "خطا در ثبت‌نام. لطفاً دوباره تلاش کنید.";
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="w-full min-h-screen flex items-center justify-center bg-mblue py-10">
+    <main className="w-full min-h-screen flex items-center justify-center bg-mblue py-10 px-4 md:px-0">
       {/* مرحله 1: شماره موبایل */}
       {step === 1 && (
         <form
-          className="flex flex-col justify-between gap-5 p-8 w-90 md:w-100 bg-white rounded-lg shadow-lg"
+          className="flex flex-col justify-between gap-5 p-8 w-full max-w-md md:w-100 bg-white rounded-lg shadow-lg"
           onSubmit={handleStep1Submit}
         >
-          <h1 className="font-extrabold text-2xl text-center">ثبت‌نام</h1>
+          <h1 className="font-extrabold text-md lg:text-2xl text-center">ثبت‌نام</h1>
 
           {error && (
             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded text-sm">
@@ -109,6 +110,7 @@ const Signup: React.FC = () => {
           <input
             name="mobile"
             type="tel"
+            dir="ltr"
             placeholder="شماره موبایل"
             value={formData.mobile}
             onChange={(e) => setFormData({ ...formData, mobile: e.target.value })}
@@ -133,10 +135,10 @@ const Signup: React.FC = () => {
       {/* مرحله 2: اطلاعات کامل */}
       {step === 2 && (
         <form
-          className="flex flex-col justify-between gap-4 p-8 w-90 md:w-100 max-h-screen overflow-y-auto bg-white rounded-lg shadow-lg"
+          className="flex flex-col justify-between gap-4 p-8 w-full max-w-md md:w-100 max-h-screen overflow-y-auto bg-white rounded-lg shadow-lg"
           onSubmit={handleStep2Submit}
         >
-          <h1 className="font-extrabold text-2xl text-center">تکمیل ثبت‌نام</h1>
+          <h1 className="font-extrabold texd-md lg:text-2xl text-center">تکمیل ثبت‌نام</h1>
 
           {error && (
             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded text-sm">
@@ -158,6 +160,7 @@ const Signup: React.FC = () => {
           <input
             type="password"
             name="password"
+            dir="ltr"
             placeholder="رمز عبور *"
             value={formData.password}
             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
@@ -169,6 +172,7 @@ const Signup: React.FC = () => {
           <input
             type="password"
             name="confirmPassword"
+            dir="ltr"
             placeholder="تکرار رمز عبور *"
             value={formData.confirmPassword}
             onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
@@ -180,6 +184,7 @@ const Signup: React.FC = () => {
           <input
             type="text"
             name="nationalId"
+            dir="ltr"
             placeholder="کد ملی (اختیاری)"
             value={formData.nationalId}
             onChange={(e) => setFormData({ ...formData, nationalId: e.target.value })}
@@ -200,6 +205,7 @@ const Signup: React.FC = () => {
           <input
             type="text"
             name="yearOfAdmission"
+            dir="ltr"
             placeholder="سال ورودی (اختیاری)"
             value={formData.yearOfAdmission}
             onChange={(e) => setFormData({ ...formData, yearOfAdmission: e.target.value })}
@@ -218,13 +224,13 @@ const Signup: React.FC = () => {
               بازگشت
             </SmartButton>
 
-            <SmartButton type="submit" variant="mblue" className="cursor-pointer flex-1" disabled={isLoading}>
-              {isLoading ? "در حال ثبت‌نام..." : "نهایی‌کردن ثبت‌نام"}
+            <SmartButton type="submit" variant="mblue" className="cursor-pointer text-sm lg:text-2xl flex-1" disabled={isLoading}>
+              {isLoading ? "در حال ثبت‌نام..." : "تایید"}
             </SmartButton>
           </div>
         </form>
       )}
-    </div>
+    </main>
   );
 };
 

@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, useRef, DragEvent } from "react";
-import { X, UploadCloud, Image as ImageIcon, Film, Trash2, RefreshCw, CheckCircle2 } from "lucide-react";
+import React, { useState, useRef, DragEvent, useEffect } from "react";
+import { X, UploadCloud, Image as ImageIcon, Film, RefreshCw, CheckCircle2 } from "lucide-react";
+import Image from "next/image";
 
 interface CreateStoryModalProps {
   isOpen: boolean;
@@ -64,6 +65,17 @@ const CreateStoryModal: React.FC<CreateStoryModalProps> = ({ isOpen, onClose, on
     if (file) validateAndSetFile(file);
   };
 
+  // Handle Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isOpen) {
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, onClose]);
+
   const handleSubmit = async () => {
     if (!selectedFile) return;
     try {
@@ -71,8 +83,8 @@ const CreateStoryModal: React.FC<CreateStoryModalProps> = ({ isOpen, onClose, on
       setError(null);
       await onSubmit(selectedFile);
       handleClose();
-    } catch (err: any) {
-      setError(err.message || "خطا در ایجاد استوری");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "خطا در ایجاد استوری");
     } finally {
       setIsSubmitting(false);
     }
@@ -107,6 +119,7 @@ const CreateStoryModal: React.FC<CreateStoryModalProps> = ({ isOpen, onClose, on
 
           {/* Close Button: Physical Feel */}
           <button
+            type="button"
             onClick={handleClose}
             className="group w-10 h-10 rounded-full bg-[#eef2f5] flex items-center justify-center 
                        shadow-[5px_5px_10px_#caced1,-5px_-5px_10px_#ffffff] 
@@ -166,11 +179,15 @@ const CreateStoryModal: React.FC<CreateStoryModalProps> = ({ isOpen, onClose, on
             <div className="space-y-5">
               <div className="relative rounded-2xl overflow-hidden bg-gray-900 shadow-[0_10px_20px_rgba(0,0,0,0.2)] border-4 border-white ring-1 ring-gray-200">
                 {selectedFile?.type.startsWith("image/") ? (
-                  <img
-                    src={preview}
-                    alt="Preview"
-                    className="w-full h-64 object-contain bg-black/50 backdrop-blur-xl"
-                  />
+                  <div className="relative w-full h-64 bg-black/50 backdrop-blur-xl">
+                    <Image
+                      src={preview}
+                      alt="Preview"
+                      fill
+                      className="object-contain"
+                      referrerPolicy="no-referrer"
+                    />
+                  </div>
                 ) : (
                   <video src={preview} controls className="w-full h-64 object-contain bg-black" />
                 )}
@@ -187,6 +204,7 @@ const CreateStoryModal: React.FC<CreateStoryModalProps> = ({ isOpen, onClose, on
               {/* Action Buttons: Skeuomorphic 3D Buttons */}
               <div className="flex gap-4">
                 <button
+                  type="button"
                   onClick={() => {
                     setSelectedFile(null);
                     setPreview(null);
@@ -200,6 +218,7 @@ const CreateStoryModal: React.FC<CreateStoryModalProps> = ({ isOpen, onClose, on
                 </button>
 
                 <button
+                  type="button"
                   onClick={handleSubmit}
                   disabled={isSubmitting}
                   className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-bold text-white 

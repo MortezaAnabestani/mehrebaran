@@ -24,7 +24,6 @@ export const getVideos = async (params: GetVideosParams): Promise<GetVideosRespo
     const response = await api.get("/blog/videos", { params });
     return response.data || { videos: [], pagination: { page: 1, limit: 10, total: 0, totalPages: 0 } };
   } catch (error) {
-    console.error("Failed to fetch videos:", error);
     return { videos: [], pagination: { page: 1, limit: 10, total: 0, totalPages: 0 } };
   }
 };
@@ -34,7 +33,6 @@ export const getVideoByIdOrSlug = async (identifier: string): Promise<IVideo | n
     const response = await api.get(`/blog/videos/${identifier}`);
     return response.data.data;
   } catch (error) {
-    console.error(`Failed to fetch video with identifier "${identifier}":`, error);
     return null;
   }
 };

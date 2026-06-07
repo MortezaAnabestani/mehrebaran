@@ -36,13 +36,13 @@ const StoryHighlights: React.FC<StoryHighlightsProps> = ({
       {/* Background Texture/Depth */}
       <div className="absolute inset-0 bg-gradient-to-b from-gray-100/80 to-transparent pointer-events-none" />
 
-      <div className="max-w-4xl mx-auto relative z-10 px-4 md:px-12">
+      <div className="max-w-4xl mx-auto relative z-10 w-full overflow-hidden">
         {/* Scroll Container with Fade Masks */}
-        <div className="relative group/scroll">
+        <div className="relative group/scroll w-full">
           {/* Left Fade Mask */}
           <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-gray-50 to-transparent z-20 pointer-events-none md:hidden" />
 
-          <div className="flex gap-6 overflow-x-auto pb-4 pt-2 px-2 scrollbar-hide snap-x snap-mandatory">
+          <div className="flex gap-4 sm:gap-6 overflow-x-auto overflow-y-hidden pb-4 pt-2 px-4 md:px-12 scrollbar-hide snap-x snap-mandatory touch-pan-x overscroll-x-contain w-full">
             {/* Add New Highlight Button (Skeuomorphic Style) */}
             {isOwnProfile && (
               <button
@@ -128,6 +128,7 @@ const StoryHighlights: React.FC<StoryHighlightsProps> = ({
           .scrollbar-hide {
             -ms-overflow-style: none;
             scrollbar-width: none;
+            -webkit-overflow-scrolling: touch;
           }
         `}</style>
       </div>

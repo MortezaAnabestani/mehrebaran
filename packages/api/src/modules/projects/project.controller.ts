@@ -43,7 +43,7 @@ class ProjectController {
           housing: "مسکن",
           food: "غذا",
           clothing: "پوشاک",
-          other: "سایر"
+          other: "سایر",
         };
 
         category = await CategoryModel.create({
@@ -67,7 +67,8 @@ class ProjectController {
 
   public getOne = asyncHandler(async (req: Request, res: Response) => {
     const { identifier } = req.params;
-    const project = await projectService.findOne(identifier);
+    const idStr = typeof identifier === "string" ? identifier : identifier[0];
+    const project = await projectService.findOne(idStr);
     if (!project) {
       throw new ApiError(404, "پروژه مورد نظر یافت نشد.");
     }
@@ -119,7 +120,7 @@ class ProjectController {
           housing: "مسکن",
           food: "غذا",
           clothing: "پوشاک",
-          other: "سایر"
+          other: "سایر",
         };
 
         category = await CategoryModel.create({
@@ -138,7 +139,7 @@ class ProjectController {
 
   public delete = asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
-    const project = await projectService.findOne(id);
+    const project = await projectService.findOne(id as string);
     if (!project) {
       throw new ApiError(404, "پروژه مورد نظر یافت نشد.");
     }
@@ -149,11 +150,11 @@ class ProjectController {
       await uploadService.deleteImage(project.featuredImage);
     }
 
-    await projectService.delete(id);
+    await projectService.delete(id as string);
     res.status(200).json({ message: "پروژه با موفقیت حذف شد." });
   });
   public incrementView = asyncHandler(async (req: Request, res: Response) => {
-    await projectService.incrementViews(req.params.id);
+    await projectService.incrementViews(req.params.id as string);
     res.status(200).json({ message: "View count incremented." });
   });
 }

@@ -7,7 +7,7 @@ import ApiError from "../../core/utils/apiError";
 class SettingController {
   public getByKey = asyncHandler(async (req: Request, res: Response) => {
     const { key } = req.params;
-    const setting = await settingService.findByKey(key);
+    const setting = await settingService.findByKey(key as any);
     if (!setting) {
       throw new ApiError(404, `تنظیمی با کلید '${key}' یافت نشد.`);
     }

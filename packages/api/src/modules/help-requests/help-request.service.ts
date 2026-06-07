@@ -36,8 +36,8 @@ class HelpRequestService {
         .populate("reviewedBy", "username fullName")
         .sort({ createdAt: -1 })
         .skip(skip)
-        .limit(limit)
-        .lean(),
+        .limit(limit),
+
       HelpRequestModel.countDocuments(query),
     ]);
 
@@ -45,9 +45,8 @@ class HelpRequestService {
   }
 
   public async findOne(id: string): Promise<IHelpRequest | null> {
-    const helpRequest = await HelpRequestModel.findById(id)
-      .populate("reviewedBy", "username fullName email")
-      .lean();
+    const helpRequest = await HelpRequestModel.findById(id).populate("reviewedBy", "username fullName email");
+
     return helpRequest;
   }
 
@@ -55,7 +54,7 @@ class HelpRequestService {
     id: string,
     status: string,
     adminNotes: string | undefined,
-    reviewedBy: string
+    reviewedBy: string,
   ): Promise<IHelpRequest | null> {
     const helpRequest = await HelpRequestModel.findByIdAndUpdate(
       id,
@@ -65,7 +64,7 @@ class HelpRequestService {
         reviewedBy,
         reviewedAt: new Date(),
       },
-      { new: true, runValidators: true }
+      { new: true, runValidators: true },
     );
 
     if (!helpRequest) {

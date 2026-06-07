@@ -1,10 +1,11 @@
 "use client";
 import OptimizedImage from "@/components/ui/OptimizedImage";
 import { FAQsType } from "@/types/types";
-import { useState, FC } from "react";
+import { useState, FC, useId } from "react";
 
 const FaqSection: FC<FAQsType> = ({ question, answer }) => {
   const [faqOpen, setFaqOpen] = useState<boolean>(false);
+  const contentId = useId();
 
   return (
     <div
@@ -22,6 +23,7 @@ const FaqSection: FC<FAQsType> = ({ question, answer }) => {
           ${faqOpen ? "bg-[#007acc]/5" : "bg-white hover:bg-gray-50"}
         `}
         aria-expanded={faqOpen}
+        aria-controls={contentId}
       >
         <span
           className={`text-lg font-medium tracking-tight ${faqOpen ? "text-[#007acc]" : "text-gray-800"}`}
@@ -51,6 +53,7 @@ const FaqSection: FC<FAQsType> = ({ question, answer }) => {
 
       {/* Content Area */}
       <div
+        id={contentId}
         className={`
           grid transition-[grid-template-rows] duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]
           ${faqOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}

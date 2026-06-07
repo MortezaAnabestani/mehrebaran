@@ -3,6 +3,7 @@ import { videoService } from "./video.service";
 import { createVideoSchema, updateVideoSchema } from "./video.validation";
 import asyncHandler from "../../../core/utils/asyncHandler";
 import ApiError from "../../../core/utils/apiError";
+import { getParam } from "../../../core/utils/getParam";
 
 class VideoController {
   public create = asyncHandler(async (req: Request, res: Response) => {
@@ -24,7 +25,7 @@ class VideoController {
   });
 
   public getOne = asyncHandler(async (req: Request, res: Response) => {
-    const video = await videoService.findOne(req.params.identifier);
+    const video = await videoService.findOne(getParam(req.params.identifier));
     if (!video) throw new ApiError(404, "ویدئو مورد نظر یافت نشد.");
     res.status(200).json({ data: video });
   });
@@ -46,14 +47,14 @@ class VideoController {
 
   public delete = asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
-    const video = await videoService.findOne(id);
+    const video = await videoService.findOne(getParam(id));
     if (!video) throw new ApiError(404, "ویدئو مورد نظر یافت نشد.");
-    await videoService.delete(id);
+    await videoService.delete(getParam(id));
     res.status(200).json({ message: "ویدئو با موفقیت حذف شد." });
   });
 
   public incrementView = asyncHandler(async (req: Request, res: Response) => {
-    await videoService.incrementViews(req.params.id);
+    await videoService.incrementViews(getParam(req.params.id));
     res.status(200).json({ message: "View count incremented." });
   });
 }

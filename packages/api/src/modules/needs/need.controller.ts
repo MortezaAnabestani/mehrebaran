@@ -21,13 +21,14 @@ import {
 } from "./need.validation";
 import asyncHandler from "../../core/utils/asyncHandler";
 import ApiError from "../../core/utils/apiError";
+import { getParam } from "../../core/utils/getParam";
 
 class NeedController {
   public create = asyncHandler(async (req: Request, res: Response) => {
     let submissionData = { ...req.body };
 
     // Parse JSON fields from FormData
-    if (submissionData.tags && typeof submissionData.tags === 'string') {
+    if (submissionData.tags && typeof submissionData.tags === "string") {
       try {
         submissionData.tags = JSON.parse(submissionData.tags);
       } catch (e) {
@@ -35,7 +36,7 @@ class NeedController {
       }
     }
 
-    if (submissionData.requiredSkills && typeof submissionData.requiredSkills === 'string') {
+    if (submissionData.requiredSkills && typeof submissionData.requiredSkills === "string") {
       try {
         submissionData.requiredSkills = JSON.parse(submissionData.requiredSkills);
       } catch (e) {
@@ -63,7 +64,7 @@ class NeedController {
       submissionData.attachments = req.processedFiles.map((file: any) => ({
         fileType: "image", // uploadService processes images
         url: file.desktop, // Use desktop version as main URL
-        fileName: file.desktop.split('/').pop(),
+        fileName: file.desktop.split("/").pop(),
         fileSize: 0, // Size not tracked by uploadService
       }));
     }
@@ -86,7 +87,7 @@ class NeedController {
   });
 
   public getOne = asyncHandler(async (req: Request, res: Response) => {
-    const need = await needService.findOne(req.params.identifier);
+    const need = await needService.findOne(getParam(req.params.identifier));
     if (!need) throw new ApiError(404, "نیاز مورد نظر یافت نشد.");
     res.status(200).json({ data: need });
   });
@@ -95,7 +96,7 @@ class NeedController {
     let updateData = { ...req.body };
 
     // Parse JSON fields from FormData
-    if (updateData.tags && typeof updateData.tags === 'string') {
+    if (updateData.tags && typeof updateData.tags === "string") {
       try {
         updateData.tags = JSON.parse(updateData.tags);
       } catch (e) {
@@ -103,7 +104,7 @@ class NeedController {
       }
     }
 
-    if (updateData.requiredSkills && typeof updateData.requiredSkills === 'string') {
+    if (updateData.requiredSkills && typeof updateData.requiredSkills === "string") {
       try {
         updateData.requiredSkills = JSON.parse(updateData.requiredSkills);
       } catch (e) {
@@ -122,12 +123,12 @@ class NeedController {
       const newAttachments = req.processedFiles.map((file: any) => ({
         fileType: "image",
         url: file.desktop,
-        fileName: file.desktop.split('/').pop(),
+        fileName: file.desktop.split("/").pop(),
         fileSize: 0,
       }));
 
       // Get existing need to merge attachments
-      const existingNeed = await needService.findOne(req.params.id);
+      const existingNeed = await needService.findOne(getParam(req.params.id));
       if (existingNeed && existingNeed.attachments) {
         updateData.attachments = [...existingNeed.attachments, ...newAttachments];
       } else {
@@ -143,19 +144,19 @@ class NeedController {
 
   public delete = asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
-    const need = await needService.findOne(id);
+    const need = await needService.findOne(getParam(id));
     if (!need) throw new ApiError(404, "نیاز مورد نظر یافت نشد.");
-    await needService.delete(id);
+    await needService.delete(getParam(id));
     res.status(200).json({ message: "نیاز با موفقیت حذف شد." });
   });
 
   public toggleUpvote = asyncHandler(async (req: Request, res: Response) => {
-    const need = await needService.toggleUpvote(req.params.id, req.user!._id.toString());
+    const need = await needService.toggleUpvote(getParam(req.params.id), req.user!._id.toString());
     res.status(200).json({ message: "عملیات رأی با موفقیت انجام شد.", data: need });
   });
 
   public addSupporter = asyncHandler(async (req: Request, res: Response) => {
-    await needService.addSupporter(req.params.id, req.user!._id.toString());
+    await needService.addSupporter(getParam(req.params.id), req.user!._id.toString());
     res.status(200).json({ message: "شما با موفقیت به حامیان این طرح پیوستید." });
   });
 
@@ -163,7 +164,7 @@ class NeedController {
   public getSupporterDetails = asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
     const { userId } = req.query;
-    const supporterDetails = await needService.getSupporterDetails(id, userId as string);
+    const supporterDetails = await needService.getSupporterDetails(getParam(id), userId as string);
     if (!supporterDetails) throw new ApiError(404, "نیاز مورد نظر یافت نشد.");
     res.status(200).json({ results: supporterDetails.length, data: supporterDetails });
   });
@@ -173,7 +174,7 @@ class NeedController {
     const need = await needService.updateSupporterDetail(
       validatedData.params.id,
       validatedData.params.userId,
-      validatedData.body
+      validatedData.body,
     );
     if (!need) throw new ApiError(404, "نیاز یا حامی مورد نظر یافت نشد.");
     res.status(200).json({ message: "اطلاعات حامی با موفقیت به‌روزرسانی شد.", data: need });
@@ -184,7 +185,7 @@ class NeedController {
     const need = await needService.addContribution(
       validatedData.params.id,
       validatedData.params.userId,
-      validatedData.body
+      validatedData.body,
     );
     if (!need) throw new ApiError(404, "نیاز یا حامی مورد نظر یافت نشد.");
     res.status(201).json({ message: "مشارکت با موفقیت ثبت شد.", data: need });
@@ -193,7 +194,7 @@ class NeedController {
   public removeSupporterDetail = asyncHandler(async (req: Request, res: Response) => {
     const { id, userId } = req.params;
     const { reason } = req.body;
-    const need = await needService.removeSupporterDetail(id, userId, reason);
+    const need = await needService.removeSupporterDetail(getParam(id), getParam(userId), reason);
     if (!need) throw new ApiError(404, "نیاز یا حامی مورد نظر یافت نشد.");
     res.status(200).json({ message: "حامی با موفقیت حذف شد.", data: need });
   });
@@ -201,7 +202,7 @@ class NeedController {
   // View Counter
   public incrementView = asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
-    await needService.incrementViews(id);
+    await needService.incrementViews(getParam(id));
     res.status(200).json({ message: "بازدید با موفقیت ثبت شد." });
   });
 
@@ -215,7 +216,7 @@ class NeedController {
 
   public getUpdates = asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
-    const updates = await needService.getUpdates(id);
+    const updates = await needService.getUpdates(getParam(id));
     if (!updates) throw new ApiError(404, "نیاز مورد نظر یافت نشد.");
     res.status(200).json({ results: updates.length, data: updates });
   });
@@ -225,7 +226,7 @@ class NeedController {
     const need = await needService.updateUpdate(
       validatedData.params.id,
       validatedData.params.updateId,
-      validatedData.body
+      validatedData.body,
     );
     if (!need) throw new ApiError(404, "نیاز یا به‌روزرسانی مورد نظر یافت نشد.");
     res.status(200).json({ message: "به‌روزرسانی با موفقیت ویرایش شد.", data: need });
@@ -233,7 +234,7 @@ class NeedController {
 
   public deleteUpdate = asyncHandler(async (req: Request, res: Response) => {
     const { id, updateId } = req.params;
-    const need = await needService.deleteUpdate(id, updateId);
+    const need = await needService.deleteUpdate(getParam(id), getParam(updateId));
     if (!need) throw new ApiError(404, "نیاز یا به‌روزرسانی مورد نظر یافت نشد.");
     res.status(200).json({ message: "به‌روزرسانی با موفقیت حذف شد.", data: need });
   });
@@ -241,7 +242,7 @@ class NeedController {
   // Milestones CRUD
   public getMilestones = asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
-    const milestones = await needService.getMilestones(id);
+    const milestones = await needService.getMilestones(getParam(id));
     if (!milestones) throw new ApiError(404, "نیاز مورد نظر یافت نشد.");
     res.status(200).json({ results: milestones.length, data: milestones });
   });
@@ -278,7 +279,7 @@ class NeedController {
     const need = await needService.updateMilestone(
       validatedData.params.id,
       validatedData.params.milestoneId,
-      updateData
+      updateData,
     );
     if (!need) throw new ApiError(404, "نیاز یا مایلستون مورد نظر یافت نشد.");
     res.status(200).json({ message: "مایلستون با موفقیت به‌روزرسانی شد.", data: need });
@@ -286,7 +287,7 @@ class NeedController {
 
   public deleteMilestone = asyncHandler(async (req: Request, res: Response) => {
     const { id, milestoneId } = req.params;
-    const need = await needService.deleteMilestone(id, milestoneId);
+    const need = await needService.deleteMilestone(getParam(id), getParam(milestoneId));
     if (!need) throw new ApiError(404, "نیاز یا مایلستون مورد نظر یافت نشد.");
     res.status(200).json({ message: "مایلستون با موفقیت حذف شد.", data: need });
   });
@@ -296,7 +297,7 @@ class NeedController {
     const need = await needService.completeMilestone(
       validatedData.params.id,
       validatedData.params.milestoneId,
-      validatedData.body.evidence
+      validatedData.body.evidence,
     );
     if (!need) throw new ApiError(404, "نیاز یا مایلستون مورد نظر یافت نشد.");
     res.status(200).json({ message: "مایلستون با موفقیت تکمیل شد.", data: need });
@@ -305,7 +306,7 @@ class NeedController {
   // Budget Items CRUD
   public getBudgetItems = asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
-    const budgetItems = await needService.getBudgetItems(id);
+    const budgetItems = await needService.getBudgetItems(getParam(id));
     if (!budgetItems) throw new ApiError(404, "نیاز مورد نظر یافت نشد.");
     res.status(200).json({ results: budgetItems.length, data: budgetItems });
   });
@@ -322,7 +323,7 @@ class NeedController {
     const need = await needService.updateBudgetItem(
       validatedData.params.id,
       validatedData.params.budgetItemId,
-      validatedData.body
+      validatedData.body,
     );
     if (!need) throw new ApiError(404, "نیاز یا قلم بودجه مورد نظر یافت نشد.");
     res.status(200).json({ message: "قلم بودجه با موفقیت به‌روزرسانی شد.", data: need });
@@ -330,7 +331,7 @@ class NeedController {
 
   public deleteBudgetItem = asyncHandler(async (req: Request, res: Response) => {
     const { id, budgetItemId } = req.params;
-    const need = await needService.deleteBudgetItem(id, budgetItemId);
+    const need = await needService.deleteBudgetItem(getParam(id), getParam(budgetItemId));
     if (!need) throw new ApiError(404, "نیاز یا قلم بودجه مورد نظر یافت نشد.");
     res.status(200).json({ message: "قلم بودجه با موفقیت حذف شد.", data: need });
   });
@@ -340,7 +341,7 @@ class NeedController {
     const need = await needService.addFundsToBudgetItem(
       validatedData.params.id,
       validatedData.params.budgetItemId,
-      validatedData.body.amount
+      validatedData.body.amount,
     );
     if (!need) throw new ApiError(404, "نیاز یا قلم بودجه مورد نظر یافت نشد.");
     res.status(200).json({ message: "مبلغ با موفقیت به قلم بودجه اضافه شد.", data: need });
@@ -350,7 +351,7 @@ class NeedController {
   public getVerificationRequests = asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
     const { status } = req.query;
-    const verifications = await needService.getVerificationRequests(id, status as string);
+    const verifications = await needService.getVerificationRequests(getParam(id), status as string);
     if (!verifications) throw new ApiError(404, "نیاز مورد نظر یافت نشد.");
     res.status(200).json({ results: verifications.length, data: verifications });
   });
@@ -360,7 +361,7 @@ class NeedController {
     const need = await needService.createVerificationRequest(
       validatedData.params.id,
       req.user!._id.toString(),
-      validatedData.body
+      validatedData.body,
     );
     if (!need) throw new ApiError(404, "نیاز مورد نظر یافت نشد.");
     res.status(201).json({ message: "درخواست تایید با موفقیت ثبت شد.", data: need });
@@ -372,7 +373,7 @@ class NeedController {
       validatedData.params.id,
       validatedData.params.verificationId,
       req.user!._id.toString(),
-      validatedData.body
+      validatedData.body,
     );
     if (!need) throw new ApiError(404, "نیاز یا درخواست تایید مورد نظر یافت نشد.");
     res.status(200).json({ message: "درخواست تایید با موفقیت بررسی شد.", data: need });
@@ -380,7 +381,7 @@ class NeedController {
 
   public deleteVerificationRequest = asyncHandler(async (req: Request, res: Response) => {
     const { id, verificationId } = req.params;
-    const need = await needService.deleteVerificationRequest(id, verificationId);
+    const need = await needService.deleteVerificationRequest(getParam(id), getParam(verificationId));
     if (!need) throw new ApiError(404, "نیاز یا درخواست تایید مورد نظر یافت نشد.");
     res.status(200).json({ message: "درخواست تایید با موفقیت حذف شد.", data: need });
   });
@@ -389,7 +390,7 @@ class NeedController {
   public getTasks = asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
     const { status, assignedTo, priority } = req.query;
-    const tasks = await needService.getTasks(id, {
+    const tasks = await needService.getTasks(getParam(id), {
       status: status as string,
       assignedTo: assignedTo as string,
       priority: priority as string,
@@ -428,7 +429,7 @@ class NeedController {
 
   public deleteTask = asyncHandler(async (req: Request, res: Response) => {
     const { id, taskId } = req.params;
-    const need = await needService.deleteTask(id, taskId);
+    const need = await needService.deleteTask(getParam(id), getParam(taskId));
     if (!need) throw new ApiError(404, "نیاز یا تسک مورد نظر یافت نشد.");
     res.status(200).json({ message: "تسک با موفقیت حذف شد.", data: need });
   });
@@ -438,7 +439,7 @@ class NeedController {
     const need = await needService.updateTaskChecklist(
       validatedData.params.id,
       validatedData.params.taskId,
-      validatedData.body.checklist
+      validatedData.body.checklist,
     );
     if (!need) throw new ApiError(404, "نیاز یا تسک مورد نظر یافت نشد.");
     res.status(200).json({ message: "چک‌لیست با موفقیت به‌روزرسانی شد.", data: need });
@@ -447,7 +448,7 @@ class NeedController {
   public completeTask = asyncHandler(async (req: Request, res: Response) => {
     const { id, taskId } = req.params;
     const { actualHours } = req.body;
-    const need = await needService.completeTask(id, taskId, actualHours);
+    const need = await needService.completeTask(getParam(id), getParam(taskId), actualHours);
     if (!need) throw new ApiError(404, "نیاز یا تسک مورد نظر یافت نشد.");
     res.status(200).json({ message: "تسک با موفقیت تکمیل شد.", data: need });
   });
@@ -493,7 +494,7 @@ class NeedController {
 
   // Comment Management
   public getComments = asyncHandler(async (req: Request, res: Response) => {
-    const comments = await needService.getComments(req.params.id);
+    const comments = await needService.getComments(getParam(req.params.id));
     res.status(200).json({ results: comments.length, data: comments });
   });
 
@@ -502,7 +503,12 @@ class NeedController {
     if (!content || !content.trim()) {
       throw new ApiError(400, "محتوای نظر الزامی است.");
     }
-    const comment = await needService.createComment(req.params.id, req.user!._id.toString(), content, parentId);
+    const comment = await needService.createComment(
+      getParam(req.params.id),
+      req.user!._id.toString(),
+      content,
+      parentId,
+    );
     res.status(201).json({ message: "نظر شما با موفقیت ثبت شد.", data: comment });
   });
 
@@ -511,13 +517,17 @@ class NeedController {
     if (!content || !content.trim()) {
       throw new ApiError(400, "محتوای نظر الزامی است.");
     }
-    const comment = await needService.updateComment(req.params.commentId, req.user!._id.toString(), content);
+    const comment = await needService.updateComment(
+      getParam(req.params.commentId),
+      req.user!._id.toString(),
+      content,
+    );
     res.status(200).json({ message: "نظر با موفقیت ویرایش شد.", data: comment });
   });
 
   public deleteComment = asyncHandler(async (req: Request, res: Response) => {
     const isAdmin = req.user?.role === "admin" || req.user?.role === "super_admin";
-    await needService.deleteComment(req.params.commentId, req.user!._id.toString(), isAdmin);
+    await needService.deleteComment(getParam(req.params.commentId), req.user!._id.toString(), isAdmin);
     res.status(200).json({ message: "نظر با موفقیت حذف شد." });
   });
 }

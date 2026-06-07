@@ -76,6 +76,7 @@ const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ onCreateClick }) => {
                 href={item.href}
                 className={`
                   relative flex flex-col items-center justify-center gap-1 py-2 px-3 rounded-xl transition-all duration-300
+                  outline-none focus-visible:ring-2 focus-visible:ring-[#007acc]
                   ${isActive ? "text-[#007acc]" : "text-gray-500"}
                 `}
               >
@@ -128,6 +129,7 @@ const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ onCreateClick }) => {
             flex items-center justify-center
             active:scale-95 transition-transform duration-200
             hover:shadow-[0_12px_32px_rgba(0,122,204,0.5)]
+            outline-none focus-visible:ring-2 focus-visible:ring-[#007acc] focus-visible:ring-offset-2
           "
           aria-label="ایجاد نیاز جدید"
         >

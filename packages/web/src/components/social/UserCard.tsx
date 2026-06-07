@@ -46,9 +46,8 @@ const UserCard: React.FC<UserCardProps> = ({
         setIsFollowing(true);
       }
       if (onFollowChange) onFollowChange();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Follow toggle error:", error);
-      alert(error.message || "خطا در عملیات");
     } finally {
       setIsLoading(false);
     }
@@ -171,11 +170,9 @@ const UserCard: React.FC<UserCardProps> = ({
       )}
 
       {isCurrentUser && (
-        <Link href="/network/profile">
-          <SmartButton variant="morange" size="md" className="w-full mt-4">
-            مشاهده پروفایل
-          </SmartButton>
-        </Link>
+        <SmartButton asLink={true} href="/network/profile" variant="morange" size="md" className="w-full mt-4">
+          مشاهده پروفایل
+        </SmartButton>
       )}
     </div>
   );

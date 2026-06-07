@@ -41,8 +41,13 @@ const DonationForm: React.FC<Props> = ({ project, onSuccess }) => {
       }
 
       // Validate donor info if not anonymous
-      if (!formData.isAnonymous && !formData.fullName) {
-        throw new Error("لطفاً نام خود را وارد کنید");
+      if (!formData.isAnonymous) {
+        if (!formData.fullName) throw new Error("لطفاً نام خود را وارد کنید");
+        
+        // Basic mobile validation
+        if (formData.mobile && !/^09[0-9]{9}$/.test(formData.mobile)) {
+          throw new Error("لطفاً شماره موبایل معتبر وارد کنید");
+        }
       }
 
       // Create donation
@@ -76,8 +81,12 @@ const DonationForm: React.FC<Props> = ({ project, onSuccess }) => {
         // Cash donation registered
         if (onSuccess) onSuccess(donation._id);
       }
-    } catch (err: any) {
-      setError(err.message || "خطا در ثبت کمک مالی. لطفاً دوباره تلاش کنید.");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message || "خطا در ثبت کمک مالی. لطفاً دوباره تلاش کنید.");
+      } else {
+        setError("خطا در ثبت کمک مالی. لطفاً دوباره تلاش کنید.");
+      }
     } finally {
       setLoading(false);
     }
@@ -153,7 +162,7 @@ const DonationForm: React.FC<Props> = ({ project, onSuccess }) => {
 
         <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-lg mb-4">
           <p className="text-sm text-yellow-800">
-            لطفاً پس از واریز، رسید خود را از طریق بخش "کمک‌های من" آپلود کنید تا پس از بررسی، کمک شما تایید
+            لطفاً پس از واریز، رسید خود را از طریق بخش «کمک‌های من» آپلود کنید تا پس از بررسی، کمک شما تایید
             شود.
           </p>
         </div>
@@ -202,6 +211,7 @@ const DonationForm: React.FC<Props> = ({ project, onSuccess }) => {
           name="amount"
           value={formData.amount}
           onChange={handleChange}
+          dir="ltr"
           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mblue"
           placeholder={`حداقل ${(project.donationSettings.minimumAmount || 10000).toLocaleString(
             "fa-IR"
@@ -274,6 +284,7 @@ const DonationForm: React.FC<Props> = ({ project, onSuccess }) => {
               name="mobile"
               value={formData.mobile}
               onChange={handleChange}
+              dir="ltr"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mblue"
               placeholder="09123456789"
             />
@@ -289,6 +300,7 @@ const DonationForm: React.FC<Props> = ({ project, onSuccess }) => {
               name="email"
               value={formData.email}
               onChange={handleChange}
+              dir="ltr"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mblue"
               placeholder="example@email.com"
             />

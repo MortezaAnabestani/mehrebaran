@@ -3,12 +3,13 @@ import asyncHandler from "../../core/utils/asyncHandler";
 import ApiError from "../../core/utils/apiError";
 import { NeedModel } from "./need.model";
 import { Types } from "mongoose";
+import { getParam } from "../../core/utils/getParam";
 
 export const isSupporter = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
   const { id: needId } = req.params;
   const userId = req.user!._id;
 
-  if (!Types.ObjectId.isValid(needId)) {
+  if (!Types.ObjectId.isValid(getParam(needId))) {
     throw new ApiError(400, "شناسه نیاز معتبر نیست.");
   }
 

@@ -3,6 +3,7 @@ import asyncHandler from "../../core/utils/asyncHandler";
 import ApiError from "../../core/utils/apiError";
 import { storyService } from "./story.service";
 import { StoryType, StoryPrivacy } from "common-types";
+import { getParam } from "../../core/utils/getParam";
 
 class StoryController {
   // ==================== STORIES ====================
@@ -27,7 +28,7 @@ class StoryController {
       linkedUrl,
       allowReplies,
       allowSharing,
-      expiresAt
+      expiresAt,
     } = req.body;
 
     // Validation
@@ -47,7 +48,7 @@ class StoryController {
       textColor,
       fontFamily,
       caption,
-      privacy: privacy as StoryPrivacy || "followers",
+      privacy: (privacy as StoryPrivacy) || "followers",
       allowedUsers,
       linkedNeedId,
       linkedUrl,
@@ -101,7 +102,7 @@ class StoryController {
     const { userId } = req.params;
     const currentUserId = req.user!._id.toString();
 
-    const stories = await storyService.getUserStories(userId);
+    const stories = await storyService.getUserStories(getParam(userId));
 
     // بررسی دسترسی
     if (stories.length > 0) {
@@ -129,7 +130,7 @@ class StoryController {
     const { id } = req.params;
     const currentUserId = req.user!._id.toString();
 
-    const story = await storyService.getStoryById(id);
+    const story = await storyService.getStoryById(getParam(id));
 
     if (!story) {
       throw new ApiError(404, "استوری یافت نشد.");
@@ -160,7 +161,7 @@ class StoryController {
     const userId = req.user!._id.toString();
     const { viewDuration } = req.body;
 
-    const story = await storyService.viewStory(id, userId, viewDuration);
+    const story = await storyService.viewStory(getParam(id), userId, viewDuration);
 
     if (!story) {
       throw new ApiError(404, "استوری یافت نشد.");
@@ -185,7 +186,7 @@ class StoryController {
       throw new ApiError(400, "ایموجی الزامی است.");
     }
 
-    const story = await storyService.addReaction(id, userId, emoji);
+    const story = await storyService.addReaction(getParam(id), userId, emoji);
 
     if (!story) {
       throw new ApiError(404, "استوری یافت نشد.");
@@ -205,7 +206,7 @@ class StoryController {
     const { id } = req.params;
     const userId = req.user!._id.toString();
 
-    const story = await storyService.removeReaction(id, userId);
+    const story = await storyService.removeReaction(getParam(id), userId);
 
     if (!story) {
       throw new ApiError(404, "استوری یافت نشد.");
@@ -226,7 +227,7 @@ class StoryController {
     const userId = req.user!._id.toString();
     const userRole = req.user!.role;
 
-    const success = await storyService.deleteStory(id, userId, userRole);
+    const success = await storyService.deleteStory(getParam(id), userId, userRole);
 
     if (!success) {
       throw new ApiError(404, "استوری یافت نشد یا شما صاحب این استوری نیستید.");
@@ -246,7 +247,7 @@ class StoryController {
     const userId = req.user!._id.toString();
     const userRole = req.user!.role;
 
-    const viewers = await storyService.getStoryViewers(id, userId, userRole);
+    const viewers = await storyService.getStoryViewers(getParam(id), userId, userRole);
 
     res.status(200).json({
       message: "لیست بیننده‌ها با موفقیت دریافت شد.",
@@ -298,7 +299,7 @@ class StoryController {
   public getUserHighlights = asyncHandler(async (req: Request, res: Response) => {
     const { userId } = req.params;
 
-    const highlights = await storyService.getUserHighlights(userId);
+    const highlights = await storyService.getUserHighlights(getParam(userId));
 
     res.status(200).json({
       message: "هایلایت‌ها با موفقیت دریافت شد.",
@@ -319,7 +320,7 @@ class StoryController {
       throw new ApiError(400, "شناسه استوری الزامی است.");
     }
 
-    const highlight = await storyService.addStoryToHighlight(id, userId, storyId);
+    const highlight = await storyService.addStoryToHighlight(getParam(id), userId, storyId);
 
     if (!highlight) {
       throw new ApiError(404, "هایلایت یافت نشد یا شما صاحب آن نیستید.");
@@ -339,7 +340,7 @@ class StoryController {
     const { id, storyId } = req.params;
     const userId = req.user!._id.toString();
 
-    const highlight = await storyService.removeStoryFromHighlight(id, userId, storyId);
+    const highlight = await storyService.removeStoryFromHighlight(getParam(id), userId, getParam(storyId));
 
     if (!highlight) {
       throw new ApiError(404, "هایلایت یافت نشد یا شما صاحب آن نیستید.");
@@ -360,7 +361,7 @@ class StoryController {
     const userId = req.user!._id.toString();
     const { title, coverImage, order } = req.body;
 
-    const highlight = await storyService.updateHighlight(id, userId, { title, coverImage, order });
+    const highlight = await storyService.updateHighlight(getParam(id), userId, { title, coverImage, order });
 
     if (!highlight) {
       throw new ApiError(404, "هایلایت یافت نشد یا شما صاحب آن نیستید.");
@@ -381,7 +382,7 @@ class StoryController {
     const userId = req.user!._id.toString();
     const userRole = req.user!.role;
 
-    const success = await storyService.deleteHighlight(id, userId, userRole);
+    const success = await storyService.deleteHighlight(getParam(id), userId, userRole);
 
     if (!success) {
       throw new ApiError(404, "هایلایت یافت نشد یا شما صاحب آن نیستید.");

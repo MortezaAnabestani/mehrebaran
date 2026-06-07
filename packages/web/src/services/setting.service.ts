@@ -6,7 +6,7 @@ export const getSetting = async (key: string): Promise<any | null> => {
     const response = await api.get(`/settings/${key}`);
     return response.data.data;
   } catch (error) {
-    console.error(`Failed to fetch setting for key "${key}":`, error);
+    // console.warn(`Failed to fetch setting for key "${key}":`, error);
     return null;
   }
 };

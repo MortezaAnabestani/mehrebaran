@@ -1,69 +1,31 @@
-import { useRef } from "react";
-import { motion, useInView } from "framer-motion";
-import { FADE_IN_VARIANTS } from "./AboutUs_Constants";
-
-// کامپوننت کارت با استایل متریال (Elevation Effect)
-// در طراحی متریال، تعامل با بالا آمدن سطح (Elevation) و افزایش سایه نمایش داده می‌شود
-const MaterialCard = ({
-  children,
-  className,
-  variant = "surface",
-}: {
-  children: React.ReactNode;
-  className?: string;
-  variant?: "surface" | "primary";
-}) => {
-  return (
-    <motion.div
-      whileHover={{
-        y: -8,
-        boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
-      }}
-      transition={{ type: "spring", stiffness: 300, damping: 20 }}
-      className={`
-        relative overflow-hidden rounded-2xl transition-colors duration-300
-        ${
-          variant === "surface"
-            ? "bg-white text-gray-800 shadow-lg border border-gray-100"
-            : "bg-[#007acc] text-white shadow-xl shadow-blue-500/30"
-        }
-        ${className}
-      `}
-    >
-      {children}
-    </motion.div>
-  );
-};
+import { MaterialCard, FadeInWrapper } from "./ContactSectionClient";
 
 const ContactSection = () => {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
-
   return (
-    <section ref={ref} className="relative pb-10 bg-gray-50 overflow-hidden">
+    <section className="relative pb-10 bg-gray-50 overflow-hidden">
       {/* --- Background Elements (Subtle Material Patterns) --- */}
       <div className="absolute inset-0 z-0 opacity-30 pointer-events-none">
         <div className="absolute right-0 top-0 w-1/3 h-full bg-gradient-to-l from-gray-200/50 to-transparent" />
         <div className="absolute left-[-10%] bottom-[-10%] w-96 h-96 bg-[#007acc]/5 rounded-full blur-3xl" />
       </div>
 
-      <div className="relative z-10 w-9/10 md:w-8/10 mx-auto max-w-6xl">
-        <motion.div initial="hidden" animate={isInView ? "visible" : "hidden"} variants={FADE_IN_VARIANTS}>
+      <div className="relative z-10 w-full px-6 md:px-0 md:w-8/10 mx-auto max-w-6xl">
+        <FadeInWrapper>
           {/* هدر بخش */}
-          <div className="mb-16 text-center">
+          <div className="mb-12 md:mb-16 text-center">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">ارتباط با ما</h2>
             <div className="flex justify-center items-center gap-2">
               <span className="h-1 w-8 bg-[#007acc] rounded-full" />
               <span className="h-1 w-2 bg-[#007acc]/50 rounded-full" />
             </div>
-            <p className="mt-4 text-gray-500 max-w-2xl mx-auto">
+            <p className="mt-4 text-gray-500 max-w-2xl mx-auto text-sm md:text-base">
               ما همیشه آماده شنیدن نظرات، پیشنهادات و پاسخگویی به سوالات شما هستیم.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
             {/* --- کارت اطلاعات تماس (Surface Card) --- */}
-            <MaterialCard variant="surface" className="h-full p-8 md:p-10">
+            <MaterialCard variant="surface" className="h-full p-6 md:p-10">
               <h3 className="text-2xl font-bold text-gray-800 mb-8 flex items-center gap-3">
                 <span className="w-1.5 h-8 bg-[#007acc] rounded-full block"></span>
                 اطلاعات تماس
@@ -110,7 +72,7 @@ const ContactSection = () => {
                   </div>
                   <div>
                     <h4 className="text-gray-400 text-sm font-medium mb-1">شماره تماس</h4>
-                    <p className="text-gray-700 text-lg font-medium dir-ltr text-right font-mono">
+                    <p className="text-gray-700 text-lg font-medium text-right font-mono" dir="ltr">
                       051 - 3888 8888
                     </p>
                   </div>
@@ -194,6 +156,7 @@ const ContactSection = () => {
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
+                    aria-hidden="true"
                   >
                     <path
                       strokeLinecap="round"
@@ -206,7 +169,7 @@ const ContactSection = () => {
               </div>
             </MaterialCard>
           </div>
-        </motion.div>
+        </FadeInWrapper>
       </div>
     </section>
   );

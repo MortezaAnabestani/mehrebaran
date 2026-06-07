@@ -7,7 +7,7 @@ import L from "leaflet";
 import OptimizedImage from "./OptimizedImage";
 
 // Fix for default marker icon issue in React-Leaflet
-delete (L.Icon.Default.prototype as any)._getIconUrl;
+delete (L.Icon.Default.prototype as { _getIconUrl?: string })._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png",
   iconUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png",
@@ -24,7 +24,7 @@ interface LocationPickerProps {
 }
 
 // Component to handle map clicks
-function LocationMarker({ position, setPosition }: any) {
+function LocationMarker({ position, setPosition }: { position: L.LatLng | null; setPosition: (pos: L.LatLng) => void }) {
   useMapEvents({
     click(e) {
       setPosition(e.latlng);
@@ -40,6 +40,7 @@ const LocationPicker: React.FC<LocationPickerProps> = ({ value, onChange, label 
   );
   const [mounted, setMounted] = useState(false);
   const [isReady, setIsReady] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -61,10 +62,12 @@ const LocationPicker: React.FC<LocationPickerProps> = ({ value, onChange, label 
         longitude: position.lng,
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [position]);
 
   // Get user's current location
   const getCurrentLocation = () => {
+    setErrorMsg(null);
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -72,11 +75,13 @@ const LocationPicker: React.FC<LocationPickerProps> = ({ value, onChange, label 
         },
         (error) => {
           console.error("Error getting location:", error);
-          alert("خطا در دریافت موقعیت مکانی");
+          setErrorMsg("خطا در دریافت موقعیت مکانی");
+          setTimeout(() => setErrorMsg(null), 3000);
         }
       );
     } else {
-      alert("مرورگر شما از Geolocation پشتیبانی نمی‌کند");
+      setErrorMsg("مرورگر شما از Geolocation پشتیبانی نمی‌کند");
+      setTimeout(() => setErrorMsg(null), 3000);
     }
   };
 
@@ -95,15 +100,16 @@ const LocationPicker: React.FC<LocationPickerProps> = ({ value, onChange, label 
     <div className="w-full">
       {label && <label className="block text-sm font-bold mb-2">{label}</label>}
 
-      <div className="mb-3 flex items-center gap-3">
+      <div className="mb-3 flex flex-wrap items-center gap-3">
         <button
           type="button"
           onClick={getCurrentLocation}
           className="px-4 py-2 bg-mblue text-white rounded-lg hover:bg-mblue/90 transition-colors text-sm"
+          aria-label="دریافت موقعیت مکانی فعلی"
         >
           <OptimizedImage
             src="/icons/placeLocation.svg"
-            alt="download icon"
+            alt="موقعیت مکانی فعلی"
             width={18}
             height={18}
             className="inline-block"
@@ -112,6 +118,11 @@ const LocationPicker: React.FC<LocationPickerProps> = ({ value, onChange, label 
         {position && (
           <div className="text-xs text-gray-600">
             <span className="font-bold">مختصات:</span> {position.lat.toFixed(6)}, {position.lng.toFixed(6)}
+          </div>
+        )}
+        {errorMsg && (
+          <div className="text-xs text-red-600 font-medium" role="alert" aria-live="assertive">
+            {errorMsg}
           </div>
         )}
       </div>

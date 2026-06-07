@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -38,7 +39,7 @@ const cardStyle =
 interface CreateNeedModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: any) => Promise<void>;
+  onSubmit: (data: unknown) => Promise<void>;
 }
 
 const CreateNeedModal: React.FC<CreateNeedModalProps> = ({ isOpen, onClose, onSubmit }) => {
@@ -68,7 +69,7 @@ const CreateNeedModal: React.FC<CreateNeedModalProps> = ({ isOpen, onClose, onSu
       category: string;
       estimatedCost: number;
     }>,
-    attachments: [] as any[],
+    attachments: [] as unknown[],
   });
 
   const steps = [
@@ -80,7 +81,7 @@ const CreateNeedModal: React.FC<CreateNeedModalProps> = ({ isOpen, onClose, onSu
     { id: 6, title: "مستندات", icon: "/icons/attach.svg" },
   ];
 
-  const updateFormData = (field: string, value: any) => {
+  const updateFormData = (field: string, value: unknown) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     if (validationErrors.length > 0) setValidationErrors([]);
   };
@@ -123,6 +124,17 @@ const CreateNeedModal: React.FC<CreateNeedModalProps> = ({ isOpen, onClose, onSu
     }
   };
 
+  // Handle Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isOpen) {
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const progress = ((currentStep + 1) / steps.length) * 100;
@@ -152,6 +164,7 @@ const CreateNeedModal: React.FC<CreateNeedModalProps> = ({ isOpen, onClose, onSu
               <p className="text-sm text-gray-500 mt-1">لطفاً فرم زیر را با دقت تکمیل کنید</p>
             </div>
             <button
+              type="button"
               onClick={onClose}
               className="w-10 h-10 rounded-full bg-gray-100 text-gray-500 hover:bg-red-50 hover:text-red-500 flex items-center justify-center transition-all shadow-[0_2px_5px_rgba(0,0,0,0.05)] active:shadow-inner active:translate-y-0.5"
             >
@@ -285,7 +298,7 @@ const CreateNeedModal: React.FC<CreateNeedModalProps> = ({ isOpen, onClose, onSu
 
 // --- Sub-Components with Skeuomorphic Design ---
 
-const Step1BasicInfo: React.FC<any> = ({ formData, updateFormData }) => (
+const Step1BasicInfo: React.FC<{ formData: any; updateFormData: any }> = ({ formData, updateFormData }) => (
   <div className="space-y-8">
     <div className="flex items-center gap-4 mb-6">
       <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center text-2xl shadow-inner border border-blue-200">
@@ -365,7 +378,7 @@ const Step1BasicInfo: React.FC<any> = ({ formData, updateFormData }) => (
   </div>
 );
 
-const Step2Details: React.FC<any> = ({ formData, updateFormData }) => {
+const Step2Details: React.FC<{ formData: any; updateFormData: any }> = ({ formData, updateFormData }) => {
   const [newSkill, setNewSkill] = useState("");
   const [newTag, setNewTag] = useState("");
 
@@ -425,6 +438,7 @@ const Step2Details: React.FC<any> = ({ formData, updateFormData }) => {
             },
           ].map((opt) => (
             <button
+              type="button"
               key={opt.value}
               onClick={() => updateFormData("urgencyLevel", opt.value)}
               className={`relative p-4 rounded-xl border transition-all duration-200 flex flex-col items-center justify-center gap-2
@@ -464,6 +478,7 @@ const Step2Details: React.FC<any> = ({ formData, updateFormData }) => {
                 className={inputStyle}
               />
               <button
+                type="button"
                 onClick={addSkill}
                 className="px-4 rounded-xl bg-[#007acc] text-white shadow-[0_4px_10px_rgba(0,122,204,0.3)] hover:bg-[#006bb3] active:scale-95 transition-all"
               >
@@ -478,6 +493,7 @@ const Step2Details: React.FC<any> = ({ formData, updateFormData }) => {
                 >
                   {skill}
                   <button
+                    type="button"
                     onClick={() =>
                       updateFormData(
                         "requiredSkills",
@@ -505,6 +521,7 @@ const Step2Details: React.FC<any> = ({ formData, updateFormData }) => {
                 className={inputStyle}
               />
               <button
+                type="button"
                 onClick={addTag}
                 className="px-4 rounded-xl bg-gray-800 text-white shadow-[0_4px_10px_rgba(0,0,0,0.2)] hover:bg-gray-700 active:scale-95 transition-all"
               >
@@ -519,6 +536,7 @@ const Step2Details: React.FC<any> = ({ formData, updateFormData }) => {
                 >
                   #{tag}
                   <button
+                    type="button"
                     onClick={() =>
                       updateFormData(
                         "tags",
@@ -539,7 +557,7 @@ const Step2Details: React.FC<any> = ({ formData, updateFormData }) => {
   );
 };
 
-const Step3Location: React.FC<any> = ({ formData, updateFormData }) => {
+const Step3Location: React.FC<{ formData: any; updateFormData: any }> = ({ formData, updateFormData }) => {
   const provinces = getProvinceNames();
   const cities = formData.location.province ? getCitiesByProvince(formData.location.province) : [];
 
@@ -626,7 +644,7 @@ const Step3Location: React.FC<any> = ({ formData, updateFormData }) => {
   );
 };
 
-const Step4Timeline: React.FC<any> = ({ formData, updateFormData }) => (
+const Step4Timeline: React.FC<{ formData: any; updateFormData: any }> = ({ formData, updateFormData }) => (
   <div className="space-y-8">
     <div className="flex items-center gap-4 mb-6">
       <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-50 to-purple-100 flex items-center justify-center text-2xl shadow-inner border border-purple-200">
@@ -681,7 +699,7 @@ const Step4Timeline: React.FC<any> = ({ formData, updateFormData }) => (
   </div>
 );
 
-const Step5Budget: React.FC<any> = ({ formData, updateFormData }) => {
+const Step5Budget: React.FC<{ formData: any; updateFormData: any }> = ({ formData, updateFormData }) => {
   const [newItem, setNewItem] = useState({ title: "", category: "", estimatedCost: 0 });
   const totalBudget = formData.budgetItems.reduce((sum: number, item: any) => sum + item.estimatedCost, 0);
 
@@ -739,6 +757,7 @@ const Step5Budget: React.FC<any> = ({ formData, updateFormData }) => {
               className={inputStyle}
             />
             <button
+              type="button"
               onClick={addBudgetItem}
               className="w-full py-3 bg-[#007acc] text-white rounded-xl font-bold shadow-[0_4px_14px_rgba(0,122,204,0.3)] hover:bg-[#006bb3] hover:shadow-lg active:scale-[0.98] transition-all"
             >
@@ -775,10 +794,11 @@ const Step5Budget: React.FC<any> = ({ formData, updateFormData }) => {
                 <div className="flex items-center gap-4">
                   <span className="font-bold text-gray-700">{item.estimatedCost.toLocaleString()} ت</span>
                   <button
+                    type="button"
                     onClick={() =>
                       updateFormData(
                         "budgetItems",
-                        formData.budgetItems.filter((_: any, i: number) => i !== idx)
+                        formData.budgetItems.filter((_: unknown, i: number) => i !== idx)
                       )
                     }
                     className="text-red-400 hover:text-red-600 hover:bg-red-50 p-2 rounded-lg transition-colors"
@@ -795,7 +815,7 @@ const Step5Budget: React.FC<any> = ({ formData, updateFormData }) => {
   );
 };
 
-const Step6Files: React.FC<any> = ({ formData, updateFormData }) => (
+const Step6Files: React.FC<{ formData: any; updateFormData: any }> = ({ formData, updateFormData }) => (
   <div className="space-y-8">
     <div className="flex items-center gap-4 mb-6">
       <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-50 to-indigo-100 flex items-center justify-center text-2xl shadow-inner border border-indigo-200">

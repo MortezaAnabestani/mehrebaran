@@ -94,6 +94,7 @@ const MobileDrawer: React.FC<MobileDrawerProps> = ({
                   flex items-center justify-center
                   hover:bg-gray-200 active:scale-95
                   transition-all duration-200
+                  outline-none focus-visible:ring-2 focus-visible:ring-[#007acc]
                 "
                 aria-label="بستن"
               >

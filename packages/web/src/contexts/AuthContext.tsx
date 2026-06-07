@@ -40,34 +40,43 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // بارگذاری اطلاعات کاربر هنگام mount
   useEffect(() => {
-    initializeAuth();
-  }, []);
+    let isMounted = true;
 
-  /**
-   * مقداردهی اولیه auth - بررسی token و دریافت اطلاعات کاربر
-   */
-  const initializeAuth = async () => {
-    try {
-      setIsLoading(true);
+    const initializeAuth = async () => {
+      try {
+        setIsLoading(true);
 
-      // بررسی وجود token در localStorage
-      const token = authService.getToken();
-      if (!token) {
-        setUser(null);
-        setIsLoading(false);
-        return;
+        // بررسی وجود token در localStorage
+        const token = authService.getToken();
+        if (!token) {
+          if (isMounted) {
+            setUser(null);
+            setIsLoading(false);
+          }
+          return;
+        }
+
+        // دریافت اطلاعات کاربر از API
+        const currentUser = await authService.getCurrentUser();
+        if (isMounted) {
+          setUser(currentUser);
+          setIsLoading(false);
+        }
+      } catch (error) {
+        console.error("Failed to initialize auth:", error);
+        if (isMounted) {
+          setUser(null);
+          setIsLoading(false);
+        }
       }
+    };
 
-      // دریافت اطلاعات کاربر از API
-      const currentUser = await authService.getCurrentUser();
-      setUser(currentUser);
-    } catch (error) {
-      console.error("Failed to initialize auth:", error);
-      setUser(null);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    initializeAuth();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   /**
    * ورود به سیستم

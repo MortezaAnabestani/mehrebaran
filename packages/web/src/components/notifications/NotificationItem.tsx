@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import OptimizedImage from "@/components/ui/OptimizedImage";
 import notificationService, { type INotification } from "@/services/notification.service";
 import type { IUser } from "common-types";
 
@@ -99,7 +100,9 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ notification, onRea
         {/* Icon/Avatar */}
         <div className="flex-shrink-0">
           {senderAvatar ? (
-            <img src={senderAvatar} alt={senderName} className="w-12 h-12 rounded-full object-cover" />
+            <div className="relative w-12 h-12 rounded-full overflow-hidden">
+              <OptimizedImage src={senderAvatar} alt={senderName} className="object-cover" fill sizes="(max-width: 48px) 100vw, 48px" />
+            </div>
           ) : notification.sender ? (
             <div className="w-12 h-12 rounded-full bg-gradient-to-br from-mblue to-cyan-500 flex items-center justify-center text-white font-bold">
               {senderName.charAt(0)}
@@ -136,6 +139,7 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ notification, onRea
           onClick={handleDelete}
           className="flex-shrink-0 text-gray-400 hover:text-red-500 transition-colors p-2"
           title="حذف اعلان"
+          aria-label="حذف اعلان"
         >
           {isDeleting ? (
             <div className="w-5 h-5 border-2 border-gray-300 border-t-transparent rounded-full animate-spin"></div>

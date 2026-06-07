@@ -71,7 +71,7 @@ class NeedService {
    */
   public async getNeeds(params?: GetNeedsParams): Promise<GetNeedsResponse> {
     try {
-      const response = await api.get(`${process.env.NEXT_PUBLIC_API_URL}/needs`, { params });
+      const response = await api.get("/needs", { params });
       return response.data;
     } catch (error: any) {
       console.error("Get needs failed:", error);

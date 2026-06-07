@@ -1,10 +1,16 @@
 import { getNewsByIdOrSlug } from "@/services/news.service";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
+import { cache } from "react";
+import sanitizeHtml from "sanitize-html";
 import HeadTitle from "@/components/features/home/HeadTitle";
 import OptimizedImage from "@/components/ui/OptimizedImage";
 import SmartSwiper from "@/components/ui/swiper/SmartSwiper";
 import Comment from "@/components/shared/Comment";
+
+export const revalidate = 600; // کش برای اخبار هر ۱۰ دقیقه (600 ثانیه)
+
+const getCachedNews = cache((id: string) => getNewsByIdOrSlug(id));
 
 type PageProps = {
   params: Promise<{ id: string }>;
@@ -13,24 +19,44 @@ type PageProps = {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params;
   const decodedId = decodeURIComponent(id);
-  const news = await getNewsByIdOrSlug(decodedId);
+  const news = await getCachedNews(decodedId);
 
   if (!news) {
     return {
-      title: "خبر یافت نشد",
+      title: "خبر یافت نشد | روایت مهر",
     };
   }
 
+  const siteUrl = process.env.NEXT_PUBLIC_API_URL?.replace("/api/v1", "") || "http://localhost:3000";
+  const url = `${siteUrl}/news/${id}`;
+  const images = news.featuredImage?.desktop ? [process.env.NEXT_PUBLIC_UPLOADS + news.featuredImage.desktop] : undefined;
+
   return {
-    title: news.seo.metaTitle || news.title,
+    title: `${news.seo.metaTitle || news.title} | روایت مهر`,
     description: news.seo.metaDescription || news.excerpt,
+    alternates: {
+      canonical: url,
+    },
+    openGraph: {
+      title: `${news.seo.metaTitle || news.title} | روایت مهر`,
+      description: news.seo.metaDescription || news.excerpt,
+      url,
+      type: "article",
+      images,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${news.seo.metaTitle || news.title} | روایت مهر`,
+      description: news.seo.metaDescription || news.excerpt,
+      images,
+    },
   };
 }
 
 export default async function NewsDetailPage({ params }: PageProps) {
   const { id } = await params;
   const decodedId = decodeURIComponent(id);
-  const news = await getNewsByIdOrSlug(decodedId);
+  const news = await getCachedNews(decodedId);
 
   if (!news) {
     notFound();
@@ -46,14 +72,60 @@ export default async function NewsDetailPage({ params }: PageProps) {
     day: "numeric",
   });
 
+  const siteUrl = process.env.NEXT_PUBLIC_API_URL?.replace("/api/v1", "") || "http://localhost:3000";
+
+  const jsonLdNewsArticle = {
+    "@context": "https://schema.org",
+    "@type": "NewsArticle",
+    headline: news.title,
+    description: news.excerpt,
+    image: news.featuredImage?.desktop ? [process.env.NEXT_PUBLIC_UPLOADS + news.featuredImage.desktop] : [],
+    datePublished: news.createdAt,
+    dateModified: news.updatedAt || news.createdAt,
+    inLanguage: "fa-IR",
+  };
+
+  const jsonLdBreadcrumb = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "خانه",
+        item: siteUrl,
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "اخبار",
+        item: `${siteUrl}/news`,
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: news.title,
+        item: `${siteUrl}/news/${id}`,
+      },
+    ],
+  };
+
   return (
     <div>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdNewsArticle) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdBreadcrumb) }}
+      />
       {/* Image Gallery */}
       {allImages.length > 0 && (
         <div className="w-full">
           <SmartSwiper
             items={allImages.map((image, index) => (
-              <div key={index} className="h-100 w-full">
+              <div key={image.desktop || index} className="h-100 w-full">
                 <OptimizedImage
                   src={image.desktop}
                   alt={news.title}
@@ -70,7 +142,7 @@ export default async function NewsDetailPage({ params }: PageProps) {
       )}
 
       {/* Content */}
-      <div className="w-9/10 md:w-8/10 mx-auto my-10">
+      <article className="w-9/10 md:w-8/10 mx-auto my-10">
         <HeadTitle title={news.title} />
 
         {/* Subtitle */}
@@ -79,13 +151,13 @@ export default async function NewsDetailPage({ params }: PageProps) {
         {/* Meta Information */}
         <div className="flex items-center gap-4 text-sm text-gray-500 mb-6 border-b border-gray-200 pb-4">
           <span className="flex items-center gap-2">
-            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
               <path d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" />
             </svg>
             {publishDate}
           </span>
           <span className="flex items-center gap-2">
-            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
               <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
               <path
                 fillRule="evenodd"
@@ -107,7 +179,7 @@ export default async function NewsDetailPage({ params }: PageProps) {
         {/* Main Content */}
         <div
           className="text-base/loose text-justify prose max-w-none"
-          dangerouslySetInnerHTML={{ __html: news.content }}
+          dangerouslySetInnerHTML={{ __html: sanitizeHtml(news.content) }}
         />
 
         {/* Tags */}
@@ -115,14 +187,18 @@ export default async function NewsDetailPage({ params }: PageProps) {
           <div className="mt-8 pt-6 border-t border-gray-200">
             <h3 className="text-sm font-bold text-gray-700 mb-3">برچسب‌ها:</h3>
             <div className="flex flex-wrap gap-2">
-              {news.tags.map((tag, index) => (
-                <span
-                  key={index}
-                  className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm hover:bg-mblue hover:text-white transition-colors cursor-pointer"
-                >
-                  {typeof tag === "string" ? tag : tag.name}
-                </span>
-              ))}
+              {news.tags.map((tag, index) => {
+                const tagName = typeof tag === "string" ? tag : tag.name;
+                const tagKey = typeof tag === "string" ? tag : (tag._id || index);
+                return (
+                  <span
+                    key={tagKey}
+                    className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm hover:bg-mblue hover:text-white transition-colors"
+                  >
+                    {tagName}
+                  </span>
+                );
+              })}
             </div>
           </div>
         )}
@@ -131,7 +207,7 @@ export default async function NewsDetailPage({ params }: PageProps) {
         <div className="mt-16">
           <Comment postId={news._id} postType="News" />
         </div>
-      </div>
+      </article>
     </div>
   );
 }

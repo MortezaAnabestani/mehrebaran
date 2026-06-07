@@ -10,6 +10,7 @@ import {
 } from "./team.validation";
 import asyncHandler from "../../core/utils/asyncHandler";
 import ApiError from "../../core/utils/apiError";
+import { getParam } from "../../core/utils/getParam";
 
 class TeamController {
   // Create team
@@ -34,7 +35,7 @@ class TeamController {
     console.log("🔍 getTeams called with needId:", needId);
     console.log("🔍 Query params:", { status, focusArea });
 
-    const teams = await teamService.getTeams(needId, {
+    const teams = await teamService.getTeams(getParam(needId), {
       status: status as any,
       focusArea: focusArea as any,
     });
@@ -51,7 +52,7 @@ class TeamController {
   public getTeamById = asyncHandler(async (req: Request, res: Response) => {
     const { teamId } = req.params;
 
-    const team = await teamService.getTeamById(teamId);
+    const team = await teamService.getTeamById(getParam(teamId));
     if (!team) {
       throw new ApiError(404, "تیم یافت نشد.");
     }
@@ -82,7 +83,7 @@ class TeamController {
     const userId = req.user!._id.toString();
     const userRole = req.user!.role;
 
-    await teamService.deleteTeam(teamId, userId, userRole);
+    await teamService.deleteTeam(getParam(teamId), userId, userRole);
 
     res.status(200).json({
       message: "تیم با موفقیت حذف شد.",
@@ -109,7 +110,7 @@ class TeamController {
     const { teamId, userId: memberIdToRemove } = req.params;
     const removedBy = req.user!._id.toString();
 
-    const team = await teamService.removeMember(teamId, removedBy, memberIdToRemove);
+    const team = await teamService.removeMember(getParam(teamId), removedBy, getParam(memberIdToRemove));
 
     res.status(200).json({
       message: "عضو با موفقیت از تیم حذف شد.",
@@ -167,7 +168,7 @@ class TeamController {
     const { needId } = req.params;
     const userId = req.user!._id.toString();
 
-    const teams = await teamService.getUserTeams(needId, userId);
+    const teams = await teamService.getUserTeams(getParam(needId), userId);
 
     res.status(200).json({
       results: teams.length,
@@ -191,7 +192,7 @@ class TeamController {
   public getTeamStats = asyncHandler(async (req: Request, res: Response) => {
     const { teamId } = req.params;
 
-    const stats = await teamService.getTeamStats(teamId);
+    const stats = await teamService.getTeamStats(getParam(teamId));
 
     res.status(200).json({
       data: stats,

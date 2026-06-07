@@ -7,6 +7,7 @@ import { logShareSchema } from "./social.validation";
 import asyncHandler from "../../core/utils/asyncHandler";
 import ApiError from "../../core/utils/apiError";
 import ResponseFormatter from "../../utils/ResponseFormatter";
+import { getParam } from "../../core/utils/getParam";
 
 class SocialController {
   // ==================== FOLLOW SYSTEM ====================
@@ -16,7 +17,7 @@ class SocialController {
     const { userId } = req.params;
     const followerId = req.user!._id.toString();
 
-    const follow = await followService.followUser(followerId, userId);
+    const follow = await followService.followUser(followerId, getParam(userId));
 
     return ResponseFormatter.created(res, follow, "کاربر با موفقیت دنبال شد.");
   });
@@ -26,7 +27,7 @@ class SocialController {
     const { userId } = req.params;
     const followerId = req.user!._id.toString();
 
-    await followService.unfollowUser(followerId, userId);
+    await followService.unfollowUser(followerId, getParam(userId));
 
     return ResponseFormatter.success(res, null, "دنبال کردن کاربر لغو شد.");
   });
@@ -36,7 +37,7 @@ class SocialController {
     const { needId } = req.params;
     const followerId = req.user!._id.toString();
 
-    const follow = await followService.followNeed(followerId, needId);
+    const follow = await followService.followNeed(followerId, getParam(needId));
 
     return ResponseFormatter.created(res, follow, "نیاز با موفقیت دنبال شد.");
   });
@@ -46,7 +47,7 @@ class SocialController {
     const { needId } = req.params;
     const followerId = req.user!._id.toString();
 
-    await followService.unfollowNeed(followerId, needId);
+    await followService.unfollowNeed(followerId, getParam(needId));
 
     return ResponseFormatter.success(res, null, "دنبال کردن نیاز لغو شد.");
   });
@@ -56,7 +57,7 @@ class SocialController {
     const { userId } = req.params;
     const { page, limit } = ResponseFormatter.extractPaginationParams(req.query);
 
-    const followers = await followService.getUserFollowers(userId, limit, (page - 1) * limit);
+    const followers = await followService.getUserFollowers(getParam(userId), limit, (page - 1) * limit);
     const total = followers.length; // TODO: Get actual count from service
 
     const pagination = ResponseFormatter.getPaginationInfo(page, limit, total);
@@ -68,7 +69,7 @@ class SocialController {
     const { userId } = req.params;
     const { page, limit } = ResponseFormatter.extractPaginationParams(req.query);
 
-    const following = await followService.getUserFollowing(userId, limit, (page - 1) * limit);
+    const following = await followService.getUserFollowing(getParam(userId), limit, (page - 1) * limit);
     const total = following.length; // TODO: Get actual count from service
 
     const pagination = ResponseFormatter.getPaginationInfo(page, limit, total);
@@ -92,7 +93,7 @@ class SocialController {
     const { needId } = req.params;
     const { page, limit } = ResponseFormatter.extractPaginationParams(req.query);
 
-    const followers = await followService.getNeedFollowers(needId, limit, (page - 1) * limit);
+    const followers = await followService.getNeedFollowers(getParam(needId), limit, (page - 1) * limit);
     const total = followers.length; // TODO: Get actual count from service
 
     const pagination = ResponseFormatter.getPaginationInfo(page, limit, total);
@@ -102,7 +103,7 @@ class SocialController {
   // Get follow stats
   public getUserFollowStats = asyncHandler(async (req: Request, res: Response) => {
     const { userId } = req.params;
-    const stats = await followService.getUserFollowStats(userId);
+    const stats = await followService.getUserFollowStats(getParam(userId));
 
     return ResponseFormatter.success(res, stats);
   });
@@ -132,7 +133,7 @@ class SocialController {
         context: context as any,
       },
       limit,
-      (page - 1) * limit
+      (page - 1) * limit,
     );
 
     const total = mentions.length; // TODO: Get actual count from service
@@ -145,7 +146,7 @@ class SocialController {
     const { mentionId } = req.params;
     const userId = req.user!._id.toString();
 
-    const mention = await mentionService.markAsRead(mentionId, userId);
+    const mention = await mentionService.markAsRead(getParam(mentionId), userId);
 
     if (!mention) {
       return ResponseFormatter.notFound(res, "منشن یافت نشد.");
@@ -159,11 +160,7 @@ class SocialController {
     const userId = req.user!._id.toString();
     const count = await mentionService.markAllAsRead(userId);
 
-    return ResponseFormatter.success(
-      res,
-      { count },
-      `${count} منشن به عنوان خوانده شده علامت‌گذاری شد.`
-    );
+    return ResponseFormatter.success(res, { count }, `${count} منشن به عنوان خوانده شده علامت‌گذاری شد.`);
   });
 
   // Get unread mention count
@@ -212,7 +209,7 @@ class SocialController {
     const { tag } = req.params;
     const limit = req.query.limit ? parseInt(req.query.limit as string) : 50;
 
-    const needs = await tagService.getNeedsByTag(tag, limit);
+    const needs = await tagService.getNeedsByTag(getParam(tag), limit);
 
     return ResponseFormatter.success(res, needs);
   });
@@ -241,7 +238,7 @@ class SocialController {
   // Get item share stats
   public getItemShareStats = asyncHandler(async (req: Request, res: Response) => {
     const { itemId } = req.params;
-    const stats = await shareService.getItemShareStats(itemId, "need");
+    const stats = await shareService.getItemShareStats(getParam(itemId), "need");
 
     return ResponseFormatter.success(res, stats);
   });
@@ -257,7 +254,7 @@ class SocialController {
   // Get OG metadata for sharing
   public getOGMetadata = asyncHandler(async (req: Request, res: Response) => {
     const { needId } = req.params;
-    const metadata = await shareService.generateOGMetadata(needId);
+    const metadata = await shareService.generateOGMetadata(getParam(needId));
 
     if (!metadata) {
       return ResponseFormatter.notFound(res, "نیاز یافت نشد.");

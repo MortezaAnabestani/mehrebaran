@@ -1,5 +1,3 @@
-"use client";
-
 import React from "react";
 import Link from "next/link";
 import OptimizedImage from "@/components/ui/OptimizedImage";
@@ -11,6 +9,13 @@ interface InstagramProfileGridProps {
   emptyMessage?: string;
 }
 
+// Format number for display
+const formatNumber = (num: number): string => {
+  if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
+  if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
+  return num.toString();
+};
+
 /**
  * InstagramProfileGrid - Skeuomorphic & Modern Grid Layout
  * بازطراحی شده با استایل اسکیومورفیسم مدرن و عمق‌دهی بصری
@@ -20,13 +25,6 @@ const InstagramProfileGrid: React.FC<InstagramProfileGridProps> = ({
   isLoading = false,
   emptyMessage = "هنوز پستی وجود ندارد",
 }) => {
-  // Format number for display
-  const formatNumber = (num: number): string => {
-    if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
-    if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
-    return num.toString();
-  };
-
   // Loading State: Inset Skeuomorphic Effect (حالت فرورفته)
   if (isLoading) {
     return (

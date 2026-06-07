@@ -42,12 +42,20 @@ const StoriesCarousel: React.FC<StoriesCarouselProps> = ({ storyGroups, currentU
 
   return (
     // Container: Skeuomorphic Card Style (Soft shadows, rounded corners)
-    <div className="bg-[#f0f2f5] border border-white/50 shadow-[6px_6px_12px_#c5c5c5,-6px_-6px_12px_#ffffff] rounded-xl md:rounded-2xl p-2 sm:p-3 mt-3 md:mt-4">
-      <div className="flex gap-3 sm:gap-4 md:gap-5 overflow-x-auto scrollbar-hide py-1.5 sm:py-2 px-0.5 sm:px-1">
+    <div className="bg-[#f0f2f5] border border-white/50 shadow-[6px_6px_12px_#c5c5c5,-6px_-6px_12px_#ffffff] rounded-xl md:rounded-2xl mt-3 md:mt-4 w-full overflow-hidden">
+      <div className="flex gap-3 sm:gap-4 md:gap-5 overflow-x-auto overflow-y-hidden scrollbar-hide py-3 md:py-4 px-3 sm:px-4 touch-pan-x overscroll-x-contain w-full">
         {/* --- Add Story Button --- */}
         <div
+          role="button"
+          tabIndex={0}
           onClick={onCreateStory}
-          className="flex flex-col items-center gap-1.5 sm:gap-2 md:gap-2.5 flex-shrink-0 cursor-pointer group"
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              onCreateStory?.();
+            }
+          }}
+          className="flex flex-col items-center gap-1.5 sm:gap-2 md:gap-2.5 flex-shrink-0 cursor-pointer group outline-none focus-visible:ring-2 focus-visible:ring-[#007acc] rounded-xl p-1"
         >
           <div className="relative w-14 h-14 sm:w-16 sm:h-16 md:w-[72px] md:h-[72px] flex items-center justify-center transition-all duration-300 transform group-hover:-translate-y-1">
             {/* Outer Ring / Base */}
@@ -91,8 +99,16 @@ const StoriesCarousel: React.FC<StoriesCarouselProps> = ({ storyGroups, currentU
         {storyGroups.map((group, index) => (
           <div
             key={group.userId}
+            role="button"
+            tabIndex={0}
             onClick={() => handleStoryClick(index)}
-            className="flex flex-col items-center gap-1.5 sm:gap-2 md:gap-2.5 flex-shrink-0 cursor-pointer group"
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                handleStoryClick(index);
+              }
+            }}
+            className="flex flex-col items-center gap-1.5 sm:gap-2 md:gap-2.5 flex-shrink-0 cursor-pointer group outline-none focus-visible:ring-2 focus-visible:ring-[#007acc] rounded-xl p-1"
           >
             <div className="relative w-14 h-14 sm:w-16 sm:h-16 md:w-[72px] md:h-[72px] flex items-center justify-center transition-all duration-300 transform group-hover:-translate-y-1">
               {/* Background Shadow for depth */}
@@ -169,6 +185,7 @@ const StoriesCarousel: React.FC<StoriesCarouselProps> = ({ storyGroups, currentU
         .scrollbar-hide {
           -ms-overflow-style: none;
           scrollbar-width: none;
+          -webkit-overflow-scrolling: touch;
         }
       `}</style>
     </div>

@@ -1,23 +1,22 @@
 import React from "react";
 import OptimizedImage from "@/components/ui/OptimizedImage";
-import SmartButton from "@/components/ui/SmartButton";
 
-interface User {
+export interface NeedCommentsUser {
   _id: string;
   name: string;
   avatar?: string;
   headline?: string;
 }
 
-interface Comment {
+export interface INeedComment {
   _id: string;
   content: string;
   createdAt: string | Date;
-  user: User;
+  user: NeedCommentsUser;
 }
 
 interface NeedCommentsProps {
-  comments: Comment[];
+  comments: INeedComment[];
   commentText: string;
   setCommentText: (text: string) => void;
   onSubmit: (e: React.FormEvent) => void;
@@ -75,63 +74,49 @@ const NeedComments: React.FC<NeedCommentsProps> = ({
 }) => {
   return (
     <section
-      className="bg-[#fcfcfd] rounded-xl sm:rounded-2xl md:rounded-3xl shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-white/60 p-3 sm:p-4 md:p-6 lg:p-8 mt-4 sm:mt-6 md:mt-8 lg:mt-10 relative overflow-hidden"
+      className="relative"
       aria-labelledby="comments-heading"
     >
       {/* --- Header Section --- */}
-      <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0 mb-4 sm:mb-5 md:mb-6 lg:mb-8">
-        <div className="flex items-center gap-2 sm:gap-3">
-          <div className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-lg sm:rounded-xl bg-[#007acc]/10 flex items-center justify-center text-[#007acc]">
-            <svg
-              width="16"
-              height="16"
-              className="sm:w-[18px] sm:h-[18px] md:w-5 md:h-5"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
-            </svg>
-          </div>
-          <h3 id="comments-heading" className="font-extrabold text-base sm:text-lg md:text-xl lg:text-2xl text-gray-800 tracking-tight">
-            نظرات کاربران
+      <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0 mt-2 mb-6 sm:mb-8 md:mb-10 lg:mb-12">
+        <div className="flex flex-col gap-1">
+          <h3 id="comments-heading" className="font-extrabold text-lg sm:text-xl md:text-2xl lg:text-3xl text-slate-700 tracking-tight flex items-center gap-2">
+            <span className="text-[#007acc] text-2xl">•</span>
+            نظرات و گفتگوها
           </h3>
         </div>
 
-        <div className="bg-white px-2.5 py-1 sm:px-3 sm:py-1.5 md:px-4 rounded-full text-xs sm:text-sm font-bold text-[#007acc] shadow-[2px_2px_8px_rgba(0,0,0,0.05),-2px_-2px_8px_rgba(255,255,255,1)] border border-gray-50">
+        <div className="bg-[#f0f2f5] px-4 py-2 rounded-xl text-sm font-bold text-[#007acc] shadow-[inset_3px_3px_6px_#c5c5c5,inset_-3px_-3px_6px_#ffffff]">
           {comments.length > 0 ? `${comments.length} دیدگاه` : "بدون دیدگاه"}
         </div>
       </header>
 
       {/* --- Comment Form --- */}
-      <div className="mb-6 sm:mb-8 md:mb-10 lg:mb-12">
-        <form onSubmit={onSubmit} className="relative group">
+      <div className="mb-8 sm:mb-10 md:mb-12 lg:mb-14">
+        <form onSubmit={onSubmit} className="relative group flex flex-col items-end">
           <label htmlFor="comment-textarea" className="sr-only">
             متن دیدگاه
           </label>
-          <div className="relative transition-transform duration-300 focus-within:-translate-y-0.5 sm:focus-within:-translate-y-1">
+          <div className="w-full relative transition-transform duration-300">
             <textarea
               id="comment-textarea"
               value={commentText}
               onChange={(e) => setCommentText(e.target.value)}
               placeholder="دیدگاه ارزشمند خود را بنویسید..."
-              className="w-full p-3 sm:p-4 md:p-5 lg:p-6 bg-gray-100/50 border border-gray-200 rounded-lg sm:rounded-xl md:rounded-2xl
-                         shadow-[inset_2px_2px_6px_rgba(0,0,0,0.06),inset_-2px_-2px_6px_rgba(255,255,255,0.8)]
-                         focus:ring-2 focus:ring-[#007acc]/20 focus:border-[#007acc] focus:bg-white
-                         transition-all duration-300 resize-none text-gray-700 placeholder-gray-400
-                         min-h-[100px] sm:min-h-[120px] md:min-h-[140px] text-sm sm:text-base leading-relaxed outline-none"
+              className="w-full p-4 sm:p-5 md:p-6 bg-[#f0f2f5] rounded-2xl
+                         shadow-[inset_6px_6px_12px_#c5c5c5,inset_-6px_-6px_12px_#ffffff]
+                         focus:outline-none focus:ring-1 focus:ring-[#007acc]/20
+                         transition-all duration-300 resize-none text-slate-700 placeholder-slate-400
+                         min-h-[120px] sm:min-h-[140px] md:min-h-[160px] text-sm sm:text-base leading-relaxed"
               disabled={isSubmitting}
             />
 
             {/* Decorative Corner Icon */}
-            <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 md:bottom-5 md:left-5 text-gray-300 pointer-events-none transition-colors duration-300 group-focus-within:text-[#007acc]/40">
+            <div className="absolute bottom-4 left-4 sm:bottom-5 sm:left-5 md:bottom-6 md:left-6 text-slate-400 pointer-events-none transition-colors duration-300 group-focus-within:text-[#007acc]">
               <svg
-                width="18"
-                height="18"
-                className="sm:w-5 sm:h-5 md:w-6 md:h-6"
+                width="20"
+                height="20"
+                className="sm:w-6 sm:h-6"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -143,30 +128,29 @@ const NeedComments: React.FC<NeedCommentsProps> = ({
             </div>
           </div>
 
-          <div className="mt-3 sm:mt-4 md:mt-5 flex justify-end">
-            <SmartButton
+          <div className="mt-4 sm:mt-5 md:mt-6 w-full sm:w-auto">
+            <button
               type="submit"
-              variant="mblue"
-              size="md"
               disabled={isSubmitting || !commentText.trim()}
-              className="shadow-[0_4px_14px_rgba(0,122,204,0.3)] hover:shadow-[0_6px_20px_rgba(0,122,204,0.4)]
-                         active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)] transition-all duration-200 px-4 sm:px-6 md:px-8 rounded-lg sm:rounded-xl text-sm sm:text-base"
+              className="relative overflow-hidden group w-full sm:w-auto bg-gradient-to-r from-[#007acc] to-[#015ca8] hover:from-[#0069bd] hover:to-[#014c8a] text-white border border-white/10 shadow-[0_4px_14px_rgba(0,122,204,0.3)] hover:shadow-[0_8px_25px_rgba(0,122,204,0.45)] hover:-translate-y-0.5 active:translate-y-0 active:shadow-[inset_0_4px_8px_rgba(0,0,0,0.15)] transition-all duration-300 px-6 sm:px-8 py-3 rounded-xl font-semibold text-sm sm:text-base flex items-center justify-center disabled:opacity-50 disabled:shadow-none disabled:transform-none disabled:cursor-not-allowed select-none"
             >
               {isSubmitting ? (
-                <span className="flex items-center gap-1.5 sm:gap-2">
-                  <span className="w-3.5 h-3.5 sm:w-4 sm:h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                <span className="flex items-center gap-2 relative z-10">
+                  <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
                   در حال ارسال...
                 </span>
               ) : (
-                "ثبت دیدگاه"
+                <span className="relative z-10">ثبت دیدگاه</span>
               )}
-            </SmartButton>
+              {/* Premium shine overlay */}
+              <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out" />
+            </button>
           </div>
         </form>
       </div>
 
       {/* --- Comments List --- */}
-      <div aria-live="polite" className="space-y-4 sm:space-y-5 md:space-y-6 lg:space-y-8">
+      <div aria-live="polite" className="space-y-6 sm:space-y-8 md:space-y-10">
         {isLoading ? (
           <>
             <CommentSkeleton />
@@ -176,43 +160,39 @@ const NeedComments: React.FC<NeedCommentsProps> = ({
           comments.map((comment) => (
             <article
               key={comment._id}
-              className="group flex gap-3 sm:gap-4 md:gap-5 lg:gap-6 transition-all duration-300 p-1 sm:p-1.5 md:p-2 rounded-xl sm:rounded-2xl md:rounded-3xl"
+              className="group flex gap-3 sm:gap-4 md:gap-5 lg:gap-6 bg-[#f0f2f5] shadow-[4px_4px_8px_#c5c5c5,-4px_-4px_8px_#ffffff] sm:shadow-[6px_6px_12px_#c5c5c5,-6px_-6px_12px_#ffffff] transition-all duration-300 p-3 sm:p-5 md:p-6 rounded-2xl md:rounded-3xl"
             >
-              {/* Avatar Section */}
-              <div className="hidden md:flex flex-shrink-0 pt-0.5 sm:pt-1">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-full p-0.5 sm:p-1 bg-white shadow-[2px_2px_8px_rgba(0,0,0,0.1),-2px_-2px_8px_rgba(255,255,255,1)]">
-                  <div className="relative w-full h-full rounded-full overflow-hidden bg-gray-100">
-                    <OptimizedImage
-                      src={comment.user?.avatar || "/images/default-avatar.png"}
-                      alt={comment.user?.name || "کاربر"}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                </div>
-              </div>
-
               {/* Content Section */}
               <div className="flex-1 min-w-0">
-                <div
-                  className="bg-white p-3 sm:p-4 md:p-5 lg:p-6 rounded-lg sm:rounded-xl md:rounded-2xl rounded-tl-none
-                              shadow-[0_2px_15px_rgba(0,0,0,0.03)] border border-gray-100
-                              group-hover:shadow-[0_8px_25px_rgba(0,0,0,0.06)] group-hover:border-[#007acc]/20
-                              transition-all duration-300 relative"
-                >
+                <div className="relative">
                   {/* Header: Name & Date */}
-                  <div className="flex flex-wrap justify-between items-start gap-2 mb-2 sm:mb-3">
-                    <div>
-                      <h4 className="font-bold text-gray-900 text-sm sm:text-base md:text-lg group-hover:text-[#007acc] transition-colors duration-200">
-                        {comment.user?.name || "کاربر ناشناس"}
-                      </h4>
-                      <p className="text-[10px] sm:text-xs text-gray-500 font-medium mt-0.5 sm:mt-1">
-                        {comment.user?.headline || "کاربر فعال شبکه"}
-                      </p>
+                  <div className="flex flex-wrap justify-between items-start gap-3 mb-3 sm:mb-4">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                         {/* Avatar Section */}
+                        <div className="flex-shrink-0">
+                            <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-full p-1 bg-[#f0f2f5] shadow-[3px_3px_6px_#c5c5c5,-3px_-3px_6px_#ffffff] sm:shadow-[4px_4px_8px_#c5c5c5,-4px_-4px_8px_#ffffff]">
+                                <div className="relative w-full h-full rounded-full overflow-hidden border border-white/60 shadow-[inset_2px_2px_4px_#c5c5c5,inset_-2px_-2px_4px_#ffffff]">
+                                    <OptimizedImage
+                                    src={comment.user?.avatar || "/images/default-avatar.png"}
+                                    alt={comment.user?.name || "کاربر"}
+                                    fill
+                                    className="object-cover"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                        <h4 className="font-extrabold text-slate-700 text-base sm:text-lg md:text-xl group-hover:text-[#007acc] transition-colors duration-300">
+                            {comment.user?.name || "کاربر ناشناس"}
+                        </h4>
+                        <p className="text-xs sm:text-sm text-slate-500 font-medium mt-1">
+                            {comment.user?.headline || "کاربر فعال شبکه"}
+                        </p>
+                        </div>
                     </div>
                     <time
                       dateTime={new Date(comment.createdAt).toISOString()}
-                      className="text-[10px] sm:text-xs font-medium text-gray-400 bg-gray-50 px-2 py-0.5 sm:px-3 sm:py-1 rounded-md sm:rounded-lg border border-gray-100"
+                      className="text-[10px] sm:text-xs font-bold text-slate-500 bg-[#f0f2f5] px-3 py-1.5 rounded-xl shadow-[inset_2px_2px_4px_#c5c5c5,inset_-2px_-2px_4px_#ffffff]"
                     >
                       {new Date(comment.createdAt).toLocaleDateString("fa-IR", {
                         day: "numeric",
@@ -223,12 +203,12 @@ const NeedComments: React.FC<NeedCommentsProps> = ({
                   </div>
 
                   {/* Comment Body */}
-                  <p className="text-gray-700 leading-6 sm:leading-7 md:leading-8 text-xs sm:text-sm md:text-[0.95rem] text-justify">{comment.content}</p>
+                  <p className="text-slate-600 leading-relaxed text-sm sm:text-base md:text-lg text-justify pl-2 sm:pl-4">{comment.content}</p>
 
                   {/* Actions (Hover only) */}
-                  <div className="flex gap-3 sm:gap-4 md:gap-5 mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-gray-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 translate-y-1 sm:translate-y-2 group-hover:translate-y-0">
-                    <button className="text-[10px] sm:text-xs font-bold text-gray-400 hover:text-[#007acc] flex items-center gap-1 sm:gap-1.5 transition-colors py-0.5 sm:py-1">
-                      <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <div className="flex gap-4 sm:gap-6 mt-4 sm:mt-5 pt-3 sm:pt-4 border-t border-white/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 translate-y-2 group-hover:translate-y-0">
+                    <button type="button" className="text-[10px] sm:text-xs font-bold text-slate-400 hover:text-[#007acc] flex items-center gap-1.5 transition-colors">
+                      <svg className="w-3 h-3 sm:w-4 sm:h-4 text-inherit" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path
                           strokeLinecap="round"
                           strokeLinejoin="round"
@@ -238,8 +218,8 @@ const NeedComments: React.FC<NeedCommentsProps> = ({
                       </svg>
                       پاسخ دادن
                     </button>
-                    <button className="text-[10px] sm:text-xs font-bold text-gray-400 hover:text-red-500 flex items-center gap-1 sm:gap-1.5 transition-colors py-0.5 sm:py-1">
-                      <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <button type="button" className="text-[10px] sm:text-xs font-bold text-slate-400 hover:text-[#007acc] flex items-center gap-1.5 transition-colors">
+                      <svg className="w-3 h-3 sm:w-4 sm:h-4 text-inherit" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path
                           strokeLinecap="round"
                           strokeLinejoin="round"

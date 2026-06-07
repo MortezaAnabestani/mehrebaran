@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { adminService } from "./admin.service";
 import asyncHandler from "../../core/utils/asyncHandler";
 import ResponseFormatter from "../../utils/ResponseFormatter";
+import { getParam } from "../../core/utils/getParam";
 
 /**
  * Admin Controller - Handles admin dashboard endpoints
@@ -142,7 +143,7 @@ class AdminController {
       res,
       result.needs,
       result.pagination,
-      "لیست نیازها با موفقیت دریافت شد"
+      "لیست نیازها با موفقیت دریافت شد",
     );
   });
 
@@ -166,11 +167,7 @@ class AdminController {
 
     const result = await adminService.bulkUpdateNeedsStatus(needIds, status, reason);
 
-    return ResponseFormatter.success(
-      res,
-      result,
-      `${result.modifiedCount} نیاز با موفقیت به‌روزرسانی شد`
-    );
+    return ResponseFormatter.success(res, result, `${result.modifiedCount} نیاز با موفقیت به‌روزرسانی شد`);
   });
 
   /**
@@ -193,7 +190,7 @@ class AdminController {
       res,
       result.comments,
       result.pagination,
-      "لیست نظرات با موفقیت دریافت شد"
+      "لیست نظرات با موفقیت دریافت شد",
     );
   });
 
@@ -247,7 +244,7 @@ class AdminController {
       res,
       result.donations,
       result.pagination,
-      "لیست کمک‌ها با موفقیت دریافت شد"
+      "لیست کمک‌ها با موفقیت دریافت شد",
     );
   });
 
@@ -266,7 +263,7 @@ class AdminController {
       return ResponseFormatter.badRequest(res, "وضعیت جدید الزامی است");
     }
 
-    const donation = await adminService.updateDonationStatus(donationId, status, notes);
+    const donation = await adminService.updateDonationStatus(getParam(donationId), status, notes);
 
     if (!donation) {
       return ResponseFormatter.notFound(res, "کمک یافت نشد");
@@ -298,7 +295,7 @@ class AdminController {
       res,
       result.activities,
       result.pagination,
-      "فید فعالیت‌ها با موفقیت دریافت شد"
+      "فید فعالیت‌ها با موفقیت دریافت شد",
     );
   });
 
@@ -323,7 +320,7 @@ class AdminController {
    * @access Private (Admin, Super Admin)
    */
   public getAdminById = asyncHandler(async (req: Request, res: Response) => {
-    const admin = await adminService.getAdminById(req.params.id);
+    const admin = await adminService.getAdminById(getParam(req.params.id));
 
     if (!admin) {
       return ResponseFormatter.notFound(res, "ادمین مورد نظر یافت نشد");
@@ -367,7 +364,7 @@ class AdminController {
       updates.avatar = req.processedFiles.desktop;
     }
 
-    const admin = await adminService.updateAdmin(req.params.id, updates);
+    const admin = await adminService.updateAdmin(getParam(req.params.id), updates);
 
     if (!admin) {
       return ResponseFormatter.notFound(res, "ادمین مورد نظر یافت نشد");
@@ -384,7 +381,7 @@ class AdminController {
    * @access Private (Super Admin only)
    */
   public deleteAdmin = asyncHandler(async (req: Request, res: Response) => {
-    const admin = await adminService.deleteAdmin(req.params.id);
+    const admin = await adminService.deleteAdmin(getParam(req.params.id));
 
     if (!admin) {
       return ResponseFormatter.notFound(res, "ادمین مورد نظر یافت نشد");

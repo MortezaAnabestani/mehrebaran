@@ -22,9 +22,10 @@ interface GetGalleriesParams {
 export const getGalleries = async (params: GetGalleriesParams): Promise<GetGalleriesResponse> => {
   try {
     const response = await api.get("/blog/gallery", { params });
+    console.log(`[getGalleries] Fetched galleries:`, response.data?.galleries?.length);
     return response.data || { galleries: [], pagination: { page: 1, limit: 10, total: 0, totalPages: 0 } };
-  } catch (error) {
-    console.error("Failed to fetch galleries:", error);
+  } catch (error: any) {
+    console.error("[getGalleries] Failed to fetch galleries:", error.message, error.response?.status);
     return { galleries: [], pagination: { page: 1, limit: 10, total: 0, totalPages: 0 } };
   }
 };
@@ -32,9 +33,10 @@ export const getGalleries = async (params: GetGalleriesParams): Promise<GetGalle
 export const getGalleryByIdOrSlug = async (identifier: string): Promise<IGallery | null> => {
   try {
     const response = await api.get(`/blog/gallery/${identifier}`);
-    return response.data.data;
-  } catch (error) {
-    console.error(`Failed to fetch gallery with identifier "${identifier}":`, error);
+    console.log(`[getGalleryByIdOrSlug] Fetched gallery ${identifier}:`, !!response.data?.data);
+    return response.data?.data || null;
+  } catch (error: any) {
+    console.error(`[getGalleryByIdOrSlug] Failed to fetch gallery "${identifier}":`, error.message, error.response?.status, error.response?.data);
     return null;
   }
 };

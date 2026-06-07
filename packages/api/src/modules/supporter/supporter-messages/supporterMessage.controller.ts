@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { supporterMessageService } from "./supporterMessage.service";
 import { createMessageSchema, likeMessageSchema } from "./supporterMessage.validation";
 import asyncHandler from "../../../core/utils/asyncHandler";
+import { getParam } from "../../../core/utils/getParam";
 
 class SupporterMessageController {
   public create = asyncHandler(async (req: Request, res: Response) => {
@@ -14,7 +15,7 @@ class SupporterMessageController {
   });
 
   public getAllForNeed = asyncHandler(async (req: Request, res: Response) => {
-    const messages = await supporterMessageService.findByNeed(req.params.needId);
+    const messages = await supporterMessageService.findByNeed(getParam(req.params.needId));
     res.status(200).json({ data: messages });
   });
 

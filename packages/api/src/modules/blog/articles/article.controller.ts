@@ -3,6 +3,7 @@ import { articleService } from "./article.service";
 import { createArticleSchema, updateArticleSchema } from "./article.validation";
 import asyncHandler from "../../../core/utils/asyncHandler";
 import ApiError from "../../../core/utils/apiError";
+import { getParam } from "../../../core/utils/getParam";
 
 class ArticleController {
   public create = asyncHandler(async (req: Request, res: Response) => {
@@ -13,7 +14,7 @@ class ArticleController {
     if (articleData.metaTitle || articleData.metaDescription) {
       articleData.seo = {
         metaTitle: articleData.metaTitle || articleData.title,
-        metaDescription: articleData.metaDescription || '',
+        metaDescription: articleData.metaDescription || "",
       };
       delete articleData.metaTitle;
       delete articleData.metaDescription;
@@ -40,7 +41,7 @@ class ArticleController {
   });
 
   public getOne = asyncHandler(async (req: Request, res: Response) => {
-    const article = await articleService.findOne(req.params.identifier);
+    const article = await articleService.findOne(getParam(req.params.identifier));
     if (!article) {
       throw new ApiError(404, "مقاله مورد نظر یافت نشد.");
     }
@@ -57,7 +58,7 @@ class ArticleController {
       if (updateData.metaTitle || updateData.metaDescription) {
         updateData.seo = {
           metaTitle: updateData.metaTitle || updateData.title,
-          metaDescription: updateData.metaDescription || '',
+          metaDescription: updateData.metaDescription || "",
         };
         delete updateData.metaTitle;
         delete updateData.metaDescription;
@@ -72,7 +73,7 @@ class ArticleController {
 
         // Parse JSON strings if needed
         existingImages = existingImages.map((img: any) => {
-          if (typeof img === 'string') {
+          if (typeof img === "string") {
             try {
               return JSON.parse(img);
             } catch {
@@ -84,9 +85,7 @@ class ArticleController {
       }
 
       // Process newly uploaded images
-      const newImages = (req.processedFiles && Array.isArray(req.processedFiles))
-        ? req.processedFiles
-        : [];
+      const newImages = req.processedFiles && Array.isArray(req.processedFiles) ? req.processedFiles : [];
 
       // Combine existing and new images
       const allImages = [...existingImages, ...newImages];
@@ -109,9 +108,9 @@ class ArticleController {
       }
       res.status(200).json({ message: "مقاله با موفقیت به‌روزرسانی شد.", data: article });
     } catch (error: any) {
-      console.error('❌ Validation error in article update:', error);
+      console.error("❌ Validation error in article update:", error);
       if (error.errors) {
-        console.error('📋 Zod errors:', JSON.stringify(error.errors, null, 2));
+        console.error("📋 Zod errors:", JSON.stringify(error.errors, null, 2));
       }
       throw error;
     }
@@ -119,16 +118,16 @@ class ArticleController {
 
   public delete = asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
-    const article = await articleService.findOne(id);
+    const article = await articleService.findOne(getParam(id));
     if (!article) {
       throw new ApiError(404, "مقاله مورد نظر یافت نشد.");
     }
-    await articleService.delete(id);
+    await articleService.delete(getParam(id));
     res.status(200).json({ message: "مقاله با موفقیت حذف شد." });
   });
 
   public incrementView = asyncHandler(async (req: Request, res: Response) => {
-    await articleService.incrementViews(req.params.id);
+    await articleService.incrementViews(getParam(req.params.id));
     res.status(200).json({ message: "View count incremented." });
   });
 }

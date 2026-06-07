@@ -16,14 +16,16 @@ export default function RainGlass({ className }: { className?: string }) {
       canvas.height = canvas.parentElement!.offsetHeight;
     };
     resize();
-    window.addEventListener("resize", () => {
+    const handleResize = () => {
       resize();
       init();
-    });
+    };
+    window.addEventListener("resize", handleResize);
 
     // --- لایه مه ---
     let fogCanvas: HTMLCanvasElement | null = null;
     function createFog() {
+      if (canvas.width === 0 || canvas.height === 0) return;
       fogCanvas = document.createElement("canvas");
       fogCanvas.width = canvas.width;
       fogCanvas.height = canvas.height;
@@ -298,7 +300,7 @@ export default function RainGlass({ className }: { className?: string }) {
       last = ts;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      if (fogCanvas) {
+      if (fogCanvas && fogCanvas.width > 0 && fogCanvas.height > 0) {
         ctx.globalAlpha = 0.6;
         ctx.drawImage(fogCanvas, 0, 0);
         ctx.globalAlpha = 1;
@@ -336,10 +338,7 @@ export default function RainGlass({ className }: { className?: string }) {
     animId = requestAnimationFrame(loop);
     return () => {
       cancelAnimationFrame(animId);
-      window.removeEventListener("resize", () => {
-        resize();
-        init();
-      });
+      window.removeEventListener("resize", handleResize);
     };
   }, []);
 
@@ -347,6 +346,7 @@ export default function RainGlass({ className }: { className?: string }) {
     <canvas
       ref={canvasRef}
       className={`absolute inset-0 w-full h-full pointer-events-none z-0 ${className ?? ""}`}
+      aria-hidden="true"
     />
   );
 }

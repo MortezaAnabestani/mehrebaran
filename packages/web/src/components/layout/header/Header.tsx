@@ -1,20 +1,18 @@
 "use client";
-import React, { FocusEvent, MouseEventHandler, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Search from "./Search";
 import Navbar from "./Navbar";
 import OptimizedImage from "@/components/ui/OptimizedImage";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
-interface Props {
-  // define your props here
-}
-
-const Header: React.FC<Props> = ({}) => {
+const Header: React.FC = () => {
   const pathname = usePathname();
   const isNetworkPage = pathname?.startsWith("/network");
-  const [scrolled, setScrolled] = useState<Boolean>(false);
-  const [open, setOpen] = useState<Boolean>(false);
+  const [scrolled, setScrolled] = useState<boolean>(false);
+  const [open, setOpen] = useState<boolean>(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -53,22 +51,24 @@ const Header: React.FC<Props> = ({}) => {
           className={`flex items-center justify-between w-8/10 mx-auto relative ${
             //این قسمت پس از تصمیم تیم سازمان اصلاح خواهد شد
             !scrolled && "border-b-2 border-none"
-          }  `}
+          }`}
         >
           <div className="hidden md:block">
             <Search />
             <Navbar deviceSize="desktop" />
           </div>
-          <div className="block md:hidden duration-200 transition-all">
-            <div onClick={() => setOpen(!open)}>
-              <OptimizedImage src="/icons/menuDots.svg" alt="menu icon" width={25} height={25} />
-            </div>
-            {open && (
-              <div className={`absolute top-16.5 w-full ${mobileBg} pt-2`}>
-                <Search className="w-9/10 min-w-9/10 mx-auto" />
-                <Navbar deviceSize="mobile" />
-              </div>
-            )}
+          <div className="block md:hidden duration-200 transition-all flex items-center justify-center">
+            <button
+              onClick={() => setOpen(!open)}
+              className="p-1 focus:outline-none flex items-center justify-center cursor-pointer text-white"
+              aria-label={open ? "بستن منو" : "باز کردن منو"}
+            >
+              {open ? (
+                <X className="w-7 h-7 transition-all duration-200" />
+              ) : (
+                <OptimizedImage src="/icons/menuDots.svg" alt="menu icon" width={25} height={25} />
+              )}
+            </button>
           </div>
           <Link href={"/"}>
             <OptimizedImage
@@ -82,6 +82,24 @@ const Header: React.FC<Props> = ({}) => {
             />
           </Link>
         </div>
+
+        {/* Mobile Accordion Menu */}
+        <AnimatePresence>
+          {open && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+              className={`absolute top-full left-0 w-full ${mobileBg} border-t border-white/10 shadow-2xl overflow-hidden z-30`}
+            >
+              <div className="px-6 py-4 flex flex-col gap-4">
+                <Search className="w-full min-w-full mx-auto" />
+                <Navbar deviceSize="mobile" setOpen={setOpen} />
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </header>
   );

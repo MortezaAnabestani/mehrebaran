@@ -1,16 +1,18 @@
 "use client";
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import { IProject } from "common-types";
 import HeadTitle from "@/components/features/home/HeadTitle";
 import ProgressBars from "@/components/features/home/runningProjects/ProgressBars";
 import OptimizedImage from "@/components/ui/OptimizedImage";
 import SmartButton from "@/components/ui/SmartButton";
 import SmartSwiper from "@/components/ui/swiper/SmartSwiper";
-import DonationForm from "@/components/shared/DonationForm";
-import VolunteerForm from "@/components/shared/VolunteerForm";
-import Modal from "@/components/ui/Modal";
 import Comment from "@/components/shared/Comment";
+
+const DonationForm = dynamic(() => import("@/components/shared/DonationForm"), { ssr: false });
+const VolunteerForm = dynamic(() => import("@/components/shared/VolunteerForm"), { ssr: false });
+const Modal = dynamic(() => import("@/components/ui/Modal"), { ssr: false });
 
 interface Props {
   project: IProject;
@@ -35,7 +37,7 @@ export default function ProjectDetailClient({ project, isAuthenticated = false }
   ];
 
   return (
-    <div className="w-9/10 md:w-8/10 mx-auto my-10">
+    <div className="w-full px-4 md:px-0 md:w-10/12 lg:w-4/5 mx-auto mt-6 mb-2 md:my-10 pb-2 md:pb-12">
       <HeadTitle title={project.title} />
 
       <div className="w-full flex flex-col md:flex-row items-center justify-between md:h-90 gap-3">
@@ -51,7 +53,8 @@ export default function ProjectDetailClient({ project, isAuthenticated = false }
                   src={process.env.NEXT_PUBLIC_UPLOADS + image.desktop}
                   alt={project.title}
                   fill={true}
-                  priority="up"
+                  priority={index === 0 ? "up" : "down"}
+                  sizes="(max-width: 768px) 100vw, 50vw"
                   rounded
                 />
               </div>
@@ -73,7 +76,7 @@ export default function ProjectDetailClient({ project, isAuthenticated = false }
             {/* Quick Donation Amounts */}
             {project.donationSettings?.enabled && (
               <div className="w-full px-4 py-6 bg-mgray rounded-xl">
-                <h3 className="font-bold mb-3 text-center">کمک سریع</h3>
+                <h2 className="font-bold mb-3 text-center">کمک سریع</h2>
                 <div className="grid grid-cols-3 gap-2 mb-3">
                   {[50000, 100000, 200000].map((amount) => (
                     <SmartButton
@@ -106,7 +109,7 @@ export default function ProjectDetailClient({ project, isAuthenticated = false }
             key={index}
             className="w-[45%] md:w-full h-15 md:h-20 bg-mgray flex flex-col items-center justify-center rounded-xl"
           >
-            <h2 className="text-lg md:text-2xl text-mblue font-bold">{item.item}</h2>
+            <div className="text-lg md:text-2xl text-mblue font-bold">{item.item}</div>
             <p className="font-bold text-xs md:text-base">{item.title}</p>
           </div>
         ))}
@@ -119,7 +122,7 @@ export default function ProjectDetailClient({ project, isAuthenticated = false }
       />
 
       {/* Comments Section */}
-      <div className="mt-16">
+      <div className="mt-8 md:mt-16">
         <Comment postId={project._id} postType="Project" />
       </div>
 

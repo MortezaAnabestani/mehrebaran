@@ -13,7 +13,6 @@ interface CommentProps {
 const Comment: React.FC<CommentProps> = ({ postId, postType }) => {
   const [comments, setComments] = useState<IComment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   const [content, setContent] = useState("");
   const [guestName, setGuestName] = useState("");
@@ -22,14 +21,27 @@ const Comment: React.FC<CommentProps> = ({ postId, postType }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
+    let isMounted = true;
     const fetchComments = async () => {
       setIsLoading(true);
-      const fetchedComments = await getCommentsByPost(postId);
-      setComments(fetchedComments);
-      setIsLoading(false);
+      try {
+        const fetchedComments = await getCommentsByPost(postId);
+        if (isMounted) {
+          setComments(fetchedComments);
+          setIsLoading(false);
+        }
+      } catch {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      }
     };
 
     fetchComments();
+
+    return () => {
+      isMounted = false;
+    };
   }, [postId]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -49,7 +61,7 @@ const Comment: React.FC<CommentProps> = ({ postId, postType }) => {
       setContent("");
       setGuestName("");
       setGuestEmail("");
-    } catch (err) {
+    } catch {
       setFormMessage("خطا در ارسال نظر. لطفاً دوباره تلاش کنید.");
     } finally {
       setIsSubmitting(false);
@@ -57,7 +69,7 @@ const Comment: React.FC<CommentProps> = ({ postId, postType }) => {
   };
 
   return (
-    <div className="my-10 w-full">
+    <div className="mt-6 md:mt-10 mb-2 md:mb-6 w-full">
       {/* بخش نمایش کامنت‌ها */}
       <div className="flex items-center justify-center md:justify-between gap-2">
         <SmartButton size="md" className="text-xs min-w-fit">
@@ -136,14 +148,14 @@ const Comment: React.FC<CommentProps> = ({ postId, postType }) => {
       </div>
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col md:flex-row gap-4 justify-between items-start w-full my-6 h-[150px]"
+        className="flex flex-col md:flex-row gap-4 justify-between items-start w-full mt-6 mb-2 md:mb-6 md:h-[150px]"
       >
         <textarea
           placeholder="نظرات شما..."
           value={content}
           onChange={(e) => setContent(e.target.value)}
           required
-          className="w-full min-h-full md:h-full md:w-7/10 border-2 border-mblue/40 focus:border-mblue focus:outline-none focus:ring-2 focus:ring-mblue/20 p-3 rounded-lg transition-all duration-200 resize-none"
+          className="w-full min-h-[120px] md:min-h-full md:h-full md:w-7/10 border-2 border-mblue/40 focus:border-mblue focus:outline-none focus:ring-2 focus:ring-mblue/20 p-3 rounded-lg transition-all duration-200 resize-none"
         />
         <div className="h-full w-full md:w-3/10 flex flex-col gap-3 items-center justify-between">
           <input
@@ -160,6 +172,7 @@ const Comment: React.FC<CommentProps> = ({ postId, postType }) => {
             value={guestEmail}
             onChange={(e) => setGuestEmail(e.target.value)}
             required
+            dir="ltr"
             className="h-12 w-full border-2 border-mblue/40 focus:border-mblue focus:outline-none focus:ring-2 focus:ring-mblue/20 px-3 rounded-lg transition-all duration-200"
           />
           <SmartButton type="submit" fullWidth={true} disabled={isSubmitting}>

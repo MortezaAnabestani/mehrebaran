@@ -4,6 +4,7 @@ import ApiError from "../../core/utils/apiError";
 import { notificationService } from "./notification.service";
 import { notificationPreferencesService } from "./notificationPreferences.service";
 import { PushTokenModel } from "./pushToken.model";
+import { getParam } from "../../core/utils/getParam";
 
 class NotificationController {
   // ==================== NOTIFICATIONS ====================
@@ -37,10 +38,7 @@ class NotificationController {
     const userId = req.user!._id.toString();
     const { limit } = req.query;
 
-    const groups = await notificationService.getGroupedNotifications(
-      userId,
-      parseInt(limit as string) || 20
-    );
+    const groups = await notificationService.getGroupedNotifications(userId, parseInt(limit as string) || 20);
 
     res.status(200).json({
       message: "نوتیفیکیشن‌های گروه‌بندی شده با موفقیت دریافت شد.",
@@ -70,7 +68,7 @@ class NotificationController {
     const { id } = req.params;
     const userId = req.user!._id.toString();
 
-    const notification = await notificationService.markAsRead(id, userId);
+    const notification = await notificationService.markAsRead(getParam(id), userId);
 
     if (!notification) {
       throw new ApiError(404, "نوتیفیکیشن یافت نشد.");
@@ -103,7 +101,7 @@ class NotificationController {
     const { id } = req.params;
     const userId = req.user!._id.toString();
 
-    const success = await notificationService.deleteNotification(id, userId);
+    const success = await notificationService.deleteNotification(getParam(id), userId);
 
     if (!success) {
       throw new ApiError(404, "نوتیفیکیشن یافت نشد.");
@@ -215,7 +213,7 @@ class NotificationController {
     const prefs = await notificationPreferencesService.toggleGlobalMute(
       userId,
       mute,
-      muteUntil ? new Date(muteUntil) : undefined
+      muteUntil ? new Date(muteUntil) : undefined,
     );
 
     res.status(200).json({
@@ -244,7 +242,7 @@ class NotificationController {
         isActive: true,
         lastUsedAt: new Date(),
       },
-      { upsert: true, new: true }
+      { upsert: true, new: true },
     );
 
     res.status(200).json({
@@ -261,10 +259,7 @@ class NotificationController {
     const userId = req.user!._id.toString();
     const { token } = req.params;
 
-    await PushTokenModel.updateOne(
-      { user: userId, token },
-      { isActive: false }
-    );
+    await PushTokenModel.updateOne({ user: userId, token }, { isActive: false });
 
     res.status(200).json({
       message: "توکن push notification حذف شد.",

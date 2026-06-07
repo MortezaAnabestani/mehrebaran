@@ -9,14 +9,10 @@ import RainEffect from "./RainEffect";
 import OptimizedImage from "@/components/ui/OptimizedImage";
 import { usePathname } from "next/navigation";
 
-interface Props {
-  // define your props here
-}
-
-const Footer: React.FC<Props> = ({}) => {
+const Footer: React.FC = () => {
   const pathname = usePathname();
   const isNetworkPage = pathname?.startsWith("/network");
-  const [showRain, setShowRain] = useState<Boolean>(false);
+  const [showRain, setShowRain] = useState<boolean>(false);
 
   const footerBg = isNetworkPage ? "bg-morange" : "bg-mblue";
 

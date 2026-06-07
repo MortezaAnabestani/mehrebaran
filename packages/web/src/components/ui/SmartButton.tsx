@@ -1,5 +1,3 @@
-"use client";
-
 import React from "react";
 import Link from "next/link";
 import clsx from "clsx";
@@ -43,7 +41,7 @@ const SmartButton: React.FC<ButtonProps> = ({
     lg: "px-6 py-3 text-lg",
   };
 
-  const disabledStyle = disabled ? "opacity-50 cursor-not-allowed" : "";
+  const disabledStyle = disabled ? "opacity-50 cursor-not-allowed pointer-events-none" : "";
   const widthStyle = fullWidth ? "w-full" : "w-auto";
 
   const combinedClassName = clsx(
@@ -57,7 +55,12 @@ const SmartButton: React.FC<ButtonProps> = ({
 
   if (asLink && href) {
     return (
-      <Link href={href} className={combinedClassName}>
+      <Link 
+        href={disabled ? "#" : href} 
+        className={combinedClassName}
+        aria-disabled={disabled}
+        tabIndex={disabled ? -1 : undefined}
+      >
         {leftIcon && <span className="mr-2">{leftIcon}</span>}
         {children}
         {rightIcon && <span className="ml-2">{rightIcon}</span>}

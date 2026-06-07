@@ -19,17 +19,16 @@ const HeroShared_views: React.FC<HeroViewsProps> = ({ cardItems, horizontal = fa
               <div
                 className={`${
                   horizontal ? "md:flex-8/12" : "md:flex-7/12"
-                } md:h-100 bg-mblue/70 bg-no-repeat text-white bg-cover object-cover rounded-lg flex flex-col items-start justify-end md:p-10`}
+                } md:h-100 bg-mblue/70 bg-no-repeat text-white bg-cover rounded-lg flex flex-col items-start justify-end md:p-10`}
                 style={{
                   backgroundImage: `url(${card.img})`,
                   backgroundPosition: "center",
                   backgroundBlendMode: "darken",
-                  backgroundSize: "100%",
                 }}
                 key={index}
               >
-                <h1 className="text-lg md:text-2xl font-bold p-5">{card.title}</h1>
-                <p className="text-xs md:text-base font-bold p-5">{card.description}</p>
+                <h2 className="text-xl md:text-3xl font-bold p-5">{card.title}</h2>
+                <p className="text-sm md:text-lg font-medium p-5">{card.description}</p>
               </div>
             );
           } else {

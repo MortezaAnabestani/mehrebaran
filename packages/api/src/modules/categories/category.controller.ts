@@ -18,7 +18,8 @@ class CategoryController {
   });
 
   public getById = asyncHandler(async (req: Request, res: Response) => {
-    const category = await categoryService.findById(req.params.id);
+    const id = typeof req.params.id === "string" ? req.params.id : req.params.id[0];
+    const category = await categoryService.findById(id);
     if (!category) {
       throw new ApiError(404, "دسته‌بندی یافت نشد.");
     }
@@ -36,12 +37,14 @@ class CategoryController {
 
   public async delete(req: Request, res: Response): Promise<void> {
     const { id } = req.params;
-    const category = await categoryService.findById(id);
+    const categoryId = typeof id === "string" ? id : id[0];
+    const category = await categoryService.findById(categoryId);
     if (!category) {
       res.status(404).json({ message: "دسته‌بندی یافت نشد." });
       return;
     }
-    await categoryService.delete(id);
+    const deleteId = typeof id === "string" ? id : id[0];
+    await categoryService.delete(deleteId);
     res.status(200).json({ message: "دسته‌بندی با موفقیت حذف شد." });
   }
 }

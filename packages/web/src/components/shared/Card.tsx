@@ -42,13 +42,19 @@ const Card: React.FC<CardProps> = ({ cardItem, horizontal = false, page = "news"
   const link = isCardType(cardItem) ? cardItem.href : `/${page}/${cardItem.slug}`;
 
   return (
-    <div
+    <article
       className={`flex ${
         horizontal ? "flex-row" : "flex-col"
       } bg-white rounded-xl shadow-md border border-mgray/65 overflow-hidden h-full w-full`}
     >
       <div className={`${horizontal ? "w-40 md:w-70" : "w-full h-48"} relative `}>
-        <OptimizedImage src={imageSrc} alt={title} fill={true} className="object-cover min-h-43 max-h-43" />
+        <OptimizedImage
+          src={imageSrc}
+          alt={title}
+          fill={true}
+          sizes={horizontal ? "(max-width: 768px) 160px, 280px" : "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"}
+          className="object-cover min-h-43 max-h-43"
+        />
       </div>
       <div className="pb-3 md:px-3 flex flex-col justify-between flex-1 p-2">
         <div>
@@ -64,12 +70,13 @@ const Card: React.FC<CardProps> = ({ cardItem, horizontal = false, page = "news"
             asLink={true}
             className="h-8 max-w-30 text-xs p-2 rounded-xs text-center"
             size="sm"
+            aria-label={`اطلاعات بیشتر درباره ${title}`}
           >
             اطلاعات بیش‌تر
           </SmartButton>
         </div>
       </div>
-    </div>
+    </article>
   );
 };
 

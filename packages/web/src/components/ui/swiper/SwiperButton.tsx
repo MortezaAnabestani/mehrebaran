@@ -22,6 +22,7 @@ const SwiperButton: React.FC<Props> = ({ prevRef, nextRef, outsideBtn = true }) 
           fill="none"
           viewBox="0 0 24 24"
           stroke="white"
+          aria-hidden="true"
         >
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
         </svg>
@@ -40,6 +41,7 @@ const SwiperButton: React.FC<Props> = ({ prevRef, nextRef, outsideBtn = true }) 
           fill="none"
           viewBox="0 0 24 24"
           stroke="white"
+          aria-hidden="true"
         >
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
         </svg>

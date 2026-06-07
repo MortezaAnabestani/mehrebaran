@@ -9,7 +9,20 @@ const useBackgroundAudio = (src: string) => {
     audio.loop = true;
     audio.volume = 0.5;
     audioRef.current = audio;
-    return () => audio.pause();
+
+    const handlePlay = () => setIsPlaying(true);
+    const handlePause = () => setIsPlaying(false);
+
+    audio.addEventListener("play", handlePlay);
+    audio.addEventListener("pause", handlePause);
+
+    return () => {
+      audio.pause();
+      audio.removeEventListener("play", handlePlay);
+      audio.removeEventListener("pause", handlePause);
+      audioRef.current = null;
+      setIsPlaying(false);
+    };
   }, [src]);
 
   const togglePlay = () => {
@@ -19,9 +32,11 @@ const useBackgroundAudio = (src: string) => {
     if (isPlaying) {
       audio.pause();
     } else {
-      audio.play().catch((err) => console.warn("Audio playback failed:", err));
+      audio.play().catch((err) => {
+        console.warn("Audio playback failed:", err);
+        setIsPlaying(false);
+      });
     }
-    setIsPlaying(!isPlaying);
   };
 
   return { isPlaying, togglePlay };

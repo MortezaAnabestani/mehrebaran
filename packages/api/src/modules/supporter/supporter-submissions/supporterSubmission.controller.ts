@@ -3,6 +3,7 @@ import { supporterSubmissionService } from "./supporterSubmission.service";
 import { createSubmissionSchema, updateSubmissionStatusSchema } from "./supporterSubmission.validation";
 import asyncHandler from "../../../core/utils/asyncHandler";
 import ApiError from "../../../core/utils/apiError";
+import { getParam } from "../../../core/utils/getParam";
 
 class SupporterSubmissionController {
   public create = asyncHandler(async (req: Request, res: Response) => {
@@ -24,13 +25,13 @@ class SupporterSubmissionController {
 
   public getByNeed = asyncHandler(async (req: Request, res: Response) => {
     const { needId } = req.params;
-    const submissions = await supporterSubmissionService.findByNeed(needId);
+    const submissions = await supporterSubmissionService.findByNeed(getParam(needId));
     res.status(200).json({ data: submissions });
   });
 
   public getAllForAdmin = asyncHandler(async (req: Request, res: Response) => {
     const { needId } = req.params;
-    const submissions = await supporterSubmissionService.findAllForAdmin(needId);
+    const submissions = await supporterSubmissionService.findAllForAdmin(getParam(needId));
     res.status(200).json({ data: submissions });
   });
 
@@ -38,7 +39,7 @@ class SupporterSubmissionController {
     const { submissionId } = req.params;
     const { body } = updateSubmissionStatusSchema.parse({ body: req.body, params: req.params });
 
-    const submission = await supporterSubmissionService.updateStatus(submissionId, body.status);
+    const submission = await supporterSubmissionService.updateStatus(getParam(submissionId), body.status);
     if (!submission) {
       throw new ApiError(404, "تصویر ارسالی یافت نشد.");
     }

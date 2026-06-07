@@ -19,7 +19,7 @@ export const getProjects = async (params: GetProjectsParams): Promise<GetProject
     const response = await api.get("/projects", { params });
     return response.data || { results: 0, data: [] };
   } catch (error) {
-    console.error("Failed to fetch projects:", error);
+    // console.error("Failed to fetch projects:", error);
     return { results: 0, data: [] };
   }
 };

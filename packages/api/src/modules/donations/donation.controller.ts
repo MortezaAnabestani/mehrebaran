@@ -12,6 +12,7 @@ import ApiError from "../../core/utils/apiError";
 import { paymentService } from "../../core/services/payment.service";
 import { certificateService } from "../../core/services/certificate.service";
 import { ProjectModel } from "../projects/project.model";
+import { getParam } from "../../core/utils/getParam";
 
 class DonationController {
   // Create a new donation
@@ -48,10 +49,10 @@ class DonationController {
 
     let donation;
     // Check if identifier is tracking code or ObjectId
-    if (identifier.startsWith("DON-")) {
-      donation = await donationService.findByTrackingCode(identifier);
+    if (identifier === "string" && identifier.startsWith("DON-")) {
+      donation = await donationService.findByTrackingCode(getParam(identifier));
     } else {
-      donation = await donationService.findById(identifier);
+      donation = await donationService.findById(getParam(identifier));
     }
 
     if (!donation) {
@@ -70,7 +71,7 @@ class DonationController {
 
     const donations = await donationService.findByProject(
       validatedData.params.projectId,
-      validatedData.query
+      validatedData.query,
     );
 
     res.status(200).json({
@@ -121,7 +122,7 @@ class DonationController {
       validatedData.params.donationId,
       adminId,
       validatedData.body.approve,
-      validatedData.body.rejectionReason
+      validatedData.body.rejectionReason,
     );
 
     res.status(200).json({
@@ -133,7 +134,7 @@ class DonationController {
   // Get donation statistics for project
   public getProjectStats = asyncHandler(async (req: Request, res: Response) => {
     const { projectId } = req.params;
-    const stats = await donationService.getProjectStats(projectId);
+    const stats = await donationService.getProjectStats(getParam(projectId));
 
     res.status(200).json({ data: stats });
   });
@@ -143,7 +144,7 @@ class DonationController {
     const { projectId } = req.params;
     const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
 
-    const donors = await donationService.getRecentDonors(projectId, limit);
+    const donors = await donationService.getRecentDonors(getParam(projectId), limit);
 
     res.status(200).json({
       results: donors.length,
@@ -156,7 +157,7 @@ class DonationController {
     const { donationId } = req.params;
 
     // Get donation details
-    const donation = await donationService.findById(donationId);
+    const donation = await donationService.findById(getParam(donationId));
     if (!donation) {
       throw new ApiError(404, "کمک مالی مورد نظر یافت نشد.");
     }
@@ -177,11 +178,11 @@ class DonationController {
 
     // Initiate payment
     const paymentResult = await paymentService.initiateDonationPayment(
-      donationId,
+      getParam(donationId),
       donation.amount,
       projectTitle,
       donation.donorInfo?.mobile,
-      donation.donorInfo?.email
+      donation.donorInfo?.email,
     );
 
     if (!paymentResult.success) {
@@ -214,7 +215,7 @@ class DonationController {
     }
 
     // Get donation
-    const donation = await donationService.findById(donationId);
+    const donation = await donationService.findById(getParam(donationId));
     if (!donation) {
       throw new ApiError(404, "کمک مالی مورد نظر یافت نشد.");
     }
@@ -235,17 +236,17 @@ class DonationController {
     // Verify payment with Zarinpal
     const verificationResult = await paymentService.verifyDonationPayment(
       Authority as string,
-      donation.amount
+      donation.amount,
     );
 
     if (!verificationResult.success) {
       // Update donation status to failed
-      await donationService.updateStatus(donationId, "failed");
+      await donationService.updateStatus(getParam(donationId), "failed");
       throw new ApiError(400, verificationResult.error || "تایید پرداخت با خطا مواجه شد.");
     }
 
     // Update donation with payment details and trigger project updates
-    await donationService.updateStatus(donationId, "completed", verificationResult.refId);
+    await donationService.updateStatus(getParam(donationId), "completed", verificationResult.refId);
 
     // Generate certificate
     let certificateUrl = donation.certificateUrl;
@@ -255,7 +256,7 @@ class DonationController {
         if (project) {
           certificateUrl = await certificateService.generateDonationCertificate(
             donation as any,
-            project as any
+            project as any,
           );
           // Update donation with certificate
           await DonationModel.findByIdAndUpdate(donationId, {
@@ -271,7 +272,7 @@ class DonationController {
     }
 
     // Re-fetch donation to get updated data
-    const updatedDonation = await donationService.findById(donationId);
+    const updatedDonation = await donationService.findById(getParam(donationId));
 
     res.status(200).json({
       message: "پرداخت شما با موفقیت تایید شد. از حمایت شما سپاسگزاریم!",
@@ -286,7 +287,7 @@ class DonationController {
   // Delete donation
   public delete = asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
-    await donationService.delete(id);
+    await donationService.delete(getParam(id));
 
     res.status(200).json({ message: "کمک مالی با موفقیت حذف شد." });
   });

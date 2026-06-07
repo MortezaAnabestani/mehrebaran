@@ -20,7 +20,8 @@ class UserController {
   });
 
   public getUserById = asyncHandler(async (req: Request, res: Response) => {
-    const user = await userService.findUserById(req.params.id);
+    const userId = typeof req.params.id === "string" ? req.params.id : req.params.id[0];
+    const user = await userService.findUserById(userId);
     if (!user) {
       throw new ApiError(404, "کاربری با این شناسه یافت نشد.");
     }
@@ -39,7 +40,8 @@ class UserController {
       updates.avatar = req.processedFiles.desktop;
     }
 
-    const user = await userService.updateUser(userId, updates);
+    const id = typeof userId === "string" ? userId : userId[0];
+    const user = await userService.updateUser(id, updates);
     if (!user) {
       throw new ApiError(404, "کاربری با این شناسه یافت نشد.");
     }
@@ -51,7 +53,8 @@ class UserController {
   });
 
   public deleteUser = asyncHandler(async (req: Request, res: Response) => {
-    const user = await userService.deleteUser(req.params.id);
+    const id = typeof req.params.id === "string" ? req.params.id : req.params.id[0];
+    const user = await userService.deleteUser(id);
     if (!user) {
       throw new ApiError(404, "کاربری با این شناسه یافت نشد.");
     }

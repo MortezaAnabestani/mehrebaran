@@ -11,60 +11,53 @@ const NeedProjectDetails: React.FC<NeedProjectDetailsProps> = ({ need }) => {
   // استفاده از useMemo برای بهینه‌سازی محاسبات و جلوگیری از رندرهای غیرضروری
   const { totalBudget, totalRaised, progress } = useMemo(() => {
     const budget =
-      need.budgetItems?.reduce((sum: number, item: any) => sum + (item.estimatedCost || 0), 0) || 0;
+      need.budgetItems?.reduce((sum: number, item: { estimatedCost?: number }) => sum + (item.estimatedCost || 0), 0) || 0;
     const raised =
-      need.budgetItems?.reduce((sum: number, item: any) => sum + (item.amountRaised || 0), 0) || 0;
+      need.budgetItems?.reduce((sum: number, item: { amountRaised?: number }) => sum + (item.amountRaised || 0), 0) || 0;
     const prog = budget === 0 ? 0 : Math.min((raised / budget) * 100, 100);
 
     return { totalBudget: budget, totalRaised: raised, progress: prog };
   }, [need.budgetItems]);
 
-  // استایل‌های پایه برای افکت اسکئومورفیسم (Neumorphism)
-  const neumorphicCard =
-    " rounded-2xl shadow-[9px_9px_16px_rgb(163,177,198,0.6),-9px_-9px_16px_rgba(255,255,255,0.5)]";
-  const neumorphicInset =
-    " rounded-full shadow-[inset_6px_6px_10px_rgb(163,177,198,0.6),inset_-6px_-6px_10px_rgba(255,255,255,0.8)]";
-  const primaryGradient = "bg-gradient-to-b from-[#33aaff] to-[#007acc]"; // رنگ برند #007acc
-
   return (
     <section
-      className="px-3 sm:px-4 md:px-6 my-4 sm:my-5 md:my-6 lg:my-8 space-y-4 sm:space-y-5 md:space-y-6 lg:space-y-8 text-gray-700 font-sans"
+      className="px-0 sm:px-2 md:px-4 my-6 sm:my-8 lg:my-10 space-y-6 sm:space-y-8 lg:space-y-10 text-slate-700 font-sans"
       dir="rtl"
     >
       {/* Budget Section */}
       {need.budgetItems && need.budgetItems.length > 0 && (
         <article
-          className={`${neumorphicCard} p-3 sm:p-4 md:p-5 lg:p-6 transition-transform duration-300 hover:scale-[1.01]`}
+          className={`bg-[#f0f2f5] rounded-2xl md:rounded-3xl shadow-[4px_4px_8px_#c5c5c5,-4px_-4px_8px_#ffffff] md:shadow-[8px_8px_16px_#c5c5c5,-8px_-8px_16px_#ffffff] border border-white/40 p-3 sm:p-5 md:p-6 lg:p-8 transition-transform duration-300 hover:scale-[1.01]`}
         >
-          <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0 mb-4 sm:mb-5 md:mb-6">
+          <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0 mb-4 sm:mb-6 md:mb-8">
             <div className="flex items-center">
               <OptimizedImage
                 src="/icons/rial.svg"
-                alt="download icon"
-                width={22}
-                height={22}
+                alt="budget icon"
+                width={24}
+                height={24}
                 className="inline-block"
               />
-              <h3 className="font-extrabold text-base sm:text-lg md:text-xl text-gray-800 inline-block pr-1.5">
+              <h3 className="font-extrabold text-base sm:text-lg md:text-xl text-slate-700 inline-block pr-2">
                 وضعیت بودجه
               </h3>
             </div>
-            <span className="px-2.5 py-0.5 sm:px-3 sm:py-1 md:px-4 rounded-full text-xs sm:text-sm font-bold text-[#007acc] bg-[#e0e5ec] shadow-[3px_3px_6px_rgb(163,177,198,0.6),-3px_-3px_6px_rgba(255,255,255,0.5)]">
+            <span className="px-3 sm:px-4 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-bold text-[#007acc] bg-[#f0f2f5] shadow-[inset_2px_2px_4px_#c5c5c5,inset_-2px_-2px_4px_#ffffff] sm:shadow-[inset_3px_3px_6px_#c5c5c5,inset_-3px_-3px_6px_#ffffff]">
               {progress.toFixed(1)}% تکمیل شده
             </span>
           </header>
 
           {/* Main Progress Bar */}
-          <div className="mb-4 sm:mb-5 md:mb-6 lg:mb-8">
+          <div className="mb-5 sm:mb-8 text-center flex flex-col justify-center overflow-hidden">
             <div
-              className={`w-full h-4 sm:h-5 md:h-6 ${neumorphicInset} overflow-hidden relative`}
+              className={`w-full h-4 sm:h-5 md:h-6 rounded-full bg-[#f0f2f5] shadow-[inset_3px_3px_6px_#c5c5c5,inset_-3px_-3px_6px_#ffffff] sm:shadow-[inset_4px_4px_8px_#c5c5c5,inset_-4px_-4px_8px_#ffffff] overflow-hidden relative`}
               role="progressbar"
               aria-valuenow={progress}
               aria-valuemin={0}
               aria-valuemax={100}
             >
               <div
-                className={`h-full rounded-full ${primaryGradient} shadow-[2px_0_5px_rgba(0,0,0,0.2)] transition-all duration-1000 ease-out relative`}
+                className={`h-full rounded-full bg-gradient-to-r from-[#007acc]/80 to-[#007acc] shadow-[2px_0_5px_rgba(0,0,0,0.2)] transition-all duration-1000 ease-out relative`}
                 style={{ width: `${progress}%` }}
               >
                 {/* Shine Effect on Bar */}
@@ -74,17 +67,17 @@ const NeedProjectDetails: React.FC<NeedProjectDetailsProps> = ({ need }) => {
           </div>
 
           {/* Stats Grid */}
-          <div className="grid grid-cols-2 gap-2 sm:gap-3 md:gap-4">
-            <div className="p-2.5 sm:p-3 md:p-4 rounded-lg sm:rounded-xl border border-white/40 shadow-[inset_2px_2px_5px_rgba(163,177,198,0.3)] bg-[#e0e5ec]/50">
-              <p className="text-[10px] sm:text-xs font-medium text-gray-500 mb-0.5 sm:mb-1">جمع‌آوری شده</p>
-              <p className="font-bold text-sm sm:text-base md:text-lg text-[#007acc] drop-shadow-sm">
-                {formatNumber(totalRaised)} <span className="text-[10px] sm:text-xs text-gray-400">ریال</span>
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 md:gap-5">
+            <div className="p-3 sm:p-4 md:p-5 rounded-xl sm:rounded-2xl border border-white/60 bg-[#f0f2f5] shadow-[inset_3px_3px_6px_#c5c5c5,inset_-3px_-3px_6px_#ffffff] sm:shadow-[inset_4px_4px_8px_#c5c5c5,inset_-4px_-4px_8px_#ffffff]">
+              <p className="text-[10px] sm:text-xs font-medium text-slate-500 mb-1 sm:mb-1.5">جمع‌آوری شده</p>
+              <p className="font-bold text-sm sm:text-base md:text-lg text-[#007acc] drop-shadow-sm truncate">
+                {formatNumber(totalRaised)} <span className="text-[10px] sm:text-xs text-slate-400">ریال</span>
               </p>
             </div>
-            <div className="p-2.5 sm:p-3 md:p-4 rounded-lg sm:rounded-xl border border-white/40 shadow-[inset_2px_2px_5px_rgba(163,177,198,0.3)] bg-[#e0e5ec]/50">
-              <p className="text-[10px] sm:text-xs font-medium text-gray-500 mb-0.5 sm:mb-1">هدف کل</p>
-              <p className="font-bold text-sm sm:text-base md:text-lg text-gray-700">
-                {formatNumber(totalBudget)} <span className="text-[10px] sm:text-xs text-gray-400">ریال</span>
+            <div className="p-3 sm:p-4 md:p-5 rounded-xl sm:rounded-2xl border border-white/60 bg-[#f0f2f5] shadow-[inset_3px_3px_6px_#c5c5c5,inset_-3px_-3px_6px_#ffffff] sm:shadow-[inset_4px_4px_8px_#c5c5c5,inset_-4px_-4px_8px_#ffffff]">
+              <p className="text-[10px] sm:text-xs font-medium text-slate-500 mb-1 sm:mb-1.5">هدف کل</p>
+              <p className="font-bold text-sm sm:text-base md:text-lg text-slate-700 truncate">
+                {formatNumber(totalBudget)} <span className="text-[10px] sm:text-xs text-slate-400">ریال</span>
               </p>
             </div>
           </div>
@@ -93,35 +86,35 @@ const NeedProjectDetails: React.FC<NeedProjectDetailsProps> = ({ need }) => {
 
       {/* Milestones Section */}
       {need.milestones && need.milestones.length > 0 && (
-        <article className={`${neumorphicCard} p-3 sm:p-4 md:p-5 lg:p-6`}>
-          <header className="mb-4 sm:mb-5 md:mb-6">
-            <h3 className="font-extrabold text-base sm:text-lg md:text-xl text-gray-800 flex items-center gap-1.5 sm:gap-2">
-              <span className="text-lg sm:text-xl md:text-2xl">🚩</span> نقاط عطف پروژه
+        <article className={`bg-[#f0f2f5] rounded-2xl md:rounded-3xl shadow-[4px_4px_8px_#c5c5c5,-4px_-4px_8px_#ffffff] md:shadow-[8px_8px_16px_#c5c5c5,-8px_-8px_16px_#ffffff] border border-white/40 p-3 sm:p-5 md:p-6 lg:p-8`}>
+          <header className="mb-5 sm:mb-6 md:mb-8">
+            <h3 className="font-extrabold text-base sm:text-lg md:text-xl text-slate-700 flex items-center gap-2">
+              <span className="text-lg sm:text-xl md:text-2xl drop-shadow-sm">🚩</span> نقاط عطف پروژه
             </h3>
           </header>
 
-          <div className="space-y-3 sm:space-y-4 md:space-y-5">
-            {need.milestones
-              .sort((a: any, b: any) => a.order - b.order)
-              .map((milestone: any, idx: number) => (
-                <div key={idx} className="group">
-                  <div className="flex justify-between items-end mb-1.5 sm:mb-2 px-0.5 sm:px-1">
-                    <h4 className="font-bold text-xs sm:text-sm text-gray-700 group-hover:text-[#007acc] transition-colors">
+          <div className="space-y-4 sm:space-y-5 md:space-y-6">
+            {[...(need.milestones || [])]
+              .sort((a: { order?: number }, b: { order?: number }) => (a.order || 0) - (b.order || 0))
+              .map((milestone: { title?: string; progressPercentage?: number }, idx: number) => (
+                <div key={milestone.title || idx} className="group">
+                  <div className="flex justify-between items-end mb-2 px-1">
+                    <h4 className="font-bold text-xs sm:text-sm text-slate-700 group-hover:text-[#007acc] transition-colors truncate pl-2">
                       {milestone.title}
                     </h4>
-                    <span className="text-[10px] sm:text-xs font-bold text-gray-500 bg-gray-200/50 px-1.5 sm:px-2 py-0.5 rounded-md">
+                    <span className="text-[10px] sm:text-xs font-bold text-slate-500 bg-[#f0f2f5] shadow-[inset_2px_2px_4px_#c5c5c5,inset_-2px_-2px_4px_#ffffff] px-2 py-1 rounded-lg">
                       {milestone.progressPercentage}%
                     </span>
                   </div>
 
                   {/* Milestone Progress Bar */}
                   <div
-                    className={`w-full h-2 sm:h-2.5 md:h-3 ${neumorphicInset} overflow-hidden`}
+                    className={`w-full h-2 sm:h-2.5 rounded-full bg-[#f0f2f5] shadow-[inset_3px_3px_5px_#c5c5c5,inset_-3px_-3px_5px_#ffffff] overflow-hidden`}
                     role="progressbar"
                     aria-label={`پیشرفت ${milestone.title}`}
                   >
                     <div
-                      className={`h-full rounded-full ${primaryGradient} opacity-90 group-hover:opacity-100 transition-all duration-700 ease-out`}
+                      className={`h-full rounded-full bg-gradient-to-r from-[#007acc]/70 to-[#007acc] opacity-90 group-hover:opacity-100 transition-all duration-700 ease-out`}
                       style={{ width: `${milestone.progressPercentage}%` }}
                     ></div>
                   </div>

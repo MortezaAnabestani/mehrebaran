@@ -68,7 +68,7 @@ const RainEffect: React.FC = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       // رسم و حرکت قطرات باران
-      raindrops.current.forEach((drop, index) => {
+      raindrops.current.forEach((drop) => {
         // رسم قطره
         ctx.strokeStyle = "rgba(173, 216, 230, 0.6)"; // آبی روشن
         ctx.lineWidth = 2;

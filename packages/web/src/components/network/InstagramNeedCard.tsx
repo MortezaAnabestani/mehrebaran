@@ -14,7 +14,7 @@ interface InstagramNeedCardProps {
   onUpdate?: () => void;
 }
 
-const InstagramNeedCard: React.FC<InstagramNeedCardProps> = ({ need, onUpdate }) => {
+const InstagramNeedCard: React.FC<InstagramNeedCardProps> = ({ need }) => {
   const { user } = useAuth();
   const router = useRouter();
   const lastTap = useRef<number>(0);
@@ -37,6 +37,9 @@ const InstagramNeedCard: React.FC<InstagramNeedCardProps> = ({ need, onUpdate })
   const [isSaved, setIsSaved] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showHeartOverlay, setShowHeartOverlay] = useState(false);
+
+  const isLikingRef = useRef(false);
+  const isFollowingRef = useRef(false);
 
   // Sync state with props
   React.useEffect(() => {
@@ -98,6 +101,9 @@ const InstagramNeedCard: React.FC<InstagramNeedCardProps> = ({ need, onUpdate })
     e?.stopPropagation();
 
     if (!user) return alert("لطفاً ابتدا وارد حساب کاربری خود شوید");
+    if (isLikingRef.current) return;
+    
+    isLikingRef.current = true;
 
     const prevLiked = isLiked;
     setIsLiked(!isLiked);
@@ -105,9 +111,11 @@ const InstagramNeedCard: React.FC<InstagramNeedCardProps> = ({ need, onUpdate })
 
     try {
       await needService.upvoteNeed(need._id);
-    } catch (error) {
+    } catch {
       setIsLiked(prevLiked);
       setLikesCount((prev) => (isLiked ? prev + 1 : prev - 1));
+    } finally {
+      isLikingRef.current = false;
     }
   };
 
@@ -126,14 +134,19 @@ const InstagramNeedCard: React.FC<InstagramNeedCardProps> = ({ need, onUpdate })
     e.preventDefault();
     e.stopPropagation();
     if (!user) return alert("لطفاً ابتدا وارد حساب کاربری خود شوید");
+    if (isFollowingRef.current) return;
+    
+    isFollowingRef.current = true;
 
     const prevFollowing = isFollowing;
     setIsFollowing(!isFollowing);
 
     try {
       await needService.supportNeed(need._id);
-    } catch (error) {
+    } catch {
       setIsFollowing(prevFollowing);
+    } finally {
+      isFollowingRef.current = false;
     }
   };
 
@@ -433,9 +446,9 @@ const InstagramNeedCard: React.FC<InstagramNeedCardProps> = ({ need, onUpdate })
           {/* Tags */}
           {need.tags && need.tags.length > 0 && (
             <div className="flex flex-wrap gap-2 pt-1">
-              {need.tags.slice(0, 3).map((tag, index) => (
+              {need.tags.slice(0, 3).map((tag) => (
                 <span
-                  key={index}
+                  key={tag}
                   className="text-[11px] font-medium text-[#007acc] bg-blue-50/80 px-2.5 py-1 rounded-lg border border-blue-100"
                 >
                   #{tag}

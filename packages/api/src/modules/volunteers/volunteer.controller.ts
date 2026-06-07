@@ -9,6 +9,7 @@ import {
 } from "./volunteer.validation";
 import asyncHandler from "../../core/utils/asyncHandler";
 import ApiError from "../../core/utils/apiError";
+import { getParam } from "../../core/utils/getParam";
 
 class VolunteerController {
   // Get all volunteer registrations with filters and pagination (Admin only)
@@ -42,7 +43,7 @@ class VolunteerController {
   // Get registration by ID
   public getOne = asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
-    const registration = await volunteerService.findById(id);
+    const registration = await volunteerService.findById(getParam(id));
 
     if (!registration) {
       throw new ApiError(404, "ثبت‌نام داوطلب مورد نظر یافت نشد.");
@@ -60,7 +61,7 @@ class VolunteerController {
 
     const registrations = await volunteerService.findByProject(
       validatedData.params.projectId,
-      validatedData.query
+      validatedData.query,
     );
 
     res.status(200).json({
@@ -88,11 +89,7 @@ class VolunteerController {
     });
     const adminId = (req as any).user._id;
 
-    const registration = await volunteerService.update(
-      validatedData.params.id,
-      validatedData.body,
-      adminId
-    );
+    const registration = await volunteerService.update(validatedData.params.id, validatedData.body, adminId);
 
     res.status(200).json({
       message: "ثبت‌نام داوطلب به‌روزرسانی شد.",
@@ -111,7 +108,7 @@ class VolunteerController {
     const registration = await volunteerService.approve(
       validatedData.params.id,
       adminId,
-      validatedData.body.notes
+      validatedData.body.notes,
     );
 
     res.status(200).json({
@@ -131,7 +128,7 @@ class VolunteerController {
     const registration = await volunteerService.reject(
       validatedData.params.id,
       adminId,
-      validatedData.body.reason
+      validatedData.body.reason,
     );
 
     res.status(200).json({
@@ -145,7 +142,7 @@ class VolunteerController {
     const { id } = req.params;
     const userId = (req as any).user._id;
 
-    const registration = await volunteerService.withdraw(id, userId);
+    const registration = await volunteerService.withdraw(getParam(id), userId);
 
     res.status(200).json({
       message: "انصراف شما ثبت شد.",
@@ -156,7 +153,7 @@ class VolunteerController {
   // Get volunteer statistics for project
   public getProjectStats = asyncHandler(async (req: Request, res: Response) => {
     const { projectId } = req.params;
-    const stats = await volunteerService.getProjectStats(projectId);
+    const stats = await volunteerService.getProjectStats(getParam(projectId));
 
     res.status(200).json({ data: stats });
   });
@@ -166,7 +163,7 @@ class VolunteerController {
     const { projectId } = req.params;
     const limit = req.query.limit ? parseInt(req.query.limit as string) : 20;
 
-    const volunteers = await volunteerService.getActiveVolunteers(projectId, limit);
+    const volunteers = await volunteerService.getActiveVolunteers(getParam(projectId), limit);
 
     res.status(200).json({
       results: volunteers.length,
@@ -177,7 +174,7 @@ class VolunteerController {
   // Delete registration
   public delete = asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
-    await volunteerService.delete(id);
+    await volunteerService.delete(getParam(id));
 
     res.status(200).json({ message: "ثبت‌نام داوطلب با موفقیت حذف شد." });
   });

@@ -144,7 +144,7 @@ const AreaItem: React.FC<AreasOfActivity> = ({ title, icon, description, color, 
           >
             <OptimizedImage
               src={icon}
-              alt={`icon ${title}`}
+              alt={title}
               width={64}
               height={64}
               className="drop-shadow-lg"

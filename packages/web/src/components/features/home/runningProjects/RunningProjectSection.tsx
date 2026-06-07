@@ -7,6 +7,76 @@ import OptimizedImage from "@/components/ui/OptimizedImage";
 import Link from "next/link";
 import { IProject } from "common-types";
 import truncateText from "@/utils/truncateText";
+import SmartSwiper from "@/components/ui/swiper/SmartSwiper";
+
+const ProjectCardContent = ({ project }: { project: IProject }) => (
+  <>
+    {/* بخش تصویر */}
+    <div className="w-full h-48 md:h-full min-h-[200px] md:w-64 lg:w-72 shrink-0 relative border-b md:border-b-0 md:border-l border-slate-200 bg-slate-100">
+      <Link href={`/projects/${project.slug}`} className="block w-full h-full relative">
+        <OptimizedImage
+          src={process.env.NEXT_PUBLIC_UPLOADS + project.featuredImage.desktop}
+          alt={project.title}
+          fill={true}
+          className="object-cover transition-transform duration-700 group-hover:scale-103"
+        />
+        {/* Overlay تکنیکال */}
+        <div className="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/5 transition-colors duration-300" />
+      </Link>
+
+      {/* بج وضعیت */}
+      <div className="absolute top-2 right-2 bg-gray-400/40 backdrop-blur-sm text-white px-2 py-1 rounded text-[10px] ">
+        فعال
+      </div>
+    </div>
+
+    {/* بخش محتوا */}
+    <div className="flex-1 p-4 md:p-5 flex flex-col">
+      <div className="flex justify-between items-start mb-3">
+        <Link
+          href={`/projects/${project.slug}`}
+          className="group-hover:text-[#007acc] transition-colors"
+        >
+          <h3 className="text-base md:text-lg font-bold text-slate-800">{project.title}</h3>
+        </Link>
+        <Link
+          href={`/projects/${project.slug}`}
+          className="hidden md:flex items-center gap-1 text-[11px] font-medium text-morange hover:text-[#007acc] transition-colors border border-morange hover:border-[#007acc] px-2 py-1 rounded"
+        >
+          مشاهده جزئیات پروژه
+          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15 19l-7-7 7-7"
+            />
+          </svg>
+        </Link>
+      </div>
+
+      <p className="text-[13px] text-slate-600 leading-relaxed text-justify line-clamp-3 md:line-clamp-none">
+        {truncateText(project?.excerpt ?? "", 180)}
+      </p>
+
+      <div className="mt-auto pt-4 border-t border-slate-100">
+        <div className="grid grid-cols-1 gap-4">
+          <DonationProgress project={project} />
+        </div>
+
+        {/* دکمه موبایل */}
+        <div className="mt-3 md:hidden">
+          <Link
+            href={`/projects/${project.slug}`}
+            className="flex items-center justify-center w-full py-2 text-xs font-medium text-[#007acc] bg-blue-50 border border-blue-100 rounded hover:bg-blue-100 transition-colors"
+          >
+            مشاهده جزئیات پروژه
+          </Link>
+        </div>
+      </div>
+    </div>
+  </>
+);
 
 export default function RunningProjectsSection({ projects }: { projects: IProject[] }) {
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -14,16 +84,21 @@ export default function RunningProjectsSection({ projects }: { projects: IProjec
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
   const startXRef = useRef(0);
   const scrollLeftRef = useRef(0);
+  const isInitialRender = useRef(true);
 
   // همگام‌سازی اسکرول با آیتم انتخاب شده
   useEffect(() => {
+    if (isInitialRender.current) {
+      isInitialRender.current = false;
+      return;
+    }
+    
     if (scrollContainerRef.current) {
-      const thumbnail = scrollContainerRef.current.children[selectedIndex];
+      const thumbnail = scrollContainerRef.current.children[selectedIndex] as HTMLElement;
       if (thumbnail) {
-        thumbnail.scrollIntoView({
-          behavior: "smooth",
-          block: "nearest",
-          inline: "center",
+        scrollContainerRef.current.scrollTo({
+          top: thumbnail.offsetTop,
+          behavior: "smooth"
         });
       }
     }
@@ -64,82 +139,40 @@ export default function RunningProjectsSection({ projects }: { projects: IProjec
         <HeadTitle title="طرح‌های در حال اجرا" />
 
         <div className="grid grid-cols-12 gap-4 lg:gap-6">
-          {/* محتوای اصلی: نمایش پروژه‌ها */}
-          <div
-            className={`col-span-12 ${projects.length > 2 ? "lg:col-span-9 xl:col-span-10" : ""} grid gap-4`}
-          >
-            {displayedProjects.map((project, idx) => (
-              <article
-                key={project._id}
-                className="bg-white rounded-2xl border border-slate-300 shadow-md hover:scale-101 transition-all overflow-hidden flex flex-col md:flex-row h-auto md:h-64 group"
-              >
-                {/* بخش تصویر */}
-                <div className="w-full md:w-64 lg:w-72 shrink-0 relative border-b md:border-b-0 md:border-l border-slate-200 bg-slate-100">
-                  <Link href={`/projects/${project.slug}`} className="block w-full h-full relative">
-                    <OptimizedImage
-                      src={process.env.NEXT_PUBLIC_UPLOADS + project.featuredImage.desktop}
-                      alt={project.title}
-                      fill={true}
-                      className="object-cover transition-transform duration-700 group-hover:scale-103"
-                    />
-                    {/* Overlay تکنیکال */}
-                    <div className="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/5 transition-colors duration-300" />
-                  </Link>
+            {/* Desktop View */}
+            <div className="hidden lg:grid col-span-12 lg:col-span-9 xl:col-span-10 gap-4">
+              {displayedProjects.map((project) => (
+                <article
+                  key={project._id}
+                  className="bg-white rounded-2xl border border-slate-300 shadow-md hover:scale-[1.01] transition-all overflow-hidden flex flex-col md:flex-row h-auto md:h-64 group"
+                >
+                  <ProjectCardContent project={project} />
+                </article>
+              ))}
+            </div>
 
-                  {/* بج وضعیت */}
-                  <div className="absolute top-2 right-2 bg-gray-400/40 backdrop-blur-sm text-white px-2 py-1 rounded text-[10px] ">
-                    فعال
-                  </div>
-                </div>
+            {/* Mobile View (Swiper) */}
+            <div className="lg:hidden col-span-12 -mx-4 px-4 pb-8">
+              <SmartSwiper
+                items={projects.map((project) => (
+                  <article
+                    key={project._id}
+                    className="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-all overflow-hidden flex flex-col h-full"
+                  >
+                    <ProjectCardContent project={project} />
+                  </article>
+                ))}
+                slidesPerView={1}
+                spaceBetween={16}
+                centeredSlides={true}
+                showPagination={true}
+                grabCursor={true}
+                loop={projects.length > 3}
+                autoplay={{ delay: 3500, disableOnInteraction: false }}
+                outsideBtn={false}
+              />
+            </div>
 
-                {/* بخش محتوا */}
-                <div className="flex-1 p-4 md:p-5 flex flex-col">
-                  <div className="flex justify-between items-start mb-3">
-                    <Link
-                      href={`/projects/${project.slug}`}
-                      className="group-hover:text-[#007acc] transition-colors"
-                    >
-                      <h3 className="text-base md:text-lg font-bold text-slate-800">{project.title}</h3>
-                    </Link>
-                    <Link
-                      href={`/projects/${project.slug}`}
-                      className="hidden md:flex items-center gap-1 text-[11px] font-medium text-morange hover:text-[#007acc] transition-colors border border-morange hover:border-[#007acc] px-2 py-1 rounded"
-                    >
-                      مشاهده جزئیات پروژه
-                      <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M15 19l-7-7 7-7"
-                        />
-                      </svg>
-                    </Link>
-                  </div>
-
-                  <p className="text-[13px] text-slate-600 leading-relaxed text-justify line-clamp-3 md:line-clamp-none">
-                    {truncateText(project?.excerpt ?? "", 180)}
-                  </p>
-
-                  <div className="mt-auto pt-4 border-t border-slate-100">
-                    <div className="grid grid-cols-1 gap-4">
-                      <DonationProgress project={project} />
-                    </div>
-
-                    {/* دکمه موبایل */}
-                    <div className="mt-3 md:hidden">
-                      <Link
-                        href={`/projects/${project.slug}`}
-                        className="flex items-center justify-center w-full py-2 text-xs font-medium text-[#007acc] bg-blue-50 border border-blue-100 rounded hover:bg-blue-100 transition-colors"
-                      >
-                        مشاهده جزئیات پروژه
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              </article>
-            ))}
-          </div>
           {projects.length > 2 && (
             <div className="hidden lg:block col-span-3 xl:col-span-2">
               <div className="sticky top-24 bg-white border border-slate-200 rounded-md overflow-hidden">
@@ -157,7 +190,7 @@ export default function RunningProjectsSection({ projects }: { projects: IProjec
                   onMouseUp={handleMouseUp}
                   onMouseLeave={handleMouseLeave}
                   className={`
-                    flex flex-col max-h-[480px] overflow-y-auto scrollbar-hide
+                    flex flex-col max-h-[480px] overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]
                     ${isDragging ? "cursor-grabbing" : "cursor-grab"}
                     select-none divide-y divide-slate-100
                   `}
@@ -227,16 +260,6 @@ export default function RunningProjectsSection({ projects }: { projects: IProjec
           )}
         </div>
       </div>
-
-      <style jsx global>{`
-        .scrollbar-hide::-webkit-scrollbar {
-          display: none;
-        }
-        .scrollbar-hide {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-      `}</style>
     </section>
   );
 }

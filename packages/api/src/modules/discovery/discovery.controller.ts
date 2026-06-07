@@ -4,12 +4,8 @@ import ApiError from "../../core/utils/apiError";
 import { leaderboardService } from "./leaderboard.service";
 import { trendingService } from "./trending.service";
 import { recommendationsService } from "./recommendations.service";
-import {
-  LeaderboardCategory,
-  LeaderboardPeriod,
-  TrendingPeriod,
-  RecommendationStrategy,
-} from "common-types";
+import { LeaderboardCategory, LeaderboardPeriod, TrendingPeriod, RecommendationStrategy } from "common-types";
+import { getParam } from "../../core/utils/getParam";
 
 class DiscoveryController {
   /**
@@ -72,7 +68,7 @@ class DiscoveryController {
     const category = (req.query.category as LeaderboardCategory) || "points";
     const period = (req.query.period as LeaderboardPeriod) || "all_time";
 
-    const rank = await leaderboardService.getUserRank(userId, category, period);
+    const rank = await leaderboardService.getUserRank(getParam(userId), category, period);
 
     if (!rank) {
       throw new ApiError(404, "رتبه کاربر یافت نشد.");
@@ -123,11 +119,7 @@ class DiscoveryController {
     const period = (req.query.period as LeaderboardPeriod) || "all_time";
     const limit = parseInt(req.query.limit as string) || 10;
 
-    const leaderboards = await leaderboardService.getMultipleCategoryLeaderboards(
-      categories,
-      period,
-      limit
-    );
+    const leaderboards = await leaderboardService.getMultipleCategoryLeaderboards(categories, period, limit);
 
     res.status(200).json({ message: "لیدربوردها با موفقیت دریافت شدند.", data: leaderboards });
   });
@@ -196,7 +188,9 @@ class DiscoveryController {
 
     const allTrending = await trendingService.getAllTrending(period);
 
-    console.log(`✅ Found ${allTrending.needs.length} needs, ${allTrending.users.length} users, ${allTrending.tags.length} tags`);
+    console.log(
+      `✅ Found ${allTrending.needs.length} needs, ${allTrending.users.length} users, ${allTrending.tags.length} tags`,
+    );
 
     res.status(200).json({ message: "موارد ترندینگ با موفقیت دریافت شدند.", data: allTrending });
   });

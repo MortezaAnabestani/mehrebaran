@@ -1,10 +1,10 @@
-import { Document, Query } from "mongoose";
+import { Query } from "mongoose";
 
-class ApiFeatures<T extends Document> {
-  public query: Query<T[], T>;
+class ApiFeatures<T> {
+  public query: Query<T[], any>;
   private queryString: Record<string, any>;
 
-  constructor(query: Query<T[], T>, queryString: Record<string, any>) {
+  constructor(query: Query<T[], any>, queryString: Record<string, any>) {
     this.query = query;
     this.queryString = queryString;
   }

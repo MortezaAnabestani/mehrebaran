@@ -1,5 +1,6 @@
 "use client";
 
+import api from "@/lib/api";
 import { useState } from "react";
 
 export default function HelpRequestForm() {
@@ -51,18 +52,7 @@ export default function HelpRequestForm() {
         formDataToSend.append("media", file);
       });
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/help-requests`, {
-        method: "POST",
-        body: formDataToSend,
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        // نمایش خطای دقیق از سرور
-        const errorMessage = data.message || data.error || "خطا در ارسال درخواست";
-        throw new Error(errorMessage);
-      }
+      await api.post("/help-requests", formDataToSend);
 
       setMessage({
         type: "success",
@@ -78,11 +68,12 @@ export default function HelpRequestForm() {
         guestPhone: "",
       });
       setFiles([]);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("خطا در ارسال درخواست:", error);
+      const errorMessage = error instanceof Error ? error.message : "خطا در ارسال درخواست. لطفاً دوباره تلاش کنید.";
       setMessage({
         type: "error",
-        text: error.message || "خطا در ارسال درخواست. لطفاً دوباره تلاش کنید.",
+        text: errorMessage,
       });
     } finally {
       setIsSubmitting(false);
@@ -171,6 +162,7 @@ export default function HelpRequestForm() {
               value={formData.guestEmail}
               onChange={handleChange}
               required
+              dir="ltr"
               placeholder="example@email.com"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
@@ -187,6 +179,7 @@ export default function HelpRequestForm() {
             value={formData.guestPhone}
             onChange={handleChange}
             required
+            dir="ltr"
             pattern="09[0-9]{9}"
             placeholder="09123456789"
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"

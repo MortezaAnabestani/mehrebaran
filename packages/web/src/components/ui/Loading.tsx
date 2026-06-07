@@ -5,7 +5,7 @@ export const Loading: React.FC = () => {
   const drops = Array.from({ length: 20 });
 
   return (
-    <div className="relative w-full h-screen flex flex-col items-center justify-center bg-slate-50 overflow-hidden">
+    <div className="relative w-full h-screen flex flex-col items-center justify-center bg-slate-50 overflow-hidden" role="status" aria-label="در حال بارگذاری">
       {/* استایل‌های انیمیشن داخلی */}
       <style>{`
         @keyframes fall {
@@ -24,16 +24,16 @@ export const Loading: React.FC = () => {
       `}</style>
 
       {/* پس‌زمینه بارانی */}
-      <div className="absolute inset-0 w-full h-full pointer-events-none">
+      <div className="absolute inset-0 w-full h-full pointer-events-none" aria-hidden="true">
         {drops.map((_, i) => (
           <div
-            key={i}
+            key={`drop-${i}`}
             className="rain-drop"
             style={{
-              left: `${Math.random() * 100}%`,
-              animationDuration: `${0.5 + Math.random() * 1.5}s`,
-              animationDelay: `${Math.random() * 2}s`,
-              opacity: 0.3 + Math.random() * 0.5,
+              left: `${(i * 17) % 100}%`,
+              animationDuration: `${0.5 + (i % 4) * 0.5}s`,
+              animationDelay: `${(i % 5) * 0.4}s`,
+              opacity: 0.3 + (i % 3) * 0.2,
             }}
           />
         ))}
@@ -51,6 +51,7 @@ export const Loading: React.FC = () => {
               stroke="currentColor"
               viewBox="0 0 24 24"
               xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
             >
               <path
                 strokeLinecap="round"

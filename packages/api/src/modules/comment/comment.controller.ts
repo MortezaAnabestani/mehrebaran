@@ -4,6 +4,7 @@ import { createCommentSchema, updateCommentSchema } from "./comment.validation";
 import { CommentStatus } from "common-types";
 import asyncHandler from "../../core/utils/asyncHandler";
 import ApiError from "../../core/utils/apiError";
+import { getParam } from "../../core/utils/getParam";
 
 class CommentController {
   public create = asyncHandler(async (req: Request, res: Response) => {
@@ -23,7 +24,7 @@ class CommentController {
   });
 
   public getByPost = asyncHandler(async (req: Request, res: Response) => {
-    const comments = await commentService.findByPost(req.params.postId);
+    const comments = await commentService.findByPost(getParam(req.params.postId));
     res.status(200).json({ data: comments });
   });
 
@@ -47,7 +48,7 @@ class CommentController {
   });
 
   public approve = asyncHandler(async (req: Request, res: Response) => {
-    const comment = await commentService.approve(req.params.id);
+    const comment = await commentService.approve(getParam(req.params.id));
     if (!comment) {
       throw new ApiError(404, "نظر یافت نشد.");
     }
@@ -55,7 +56,7 @@ class CommentController {
   });
 
   public reject = asyncHandler(async (req: Request, res: Response) => {
-    const comment = await commentService.reject(req.params.id);
+    const comment = await commentService.reject(getParam(req.params.id));
     if (!comment) {
       throw new ApiError(404, "نظر یافت نشد.");
     }
@@ -72,7 +73,7 @@ class CommentController {
   });
 
   public delete = asyncHandler(async (req: Request, res: Response) => {
-    const deletedComment = await commentService.delete(req.params.id);
+    const deletedComment = await commentService.delete(getParam(req.params.id));
     if (!deletedComment) {
       throw new ApiError(404, "نظر یافت نشد.");
     }

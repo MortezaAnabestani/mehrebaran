@@ -1,3 +1,4 @@
+import { Metadata } from "next";
 import AreasOfActivitySection from "@/components/features/home/areasOfActivity/AreasOfActivitySection";
 import BlogSection from "@/components/features/home/BlogSection";
 import HeroSection from "@/components/features/home/heroSection/HeroSection";
@@ -10,15 +11,33 @@ import { getProjects } from "@/services/project.service";
 import { getNews } from "@/services/news.service";
 import { IHomePageHeroSetting, IBlogBackgroundSetting, IWhatWeDidStatistics } from "common-types";
 
-// 1. Performance: فعال‌سازی ISR برای بازسازی صفحه هر یک ساعت
 export const revalidate = 3600;
 
-// 2. Logical Separation: جداسازی منطق دریافت داده برای تمیزی و تست‌پذیری
+export const metadata: Metadata = {
+  title: "صفحه اصلی | سامانه یکپارچه فعالیت‌های داوطلبانه مهرباران",
+  description: "به کانون مهرباران بپیوندید. ما با توسعه شبکه‌سازی، فعالیت‌های داوطلبانه و نیکوکاری، هدفی جز تاثیر مثبت اجتماعی در جامعه نداریم.",
+  alternates: {
+    canonical: "https://mehrbaran.com",
+  },
+  openGraph: {
+    title: "سامانه یکپارچه فعالیت‌های داوطلبانه | کانون مهرباران",
+    description: "به کانون مهرباران بپیوندید. ما با توسعه شبکه‌سازی، فعالیت‌های داوطلبانه و نیکوکاری، هدفی جز تاثیر مثبت اجتماعی در جامعه نداریم.",
+    url: "https://mehrbaran.com",
+    siteName: "کانون مهرباران",
+    type: "website",
+    images: [{ url: "https://mehrbaran.com/images/default-og.jpg", width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "سامانه یکپارچه فعالیت‌های داوطلبانه | کانون مهرباران",
+    description: "به کانون مهرباران بپیوندید. ما با توسعه شبکه‌سازی، فعالیت‌های داوطلبانه و نیکوکاری، هدفی جز تاثیر مثبت اجتماعی در جامعه نداریم.",
+    images: ["https://mehrbaran.com/images/default-og.jpg"],
+  },
+};
+
 async function fetchHomePageData() {
   try {
-    // استفاده از Promise.all برای موازی‌سازی درخواست‌ها
     const [heroSettings, blogBgSettings, whatWeDidStats, projectsResponse, newsResponse] = await Promise.all([
-      // Defensive Programming: مدیریت خطا در سطح هر درخواست برای جلوگیری از کرش کل صفحه
       getSetting("homePageHero").catch(() => null) as Promise<IHomePageHeroSetting | null>,
       getSetting("blogBackground").catch(() => null) as Promise<IBlogBackgroundSetting | null>,
       getSetting("whatWeDidStatistics").catch(() => null) as Promise<IWhatWeDidStatistics | null>,
@@ -30,13 +49,11 @@ async function fetchHomePageData() {
       heroSettings,
       blogBgSettings,
       whatWeDidStats,
-      // استفاده از Fallback Values (آرایه خالی) برای جلوگیری از خطای دسترسی به property در null
       projects: projectsResponse?.data ?? [],
       news: newsResponse?.data ?? [],
     };
   } catch (error) {
     console.error("Home page data fetch error:", error);
-    // بازگشت آبجکت امن در صورت خطای کلی
     return {
       heroSettings: null,
       blogBgSettings: null,
@@ -50,21 +67,44 @@ async function fetchHomePageData() {
 export default async function Home() {
   const { heroSettings, blogBgSettings, whatWeDidStats, projects, news } = await fetchHomePageData();
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": ["WebSite", "NGO"],
+    "inLanguage": "fa-IR",
+    "name": "کانون مهرباران",
+    "url": "https://mehrbaran.com",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://mehrbaran.com/search?q={search_term_string}",
+      "query-input": "required name=search_term_string",
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "کانون مهرباران",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://mehrbaran.com/icons/logo.svg"
+      }
+    }
+  };
+
   return (
-    <section>
-      {/* Safe Navigation: ارسال داده‌های ایمن‌سازی شده به کامپوننت‌ها */}
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <h1 className="sr-only">کانون مسئولیت اجتماعی مهرباران - فعالیت‌های داوطلبانه</h1>
+      
       <HeroSection settings={heroSettings} />
 
-      {/* Standardized CSS: استفاده از کلاس‌های استاندارد کانتینر بجای مقادیر دستی */}
-      <main className="md:w-8/10 mx-auto grow px-4 xl:px-0">
+      <main className="md:w-8/10 mx-auto flex w-full flex-col gap-y-16 px-4 pb-12 xl:px-0">
         <WhatWeDidSection statistics={whatWeDidStats} />
-
         <RunningProjectsSection projects={projects} />
         <NewsSection newsItems={news} />
-
         <BlogSection settings={blogBgSettings} />
         <AreasOfActivitySection />
       </main>
-    </section>
+    </>
   );
 }

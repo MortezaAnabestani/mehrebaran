@@ -27,7 +27,7 @@ class TagController {
 
   public delete = asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
-    const deletedTag = await tagService.delete(id);
+    const deletedTag = await tagService.delete(id as any);
     if (!deletedTag) {
       throw new ApiError(404, "تگ یافت نشد.");
     }

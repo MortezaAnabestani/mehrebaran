@@ -6,6 +6,7 @@ import HeadTitle from "./HeadTitle";
 import { motion, useInView, useSpring, useTransform } from "framer-motion";
 import OptimizedImage from "@/components/ui/OptimizedImage";
 import dynamic from "next/dynamic";
+import SmartSwiper from "@/components/ui/swiper/SmartSwiper";
 
 const Tetris = dynamic(() => import("@/components/Tetris/Tetris"), { ssr: false });
 
@@ -156,11 +157,78 @@ const WhatWeDidSection: React.FC<{ statistics: IWhatWeDidStatistics | null }> = 
             <HeadTitle title="در کنار هم چه کردیم؟" />
           </motion.div>
 
+          <div className="sm:hidden -mx-4 px-4 lg:pb-8">
+            <SmartSwiper
+              items={Items.map((item, index) => (
+                <div 
+                  key={index} 
+                  className="group relative h-full lg:mb-8 h-[252px]"
+                  onClick={() => handleCardClick(index)}
+                >
+                  <div
+                    className={`relative h-full overflow-hidden rounded-[1.7rem] p-5 md:p-6 transition-all duration-300 border cursor-pointer flex flex-col justify-center ${
+                      item.variant === "primary"
+                        ? "bg-[#007acc] text-white border-[#007acc] shadow-lg shadow-blue-900/20"
+                        : "bg-white text-gray-800 border-gray-100 shadow-md"
+                    }`}
+                  >
+                    <div
+                      className={`absolute -bottom-4 -left-4 w-[76px] h-[76px] opacity-10 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-12 ${
+                        item.variant === "primary" ? "invert brightness-0" : ""
+                      }`}
+                    >
+                      <OptimizedImage
+                        src={item.icon}
+                        alt=""
+                        width={76}
+                        height={76}
+                        className="object-contain"
+                      />
+                    </div>
+                    <div className="relative z-10 flex flex-col items-center justify-center h-full text-center gap-3">
+                      <div
+                        className={`p-2 rounded-xl mb-1 ${
+                          item.variant === "primary" ? "bg-white/20 backdrop-blur-sm" : "bg-[#007acc]/10"
+                        }`}
+                      >
+                        <OptimizedImage
+                          src={item.icon}
+                          alt={item.title}
+                          width={19}
+                          height={19}
+                          className={item.variant === "primary" ? "brightness-0 invert" : ""}
+                        />
+                      </div>
+                      <h2 className="text-3xl md:text-4xl font-black tracking-tight">
+                        {isInView ? <AnimatedCounter value={item.numOfProject} /> : "۰"}
+                        <span className="text-xl align-top opacity-60 mr-1">+</span>
+                      </h2>
+                      <h3
+                        className={`text-sm md:text-base font-bold leading-relaxed ${
+                          item.variant === "primary" ? "text-blue-50" : "text-gray-600"
+                        }`}
+                      >
+                        {item.title}
+                      </h3>
+                    </div>
+                  </div>
+                </div>
+              ))}
+              slidesPerView={1.2}
+              spaceBetween={20}
+              centeredSlides={true}
+              showPagination={true}
+              grabCursor={true}
+              outsideBtn={false}
+              loop={Items.length > 3}
+            />
+          </div>
+
           <motion.div
             variants={containerVariants}
             initial="hidden"
             animate={isInView ? "visible" : "hidden"}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 max-w-6xl mx-auto"
+            className="hidden sm:grid grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 max-w-6xl mx-auto"
           >
             {Items.map((item, index) => (
               <motion.div
@@ -171,7 +239,7 @@ const WhatWeDidSection: React.FC<{ statistics: IWhatWeDidStatistics | null }> = 
                 onClick={() => handleCardClick(index)}
               >
                 <div
-                  className={`relative h-full overflow-hidden rounded-3xl p-6 md:p-8 transition-all duration-300 border cursor-pointer ${
+                  className={`relative h-full overflow-hidden rounded-[1.7rem] p-5 md:p-7 transition-all duration-300 border cursor-pointer ${
                     item.variant === "primary"
                       ? "bg-[#007acc] text-white border-[#007acc] shadow-lg shadow-blue-900/20"
                       : "bg-white text-gray-800 border-gray-100 shadow-md hover:border-[#007acc]/30 hover:shadow-xl"
@@ -179,44 +247,44 @@ const WhatWeDidSection: React.FC<{ statistics: IWhatWeDidStatistics | null }> = 
                 >
                   {/* آیکون پس‌زمینه بزرگ و محو */}
                   <div
-                    className={`absolute -bottom-4 -left-4 w-32 h-32 opacity-10 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-12 ${
+                    className={`absolute -bottom-4 -left-4 w-[115px] h-[115px] opacity-10 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-12 ${
                       item.variant === "primary" ? "invert brightness-0" : ""
                     }`}
                   >
                     <OptimizedImage
                       src={item.icon}
                       alt=""
-                      width={128}
-                      height={128}
+                      width={115}
+                      height={115}
                       className="object-contain"
                     />
                   </div>
 
-                  <div className="relative z-10 flex flex-col items-center justify-center h-full text-center gap-4">
+                  <div className="relative z-10 flex flex-col items-center justify-center h-full text-center gap-3 md:gap-4">
                     {/* آیکون کوچک بالای کارت */}
                     <div
-                      className={`p-3 rounded-2xl mb-2 ${
+                      className={`p-2.5 rounded-[0.85rem] mb-1.5 md:mb-2 ${
                         item.variant === "primary" ? "bg-white/20 backdrop-blur-sm" : "bg-[#007acc]/10"
                       }`}
                     >
                       <OptimizedImage
                         src={item.icon}
                         alt={item.title}
-                        width={32}
-                        height={32}
+                        width={28}
+                        height={28}
                         className={item.variant === "primary" ? "brightness-0 invert" : ""}
                       />
                     </div>
 
                     {/* عدد شمارنده */}
-                    <h2 className="text-4xl md:text-5xl font-black tracking-tight">
+                    <h2 className="text-3xl md:text-4xl font-black tracking-tight">
                       {isInView ? <AnimatedCounter value={item.numOfProject} /> : "۰"}
-                      <span className="text-2xl align-top opacity-60 mr-1">+</span>
+                      <span className="text-xl md:text-2xl align-top opacity-60 mr-1">+</span>
                     </h2>
 
                     {/* عنوان */}
                     <h3
-                      className={`text-base md:text-lg font-bold leading-relaxed ${
+                      className={`text-sm md:text-base font-bold leading-relaxed ${
                         item.variant === "primary" ? "text-blue-50" : "text-gray-600"
                       }`}
                     >

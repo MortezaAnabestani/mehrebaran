@@ -1,14 +1,11 @@
 "use client";
-import React, { useState, useEffect, useRef, FC } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import OptimizedImage from "@/components/ui/OptimizedImage";
 
-interface CodabiatProps {}
-
-const Codabiat: FC<CodabiatProps> = () => {
+const Codabiat: React.FC = () => {
   const [words, setWords] = useState<string[]>([]);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const containerRef = useRef<HTMLDivElement | null>(null);
 
   const letters: string[] = ["ک", "ب", "ی", "د", "ا", "ت", "01", "10", "1001", "0011", "1010", "0101"];
 
@@ -18,7 +15,12 @@ const Codabiat: FC<CodabiatProps> = () => {
     intervalRef.current = setInterval(() => {
       const randomIndex = Math.floor(Math.random() * letters.length);
       const newLetter = letters[randomIndex];
-      setWords((prev) => [...prev, `${newLetter}-${Date.now()}`]);
+      const key = `${newLetter}-${Date.now()}-${Math.random()}`;
+      setWords((prev) => [...prev, key]);
+      
+      setTimeout(() => {
+        setWords((prev) => prev.filter((w) => w !== key));
+      }, 1200);
     }, 300);
   };
 
@@ -38,6 +40,7 @@ const Codabiat: FC<CodabiatProps> = () => {
       <Link
         href="https://t.me/Morteza_anabestani"
         target="_blank"
+        rel="noopener noreferrer"
         className="group flex items-center transition-all duration-500 space-x-2"
         onMouseEnter={startAnimation}
         onMouseLeave={stopAnimation}
@@ -52,7 +55,7 @@ const Codabiat: FC<CodabiatProps> = () => {
           </span>
         </span>
 
-        <div className="relative w-6 h-6 overflow-visible" ref={containerRef}>
+        <div className="relative w-6 h-6 overflow-visible">
           {words.map((wordKey) => {
             const word = wordKey.split("-")[0];
             return (

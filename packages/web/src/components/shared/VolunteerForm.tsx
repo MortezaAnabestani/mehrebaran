@@ -106,6 +106,13 @@ const VolunteerForm: React.FC<Props> = ({ project, onSuccess, isAuthenticated })
         throw new Error("لطفاً حداقل یک بازه زمانی انتخاب کنید");
       }
 
+      if (
+        formData.emergencyContact.phone &&
+        !/^09[0-9]{9}$/.test(formData.emergencyContact.phone)
+      ) {
+        throw new Error("لطفاً شماره تماس اضطراری معتبر وارد کنید");
+      }
+
       // Register as volunteer
       const registration = await registerAsVolunteer({
         projectId: project._id,
@@ -123,8 +130,12 @@ const VolunteerForm: React.FC<Props> = ({ project, onSuccess, isAuthenticated })
 
       setSuccess(true);
       if (onSuccess) onSuccess(registration._id);
-    } catch (err: any) {
-      setError(err.message || "خطا در ثبت‌نام داوطلب. لطفاً دوباره تلاش کنید.");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message || "خطا در ثبت‌نام داوطلب. لطفاً دوباره تلاش کنید.");
+      } else {
+        setError("خطا در ثبت‌نام داوطلب. لطفاً دوباره تلاش کنید.");
+      }
     } finally {
       setLoading(false);
     }
@@ -249,6 +260,7 @@ const VolunteerForm: React.FC<Props> = ({ project, onSuccess, isAuthenticated })
           id="availableHours"
           value={formData.availableHours}
           onChange={(e) => setFormData((prev) => ({ ...prev, availableHours: e.target.value }))}
+          dir="ltr"
           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mblue"
           placeholder="مثال: 10"
           required
@@ -376,6 +388,8 @@ const VolunteerForm: React.FC<Props> = ({ project, onSuccess, isAuthenticated })
                 emergencyContact: { ...prev.emergencyContact, phone: e.target.value },
               }))
             }
+            dir="ltr"
+            pattern="(09[0-9]{9})?"
             className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mblue"
           />
         </div>

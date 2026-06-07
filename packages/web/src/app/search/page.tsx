@@ -4,6 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { globalSearch, SearchResult } from "@/services/search.service";
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 
 const getResultUrl = (result: SearchResult): string => {
@@ -53,29 +54,37 @@ function SearchContent() {
   const [totalResults, setTotalResults] = useState(0);
 
   useEffect(() => {
+    let ignore = false;
+
     if (query) {
       setLoading(true);
       globalSearch(query).then((response) => {
-        setResults(response.results);
-        setTotalResults(response.totalResults);
-        setLoading(false);
+        if (!ignore) {
+          setResults(response.results);
+          setTotalResults(response.totalResults);
+          setLoading(false);
+        }
       });
     } else {
       setLoading(false);
     }
+
+    return () => {
+      ignore = true;
+    };
   }, [query]);
 
   if (!query) {
     return (
-      <div className="w-9/10 md:w-8/10 mx-auto py-20 text-center">
+      <main className="w-9/10 md:w-8/10 mx-auto py-20 text-center">
         <h1 className="text-4xl font-bold text-gray-800 mb-4">جستجو</h1>
         <p className="text-gray-600">لطفاً عبارت مورد نظر خود را در کادر جستجو وارد کنید.</p>
-      </div>
+      </main>
     );
   }
 
   return (
-    <div className="w-9/10 md:w-8/10 mx-auto py-12">
+    <main className="w-9/10 md:w-8/10 mx-auto py-12">
       <div className="mb-8">
         <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-2">نتایج جستجو</h1>
         <p className="text-gray-600">
@@ -105,11 +114,13 @@ function SearchContent() {
                 <div className="flex gap-4">
                   {result.coverImage && (
                     <div className="flex-shrink-0">
-                      <div className="w-24 h-24 md:w-32 md:h-32 rounded-lg overflow-hidden bg-gray-100">
-                        <img
+                      <div className="w-24 h-24 md:w-32 md:h-32 rounded-lg overflow-hidden bg-gray-100 relative">
+                        <Image
                           src={`${process.env.NEXT_PUBLIC_API_URL?.replace("/api", "")}/${result.coverImage.desktop || result.coverImage}`}
                           alt={result.title}
-                          className="w-full h-full object-cover"
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 768px) 96px, 128px"
                         />
                       </div>
                     </div>
@@ -152,6 +163,6 @@ function SearchContent() {
           </p>
         </div>
       )}
-    </div>
+    </main>
   );
 }

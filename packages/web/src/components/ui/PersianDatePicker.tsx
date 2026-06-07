@@ -9,94 +9,77 @@ import DatePicker, { DayValue, Day } from "react-modern-calendar-datepicker";
 // ─────────────────────────────────────────────────────────────
 
 function gregorianToJalali(gy: number, gm: number, gd: number): [number, number, number] {
-  const g_d_no = 365 * gy + div(gy + 3, 4) - div(gy + 99, 100) + div(gy + 399, 400);
-  let j_d_no = g_d_no - 79;
-
-  const j_np = div(j_d_no, 12053);
-  j_d_no %= 12053;
-
-  let jy = 979 + 33 * j_np + 4 * div(j_d_no, 1461);
-  j_d_no %= 1461;
-
-  if (j_d_no >= 366) {
-    jy += div(j_d_no - 1, 365);
-    j_d_no = (j_d_no - 1) % 365;
+  const g_d_m = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
+  const gy2 = gm > 2 ? gy + 1 : gy;
+  const days =
+    365 * gy +
+    Math.floor((gy2 + 3) / 4) -
+    Math.floor((gy2 + 99) / 100) +
+    Math.floor((gy2 + 399) / 400) +
+    gd +
+    g_d_m[gm - 1] -
+    1;
+  let jy = days - 79 > 0 ? 979 : 978;
+  const j_d_no = days - 79 > 0 ? days - 79 : days + 286;
+  const j_np = Math.floor(j_d_no / 12053);
+  let j_d = j_d_no % 12053;
+  jy += 33 * j_np + 4 * Math.floor(j_d / 1461);
+  j_d %= 1461;
+  if (j_d >= 366) {
+    jy += Math.floor((j_d - 1) / 365);
+    j_d = (j_d - 1) % 365;
   }
-
-  const monthDays = [0, 31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, 29];
-  let jm = 0;
-  let jd = 0;
-  let remaining = j_d_no;
-
-  for (let i = 1; i <= 12; i++) {
-    if (remaining < monthDays[i]) {
-      jm = i;
-      jd = remaining + 1;
-      break;
-    }
-    remaining -= monthDays[i];
-  }
-
-  // subtract gm/gd offset (align to start of year)
-  // recalculate properly from day-of-year
-  return jalaliFromDayOfYear(jy, j_d_no);
-}
-
-function jalaliFromDayOfYear(jy: number, dayOfYear: number): [number, number, number] {
-  const monthLengths = [31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, 29];
-  let remaining = dayOfYear;
-  for (let m = 0; m < 12; m++) {
-    if (remaining < monthLengths[m]) {
-      return [jy, m + 1, remaining + 1];
-    }
-    remaining -= monthLengths[m];
-  }
-  return [jy, 12, 29];
+  const jm = j_d < 186 ? Math.floor(j_d / 31) + 1 : Math.floor((j_d - 186) / 30) + 7;
+  const jd = j_d < 186 ? (j_d % 31) + 1 : ((j_d - 186) % 30) + 1;
+  return [jy, jm, jd];
 }
 
 function jalaliToGregorian(jy: number, jm: number, jd: number): [number, number, number] {
-  let gy: number;
-  let gm: number;
-  let gd: number;
-
-  jy += 1595;
-  const days =
-    -355779 +
+  let gy = jy <= 979 ? 621 : 1600;
+  jy -= jy <= 979 ? 0 : 979;
+  let days =
     365 * jy +
-    div(jy, 33) * 8 +
-    div((jy % 33) + 3, 4) +
+    Math.floor(jy / 33) * 8 +
+    Math.floor(((jy % 33) + 3) / 4) +
     78 +
     jd +
     (jm < 7 ? (jm - 1) * 31 : (jm - 7) * 30 + 186);
-
-  gy = 400 * div(days, 146097);
-  let d = days % 146097;
-
-  if (d > 36524) {
-    gy += 100 * div(--d, 36524);
-    d %= 36524;
-    if (d >= 365) d++;
+  gy += 400 * Math.floor(days / 146097);
+  days %= 146097;
+  if (days > 36524) {
+    gy += 100 * Math.floor(--days / 36524);
+    days %= 36524;
+    if (days >= 365) days++;
   }
-
-  gy += 4 * div(d, 1461);
-  d %= 1461;
-
-  if (d > 364) {
-    gy += div(d - 1, 365);
-    d = (d - 1) % 365;
+  gy += 4 * Math.floor(days / 1461);
+  days %= 1461;
+  if (days > 364) {
+    gy += Math.floor((days - 1) / 365);
+    days = (days - 1) % 365;
   }
-
-  const sal_a = [0, 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-  gd = d + 1;
-  for (gm = 0; gm < 13 && gd > sal_a[gm]; gm++) {
-    gd -= sal_a[gm];
+  const gd = days + 1;
+  const sal_a = [
+    0,
+    31,
+    (gy % 4 === 0 && gy % 100 !== 0) || gy % 400 === 0 ? 29 : 28,
+    31,
+    30,
+    31,
+    30,
+    31,
+    31,
+    30,
+    31,
+    30,
+    31,
+  ];
+  let gm = 0;
+  let remainingDays = gd;
+  for (gm = 1; gm <= 12; gm++) {
+    if (remainingDays <= sal_a[gm]) break;
+    remainingDays -= sal_a[gm];
   }
-
-  return [gy, gm, gd];
-}
-
-function div(a: number, b: number): number {
-  return Math.floor(a / b);
+  return [gy, gm, remainingDays];
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -135,64 +118,6 @@ function jalaliToIso(day: Day): string {
     return "";
   }
 }
-
-// ─────────────────────────────────────────────────────────────
-// Locale definition
-// ─────────────────────────────────────────────────────────────
-
-const PERSIAN_LOCALE = {
-  months: [
-    "فروردین",
-    "اردیبهشت",
-    "خرداد",
-    "تیر",
-    "مرداد",
-    "شهریور",
-    "مهر",
-    "آبان",
-    "آذر",
-    "دی",
-    "بهمن",
-    "اسفند",
-  ],
-  weekDays: [
-    { name: "شنبه", short: "ش" },
-    { name: "یکشنبه", short: "ی" },
-    { name: "دوشنبه", short: "د" },
-    { name: "سه‌شنبه", short: "س" },
-    { name: "چهارشنبه", short: "چ" },
-    { name: "پنج‌شنبه", short: "پ" },
-    { name: "جمعه", short: "ج", isWeekend: true },
-  ],
-  weekStartingIndex: 6,
-  getToday: (gregorianToday: Day) => {
-    const [jy, jm, jd] = gregorianToJalali(gregorianToday.year, gregorianToday.month, gregorianToday.day);
-    return { year: jy, month: jm, day: jd };
-  },
-  toNativeDate: (date: Day) => {
-    const [gy, gm, gd] = jalaliToGregorian(date.year, date.month, date.day);
-    return new Date(gy, gm - 1, gd);
-  },
-  getMonthLength: (date: Day) => {
-    if (date.month <= 6) return 31;
-    if (date.month <= 11) return 30;
-    const isLeap = ((((date.year - 474) % 2820) + 474 + 38) * 682) % 2816 < 682;
-    return isLeap ? 30 : 29;
-  },
-  transformDigit: (digit: string | number) => String(digit),
-  nextMonth: "ماه بعد",
-  previousMonth: "ماه قبل",
-  openMonthSelector: "انتخاب ماه",
-  openYearSelector: "انتخاب سال",
-  closeMonthSelector: "بستن",
-  closeYearSelector: "بستن",
-  defaultPlaceholder: "انتخاب...",
-  from: "از",
-  to: "تا",
-  digitSeparator: "،",
-  yearLetterSkip: 0,
-  isRtl: true,
-} as const;
 
 // ─────────────────────────────────────────────────────────────
 // Component props

@@ -1,4 +1,5 @@
-import { useRef, useMemo, useState } from "react";
+"use client";
+import { useRef, useMemo } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, MeshDistortMaterial, Float, useTexture } from "@react-three/drei";
 import * as THREE from "three";
@@ -41,6 +42,7 @@ const Rain = ({ count = 1000 }) => {
           count={particlesPosition.length / 3}
           array={particlesPosition}
           itemSize={3}
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           args={[particlesPosition, 3] as any}
         />
       </bufferGeometry>
@@ -54,11 +56,9 @@ const WaterDroplet = () => {
   const envTexture = useTexture("/images/2.png");
   envTexture.mapping = THREE.EquirectangularReflectionMapping;
 
-  const [hovered, setHover] = useState(false);
-
   return (
     <Float speed={2} rotationIntensity={0.5} floatIntensity={0.5}>
-      <mesh onPointerOver={() => setHover(true)} onPointerOut={() => setHover(false)}>
+      <mesh>
         <sphereGeometry args={[1.7, 64, 64]} />
         <MeshDistortMaterial
           color="#8ecae6"
@@ -81,7 +81,7 @@ const WaterDroplet = () => {
 const AboutSection = () => {
   return (
     <div>
-      <section className="h-[600px]  w-full relative overflow-hidden" style={{ backgroundColor: "#4083C4" }}>
+      <section className="h-[500px] md:h-[600px] w-full relative overflow-hidden" style={{ backgroundColor: "#4083C4" }}>
         <Canvas camera={{ position: [0, 0, 8], fov: 45 }}>
           {/* نورپردازی محیطی */}
           <ambientLight intensity={0.5} />
@@ -104,17 +104,18 @@ const AboutSection = () => {
         </Canvas>
 
         {/* راهنمای تعامل */}
-        <div className="absolute bottom-4 left-0 right-0 text-center pointer-events-none">
-          <p className="text-white/50 text-sm mb-3">
-            کانون مهرباران، بخشی از سازمان دانشجویان جهاد دانشگاهی خراسان رضوی است که با هدف ایجاد تحول
-            مثبت...
+        <div className="absolute bottom-6 left-0 right-0 text-center pointer-events-none px-4 md:px-0">
+          <p className="text-white/80 text-sm mb-4 max-w-2xl mx-auto drop-shadow-md">
+            کانون مهرباران، بخشی از سازمان دانشجویان جهاد دانشگاهی خراسان رضوی است که با هدف ایجاد تحول مثبت
           </p>
-          {STATS.map((stat, idx) => (
-            <p key={idx} className="text-center inline-block pr-6">
-              <span className="text-xl font-bold text-white/50 ml-1">{stat.value}</span>
-              <span className="text-white/50">{stat.label}</span>
-            </p>
-          ))}
+          <div className="flex flex-wrap justify-center gap-4">
+            {STATS.map((stat, idx) => (
+              <div key={idx} className="text-center px-2">
+                <span className="text-lg md:text-xl font-bold text-white ml-2 drop-shadow-sm">{stat.value}</span>
+                <span className="text-white/80 text-sm md:text-base drop-shadow-sm">{stat.label}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
     </div>

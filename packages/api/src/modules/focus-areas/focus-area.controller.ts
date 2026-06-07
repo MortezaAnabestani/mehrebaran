@@ -8,6 +8,7 @@ import {
 } from "./focus-area.validation";
 import asyncHandler from "../../core/utils/asyncHandler";
 import ApiError from "../../core/utils/apiError";
+import { getParam } from "../../core/utils/getParam";
 
 class FocusAreaController {
   public create = asyncHandler(async (req: Request, res: Response) => {
@@ -67,7 +68,7 @@ class FocusAreaController {
 
   public toggleActive = asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
-    const focusArea = await focusAreaService.toggleActive(id);
+    const focusArea = await focusAreaService.toggleActive(getParam(id));
     if (!focusArea) {
       throw new ApiError(404, "حوزه فعالیت مورد نظر یافت نشد.");
     }

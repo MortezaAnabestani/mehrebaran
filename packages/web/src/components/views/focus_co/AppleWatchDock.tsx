@@ -2,31 +2,33 @@
 import * as React from "react";
 import { motion, useMotionValue } from "framer-motion";
 import { Item } from "./Item";
-import { device } from "./settings";
 
-// نصف تعداد ردیف‌ها و ستون‌ها
-const rowsCount = 5;
-const colsCount = 4;
+// تعداد ردیف‌ها و ستون‌ها برای پوشش کل صفحه با تعداد بهینه
+const rowsCount = 10;
+const colsCount = 10;
 
 // ساخت آرایه grid جدید
-const grid = new Array(rowsCount).fill(0).map((_, i) => new Array(colsCount).fill(0).map((_, j) => j));
+const grid = new Array(rowsCount).fill(0).map(() => new Array(colsCount).fill(0).map((_, j) => j));
 
 interface AppleWatchDockProps {
   images?: string[];
 }
 
 export function AppleWatchDock({ images }: AppleWatchDockProps) {
-  const x = useMotionValue(-225);
-  const y = useMotionValue(-225);
+  const x = useMotionValue(-300);
+  const y = useMotionValue(-300);
 
   return (
-    <div className="device" style={device}>
+    <div className="absolute inset-0 pointer-events-auto w-full h-full">
       <motion.div
         drag
-        dragConstraints={{ left: -650, right: 50, top: -600, bottom: 50 }}
+        dragConstraints={{ left: -1000, right: 0, top: -1000, bottom: 0 }}
         style={{
-          width: 600,
-          height: 600,
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: 2000,
+          height: 2000,
           x,
           y,
           background: "transparent",
